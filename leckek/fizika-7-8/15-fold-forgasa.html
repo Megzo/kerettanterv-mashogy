@@ -1,0 +1,1127 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Miért van nappal és éjszaka? — Fizika</title>
+<link rel="stylesheet" href="../../shared/lesson.css">
+<style>
+  .lp-text b { color: var(--ink); }
+  #lesson-canvas { touch-action: none; }
+</style>
+<!-- A lecke által várt tartalomkulcsok. A tools/build_lesson.py ez alapján ellenőrzi a .md-t.
+     labels: felirat → max. karakterszám (null = alapértelmezett 32) · data: adat → mértékegység, tartomány -->
+<script type="application/json" id="lesson-spec">
+{
+  "steps": 9,
+  "labels": {
+    "nap": 10, "föld": 10, "budapest": 14, "egyenlítő hely": 14, "északi-sark hely": 14,
+    "é": 3, "d": 3, "k": 3, "ny": 3,
+    "hónapnevek": 140, "húzd": 12, "napidő": 22, "dátum csúszka": 30, "napszak csúszka": 30, "tengely": 14,
+    "napfény": 14, "nappal": 12, "éjszaka": 12, "felülnézet": 32, "egy forgás": 24, "megállít gomb": 22,
+    "űrből": 24, "horizontról": 32, "napmagasság": 28, "napmagasság lent": 30, "kel": 12, "delel": 12, "nyugszik": 12,
+    "bot": 10, "árnyék": 12, "legrövidebb": 30, "észak-dél": 18, "nyugat-kelet": 18,
+    "delelés ma": 26, "delelés június": 30, "tévhit": 10, "fölöttünk": 36,
+    "sarkcsillag": 16, "göncölszekér": 16, "kis göncöl": 16, "kassziopeia": 16, "vega": 12, "capella": 12,
+    "fényesebb": 40, "sarkcsillag magassága": 24, "északra nézve": 22, "csillagívek gomb": 24, "eltelt órák": 18,
+    "csillagképek": 160, "éjfélkor": 30, "nap mögött": 30, "éjjel erre": 22, "pálya": 22,
+    "sarkcsillag felé": 22, "delelés": 18, "nappal hossza": 28, "egész nap fenn": 28, "egész nap lenn": 28,
+    "nyári napforduló": 12, "téli napforduló": 12, "tavaszi napéjegyenlőség": 12, "őszi napéjegyenlőség": 12,
+    "léptékhelyes": 34, "napközelpont felirat": 30, "naptávolpont felirat": 30, "távolság": 26,
+    "évszakok": 40, "évszak nálunk": 22, "nyaláb": 30, "nyaláb szélesség": 8, "talajon": 26,
+    "júniushoz képest": 50, "távolság hatása": 24, "szög hatása": 24,
+    "csillag irány": 26, "csillagnap felirat": 24, "napnap felirat": 16, "gyorsítva": 30,
+    "kártya nap cím": 10, "kártya nap": 28, "kártya hónap cím": 10, "kártya hónap": 28, "kártya év cím": 10, "kártya év": 28,
+    "szökőév": 34, "lejátszás gomb": 22,
+    "össz forgás": 30, "össz nap útja": 30, "össz árnyék": 30, "össz sarkcsillag": 30, "össz tengely": 30, "össz távolság": 30
+  },
+  "data": {
+    "tengelyferdeség":       {"unit": "°", "min": 20, "max": 26},
+    "Budapest szélessége":   {"unit": "°", "min": 45, "max": 49},
+    "Budapest hosszúsága":   {"unit": "°", "min": 16, "max": 23},
+    "Sarkcsillag távolsága a pólustól": {"unit": "°", "min": 0, "max": 2},
+    "napközelpont":          {"unit": "millió km", "min": 140, "max": 150},
+    "naptávolpont":          {"unit": "millió km", "min": 150, "max": 160},
+    "év hossza":             {"unit": "nap", "min": 365, "max": 366},
+    "holdhónap":             {"unit": "nap", "min": 29, "max": 30}
+  }
+}
+</script>
+</head>
+<body>
+<script src="15-fold-forgasa.content.js"></script>
+<script src="fold-szarazfold.js"></script>
+<script src="../../shared/lesson.js"></script>
+<script>
+(function () {
+'use strict';
+const U = Lesson.U, { clamp, lerp, smooth, out, inOut, TAU } = U, fmt = U.fmt;
+const F = Lesson.FONTS;
+/* ── paletta (világos téma, lásd SZERZODES.md) ── */
+const INK = '#1c2440', MUT = '#565d72', RED = '#c8401c', TEAL = '#0a6f86', GOOD = '#1d7a45', BAD = '#b3261e',
+  CARD = '#fffaf1', LINE = 'rgba(28,36,64,.16)', AMB = '#d98a00', AMB_D = '#8a5a00', NIGHT = '#141b33', STARC = '#f3ead6';
+let L, c, GA = 1;
+const al = (a = 1) => { c.globalAlpha = GA * clamp(a); };
+const lab = (k) => L.lab(k), num = (k) => L.num(k);
+const LT = (k, x, y, o = {}) => L.tx(lab(k), x, y, Object.assign({ k }, o));
+const LP = (k, x, y, o = {}) => L.pill(lab(k), x, y, Object.assign({ k }, o));
+const tx = (s, x, y, o) => L.tx(s, x, y, o);
+const rr = (x, y, w, h, r) => { c.beginPath(); c.roundRect(x, y, w, h, r); };
+const ln = (x1, y1, x2, y2, col, w = 2, dash) => { c.beginPath(); c.moveTo(x1, y1); c.lineTo(x2, y2); c.strokeStyle = col; c.lineWidth = w; c.setLineDash(dash || []); c.stroke(); c.setLineDash([]); };
+const deg = Math.PI / 180;
+const labN = (k, s) => lab(k).replace('#', s);
+const lst = (k) => lab(k).split(/\s*,\s*/);
+
+function background() {
+  c.globalAlpha = 1;
+  const g = c.createRadialGradient(680, 480, 100, 680, 540, 1300); g.addColorStop(0, '#f7f1e6'); g.addColorStop(1, '#efe6d6');
+  c.fillStyle = g; c.fillRect(0, 0, 1920, 1080);
+  c.strokeStyle = 'rgba(28,36,64,.045)'; c.lineWidth = 1; c.beginPath();
+  for (let x = 0; x <= 1920; x += 40) { c.moveTo(x + .5, 0); c.lineTo(x + .5, 1080); }
+  for (let y = 0; y <= 1080; y += 40) { c.moveTo(0, y + .5); c.lineTo(1920, y + .5); }
+  c.stroke();
+}
+function arrowHead(x1, y1, x2, y2, col, s = 16) {
+  const a = Math.atan2(y2 - y1, x2 - x1);
+  c.beginPath(); c.moveTo(x2, y2); c.lineTo(x2 - s * Math.cos(a - .42), y2 - s * Math.sin(a - .42)); c.lineTo(x2 - s * Math.cos(a + .42), y2 - s * Math.sin(a + .42)); c.closePath();
+  c.fillStyle = col; c.fill();
+}
+function arrowLine(x1, y1, x2, y2, col, w = 3, s = 16) { ln(x1, y1, x2 - (x2 - x1) * .02, y2 - (y2 - y1) * .02, col, w); arrowHead(x1, y1, x2, y2, col, s); }
+
+/* ═══════════════════════════════ ÉGBOLT-MODUL ═══════════════════════════════
+   Nap–Föld(–Hold) geometria és rajzolók. Önálló blokk (csak a 2D kontextust kapja paraméterben,
+   szöveget nem ír) – a 16-holdfazisok lecke innen másolja.
+   Keretek (egységvektorok):
+     ekliptikai = „világ”: x → tavaszpont, z → az ekliptika északi pólusa. A Föld +z körül pozitív
+       irányban kering és forog (az északi pólus fölül nézve az óramutatóval ellentétesen).
+     egyenlítői: x → tavaszpont, z → a Föld forgástengelye (északi pólus).
+     helyi (ENU): [kelet, észak, fel].
+   Szögek radiánban. Az idő: helyi valódi napidő órában (12 = delelés).
+   Egyszerűsítések: a Nap középpontja számít (nincs fénytörés, nincs napkorong-sugár); a Nap helyzete
+   a csillagászati évkönyvek rövid közelítő képletéből (±0,1°); a Föld gömb; a csillagok J2000-koordinátái.
+   Szárazföld: window.FOLD_SZARAZFOLD (fold-szarazfold.js, Natural Earth). */
+const SKY = (function () {
+  const D = Math.PI / 180, TAU = Math.PI * 2;
+  const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+  const cross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+  const add = (a, b) => [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
+  const mul = (a, k) => [a[0] * k, a[1] * k, a[2] * k];
+  const norm = (a) => { const l = Math.hypot(a[0], a[1], a[2]) || 1; return [a[0] / l, a[1] / l, a[2] / l]; };
+
+  /* ── szárazföld-maszk (0,5°-os rács) ── */
+  let MASK = null, MW = 0, MH = 0;
+  function loadLand(o) {
+    if (!o || MASK) return;
+    const bin = atob(o.b64); MW = o.w; MH = o.h; MASK = new Uint8Array(MW * MH);
+    for (let i = 0; i < MW * MH; i++) MASK[i] = (bin.charCodeAt(i >> 3) >> (i & 7)) & 1;
+  }
+  function isLand(latD, lonD) {
+    if (!MASK) return 0;
+    let x = Math.floor((lonD + 180) / 360 * MW) % MW; if (x < 0) x += MW;
+    const y = Math.min(MH - 1, Math.max(0, Math.floor((90 - latD) / 180 * MH)));
+    return MASK[y * MW + x];
+  }
+
+  /* ── a Nap helyzete egy dátumon ──
+     day: az év napja törttel (1,0 = jan. 1. 0:00 világidő; a 2026-os évre számolva)
+     P = {eps: tengelyferdeség (fok), rp, ra: napközel- és naptávolpont (bármely egységben)}
+     → {lam: ekliptikai hosszúság, dec, ra (rektaszcenzió), r: Nap–Föld távolság (P egységében),
+        w: világvektor a Földtől a Nap felé, g: középanomália, eps (rad)} */
+  function sun(day, P) {
+    const n = 9496.5 + (day - 1);                       // napok 2000. jan. 1. 12:00 óta
+    const e = (P.ra - P.rp) / (P.ra + P.rp), a = (P.ra + P.rp) / 2;
+    const g = ((357.528 + 0.9856003 * n) % 360) * D;
+    const lam = ((((280.460 + 0.9856474 * n) % 360) * D + 2 * e * Math.sin(g) + 1.25 * e * e * Math.sin(2 * g)) % TAU + TAU) % TAU;
+    const eps = P.eps * D;
+    return { lam, g, eps, r: a * (1 - e * Math.cos(g)), dec: Math.asin(Math.sin(eps) * Math.sin(lam)),
+      ra: Math.atan2(Math.cos(eps) * Math.sin(lam), Math.cos(lam)), w: [Math.cos(lam), Math.sin(lam), 0] };
+  }
+  /* a Föld helyzete a Naptól (világkeret, P egységében) */
+  const earthPos = (S) => mul(S.w, -S.r);
+  /* keret-átváltás */
+  const eqToEcl = (v, eps) => { const ce = Math.cos(eps), se = Math.sin(eps); return [v[0], v[1] * ce + v[2] * se, -v[1] * se + v[2] * ce]; };
+  const eclToEq = (w, eps) => { const ce = Math.cos(eps), se = Math.sin(eps); return [w[0], w[1] * ce - w[2] * se, w[1] * se + w[2] * ce]; };
+  const eqVec = (ra, dec) => [Math.cos(dec) * Math.cos(ra), Math.cos(dec) * Math.sin(ra), Math.sin(dec)];
+  const axisW = (eps) => [0, Math.sin(eps), Math.cos(eps)];            // az északi pólus iránya (világ)
+  /* a megfigyelő délkörének rektaszcenziója (helyi csillagidő) a helyi napidőből */
+  const lstOf = (S, hr) => S.ra + (hr - 12) * 15 * D;
+  /* egy földrajzi pont (lat, lon) világvektora; thetaG = a greenwichi délkör rektaszcenziója */
+  const geoW = (lat, lon, thetaG, eps) => eqToEcl(eqVec(thetaG + lon, lat), eps);
+  /* helyi ENU-tengelyek egyenlítői koordinátákban */
+  function enu(lat, lstR) {
+    const sl = Math.sin(lat), cl = Math.cos(lat), so = Math.sin(lstR), co = Math.cos(lstR);
+    return { e: [-so, co, 0], n: [-sl * co, -sl * so, cl], u: [cl * co, cl * so, sl] };
+  }
+  const hor = (v, f) => [dot(v, f.e), dot(v, f.n), dot(v, f.u)];
+  /* a Nap iránya a helyi égen [K, É, fel] */
+  const sunHor = (S, lat, hr) => hor(eqVec(S.ra, S.dec), enu(lat, lstOf(S, hr)));
+  /* a nappal hossza órában (mértani: a Nap középpontja a látóhatár fölött; fénytörés nélkül) */
+  function dayLength(lat, dec) {
+    const x = -Math.tan(lat) * Math.tan(dec);
+    if (!(x > -1)) return x <= -1 ? 24 : 12;
+    if (x >= 1) return 0;
+    return 2 * Math.acos(x) / D / 15;
+  }
+  /* delelési magasság (rad): a Nap legnagyobb magassága a napon */
+  const noonAlt = (lat, dec) => Math.PI / 2 - Math.abs(lat - dec);
+
+  /* ── kamera: (r, u, v) jobbsodrású; v a néző felé mutat ── */
+  function camera(v, up) {
+    v = norm(v); up = up || [0, 0, 1];
+    const u = norm(add(up, mul(v, -dot(up, v)))); return { r: cross(u, v), u, v };
+  }
+  /* a Nap balra esik, a tengely felfelé dől; el: a néző magassága a Föld egyenlítője fölött */
+  function camSunLeft(sunW, axis, el) {
+    const np = norm(add(axis, mul(sunW, -dot(axis, sunW)))), w = norm(cross(np, sunW));
+    return camera(add(mul(w, Math.cos(el)), mul(np, Math.sin(el))), np);
+  }
+  /* felülnézet az északi pólus fölül, a Nap balra */
+  function camTop(sunW, axis) {
+    const v = norm(axis), r = mul(norm(add(sunW, mul(v, -dot(sunW, v)))), -1);
+    return { r, u: cross(v, r), v };
+  }
+  /* világvektor → képernyő (gömbközéppont cx, cy, sugár R) */
+  const proj = (cam, cx, cy, R, p) => ({ x: cx + R * dot(p, cam.r), y: cy - R * dot(p, cam.u), z: dot(p, cam.v),
+    vis: dot(p, cam.v) >= 0 || dot(p, cam.r) ** 2 + dot(p, cam.u) ** 2 > 1 });
+
+  /* ── pixeles földgömb (szárazföld, nappal–éjszaka, szürkületi sáv) ──
+     o = {cam, sun: világvektor a Nap felé, eps, thetaG, res (felbontás-szorzó), plain (true: nincs térkép), tint} */
+  const GC = {};
+  const COL = { sea: [86, 146, 196], land: [146, 176, 98], ice: [232, 236, 238], seaN: [30, 40, 72], landN: [48, 58, 86], iceN: [72, 82, 108],
+    moon: [196, 192, 182], moonN: [44, 48, 62] };
+  function globe(ctx, id, cx, cy, R, o) {
+    const res = o.res || 1, N = Math.max(8, Math.round(2 * R * res));
+    let G = GC[id];
+    if (!G || G.N !== N) {
+      G = GC[id] = { N, cv: document.createElement('canvas'), key: '' };
+      G.cv.width = G.cv.height = N; G.g = G.cv.getContext('2d'); G.img = G.g.createImageData(N, N);
+      const I = [], X = [], Y = [], Z = [], A = [], h = N / 2;
+      for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) {
+        const x = (i + .5 - h) / h, y = -(j + .5 - h) / h, d = Math.hypot(x, y), edge = (1 - d) * h + .5;
+        if (edge <= 0) continue;
+        I.push(j * N + i); X.push(x); Y.push(y); Z.push(Math.sqrt(Math.max(0, 1 - d * d))); A.push(Math.min(1, edge));
+      }
+      G.I = Int32Array.from(I); G.X = Float32Array.from(X); G.Y = Float32Array.from(Y); G.Z = Float32Array.from(Z); G.A = Float32Array.from(A);
+    }
+    const cam = o.cam, eps = o.eps || 0, th = o.thetaG || 0;
+    const key = [].concat(cam.r, cam.u, o.sun, [th % TAU, eps, o.plain ? 1 : 0]).map((v) => v.toFixed(4)).join(',');
+    if (key !== G.key) {
+      G.key = key;
+      const rE = eclToEq(cam.r, eps), uE = eclToEq(cam.u, eps), vE = eclToEq(cam.v, eps), sE = eclToEq(o.sun, eps);
+      const d = G.img.data, n = G.I.length;
+      const cD = o.plain ? COL.moon : null, cN = o.plain ? COL.moonN : null;
+      for (let k = 0; k < n; k++) {
+        const x = G.X[k], y = G.Y[k], z = G.Z[k];
+        const e0 = x * rE[0] + y * uE[0] + z * vE[0], e1 = x * rE[1] + y * uE[1] + z * vE[1], e2 = x * rE[2] + y * uE[2] + z * vE[2];
+        const lit = e0 * sE[0] + e1 * sE[1] + e2 * sE[2];
+        let day, ngt;
+        if (o.plain) { day = cD; ngt = cN; }
+        else {
+          const lat = Math.asin(Math.max(-1, Math.min(1, e2))) / D;
+          let lon = (Math.atan2(e1, e0) - th) / D; lon = ((lon + 180) % 360 + 360) % 360 - 180;
+          if (isLand(lat, lon)) { const ice = lat > 62 && lon < -10 && lon > -75 || lat < -60; day = ice ? COL.ice : COL.land; ngt = ice ? COL.iceN : COL.landN; }
+          else { day = COL.sea; ngt = COL.seaN; }
+        }
+        const f = Math.max(0, Math.min(1, (lit + .07) / .12)), t = f * f * (3 - 2 * f), sh = (.8 + .2 * Math.max(0, lit)) * (.86 + .14 * z);
+        const o4 = G.I[k] * 4;
+        d[o4] = (ngt[0] + (day[0] * sh - ngt[0]) * t); d[o4 + 1] = (ngt[1] + (day[1] * sh - ngt[1]) * t); d[o4 + 2] = (ngt[2] + (day[2] * sh - ngt[2]) * t);
+        d[o4 + 3] = G.A[k] * 255;
+      }
+      G.g.putImageData(G.img, 0, 0);
+    }
+    ctx.drawImage(G.cv, cx - R, cy - R, 2 * R, 2 * R);
+  }
+  /* világpontok vonala a gömb előtt (látható rész folytonos; o.back > 0 → a takart rész szaggatottan, halványan) */
+  function wpath(ctx, cam, cx, cy, R, pts, o) {
+    const P = pts.map((p) => proj(cam, cx, cy, R, p));
+    const run = (want) => {
+      ctx.beginPath(); let pen = false;
+      for (let i = 0; i < P.length; i++) {
+        const ok = P[i].vis === want && (i === 0 || P[i - 1].vis === want || !pen);
+        if (P[i].vis === want) { if (pen) ctx.lineTo(P[i].x, P[i].y); else ctx.moveTo(P[i].x, P[i].y); pen = true; } else pen = false;
+        void ok;
+      }
+      ctx.stroke();
+    };
+    ctx.strokeStyle = o.col; ctx.lineWidth = o.w || 2; ctx.lineCap = 'round'; ctx.setLineDash(o.dash || []);
+    run(true);
+    if (o.back) { const a = ctx.globalAlpha; ctx.globalAlpha = a * o.back; ctx.setLineDash([6, 7]); run(false); ctx.globalAlpha = a; }
+    ctx.setLineDash([]); ctx.lineCap = 'butt';
+    return P;
+  }
+  /* szélességi kör (vagy íve) világpontjai; k: sugárszorzó (k > 1: a gömb fölött lebeg) */
+  function latPts(lat, thetaG, eps, a0 = 0, a1 = TAU, k = 1, n = 96) {
+    const o = []; for (let i = 0; i <= n; i++) o.push(mul(eqToEcl(eqVec(thetaG + lerp(a0, a1, i / n), lat), eps), k)); return o;
+  }
+  /* a nappal–éjszaka határ (terminátor) világpontjai */
+  function termPts(sunW, n = 120) {
+    const a = norm(cross(sunW, Math.abs(sunW[2]) < .9 ? [0, 0, 1] : [1, 0, 0])), b = cross(sunW, a), o = [];
+    for (let i = 0; i <= n; i++) { const t = i / n * TAU; o.push(add(mul(a, Math.cos(t)), mul(b, Math.sin(t)))); }
+    return o;
+  }
+  const lerp = (a, b, t) => a + (b - a) * t;
+
+  /* ── helyi égbolt „búraként” (dél felé néző, beta szögben felülről néző nézet) ── */
+  function dome(cx, cy, R, beta) {
+    const sb = Math.sin(beta), cb = Math.cos(beta);
+    return { cx, cy, R, sb, cb, p: (h) => ({ x: cx - h[0] * R, y: cy - (-h[1] * sb + h[2] * cb) * R, z: h[1] * cb + h[2] * sb }) };
+  }
+  /* égbolt (day: 0 éjjel … 1 nappal) + talaj */
+  function domeBase(ctx, Dm, day) {
+    const { cx, cy, R, sb } = Dm;
+    ctx.beginPath(); ctx.arc(cx, cy, R, Math.PI, TAU); ctx.ellipse(cx, cy, R, R * sb, 0, 0, Math.PI); ctx.closePath();
+    const g = ctx.createLinearGradient(0, cy - R, 0, cy);
+    g.addColorStop(0, U.mix('#232d55', '#9cc6e6', day)); g.addColorStop(1, U.mix('#3a4570', '#d7e8f0', day));
+    ctx.fillStyle = g; ctx.fill();
+    ctx.strokeStyle = U.rgba('#1c2440', .45); ctx.lineWidth = 2; ctx.stroke();
+    ctx.beginPath(); ctx.ellipse(cx, cy, R, R * sb, 0, 0, TAU);
+    ctx.fillStyle = U.mix('#7d8460', '#cdd39c', day); ctx.fill();
+    ctx.strokeStyle = '#3d4a2a'; ctx.lineWidth = 2.5; ctx.stroke();
+  }
+  /* a Nap napi útja: [{hr, h: [K, É, fel]}] */
+  function sunPath(S, lat, n = 240) { const o = []; for (let i = 0; i <= n; i++) { const hr = 24 * i / n; o.push({ hr, h: sunHor(S, lat, hr) }); } return o; }
+
+  /* ── éjszakai égbolt: sztereografikus vetítés északra nézve, alt0 magasságú középponttal ── */
+  function stereo(cx, cy, Fz, alt0) {
+    const ca = Math.cos(alt0), sa = Math.sin(alt0);
+    return (h) => { const z = h[1] * ca + h[2] * sa, y = -h[1] * sa + h[2] * ca, k = 2 * Fz / (1 + Math.max(-.95, z)); return { x: cx + k * h[0], y: cy - k * y, z }; };
+  }
+  /* fényes csillagok: [rektaszcenzió (óra), deklináció (fok), látszó fényesség (magnitúdó; kisebb = fényesebb), azonosító] */
+  const STARS = [
+    [2.530, 89.26, 1.98, 'polaris'], [17.537, 86.59, 4.35, 'yildun'], [16.766, 82.04, 4.21, 'epsumi'], [15.734, 77.79, 4.32, 'zetumi'],
+    [16.292, 75.76, 4.95, 'etaumi'], [14.845, 74.16, 2.08, 'kochab'], [15.345, 71.83, 3.05, 'pherkad'],
+    [11.062, 61.75, 1.79, 'dubhe'], [11.031, 56.38, 2.37, 'merak'], [11.897, 53.69, 2.44, 'phecda'], [12.257, 57.03, 3.31, 'megrez'],
+    [12.900, 55.96, 1.77, 'alioth'], [13.399, 54.93, 2.27, 'mizar'], [13.792, 49.31, 1.86, 'alkaid'],
+    [0.153, 59.15, 2.28, 'caph'], [0.675, 56.54, 2.24, 'schedar'], [0.945, 60.72, 2.15, 'gcas'], [1.430, 60.24, 2.68, 'ruchbah'], [1.907, 63.67, 3.37, 'segin'],
+    [5.278, 46.00, 0.08, 'capella'], [18.616, 38.78, 0.03, 'vega'], [20.690, 45.28, 1.25, 'deneb'], [14.261, 19.18, -0.05, 'arcturus'],
+    [3.405, 49.86, 1.79, 'mirfak'], [2.065, 42.33, 2.10, 'almach'], [9.460, 51.68, 3.17, 'tlyr'], [20.370, 40.26, 2.23, 'sadr'],
+  ];
+  const FIGS = { // csillagkép-vonalak (azonosító-párok)
+    umi: [['polaris', 'yildun'], ['yildun', 'epsumi'], ['epsumi', 'zetumi'], ['zetumi', 'etaumi'], ['etaumi', 'pherkad'], ['pherkad', 'kochab'], ['kochab', 'zetumi']],
+    uma: [['dubhe', 'merak'], ['merak', 'phecda'], ['phecda', 'megrez'], ['megrez', 'dubhe'], ['megrez', 'alioth'], ['alioth', 'mizar'], ['mizar', 'alkaid']],
+    cas: [['caph', 'schedar'], ['schedar', 'gcas'], ['gcas', 'ruchbah'], ['ruchbah', 'segin']],
+  };
+  /* halvány háttércsillagok (determinisztikus véletlen, egyenletesen a gömbön) */
+  function fieldStars(n, seed) {
+    const r = U.rng(seed), o = [];
+    for (let i = 0; i < n; i++) { const z = r() * 1.6 - .6; o.push([r() * 24, Math.asin(z) / D, 3.6 + r() * 1.6, 'f' + i]); }
+    return o;
+  }
+  /* napkorong fénykoszorúval */
+  function sunDisc(ctx, x, y, r, glow = 2.6) {
+    const g = ctx.createRadialGradient(x, y, r * .6, x, y, r * glow); g.addColorStop(0, 'rgba(255,196,64,.55)'); g.addColorStop(1, 'rgba(255,196,64,0)');
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r * glow, 0, TAU); ctx.fill();
+    const g2 = ctx.createRadialGradient(x - r * .3, y - r * .3, r * .1, x, y, r); g2.addColorStop(0, '#fff2b0'); g2.addColorStop(1, '#f3a51c');
+    ctx.fillStyle = g2; ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill();
+    ctx.strokeStyle = '#8a5a00'; ctx.lineWidth = 2.5; ctx.stroke();
+  }
+
+  return { D, dot, cross, add, mul, norm, loadLand, isLand, sun, earthPos, eqToEcl, eclToEq, eqVec, axisW, lstOf, geoW, enu, hor, sunHor,
+    dayLength, noonAlt, camera, camSunLeft, camTop, proj, globe, wpath, latPts, termPts, dome, domeBase, sunPath, stereo, STARS, FIGS, fieldStars, sunDisc };
+})();
+/* ═══════════════════════════ ÉGBOLT-MODUL VÉGE ═══════════════════════════ */
+
+/* ── a lecke közös adatai ── */
+let P, EPS, LAT_BP, LON_BP, YEAR, MONTH;
+const DAY_EQ = 79.5, DAY_JUN = 172.5, DAY_SEP = 266.5, DAY_DEC = 355.5;      // márc. 20., jún. 21., szept. 23., dec. 21. (dél)
+const MDAYS = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
+function loadData() {
+  P = { eps: num('tengelyferdeség'), rp: num('napközelpont'), ra: num('naptávolpont') };
+  EPS = P.eps * deg; LAT_BP = num('Budapest szélessége') * deg; LON_BP = num('Budapest hosszúsága') * deg;
+  YEAR = num('év hossza'); MONTH = num('holdhónap');
+}
+const sunAt = (day) => SKY.sun(day, P);
+const dateStr = (day) => { const d = Math.floor(day), m = MDAYS.reduce((a, v, i) => (d > v ? i : a), 0), names = lst('hónapnevek'); return names[m] + ' ' + (d - MDAYS[m]) + '.'; };
+const hhmm = (hr) => { const m = Math.round(((hr % 24) + 24) % 24 * 60) % 1440; return String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0'); };
+const hmin = (h) => { const m = Math.round(h * 60); return Math.floor(m / 60) + ' h ' + String(m % 60).padStart(2, '0') + ' min'; };
+const degS = (r, d = 1) => fmt(r / deg, d) + '°';
+const LOCS = [{ k: 'budapest', lat: () => LAT_BP }, { k: 'egyenlítő hely', lat: () => 0 }, { k: 'északi-sark hely', lat: () => 90 * deg }];
+/* helyszín-átmenet: {from, to, t0} → szélesség (rad) */
+const locLat = (S, st) => lerp(LOCS[S.from].lat(), LOCS[S.loc].lat(), inOut(clamp((st - S.t0) / .9)));
+
+/* ── húzható elemek (a 10-arnyek-tukor leckéből; a motor csak L.pointer-t ad) ── */
+const DR = { list: [], act: null, hov: null, used: {} };
+function grab(id, x, y, r, fn) { DR.list.push({ id, x, y, r, fn }); }
+function pick(p) {
+  let best = null, bd = 1e9;
+  if (p.x > 1370) return null;
+  for (const h of DR.list) { const d = Math.hypot(p.x - h.x, p.y - h.y); if (d < h.r + 12 && d < bd) { bd = d; best = h; } }
+  return best;
+}
+function installDrag() {
+  const st = L.stage;
+  st.addEventListener('pointerdown', (e) => {
+    if (e.target.closest && e.target.closest('#lesson-panel')) return;
+    const p = L.toStage(e), h = pick(p); if (!h) return;
+    DR.act = { id: h.id, fn: h.fn, dx: h.x - p.x, dy: h.y - p.y }; DR.used[h.id] = 1;
+    st.style.cursor = 'grabbing'; e.preventDefault();
+  });
+  window.addEventListener('pointermove', (e) => {
+    const p = L.toStage(e);
+    if (DR.act) { DR.act.fn(p.x + DR.act.dx, p.y + DR.act.dy); return; }
+    const h = (e.target.closest && e.target.closest('#lesson-panel')) ? null : pick(p);
+    DR.hov = h ? h.id : null; st.style.cursor = h ? 'grab' : '';
+  });
+  window.addEventListener('pointerup', () => { DR.act = null; st.style.cursor = DR.hov ? 'grab' : ''; });
+}
+const isHot = (id) => DR.hov === id || (DR.act && DR.act.id === id);
+function ring(id, x, y, r) {
+  if (!isHot(id)) return;
+  c.beginPath(); c.arc(x, y, r, 0, TAU); c.setLineDash([7, 6]); c.strokeStyle = U.rgba(TEAL, .8); c.lineWidth = 2.5; c.stroke(); c.setLineDash([]);
+}
+function hint(id, x, y, a) {
+  if (DR.used[id] || a <= .01) return;
+  const k = .5 + .5 * Math.sin(L.t * 3.2);
+  al(a * (.75 + .25 * k)); LP('húzd', x, y, { s: 22, w: 700, a: 'center', c: '#fff', bg: TEAL, pad: 10 }); al(a);
+}
+
+/* ── közös rajzelemek ── */
+function pinMark(p, a, col = RED) {
+  if (a <= .01) return;
+  al(a * (p.vis ? 1 : .3));
+  c.beginPath(); c.arc(p.x, p.y, 9, 0, TAU); c.fillStyle = col; c.fill(); c.strokeStyle = '#fff'; c.lineWidth = 3; c.stroke();
+  c.beginPath(); c.arc(p.x, p.y, 11, 0, TAU); c.strokeStyle = INK; c.lineWidth = 1.5; c.stroke();
+}
+/* tengely + pólusjel egy pixeles gömbön */
+function axisOn(cam, cx, cy, R, k = 1.32, a = 1) {
+  const n = SKY.axisW(EPS), pts = []; for (let i = 0; i <= 40; i++) pts.push(SKY.mul(n, lerp(-k, k, i / 40)));
+  al(a); SKY.wpath(c, cam, cx, cy, R, pts, { col: INK, w: 3, back: .35 });
+  return { top: SKY.proj(cam, cx, cy, R, SKY.mul(n, k)), bot: SKY.proj(cam, cx, cy, R, SKY.mul(n, -k)) };
+}
+/* forgásirány-nyíl a gömb látható oldalán (keletre = növekvő rektaszcenzió) */
+function spinArrow(cam, cx, cy, R, thetaRef, lat, span, k, col, a) {
+  const vE = SKY.eclToEq(cam.v, EPS), raF = Math.atan2(vE[1], vE[0]);
+  const pts = SKY.latPts(lat, 0, EPS, raF - span / 2, raF + span / 2, k, 40);
+  al(a); const pr = SKY.wpath(c, cam, cx, cy, R, pts, { col, w: 4.5 });
+  const p1 = pr[pr.length - 2], p2 = pr[pr.length - 1];
+  if (p2.vis) arrowHead(p1.x, p1.y, p2.x, p2.y, col, 20);
+  void thetaRef;
+}
+function terminatorOn(cam, cx, cy, R, sunW, a) { al(a); SKY.wpath(c, cam, cx, cy, R, SKY.termPts(sunW), { col: U.rgba(INK, .55), w: 2 }); }
+/* napsugár-nyilak balról */
+function sunRays(x0, x1, ys, a) { al(a); for (const y of ys) arrowLine(x0, y, x1, y, AMB, 4, 18); }
+/* rövid helyi idő-jel: nap vagy hold ikon */
+function dayIcon(x, y, up, a) {
+  al(a);
+  if (up) SKY.sunDisc(c, x, y, 14, 1.9);
+  else { c.beginPath(); c.arc(x, y, 14, 0, TAU); c.fillStyle = '#e9e2cf'; c.fill(); c.strokeStyle = INK; c.lineWidth = 2; c.stroke(); c.beginPath(); c.arc(x + 7, y - 4, 12, 0, TAU); c.fillStyle = '#2a3358'; c.fill(); }
+}
+
+/* ── búra-jelenet (2., 3., 6. lépés) ── */
+function cardinals(Dm, a, s = 28) {
+  const { cx, cy, R, sb } = Dm; al(a);
+  LT('k', cx - R - 16, cy + 2, { s, w: 700, a: 'right', b: 'middle', f: F.D });
+  LT('ny', cx + R + 16, cy + 2, { s, w: 700, a: 'left', b: 'middle', f: F.D });
+  LP('d', cx + 26, cy - R * sb - 22, { s: s * .85, w: 700, a: 'left', f: F.D, c: INK, bg: 'rgba(255,250,241,.85)', pad: 6 });
+  LT('é', cx, cy + R * sb + 12, { s, w: 700, a: 'center', b: 'top', f: F.D });
+}
+/* a Nap napi útja a búrán; vissza: a pálya pontjai (képernyőn) */
+function drawPath(Dm, S, lat, col, wid, a, back = .5) {
+  const path = SKY.sunPath(S, lat).map((q) => Object.assign(Dm.p(q.h), { hr: q.hr, h: q.h }));
+  al(a); c.lineCap = 'round';
+  c.strokeStyle = col; c.lineWidth = wid; c.beginPath(); let pen = false;
+  for (const q of path) { if (q.h[2] >= 0) { if (pen) c.lineTo(q.x, q.y); else c.moveTo(q.x, q.y); pen = true; } else pen = false; }
+  c.stroke();
+  if (back) {
+    al(a * back); c.setLineDash([5, 8]); c.lineWidth = 2; c.beginPath(); pen = false;
+    for (const q of path) { if (q.h[2] < 0) { if (pen) c.lineTo(q.x, q.y); else c.moveTo(q.x, q.y); pen = true; } else pen = false; }
+    c.stroke(); c.setLineDash([]);
+  }
+  c.lineCap = 'butt';
+  return path;
+}
+const HS = .3;   // a bot magassága a búra sugarához képest
+const tipOf = (h) => [-HS * h[0] / h[2], -HS * h[1] / h[2], 0];
+function stickShadow(Dm, h, a) {
+  const base = Dm.p([0, 0, 0]), top = Dm.p([0, 0, HS]);
+  if (h[2] > .01) {
+    let t = tipOf(h); const L0 = Math.hypot(t[0], t[1]);
+    const lim = .97; let fade = 1; if (L0 > lim) { t = [t[0] * lim / L0, t[1] * lim / L0, 0]; fade = .7; }
+    const tp = Dm.p(t);
+    al(a * clamp(h[2] / .05) * fade); c.lineCap = 'round'; ln(base.x, base.y, tp.x, tp.y, 'rgba(28,36,64,.55)', 9); c.lineCap = 'butt';
+  }
+  al(a); c.lineCap = 'round'; ln(base.x, base.y, top.x, top.y, '#3b2410', 9); ln(base.x, base.y, top.x, top.y, '#9a6332', 5); c.lineCap = 'butt';
+  return { base, top };
+}
+function sunOnDome(Dm, h, a, r = 24) {
+  const p = Dm.p(h);
+  if (h[2] >= 0) { al(a); SKY.sunDisc(c, p.x, p.y, r); }
+  else { al(a * .35); c.beginPath(); c.arc(p.x, p.y, r, 0, TAU); c.setLineDash([5, 5]); c.strokeStyle = AMB_D; c.lineWidth = 2; c.stroke(); c.setLineDash([]); }
+  return p;
+}
+/* halvány magassági körök (30°, 60°) a búrán – a vetítés torzít, ezek segítenek leolvasni a magasságot */
+function altRings(Dm, a, day) {
+  const col = U.mix('#c9d6ff', '#1c2440', day);
+  for (const alt of [30, 60]) {
+    const pts = []; for (let i = 0; i <= 120; i++) { const az = i / 120 * TAU; pts.push(Dm.p([Math.sin(az) * Math.cos(alt * deg), Math.cos(az) * Math.cos(alt * deg), Math.sin(alt * deg)])); }
+    al(a * .5); c.beginPath(); pts.forEach((q, i) => (i ? c.lineTo(q.x, q.y) : c.moveTo(q.x, q.y))); c.strokeStyle = col; c.lineWidth = 1.5; c.setLineDash([2, 6]); c.stroke(); c.setLineDash([]);
+    const q = Dm.p([Math.cos(alt * deg), 0, Math.sin(alt * deg)]);
+    al(a * .9); tx(alt + '°', q.x + 8, q.y - 12, { k: 'napmagasság', f: F.M, s: 22, w: 600, a: 'left', b: 'middle', c: col });
+  }
+}
+/* a Nap húzása a pályáján: a legközelebbi pályapont órája */
+function nearestHr(path, x, y) { let best = path[0], bd = 1e9; for (const q of path) { const d = Math.hypot(q.x - x, q.y - y); if (d < bd) { bd = d; best = q; } } return best.hr; }
+
+/* ════════ 1. A Föld forog ════════ */
+const S1 = { run: 1, Tp: 10.5, t0: 0 };
+const RATE1 = 2;                               // óra / mp → egy nap 12 mp alatt
+const hr1 = (st) => (S1.run ? S1.Tp + (st - S1.t0) * RATE1 : S1.Tp);
+function scene1(st, cur) {
+  const p0 = out(clamp(st / .7)), S = sunAt(DAY_EQ), hr = hr1(st), th = SKY.lstOf(S, hr) - LON_BP;
+  const cam = SKY.camSunLeft(S.w, SKY.axisW(EPS), 32 * deg), CX = 600, CY = 560, R = 255;
+  // Nap balra, sugarak
+  al(p0); SKY.sunDisc(c, -150, CY, 250, 1.35);
+  sunRays(130, 300, [CY - 190, CY, CY + 190], p0 * clamp((st - .2) / .5));
+  al(p0 * clamp((st - .2) / .5)); LT('napfény', 215, CY - 214, { s: 26, w: 600, a: 'center', c: AMB_D });
+  // Föld
+  al(p0); SKY.globe(c, 'g1', CX, CY, R, { cam, sun: S.w, eps: EPS, thetaG: th });
+  c.beginPath(); c.arc(CX, CY, R, 0, TAU); c.strokeStyle = INK; c.lineWidth = 2.5; c.stroke();
+  terminatorOn(cam, CX, CY, R, S.w, p0);
+  const ax = axisOn(cam, CX, CY, R, 1.28, p0);
+  spinArrow(cam, CX, CY, R, th, 70 * deg, 150 * deg, 1.0, RED, p0 * clamp((st - .8) / .5));
+  al(p0); LT('tengely', ax.top.x + 14, ax.top.y + 6, { s: 24, c: MUT, w: 600 });
+  const bp = SKY.proj(cam, CX, CY, R, SKY.geoW(LAT_BP, LON_BP, th, EPS));
+  pinMark(bp, p0);
+  if (bp.vis) { al(p0); LP('budapest', bp.x + 18, bp.y - 30, { s: 24, w: 700, c: '#fff', bg: RED, pad: 9 }); }
+  al(p0); LP('nappal', CX - 130, CY + R + 52, { s: 26, w: 700, a: 'center', c: INK, bg: '#ffe7a3', bd: AMB_D, pad: 12 });
+  LP('éjszaka', CX + 130, CY + R + 52, { s: 26, w: 700, a: 'center', c: '#fff', bg: '#2a3358', pad: 12 });
+  // felülnézet
+  const q = clamp((st - .6) / .6), TX = 1160, TY = 330, TR = 112;
+  const camT = SKY.camTop(S.w, SKY.axisW(EPS));
+  al(p0 * q); LT('felülnézet', TX, TY - TR - 58, { s: 24, w: 600, a: 'center', c: MUT, max: 340 });
+  SKY.globe(c, 'g1t', TX, TY, TR, { cam: camT, sun: S.w, eps: EPS, thetaG: th });
+  c.beginPath(); c.arc(TX, TY, TR, 0, TAU); c.strokeStyle = INK; c.lineWidth = 2.5; c.stroke();
+  // forgásirány a felülnézeten: az egyenlítő íve kívül
+  const sE = SKY.eclToEq(S.w, EPS), raS = Math.atan2(sE[1], sE[0]);
+  const arc = SKY.latPts(0, 0, EPS, raS + 115 * deg, raS + 245 * deg, 1.2, 40).map((p) => SKY.proj(camT, TX, TY, TR, p));
+  al(p0 * q); c.beginPath(); arc.forEach((p, i) => (i ? c.lineTo(p.x, p.y) : c.moveTo(p.x, p.y))); c.strokeStyle = RED; c.lineWidth = 4.5; c.stroke();
+  arrowHead(arc[arc.length - 2].x, arc[arc.length - 2].y, arc[arc.length - 1].x, arc[arc.length - 1].y, RED, 20);
+  const bt = SKY.proj(camT, TX, TY, TR, SKY.geoW(LAT_BP, LON_BP, th, EPS)); pinMark(bt, p0 * q);
+  al(p0 * q); LP('egy forgás', TX, TY + TR + 52, { s: 24, w: 700, a: 'center', c: '#fff', bg: RED, pad: 11 });
+  // óra
+  const h = SKY.sunHor(S, LAT_BP, hr), qc = clamp((st - .9) / .5);
+  al(p0 * qc); LT('budapest', TX, 640, { s: 26, w: 700, a: 'center' });
+  tx(hhmm(hr), TX - 22, 712, { k: 'napidő', f: F.M, s: 56, w: 700, a: 'center', c: INK });
+  dayIcon(TX + 112, 692, h[2] > 0, p0 * qc);
+  al(p0 * qc); LT('napidő', TX, 752, { s: 24, c: MUT, a: 'center' });
+  void cur;
+}
+
+/* ════════ 2. A Nap látszólagos útja ════════ */
+const S2 = { man: 0, hr: 12, sl: null };
+const hr2 = (st) => (S2.man ? S2.hr : lerp(5.4, 12, inOut(clamp((st - .7) / 4.3))));
+function localDisc(cam, cx, cy, R, lat, lon, th, a) {     // kis látóhatár-korong + bot a gömbön
+  const f = SKY.enu(lat, th + lon), E = SKY.eqToEcl(f.e, EPS), N = SKY.eqToEcl(f.n, EPS), Up = SKY.eqToEcl(f.u, EPS);
+  const pts = []; for (let i = 0; i <= 36; i++) { const t = i / 36 * TAU; pts.push(SKY.add(Up, SKY.add(SKY.mul(E, .17 * Math.cos(t)), SKY.mul(N, .17 * Math.sin(t))))); }
+  const pr = pts.map((p) => SKY.proj(cam, cx, cy, R, p)), vis = SKY.proj(cam, cx, cy, R, Up);
+  al(a * (vis.vis ? 1 : .25)); c.beginPath(); pr.forEach((p, i) => (i ? c.lineTo(p.x, p.y) : c.moveTo(p.x, p.y))); c.closePath();
+  c.fillStyle = 'rgba(205,211,156,.92)'; c.fill(); c.strokeStyle = '#3d4a2a'; c.lineWidth = 2; c.stroke();
+  const tp = SKY.proj(cam, cx, cy, R, SKY.mul(Up, 1.14));
+  c.lineCap = 'round'; ln(vis.x, vis.y, tp.x, tp.y, '#3b2410', 5); c.lineCap = 'butt';
+  return vis;
+}
+function scene2(st, cur) {
+  const p0 = out(clamp(st / .7)), S = sunAt(DAY_EQ), hr = hr2(st), th = SKY.lstOf(S, hr) - LON_BP;
+  if (cur && S2.sl && !S2.man) S2.sl.set(Math.round(hr * 12) / 12);
+  // bal: az űrből
+  const cam = SKY.camSunLeft(S.w, SKY.axisW(EPS), 50 * deg), CX = 330, CY = 590, R = 215;
+  al(p0); SKY.sunDisc(c, -95, CY, 120, 1.5);
+  al(p0); LT('űrből', CX, 300, { s: 28, w: 700, a: 'center' });
+  SKY.globe(c, 'g2', CX, CY, R, { cam, sun: S.w, eps: EPS, thetaG: th });
+  c.beginPath(); c.arc(CX, CY, R, 0, TAU); c.strokeStyle = INK; c.lineWidth = 2.5; c.stroke();
+  terminatorOn(cam, CX, CY, R, S.w, p0);
+  axisOn(cam, CX, CY, R, 1.3, p0 * .8);
+  const bp = localDisc(cam, CX, CY, R, LAT_BP, LON_BP, th, p0);
+  al(p0); LP('budapest', bp.x + 26, bp.y + 34, { s: 24, w: 700, c: '#fff', bg: RED, pad: 9 });
+  // jobb: Budapestről
+  const Dm = SKY.dome(1005, 690, 285, 14 * deg), h = SKY.sunHor(S, LAT_BP, hr);
+  const dayK = smooth(clamp((h[2] + .1) / .2));
+  al(p0); LT('horizontról', 1005, 110, { s: 28, w: 700, a: 'center' });
+  tx(hhmm(hr), 1005, 180, { k: 'napidő', f: F.M, s: 50, w: 700, a: 'center' });
+  al(p0); if (h[2] > 0) L.tx(labN('napmagasság', degS(Math.asin(h[2]))), 1005, 226, { k: 'napmagasság', s: 26, a: 'center', c: MUT });
+  else LT('napmagasság lent', 1005, 226, { s: 26, a: 'center', c: MUT });
+  al(p0); SKY.domeBase(c, Dm, dayK);
+  altRings(Dm, p0, dayK);
+  const path = drawPath(Dm, S, LAT_BP, AMB, 4, p0 * clamp((st - .4) / .6));
+  cardinals(Dm, p0);
+  // kel / delel / nyugszik
+  const pl = clamp((st - 1) / .6) * p0;
+  let rise = null, set = null, noon = null;
+  for (let i = 1; i < path.length; i++) { if (path[i - 1].h[2] < 0 && path[i].h[2] >= 0) rise = path[i]; if (path[i - 1].h[2] >= 0 && path[i].h[2] < 0) set = path[i - 1]; }
+  noon = path.reduce((a, q) => (q.h[2] > a.h[2] ? q : a), path[0]);
+  al(pl);
+  const PB = { s: 24, w: 700, c: AMB_D, bg: 'rgba(255,250,241,.88)', pad: 7 };
+  if (rise) LP('kel', rise.x + 12, rise.y + 30, Object.assign({ a: 'left' }, PB));
+  if (set) LP('nyugszik', set.x - 12, set.y + 30, Object.assign({ a: 'right' }, PB));
+  LP('delel', noon.x + 30, noon.y + 30, Object.assign({ a: 'left' }, PB));
+  stickShadow(Dm, h, p0);
+  const sp = sunOnDome(Dm, h, p0);
+  if (cur) {
+    grab('nap2', sp.x, sp.y, 34, (x, y) => { S2.man = 1; S2.hr = nearestHr(path, x, y); if (S2.sl) S2.sl.set(Math.round(S2.hr * 12) / 12); });
+    ring('nap2', sp.x, sp.y, 34);
+    hint('nap2', sp.x - 92, sp.y + 4, p0 * clamp((st - 5) / .5));
+  }
+}
+
+/* ════════ 3. A bot árnyéka mutatja az égtájakat ════════ */
+const S3 = { man: 0, hr: 12, sl: null };
+const H3a = 6.5, H3b = 17.5, D3 = 5;
+const hr3 = (st) => (S3.man ? S3.hr : lerp(H3a, H3b, clamp((st - .5) / D3)));
+function scene3(st, cur) {
+  const p0 = out(clamp(st / .6)), S = sunAt(DAY_EQ), hr = hr3(st);
+  if (cur && S3.sl && !S3.man) S3.sl.set(Math.round(hr * 12) / 12);
+  const Dm = SKY.dome(560, 640, 380, 22 * deg), h = SKY.sunHor(S, LAT_BP, hr), dayK = smooth(clamp((h[2] + .1) / .2));
+  al(p0); SKY.domeBase(c, Dm, dayK);
+  const path = drawPath(Dm, S, LAT_BP, AMB, 4, p0 * .8);
+  cardinals(Dm, p0, 32);
+  // óránkénti árnyékvégek
+  const tips = [];
+  for (let k = 8; k <= 16; k++) {
+    const ht = SKY.sunHor(S, LAT_BP, k), tp = Dm.p(tipOf(ht)), a = clamp((st - .5 - (k - H3a) / (H3b - H3a) * D3) / .3);
+    tips.push({ k, p: tp, a });
+  }
+  // szerkesztés: nyugat–kelet egyenes a pontokon át, rá merőleges észak–dél egyenes a bot tövén át
+  const ca = p0 * clamp((st - 5.7) / .8);
+  if (ca > 0) {
+    const a = tips[0].p, b = tips[tips.length - 1].p, dx = b.x - a.x, dy = b.y - a.y, l = Math.hypot(dx, dy);
+    al(ca); ln(a.x - dx / l * 60, a.y - dy / l * 60, b.x + dx / l * 60, b.y + dy / l * 60, TEAL, 3.5, [12, 8]);
+    const n0 = Dm.p([0, -.92, 0]), n1 = Dm.p([0, .92, 0]);
+    ln(n0.x, n0.y, n1.x, n1.y, RED, 3.5, [12, 8]);
+    LP('nyugat-kelet', b.x + 4, b.y + 84, { s: 24, w: 700, a: 'center', c: '#fff', bg: TEAL, pad: 10 });
+    LP('észak-dél', n0.x + 26, n0.y + 30, { s: 24, w: 700, a: 'left', c: '#fff', bg: RED, pad: 10 });
+  }
+  for (const t of tips) {
+    al(p0 * t.a); c.beginPath(); c.arc(t.p.x, t.p.y, t.k === 12 ? 9 : 7, 0, TAU); c.fillStyle = t.k === 12 ? RED : INK; c.fill();
+    c.strokeStyle = '#fff'; c.lineWidth = 2; c.stroke();
+    tx(String(t.k), t.p.x + (t.k === 12 ? 12 : 0), t.p.y + (t.k === 12 ? -16 : 34), { k: 'napidő', f: F.M, s: 22, w: 700, a: t.k === 12 ? 'left' : 'center', c: t.k === 12 ? RED : INK });
+  }
+  const tn = tips.find((t) => t.k === 12);
+  al(p0 * tn.a); LP('legrövidebb', tn.p.x + 20, tn.p.y + 76, { s: 24, w: 700, c: RED, a: 'left', bg: 'rgba(255,250,241,.9)', pad: 8 });
+  // bot, árnyék, napsugár
+  const sk = stickShadow(Dm, h, p0);
+  if (h[2] > .05) {
+    const t = tipOf(h), tp = Dm.p(t), far = Dm.p([t[0] + h[0] * 1.05, t[1] + h[1] * 1.05, t[2] + h[2] * 1.05]);
+    al(p0 * .8); ln(tp.x, tp.y, far.x, far.y, AMB, 2.5, [8, 6]);
+  }
+  al(p0); LT('bot', sk.top.x - 14, sk.top.y - 4, { s: 24, w: 600, a: 'right' });
+  const sp = sunOnDome(Dm, h, p0);
+  // tévhit: oldalnézet valódi szögekkel (délben)
+  const qt = p0 * clamp((st - 1) / .6);
+  al(qt); LP('tévhit', 50, 70, { s: 22, w: 800, c: '#fff', bg: BAD, pad: 10, ls: '1px' });
+  LT('fölöttünk', 50, 126, { s: 28, f: F.D, i: 1, w: 500, c: BAD, max: 560 });
+  const nE = SKY.noonAlt(LAT_BP, S.dec), nJ = SKY.noonAlt(LAT_BP, sunAt(DAY_JUN).dec);
+  const PX = 1000, PW = 340, PY = 40, PH = 340, gx = PX + PW - 90, gy = PY + PH - 60, sh = 70;   // gx: a bot töve
+  al(qt); rr(PX, PY, PW, PH, 18); c.fillStyle = CARD; c.fill(); c.strokeStyle = LINE; c.lineWidth = 2; c.stroke();
+  ln(PX + 24, gy, PX + PW - 24, gy, '#3d4a2a', 3);
+  LT('d', PX + 30, gy + 30, { s: 24, w: 700, f: F.D, c: MUT }); LT('é', PX + PW - 30, gy + 30, { s: 24, w: 700, f: F.D, a: 'right' });
+  al(qt); ln(gx, gy, gx, PY + 30, U.rgba(INK, .5), 2, [5, 6]);
+  tx('90°', gx + 10, PY + 44, { k: 'fölöttünk', f: F.M, s: 22, w: 700, c: MUT });
+  for (const [ang, col, k, key2] of [[nJ, AMB_D, 'delelés június', 'tengelyferdeség'], [nE, RED, 'delelés ma', 'Budapest szélessége']]) {
+    const ex = gx - Math.cos(ang) * 230, ey = gy - Math.sin(ang) * 230;
+    al(qt); ln(gx, gy, ex, ey, col, 3.5);
+    SKY.sunDisc(c, ex, ey, 13, 1.8);
+    c.beginPath(); c.arc(gx, gy, k === 'delelés ma' ? 64 : 92, Math.PI + ang, Math.PI, true); c.strokeStyle = col; c.lineWidth = 2.5; c.stroke();
+    L.tx(degS(ang), ex - 16, ey - 18, { k: [k, key2], f: F.M, s: 24, w: 700, a: 'center', c: col });
+  }
+  al(qt); c.lineCap = 'round'; ln(gx, gy, gx, gy - sh, '#3b2410', 7); ln(gx, gy, gx, gy - sh, '#9a6332', 4); c.lineCap = 'butt';
+  L.tx(labN('delelés ma', degS(nE)), 50, 176, { k: ['delelés ma', 'Budapest szélessége'], s: 26, w: 700, c: RED });
+  L.tx(labN('delelés június', degS(nJ)), 50, 214, { k: ['delelés június', 'tengelyferdeség'], s: 26, w: 700, c: AMB_D });
+  al(p0); tx(hhmm(hr), 50, 1000, { k: 'napidő', f: F.M, s: 40, w: 700 });
+  LT('napidő', 200, 1000, { s: 24, c: MUT });
+  if (cur) {
+    grab('nap3', sp.x, sp.y, 34, (x, y) => { S3.man = 1; S3.hr = nearestHr(path, x, y); if (S3.sl) S3.sl.set(Math.round(S3.hr * 12) / 12); });
+    ring('nap3', sp.x, sp.y, 34);
+  }
+}
+
+/* ════════ 4. Éjjel: a Sarkcsillag ════════ */
+const S4 = { loc: 0, from: 0, t0: -9, trails: 1, trFrom: 1, trT0: -9 };
+const LST4 = 9 * 15 * deg, RATE4 = 1.5;          // kezdő csillagidő; óra / mp
+let STARS4 = null;
+const trA4 = (st) => lerp(S4.trFrom, S4.trails, clamp((st - S4.trT0) / .5));
+function scene4(st, cur) {
+  const p0 = out(clamp(st / .6)), lat = locLat(S4, st);
+  const WX = 40, WY = 50, WW = 1280, WH = 960, CX = WX + WW / 2, CY = 528;
+  const pr = SKY.stereo(CX, CY, 482, 42 * deg);
+  const hours = Math.min(24, Math.max(0, st - .6) * RATE4), lst1 = LST4 + hours * 15 * deg;
+  const pol = 90 - num('Sarkcsillag távolsága a pólustól');
+  if (!STARS4) STARS4 = SKY.STARS.concat(SKY.fieldStars(340, 7));
+  const starH = (s, l) => SKY.hor(SKY.eqVec(s[0] * 15 * deg, (s[3] === 'polaris' ? pol : s[1]) * deg), SKY.enu(lat, l));
+  // ablak
+  al(p0); rr(WX, WY, WW, WH, 26);
+  const g = c.createLinearGradient(0, WY, 0, WY + WH); g.addColorStop(0, '#0e1430'); g.addColorStop(1, '#27325e');
+  c.fillStyle = g; c.fill();
+  c.save(); rr(WX, WY, WW, WH, 26); c.clip();
+  // csillagívek
+  const ta = trA4(st) * p0;
+  if (ta > .01 && hours > .05) {
+    const n = Math.max(2, Math.ceil(hours * 4));
+    for (const s of STARS4) {
+      const br = clamp((4.8 - s[2]) / 4.5);
+      al(ta * (.25 + .6 * br)); c.strokeStyle = s[3] === 'polaris' ? '#ffd88a' : '#c9d6ff'; c.lineWidth = .9 + 1.8 * br;
+      c.beginPath();
+      for (let i = 0; i <= n; i++) { const q = pr(starH(s, LST4 + hours * 15 * deg * i / n)); if (i) c.lineTo(q.x, q.y); else c.moveTo(q.x, q.y); }
+      c.stroke();
+    }
+  }
+  // csillagkép-vonalak
+  const pos = {};
+  for (const s of STARS4) pos[s[3]] = { p: pr(starH(s, lst1)), s };
+  al(p0 * .55); c.strokeStyle = '#8fa6e8'; c.lineWidth = 2;
+  for (const f of Object.values(SKY.FIGS)) for (const [a, b] of f) { c.beginPath(); c.moveTo(pos[a].p.x, pos[a].p.y); c.lineTo(pos[b].p.x, pos[b].p.y); c.stroke(); }
+  // csillagok
+  for (const s of STARS4) {
+    const q = pos[s[3]].p, r = clamp(5.6 - 1.05 * s[2], 1.1, 6.5);
+    al(p0); c.beginPath(); c.arc(q.x, q.y, r, 0, TAU); c.fillStyle = s[3] === 'polaris' ? '#ffe2a0' : '#f4f1ff'; c.fill();
+    if (s[2] < 1.5) { const gg = c.createRadialGradient(q.x, q.y, 0, q.x, q.y, r * 4); gg.addColorStop(0, 'rgba(240,240,255,.45)'); gg.addColorStop(1, 'rgba(240,240,255,0)'); c.fillStyle = gg; c.beginPath(); c.arc(q.x, q.y, r * 4, 0, TAU); c.fill(); }
+  }
+  // magasság-ív a pólusig (a délkörön)
+  const latD = lat / deg, mer = []; for (let i = 0; i <= 30; i++) { const a = lat * i / 30; mer.push(pr([0, Math.cos(a), Math.sin(a)])); }
+  const h0 = pr([0, 1, 0]);
+  al(p0); c.beginPath(); mer.forEach((q, i) => (i ? c.lineTo(q.x, q.y) : c.moveTo(q.x, q.y))); c.strokeStyle = '#ffb35c'; c.lineWidth = 3; c.setLineDash([9, 7]); c.stroke(); c.setLineDash([]);
+  // talaj
+  const hz = []; for (let a = -110; a <= 110; a += 2) hz.push(pr([Math.sin(a * deg), Math.cos(a * deg), 0]));
+  al(p0); c.beginPath(); c.moveTo(WX - 10, WY + WH + 10); hz.forEach((q) => c.lineTo(q.x, q.y)); c.lineTo(WX + WW + 10, WY + WH + 10); c.closePath();
+  c.fillStyle = '#0b0f1e'; c.fill();
+  // fasor-sziluett
+  const rg = U.rng(3); c.fillStyle = '#05070f';
+  for (let i = 0; i < 26; i++) {
+    const a = -95 + i * 7.6 + rg() * 3, q = pr([Math.sin(a * deg), Math.cos(a * deg), 0]), hgt = 24 + rg() * 46, w = 16 + rg() * 20;
+    c.beginPath(); c.moveTo(q.x - w, q.y + 4); c.quadraticCurveTo(q.x - w * .6, q.y - hgt, q.x, q.y - hgt * 1.1); c.quadraticCurveTo(q.x + w * .6, q.y - hgt, q.x + w, q.y + 4); c.fill();
+  }
+  c.restore();
+  al(p0); rr(WX, WY, WW, WH, 26); c.strokeStyle = INK; c.lineWidth = 3; c.stroke();
+  // feliratok (világos szöveg a sötét ablakban)
+  const DARK = 'rgba(12,17,40,.78)';
+  const lbl = (k, q, dx, dy, o = {}) => { if (q.x < WX + 60 || q.x > WX + WW - 60 || q.y < WY + 40 || q.y > Math.min(WY + WH - 20, hzY(q.x) - 10)) return false; LP(k, q.x + dx, q.y + dy, Object.assign({ s: 24, w: 600, c: STARC, bg: DARK, pad: 8 }, o)); return true; };
+  const hzY = (x) => { let best = hz[0]; for (const q of hz) if (Math.abs(q.x - x) < Math.abs(best.x - x)) best = q; return best.y; };
+  const pp = pos.polaris.p, ql = clamp((st - .8) / .5) * p0;
+  const cen = (ids) => { let x = 0, y = 0; ids.forEach((i) => { x += pos[i].p.x; y += pos[i].p.y; }); return { x: x / ids.length, y: y / ids.length }; };
+  const away = (q, d) => { const dx = q.x - pp.x, dy = q.y - pp.y, l = Math.hypot(dx, dy) || 1; return { x: q.x + dx / l * d, y: q.y + dy / l * d, ux: dx / l, uy: dy / l }; };
+  const umi = away(cen(['kochab', 'pherkad', 'zetumi', 'etaumi']), 54);
+  // a Sarkcsillag felirata a Kis Göncöllel ellentétes oldalra
+  const plx = lat < 12 * deg ? pp.x - 90 : pp.x - umi.ux * 90, ply = clamp(lat < 12 * deg ? pp.y - 44 : pp.y - umi.uy * 60, WY + 40, hzY(pp.x) - 40);
+  al(ql); LP('sarkcsillag', plx, ply, { s: 26, w: 700, a: 'center', c: INK, bg: '#ffd88a', pad: 10 });
+  if (lat > 12 * deg) {
+    const mid = mer[Math.floor(mer.length * .45)];
+    al(p0); L.pill(labN('sarkcsillag magassága', fmt(latD, 1) + '°'), mid.x + 22, mid.y, { k: ['sarkcsillag magassága', 'Budapest szélessége'], s: 26, w: 700, c: '#ffc27a', bg: DARK, pad: 8 });
+  } else { al(p0); L.pill(labN('sarkcsillag magassága', fmt(latD, 1) + '°'), h0.x + 40, h0.y - 44, { k: ['sarkcsillag magassága', 'Budapest szélessége'], s: 26, w: 700, c: '#ffc27a', bg: DARK, pad: 8 }); }
+  al(p0);
+  const uma = away(cen(['dubhe', 'merak', 'phecda', 'megrez', 'alioth', 'mizar', 'alkaid']), 70), cas = away(cen(['caph', 'schedar', 'gcas', 'ruchbah', 'segin']), 60);
+  lbl('göncölszekér', uma, 0, 0, { a: 'center' });
+  lbl('kassziopeia', cas, 0, 0, { a: 'center' });
+  lbl('kis göncöl', umi, 0, 0, { a: 'center' });
+  const vq = pos.vega.p, cq = pos.capella.p;
+  const both = lbl('vega', vq, 16, -18, { c: '#ffffff' }) & lbl('capella', cq, 16, -18, { c: '#ffffff' });
+  const notPole = clamp((88 * deg - lat) / (3 * deg));         // a sarkon minden irány dél
+  al(p0 * notPole); LT('é', h0.x, Math.min(h0.y + 44, WY + WH - 60), { s: 30, w: 700, a: 'center', f: F.D, c: STARC });
+  LT('északra nézve', WX + 30, WY + WH - 28, { s: 24, c: '#aeb6d6' });
+  al(p0 * (both ? 1 : 0)); LT('fényesebb', WX + WW - 30, WY + WH - 28, { s: 24, c: '#aeb6d6', a: 'right' });
+  al(p0 * ta); L.pill(labN('eltelt órák', fmt(hours, 0)), WX + 24, WY + 46, { k: 'eltelt órák', s: 26, w: 600, c: STARC, bg: DARK, pad: 10 });
+  al(p0); L.pill(lab(LOCS[S4.loc].k), WX + WW - 30, WY + 46, { k: LOCS[S4.loc].k, s: 26, w: 700, a: 'right', c: INK, bg: '#ffd88a', pad: 10 });
+  void cur;
+}
+
+/* ════════ 5. Keringés: más évszak, más csillagképek ════════ */
+const S5 = { man: 0, day: DAY_EQ, sl: null };
+const day5 = (st) => (S5.man ? S5.day : DAY_EQ + 365 * inOut(clamp((st - .6) / 6.6)));
+/* az állatöv csillagképeinek határai az ekliptikán (ekliptikai hosszúság, fok; IAU-határok, J2000) */
+const ZOD = [351.6, 28.7, 53.4, 90.1, 118.0, 138.0, 173.9, 217.8, 241.0, 247.7, 266.3, 299.7, 327.5];
+const zodOf = (lamD) => { lamD = ((lamD % 360) + 360) % 360; for (let i = ZOD.length - 1; i >= 0; i--) { const a = ZOD[i], b = ZOD[(i + 1) % ZOD.length]; if (a < b ? lamD >= a && lamD < b : lamD >= a || lamD < b) return i; } return 0; };
+const zodMid = (i) => { const a = ZOD[i], b = ZOD[(i + 1) % ZOD.length]; return ((a + ((b - a + 360) % 360) / 2) % 360); };
+function scene5(st, cur) {
+  const p0 = out(clamp(st / .6)), day = ((day5(st) - 1) % 365 + 365) % 365 + 1, S = sunAt(day);
+  if (cur && S5.sl && !S5.man) S5.sl.set(Math.floor(day));
+  const CX = 650, CY = 540, RO = 300, RZ = 448, A = RO / ((P.rp + P.ra) / 2);
+  const scr = (lamR, r) => ({ x: CX + r * Math.cos(lamR), y: CY - r * Math.sin(lamR) });
+  const names = lst('csillagképek');
+  const night = zodOf(S.lam / deg + 180), behind = zodOf(S.lam / deg);
+  // állatöv-gyűrű
+  al(p0); c.beginPath(); c.arc(CX, CY, RZ + 34, 0, TAU); c.arc(CX, CY, RZ - 34, 0, TAU, true); c.fillStyle = 'rgba(28,36,64,.06)'; c.fill();
+  c.strokeStyle = LINE; c.lineWidth = 2; c.beginPath(); c.arc(CX, CY, RZ + 34, 0, TAU); c.stroke(); c.beginPath(); c.arc(CX, CY, RZ - 34, 0, TAU); c.stroke();
+  for (const b of ZOD) { const a = scr(b * deg, RZ - 34), z = scr(b * deg, RZ + 34); ln(a.x, a.y, z.x, z.y, U.rgba(INK, .3), 2); }
+  // kiemelt szeletek
+  const seg = (i, col) => { const a = ZOD[i] * deg, b = ZOD[(i + 1) % ZOD.length] * deg; c.beginPath(); c.arc(CX, CY, RZ + 34, -a, -b, true); c.arc(CX, CY, RZ - 34, -b, -a, false); c.closePath(); c.fillStyle = col; c.fill(); };
+  al(p0); seg(night, U.rgba(RED, .16)); seg(behind, U.rgba(AMB, .16));
+  names.forEach((nm, i) => {
+    const q = scr(zodMid(i) * deg, RZ + (i === 8 ? -2 : 0));
+    al(p0 * (i === night ? 1 : i === behind ? .75 : .9));
+    tx(nm, q.x, q.y + 1, { k: 'csillagképek', s: i === night ? 26 : 23, w: i === night ? 800 : 600, a: 'center', b: 'middle', c: i === night ? RED : i === behind ? AMB_D : INK });
+  });
+  // pálya
+  al(p0); c.beginPath();
+  for (let d = 0; d <= 366; d += 3) { const e = SKY.earthPos(sunAt(d)); const x = CX + A * e[0], y = CY - A * e[1]; if (d) c.lineTo(x, y); else c.moveTo(x, y); }
+  c.strokeStyle = U.rgba(INK, .5); c.lineWidth = 2; c.setLineDash([3, 6]); c.stroke(); c.setLineDash([]);
+  LT('pálya', CX, CY + RO - 30, { s: 22, c: MUT, a: 'center' });
+  // Nap
+  al(p0); SKY.sunDisc(c, CX, CY, 46, 2.2); LT('nap', CX, CY + 82, { s: 24, w: 700, a: 'center', c: AMB_D });
+  // Föld
+  const e = SKY.earthPos(S), EX = CX + A * e[0], EY = CY - A * e[1];
+  const out1 = scr(S.lam + Math.PI, RZ - 40), back1 = scr(S.lam, RZ - 40);
+  al(p0 * .7); ln(EX, EY, back1.x, back1.y, U.rgba(AMB, .7), 2.5, [10, 8]);
+  al(p0); arrowLine(EX + (out1.x - EX) * .12, EY + (out1.y - EY) * .12, out1.x, out1.y, RED, 3.5, 18);
+  const camTop = { r: [1, 0, 0], u: [0, 1, 0], v: [0, 0, 1] };
+  SKY.globe(c, 'g5', EX, EY, 34, { cam: camTop, sun: S.w, eps: EPS, thetaG: SKY.lstOf(S, 0) - LON_BP });
+  c.beginPath(); c.arc(EX, EY, 34, 0, TAU); c.strokeStyle = INK; c.lineWidth = 2; c.stroke();
+  pinMark(SKY.proj(camTop, EX, EY, 34, SKY.geoW(LAT_BP, LON_BP, SKY.lstOf(S, 0) - LON_BP, EPS)), p0);
+  // felirat a Föld mellé, a nyílra merőlegesen (függőleges nyílnál messzebb, mert a felirat széles)
+  const ux = Math.cos(S.lam + Math.PI), uy = -Math.sin(S.lam + Math.PI), side = ux > 0 ? -1 : 1, dd = 50 + 92 * Math.abs(uy);
+  const bx = EX + ux * 20, by = EY + uy * 20;
+  al(p0); LT('éjjel erre', bx + side * uy * dd, by - side * ux * dd, { s: 22, w: 600, c: RED, a: 'center', b: 'middle' });
+  // kiírás
+  al(p0); tx(dateStr(day), 1330, 86, { k: 'hónapnevek', f: F.D, s: 42, w: 600, a: 'right' });
+  L.tx(labN('éjfélkor', names[night]), 1330, 132, { k: ['éjfélkor', 'csillagképek'], s: 28, w: 700, a: 'right', c: RED });
+  L.tx(labN('nap mögött', names[behind]), 1330, 172, { k: ['nap mögött', 'csillagképek'], s: 24, w: 600, a: 'right', c: AMB_D });
+  void cur;
+}
+
+/* ════════ 6. Évszakok: a ferde tengely ════════ */
+const S6 = { man: 0, day: DAY_JUN, sl: null, loc: 0, from: 0, t0: -9 };
+const day6 = (st) => (S6.man ? S6.day : lerp(DAY_EQ, DAY_JUN, inOut(clamp((st - .8) / 3))));
+const hr6 = (st) => ((9 + st * 2) % 24);
+function orbitEarth(cam, OX, OY, A, S, R, id, a, th) {
+  const e = SKY.earthPos(S), q = SKY.proj(cam, OX, OY, A, SKY.mul(e, 1 / ((P.rp + P.ra) / 2)));
+  al(a); SKY.globe(c, id, q.x, q.y, R, { cam, sun: S.w, eps: EPS, thetaG: th, res: R < 40 ? 1.5 : 1 });
+  c.beginPath(); c.arc(q.x, q.y, R, 0, TAU); c.strokeStyle = INK; c.lineWidth = R < 40 ? 1.5 : 2.5; c.stroke();
+  return q;
+}
+function scene6(st, cur) {
+  const p0 = out(clamp(st / .6)), day = day6(st), S = sunAt(day), hr = hr6(st), lat = locLat(S6, st);
+  if (cur && S6.sl && !S6.man) S6.sl.set(Math.round(day - .5));
+  const OX = 345, OY = 520, A = 240, el = 22 * deg, cam = SKY.camera([Math.cos(el), 0, Math.sin(el)], [0, 0, 1]);
+  const aU = (P.rp + P.ra) / 2;
+  // pálya (hátsó fele előbb, a Nap, aztán az első fele)
+  const orbitPts = []; for (let d = 0; d <= 366; d += 2) orbitPts.push(SKY.proj(cam, OX, OY, A, SKY.mul(SKY.earthPos(sunAt(d)), 1 / aU)));
+  al(p0); c.strokeStyle = U.rgba(INK, .45); c.lineWidth = 2; c.setLineDash([3, 6]); c.beginPath(); orbitPts.forEach((q, i) => (i ? c.lineTo(q.x, q.y) : c.moveTo(q.x, q.y))); c.stroke(); c.setLineDash([]);
+  const ghosts = [[DAY_JUN, 'nyári napforduló'], [DAY_EQ, 'tavaszi napéjegyenlőség'], [DAY_SEP, 'őszi napéjegyenlőség'], [DAY_DEC, 'téli napforduló']];
+  const e = SKY.earthPos(S), ez = SKY.dot(e, cam.v);
+  const qc = SKY.proj(cam, OX, OY, A, SKY.mul(e, 1 / aU));
+  const drawGhost = (g) => {
+    const Sg = sunAt(g[0]), q = orbitEarth(cam, OX, OY, A, Sg, 30, 'g6' + g[1], p0 * .55, SKY.lstOf(Sg, 12) - LON_BP);
+    const far = SKY.dot(SKY.earthPos(Sg), cam.v) < 0, n = SKY.axisW(EPS);
+    al(p0 * .55); const t = SKY.proj(cam, q.x, q.y, 30, SKY.mul(n, 1.5)), b = SKY.proj(cam, q.x, q.y, 30, SKY.mul(n, -1.5)); ln(b.x, b.y, t.x, t.y, INK, 2);
+    const ly = far ? q.y - 80 : q.y + 98;
+    const clash = Math.abs(q.x - qc.x) < 210 && ly > qc.y - 150 && ly < qc.y + 80;   // ne takarja a mostani Földet és a feliratát
+    if (!clash && Math.abs(day - g[0]) > 4 && Math.abs(day - g[0]) < 361) { al(p0 * .9); LT(g[1], q.x, ly, { s: 22, w: 600, a: 'center', c: MUT }); }
+  };
+  ghosts.filter((g) => SKY.dot(SKY.earthPos(sunAt(g[0])), cam.v) < 0).forEach(drawGhost);
+  const drawCur = () => {
+    const th = SKY.lstOf(S, hr) - LON_BP, q = orbitEarth(cam, OX, OY, A, S, 58, 'g6', p0, th);
+    terminatorOn(cam, q.x, q.y, 58, S.w, p0);
+    const ax = axisOn(cam, q.x, q.y, 58, 1.6, p0);
+    const bp = SKY.proj(cam, q.x, q.y, 58, SKY.geoW(lat, LON_BP, th, EPS)); pinMark(bp, p0);
+    al(p0); arrowHead(ax.bot.x, ax.bot.y, ax.top.x, ax.top.y, INK, 16);
+    LT('sarkcsillag felé', ax.top.x + 4, ax.top.y - 16, { s: 22, w: 600, a: 'center', c: INK });
+  };
+  if (ez < 0) drawCur();
+  al(p0); SKY.sunDisc(c, OX, OY, 46, 2.2);
+  ghosts.filter((g) => SKY.dot(SKY.earthPos(sunAt(g[0])), cam.v) >= 0).forEach(drawGhost);
+  if (ez >= 0) drawCur();
+  // jobb: búra
+  const Dm = SKY.dome(1015, 700, 280, 14 * deg), h = SKY.sunHor(S, lat, hr), dayK = smooth(clamp((h[2] + .1) / .2));
+  al(p0); SKY.domeBase(c, Dm, dayK);
+  altRings(Dm, p0, dayK);
+  const refs = [[DAY_JUN, 'nyári napforduló'], [DAY_EQ, 'tavaszi napéjegyenlőség'], [DAY_DEC, 'téli napforduló']];
+  const placed = [];
+  for (const [d, k] of refs) {
+    const pth = drawPath(Dm, sunAt(d), lat, U.rgba(INK, .55), 2, p0 * .7, 0);
+    const nn = pth.reduce((a2, q) => (q.h[2] > a2.h[2] ? q : a2), pth[0]);
+    if (nn.h[2] > .02 && Math.abs(day - d) > 6) {
+      let y = nn.y - 4; while (placed.some((py) => Math.abs(py - y) < 34)) y += 36;
+      placed.push(y); al(p0 * .9); LP(k, nn.x + 14, y, { s: 22, w: 600, c: INK, bg: 'rgba(255,250,241,.85)', pad: 7 });
+    }
+  }
+  drawPath(Dm, S, lat, AMB, 4.5, p0, .5);
+  cardinals(Dm, p0 * clamp((88 * deg - lat) / (3 * deg)));        // a sarkon minden irány dél – ott nincs égtáj
+  stickShadow(Dm, h, p0);
+  sunOnDome(Dm, h, p0, 22);
+  // kiírások
+  const dl = SKY.dayLength(lat, S.dec), na = SKY.noonAlt(lat, S.dec);
+  al(p0); tx(dateStr(day), 1015, 96, { k: 'hónapnevek', f: F.D, s: 44, w: 600, a: 'center' });
+  L.pill(lab(LOCS[S6.loc].k), 1015, 146, { k: LOCS[S6.loc].k, s: 24, w: 700, a: 'center', c: '#fff', bg: RED, pad: 10 });
+  L.tx(labN('delelés', degS(na)), 1015, 212, { k: ['delelés', 'tengelyferdeség'], s: 28, w: 700, a: 'center' });
+  if (dl >= 24) LT('egész nap fenn', 1015, 254, { s: 28, w: 700, a: 'center', c: AMB_D });
+  else if (dl <= 0) LT('egész nap lenn', 1015, 254, { s: 28, w: 700, a: 'center', c: TEAL });
+  else L.tx(labN('nappal hossza', hmin(dl)), 1015, 254, { k: ['nappal hossza', 'Budapest szélessége'], s: 28, w: 700, a: 'center' });
+  al(p0); L.tx(lab('tengely') + ': ' + L.val('tengelyferdeség'), 60, 1010, { k: ['tengely', 'tengelyferdeség'], s: 24, w: 600, c: MUT });
+  const wN = LT('napidő', 1320, 1010, { s: 22, a: 'right', c: MUT }).w;
+  tx(hhmm(hr), 1320 - wN - 12, 1010, { k: 'napidő', f: F.M, s: 26, w: 700, a: 'right', c: INK });
+  void cur;
+}
+
+/* ════════ 7. Tévhit: a távolság ════════ */
+const S7 = { man: 0, day: DAY_DEC, sl: null };
+const day7 = (st) => (S7.man ? S7.day : lerp(DAY_JUN, DAY_DEC, inOut(clamp((st - .8) / 5))));
+function scene7(st, cur) {
+  const p0 = out(clamp(st / .6)), day = day7(st), S = sunAt(day);
+  if (cur && S7.sl && !S7.man) S7.sl.set(Math.round(day - .5));
+  const OX = 320, OY = 500, aU = (P.rp + P.ra) / 2, A = 215 / aU;
+  // léptékhelyes pálya
+  al(p0); LT('léptékhelyes', OX, 150, { s: 26, w: 700, a: 'center' });
+  c.beginPath(); for (let d = 0; d <= 366; d += 2) { const e = SKY.earthPos(sunAt(d)); const x = OX + A * e[0], y = OY - A * e[1]; if (d) c.lineTo(x, y); else c.moveTo(x, y); }
+  c.closePath(); c.strokeStyle = INK; c.lineWidth = 2.5; c.stroke();
+  al(p0); SKY.sunDisc(c, OX, OY, 30, 2.2);
+  // napközel- és naptávolpont (a pályaképletből keresve)
+  let pmin = null, pmax = null;
+  for (let d = 1; d <= 365; d += .5) { const s = sunAt(d); if (!pmin || s.r < pmin.r) pmin = s; if (!pmax || s.r > pmax.r) pmax = s; }
+  for (const [s, k, kd] of [[pmin, 'napközelpont felirat', 'napközelpont'], [pmax, 'naptávolpont felirat', 'naptávolpont']]) {
+    const e = SKY.earthPos(s), x = OX + A * e[0], y = OY - A * e[1];
+    al(p0); c.beginPath(); c.arc(x, y, 7, 0, TAU); c.fillStyle = INK; c.fill();
+    const up = y < OY;
+    LT(k, x, up ? y - 54 : y + 42, { s: 22, w: 600, a: 'center', c: MUT, max: 420 });
+    L.tx(L.val(kd), x, up ? y - 24 : y + 72, { k: kd, f: F.M, s: 24, w: 700, a: 'center' });
+  }
+  // Föld most
+  const e = SKY.earthPos(S), EX = OX + A * e[0], EY = OY - A * e[1];
+  al(p0); ln(OX, OY, EX, EY, U.rgba(RED, .8), 2.5, [8, 6]);
+  c.beginPath(); c.arc(EX, EY, 16, 0, TAU); c.fillStyle = '#5c92c4'; c.fill(); c.strokeStyle = INK; c.lineWidth = 2.5; c.stroke();
+  const seasons = lst('évszakok'), mo = MDAYS.reduce((a2, v, i) => (Math.floor(day) > v ? i : a2), 0), si = Math.floor(((mo + 10) % 12) / 3);   // meteorológiai évszak
+  tx(dateStr(day), OX, 900, { k: 'hónapnevek', f: F.D, s: 40, w: 600, a: 'center' });
+  L.tx(labN('távolság', fmt(S.r, 1) + ' ' + L.unit('napközelpont')), OX, 946, { k: ['távolság', 'napközelpont'], s: 26, w: 700, a: 'center', c: RED });
+  L.tx(labN('évszak nálunk', seasons[si] || ''), OX, 988, { k: ['évszak nálunk', 'évszakok'], s: 26, w: 700, a: 'center' });
+  // jobb: déli napsugárnyaláb
+  const hN = SKY.noonAlt(LAT_BP, S.dec), hJ = SKY.noonAlt(LAT_BP, sunAt(DAY_JUN).dec), rJ = sunAt(DAY_JUN).r;
+  const GY = 560, BW = 92;
+  al(p0); LT('nyaláb', 1040, 110, { s: 26, w: 700, a: 'center' });
+  c.fillStyle = '#cdd39c'; c.fillRect(700, GY, 640, 40); ln(700, GY, 1340, GY, '#3d4a2a', 3);
+  const foot = BW / Math.sin(hN), dx = -Math.cos(hN), dy = -Math.sin(hN);   // d: a Nap felé (képernyőn)
+  const MX = 1040, Lb = 420, px = -dy, py = dx;
+  const G = [-1, 1].map((sg) => { const gx = MX + sg * foot / 2, Ls = Lb - sg * foot / 2 * dx; return { gx, fx: gx + dx * Ls, fy: GY + dy * Ls }; });
+  const x0 = G[0].gx, x1 = G[1].gx;
+  c.save(); c.beginPath(); c.rect(640, 150, 720, GY - 150); c.clip();
+  al(p0); c.beginPath(); c.moveTo(G[0].gx, GY); c.lineTo(G[1].gx, GY); c.lineTo(G[1].fx, G[1].fy); c.lineTo(G[0].fx, G[0].fy); c.closePath();
+  c.fillStyle = 'rgba(255,196,64,.42)'; c.fill();
+  for (let i = 0; i <= 4; i++) { const t = i / 4; ln(lerp(G[0].gx, G[1].gx, t), GY, lerp(G[0].fx, G[1].fx, t), lerp(G[0].fy, G[1].fy, t), AMB, 2.5); }
+  c.restore();
+  c.fillStyle = 'rgba(200,64,28,.35)'; c.fillRect(x0, GY, foot, 14); ln(x0, GY + 7, x1, GY + 7, RED, 4);
+  // a nyaláb szélessége (merőlegesen) és a beesési szög
+  const dm = Math.min(Lb - 40, (GY - 200) / Math.sin(hN)), mx = MX + dx * dm, my = GY + dy * dm;
+  ln(mx - px * BW / 2, my - py * BW / 2, mx + px * BW / 2, my + py * BW / 2, INK, 2.5);
+  const sgn = 1;
+  LT('nyaláb szélesség', mx + sgn * px * (BW / 2 + 26), my + sgn * py * (BW / 2 + 26), { s: 22, w: 700, a: 'center', b: 'middle', f: F.M });
+  c.beginPath(); c.arc(x1, GY, 64, Math.PI, Math.PI + hN, false); c.strokeStyle = TEAL; c.lineWidth = 3; c.stroke();
+  tx(degS(hN), x1 + 14, GY - 18, { k: 'delelés', f: F.M, s: 24, w: 700, a: 'left', c: TEAL });
+  L.tx(labN('talajon', fmt(1 / Math.sin(hN), 2)), MX, GY + 86, { k: 'talajon', s: 26, w: 700, a: 'center', c: RED });
+  // sávok
+  const fd = Math.pow(rJ / S.r, 2), fa = Math.sin(hN) / Math.sin(hJ), BX = 720, BL = 420;
+  al(p0 * clamp((st - .5) / .6)); LT('júniushoz képest', 1030, 728, { s: 24, w: 600, a: 'center', c: MUT, max: 620 });
+  const bar = (y, v, k, col) => {
+    rr(BX, y, BL * 1.25, 34, 8); c.fillStyle = 'rgba(28,36,64,.06)'; c.fill();
+    rr(BX, y, Math.max(4, BL * Math.min(v, 1.25)), 34, 8); c.fillStyle = col; c.fill();
+    LT(k, BX, y - 12, { s: 24, w: 600 });
+    tx(fmt(v * 100) + ' %', BX + BL * 1.25 + 14, y + 18, { k, f: F.M, s: 26, w: 700, b: 'middle', c: col });
+  };
+  bar(800, fd, 'távolság hatása', TEAL); bar(900, fa, 'szög hatása', RED);
+  ln(BX + BL, 776, BX + BL, 946, INK, 2, [5, 5]); tx('100 %', BX + BL, 966, { k: 'júniushoz képest', f: F.M, s: 22, a: 'center', b: 'top', c: MUT });
+  void cur;
+}
+
+/* ════════ 8. Nap, hónap, év ════════ */
+const K8 = 20;                                  // a keringés gyorsítása a rajzon
+const S8 = { t0: 0 };
+function t8(st, sid) {
+  const s = st - S8.t0;
+  if (s < 4.5) return lerp(0, sid, inOut(clamp((s - .5) / 4)));
+  return lerp(sid, 24, inOut(clamp((s - 5.5) / 1.5)));
+}
+function scene8(st, cur) {
+  const p0 = out(clamp(st / .6)), Ye = YEAR / K8, sidE = 24 * Ye / (Ye + 1), t = t8(st, sidE), s = st - S8.t0;
+  const SX = 140, SY = 560, RO = 520, R = 58;
+  const phi = (-10 + 360 * t / (24 * Ye)) * deg, EX = SX + RO * Math.cos(phi), EY = SY - RO * Math.sin(phi);
+  const psi0 = Math.PI - 10 * deg, psi = psi0 + TAU * t / sidE;     // a jel iránya (képernyő-szög, óramutatóval ellentétes)
+  al(p0); SKY.sunDisc(c, SX, SY, 66, 2); LT('nap', SX, SY + 100, { s: 24, w: 700, a: 'center', c: AMB_D });
+  // pályaív
+  al(p0); c.beginPath(); c.arc(SX, SY, RO, 20 * deg, -30 * deg, true); c.strokeStyle = U.rgba(INK, .45); c.lineWidth = 2; c.setLineDash([3, 6]); c.stroke(); c.setLineDash([]);
+  // kiinduló Föld (halványan)
+  const E0x = SX + RO * Math.cos(-10 * deg), E0y = SY - RO * Math.sin(-10 * deg);
+  al(p0 * .25); c.beginPath(); c.arc(E0x, E0y, R, 0, TAU); c.fillStyle = '#5c92c4'; c.fill(); c.strokeStyle = INK; c.lineWidth = 2; c.stroke();
+  // Föld: nappali / éjszakai fél
+  const sa = Math.atan2(-(SY - EY), SX - EX);   // a Nap iránya (matematikai szög)
+  al(p0); c.beginPath(); c.arc(EX, EY, R, 0, TAU); c.fillStyle = '#26304f'; c.fill();
+  c.beginPath(); c.arc(EX, EY, R, -sa - Math.PI / 2, -sa + Math.PI / 2); c.closePath(); c.fillStyle = '#6aa0cf'; c.fill();
+  c.beginPath(); c.arc(EX, EY, R, 0, TAU); c.strokeStyle = INK; c.lineWidth = 2.5; c.stroke();
+  // a távoli csillag iránya (párhuzamos a kiinduló Nap-iránnyal)
+  const sx = Math.cos(psi0), sy = -Math.sin(psi0);
+  al(p0 * .9); ln(EX + sx * R * 1.1, EY + sy * R * 1.1, EX + sx * 250, EY + sy * 250, TEAL, 3, [10, 7]); arrowHead(EX, EY, EX + sx * 252, EY + sy * 252, TEAL, 16);
+  LT('csillag irány', EX + sx * 150, EY + sy * 150 - 26, { s: 22, w: 600, a: 'center', c: TEAL });
+  // a Nap iránya a Földről
+  al(p0 * .8); ln(EX, EY, SX + (EX - SX) * .16, SY + (EY - SY) * .16, U.rgba(AMB_D, .8), 2, [4, 6]);
+  // a „delelő hely” jele
+  const mxp = Math.cos(psi), myp = -Math.sin(psi);
+  al(p0); c.lineCap = 'round'; ln(EX, EY, EX + mxp * R * 1.55, EY + myp * R * 1.55, RED, 5); c.lineCap = 'butt';
+  c.beginPath(); c.arc(EX + mxp * R, EY + myp * R, 8, 0, TAU); c.fillStyle = RED; c.fill(); c.strokeStyle = '#fff'; c.lineWidth = 2.5; c.stroke();
+  // kiírások
+  const sidH = 24 * YEAR / (YEAR + 1);
+  const a1 = p0 * clamp((s - 4.4) / .4), a2 = p0 * clamp((s - 6.9) / .4);
+  al(a1); L.pill(labN('csillagnap felirat', hmin(sidH)), 120, 200, { k: ['csillagnap felirat', 'év hossza'], s: 26, w: 700, c: '#fff', bg: TEAL, pad: 12 });
+  al(a2); L.pill(labN('napnap felirat', '24 h'), 120, 262, { k: 'napnap felirat', s: 26, w: 700, c: '#fff', bg: RED, pad: 12 });
+  al(p0); L.tx(labN('gyorsítva', String(K8)), 120, 1010, { k: 'gyorsítva', s: 22, c: MUT });
+  // kártyák
+  const cards = [
+    ['kártya nap cím', 'kártya nap', '24 h', null],
+    ['kártya hónap cím', 'kártya hónap', L.val('holdhónap'), 'holdhónap'],
+    ['kártya év cím', 'kártya év', L.val('év hossza'), 'év hossza'],
+  ];
+  cards.forEach(([kt, kd, v, kv], i) => {
+    const q = p0 * out(clamp((st - .4 - i * .3) / .6)), x = 880, y = 90 + i * 270, w = 450, hh = 240;
+    if (q <= 0) return;
+    al(q); rr(x, y, w, hh, 18); c.fillStyle = CARD; c.fill(); c.strokeStyle = LINE; c.lineWidth = 2; c.stroke();
+    cardIcon(i, x + 76, y + 120, st, q);
+    al(q); LT(kt, x + 156, y + 60, { s: 34, f: F.D, w: 700, c: RED });
+    LT(kd, x + 156, y + 108, { s: 24, w: 500, max: 284 });
+    tx(v, x + 156, y + 170, { k: kv || kt, f: F.M, s: 32, w: 700 });
+  });
+  const q3 = p0 * clamp((st - 1.6) / .6);
+  al(q3); L.tx(labN('szökőév', fmt(YEAR - 365, 2)), 880, 920, { k: ['szökőév', 'év hossza'], s: 26, w: 700, c: RED, max: 450 });
+  void cur;
+}
+function cardIcon(i, x, y, st, a) {
+  al(a);
+  if (i === 0) {           // forgó Föld
+    c.beginPath(); c.arc(x, y, 40, 0, TAU); c.fillStyle = '#26304f'; c.fill();
+    c.beginPath(); c.arc(x, y, 40, Math.PI / 2, Math.PI * 1.5); c.closePath(); c.fillStyle = '#6aa0cf'; c.fill();
+    c.beginPath(); c.arc(x, y, 40, 0, TAU); c.strokeStyle = INK; c.lineWidth = 2; c.stroke();
+    const r0 = st * 1.6; c.beginPath(); c.arc(x, y, 54, -r0, -r0 - 4.4, true); c.strokeStyle = RED; c.lineWidth = 3.5; c.stroke();
+    const ex = x + 54 * Math.cos(-r0 - 4.4), ey = y + 54 * Math.sin(-r0 - 4.4), bx = x + 54 * Math.cos(-r0 - 4.2), by = y + 54 * Math.sin(-r0 - 4.2);
+    arrowHead(bx, by, ex, ey, RED, 13);
+  } else if (i === 1) {    // Hold a Föld körül
+    c.beginPath(); c.arc(x, y, 52, 0, TAU); c.strokeStyle = U.rgba(INK, .4); c.lineWidth = 1.5; c.setLineDash([3, 5]); c.stroke(); c.setLineDash([]);
+    c.beginPath(); c.arc(x, y, 22, 0, TAU); c.fillStyle = '#6aa0cf'; c.fill(); c.strokeStyle = INK; c.lineWidth = 2; c.stroke();
+    const m = st * .9, mx = x + 52 * Math.cos(m), my = y - 52 * Math.sin(m);
+    c.beginPath(); c.arc(mx, my, 11, 0, TAU); c.fillStyle = '#c9c3b4'; c.fill(); c.strokeStyle = INK; c.lineWidth = 2; c.stroke();
+  } else {                 // Föld a Nap körül
+    c.beginPath(); c.arc(x, y, 58, 0, TAU); c.strokeStyle = U.rgba(INK, .4); c.lineWidth = 1.5; c.setLineDash([3, 5]); c.stroke(); c.setLineDash([]);
+    SKY.sunDisc(c, x, y, 18, 1.8);
+    const m = st * .5, ex = x + 58 * Math.cos(m), ey = y - 58 * Math.sin(m);
+    c.beginPath(); c.arc(ex, ey, 10, 0, TAU); c.fillStyle = '#6aa0cf'; c.fill(); c.strokeStyle = INK; c.lineWidth = 2; c.stroke();
+  }
+}
+
+/* ════════ 9. Összefoglalás ════════ */
+function scene9(st) {
+  const p0 = out(clamp(st / .5));
+  const cards = [['össz forgás', sum1], ['össz nap útja', sum2], ['össz árnyék', sum3], ['össz sarkcsillag', sum4], ['össz tengely', sum5], ['össz távolság', sum6]];
+  cards.forEach(([k, fn], i) => {
+    const q = out(clamp((st - .3 - i * .35) / .6)); if (q <= 0) return;
+    const col = i % 3, row = Math.floor(i / 3), x = 50 + col * 430, y = 90 + row * 470 + (1 - q) * 30, w = 400, h = 430;
+    al(p0 * q); rr(x, y, w, h, 20); c.fillStyle = CARD; c.fill(); c.strokeStyle = LINE; c.lineWidth = 2; c.stroke();
+    tx(String(i + 1), x + 26, y + 46, { f: F.D, s: 40, w: 600, c: RED, qa: false });
+    c.save(); c.translate(x, y); fn(p0 * q, st); c.restore();
+    al(p0 * q); LT(k, x + w / 2, y + h - 36, { s: 26, w: 700, a: 'center', max: w - 40 });
+  });
+}
+function sum1(a, st) {
+  const S = sunAt(DAY_EQ), cam = SKY.camSunLeft(S.w, SKY.axisW(EPS), 30 * deg), th = SKY.lstOf(S, 15) - LON_BP;
+  al(a); SKY.sunDisc(c, 40, 200, 26, 1.8);
+  SKY.globe(c, 'g9a', 230, 200, 110, { cam, sun: S.w, eps: EPS, thetaG: th });
+  c.beginPath(); c.arc(230, 200, 110, 0, TAU); c.strokeStyle = INK; c.lineWidth = 2; c.stroke();
+  spinArrow(cam, 230, 200, 110, th, 70 * deg, 150 * deg, 1, RED, a);
+  void st;
+}
+function sum2(a) {
+  const S = sunAt(DAY_EQ), Dm = SKY.dome(200, 260, 150, 20 * deg);
+  al(a); SKY.domeBase(c, Dm, 1); drawPath(Dm, S, LAT_BP, AMB, 4, a, 0);
+  const h = SKY.sunHor(S, LAT_BP, 10); sunOnDome(Dm, h, a, 14);
+  al(a); LT('k', Dm.cx - Dm.R - 10, Dm.cy + 2, { s: 24, w: 700, a: 'right', b: 'middle', f: F.D });
+  LT('ny', Dm.cx + Dm.R + 10, Dm.cy + 2, { s: 24, w: 700, a: 'left', b: 'middle', f: F.D });
+}
+function sum3(a) {
+  const S = sunAt(DAY_EQ), Dm = SKY.dome(200, 210, 160, 34 * deg), h = SKY.sunHor(S, LAT_BP, 12);
+  al(a); c.beginPath(); c.ellipse(200, 210, 160, 160 * Dm.sb, 0, 0, TAU); c.fillStyle = '#cdd39c'; c.fill(); c.strokeStyle = '#3d4a2a'; c.lineWidth = 2; c.stroke();
+  stickShadow(Dm, h, a);
+  const t = Dm.p(tipOf(h)), n = Dm.p([0, .95, 0]);
+  al(a); arrowLine(t.x, t.y + 6, n.x, n.y + 24, RED, 3.5, 16);
+  LT('é', n.x, n.y + 30, { s: 26, w: 700, a: 'center', b: 'top', f: F.D, c: RED });
+}
+function sum4(a, st) {
+  al(a); rr(40, 60, 320, 250, 16); c.fillStyle = NIGHT; c.fill();
+  c.save(); rr(40, 60, 320, 250, 16); c.clip();
+  const cx = 200, cy = 150, r0 = U.rng(11);
+  for (let i = 0; i < 26; i++) {
+    const r = 18 + r0() * 150, a0 = r0() * TAU, sp = 1.2 + r0() * .4;
+    c.beginPath(); c.arc(cx, cy, r, -a0, -a0 - sp, true); c.strokeStyle = 'rgba(201,214,255,.55)'; c.lineWidth = 1.6; c.stroke();
+  }
+  c.beginPath(); c.arc(cx, cy, 5, 0, TAU); c.fillStyle = '#ffe2a0'; c.fill();
+  c.fillStyle = '#0b0f1e'; c.fillRect(40, 270, 320, 40);
+  c.restore();
+  void st;
+}
+function sum5(a) {
+  const el = 10 * deg, cam = SKY.camera([Math.cos(el), 0, Math.sin(el)], [0, 0, 1]), S = sunAt(DAY_JUN);
+  al(a); SKY.sunDisc(c, 345, 200, 24, 1.6);
+  SKY.globe(c, 'g9b', 170, 200, 100, { cam, sun: [0, 1, 0], eps: EPS, thetaG: SKY.lstOf(S, 12) - LON_BP });
+  c.beginPath(); c.arc(170, 200, 100, 0, TAU); c.strokeStyle = INK; c.lineWidth = 2; c.stroke();
+  axisOn(cam, 170, 200, 100, 1.4, a);
+}
+function sum6(a) {
+  al(a); c.beginPath(); c.ellipse(200, 190, 130, 130, 0, 0, TAU); c.strokeStyle = INK; c.lineWidth = 2.5; c.stroke();
+  SKY.sunDisc(c, 202, 190, 22, 1.8);
+  for (const [x, k] of [[70, 'napközelpont'], [332, 'naptávolpont']]) {
+    ln(x, 190, 202, 190, U.rgba(INK, .55), 2, [5, 5]);
+    c.beginPath(); c.arc(x, 190, 12, 0, TAU); c.fillStyle = '#6aa0cf'; c.fill(); c.strokeStyle = INK; c.lineWidth = 2; c.stroke();
+    tx(fmt(num(k), 1), x < 200 ? x + 16 : x - 16, 172, { k, f: F.M, s: 22, w: 700, a: x < 200 ? 'left' : 'right' });
+  }
+  c.lineCap = 'round'; ln(318, 60, 362, 104, BAD, 7); ln(362, 60, 318, 104, BAD, 7); c.lineCap = 'butt';
+}
+
+/* ════════════════════════════════════════════════════════════════ */
+const sT = new Array(9).fill(0);
+const SCENES = [scene1, scene2, scene3, scene4, scene5, scene6, scene7, scene8, scene9];
+const resetDrag = () => { DR.used = {}; DR.act = null; };
+const hrFmt = (v) => hhmm(v);
+let locBtns4 = [], locBtns6 = [];
+function setLoc(S, i, btns) { if (i === S.loc) return; S.from = S.loc; S.t0 = L.st - (S.t0 > L.st - .9 ? 0 : 0); S.loc = i; S.t0 = L.st; btns.forEach((b, j) => b && b.classList.toggle('on', j === i)); }
+function locButtons(S, arr) { arr.length = 0; LOCS.forEach((l, i) => arr.push(L.button(lab(l.k), () => setLoc(S, i, arr), l.k))); arr.forEach((b, j) => b.classList.toggle('on', j === S.loc)); }
+L = Lesson.create({
+  content: window.LESSON_CONTENT,
+  home: false,
+  steps: [
+    { settle: 4,
+      enter() { resetDrag(); Object.assign(S1, { run: 1, Tp: 10.5, t0: 0 }); },
+      controls(L) { L.button(lab('megállít gomb'), () => { const h = hr1(L.st); S1.Tp = h; S1.t0 = L.st; S1.run = S1.run ? 0 : 1; }, 'megállít gomb'); } },
+    { settle: 5.5,
+      enter() { resetDrag(); Object.assign(S2, { man: 0, hr: 12 }); },
+      controls(L) { S2.sl = L.slider({ label: lab('napszak csúszka'), k: 'napszak csúszka', min: 0, max: 24, step: 1 / 12, value: 5.4, format: hrFmt, onInput: (v) => { S2.man = 1; S2.hr = v; } }); } },
+    { settle: 6.6,
+      enter() { resetDrag(); Object.assign(S3, { man: 0, hr: 12 }); },
+      controls(L) { S3.sl = L.slider({ label: lab('napszak csúszka'), k: 'napszak csúszka', min: 0, max: 24, step: 1 / 12, value: H3a, format: hrFmt, onInput: (v) => { S3.man = 1; S3.hr = v; } }); } },
+    { settle: 8.6,
+      enter() { resetDrag(); Object.assign(S4, { loc: 0, from: 0, t0: -9, trails: 1, trFrom: 1, trT0: -9 }); locBtns4.forEach((b, j) => b && b.classList.toggle('on', j === 0)); },
+      controls(L) {
+        locButtons(S4, locBtns4);
+        L.button(lab('csillagívek gomb'), () => { S4.trFrom = trA4(L.st); S4.trails = S4.trails ? 0 : 1; S4.trT0 = L.st; }, 'csillagívek gomb');
+      } },
+    { settle: 7.4,
+      enter() { resetDrag(); Object.assign(S5, { man: 0, day: DAY_EQ }); },
+      controls(L) { S5.sl = L.slider({ label: lab('dátum csúszka'), k: 'dátum csúszka', min: 1, max: 365, step: 1, value: Math.floor(DAY_EQ), format: (v) => dateStr(v), onInput: (v) => { S5.man = 1; S5.day = v + .5; } }); } },
+    { settle: 4,
+      enter() { resetDrag(); Object.assign(S6, { man: 0, day: DAY_JUN, loc: 0, from: 0, t0: -9 }); locBtns6.forEach((b, j) => b && b.classList.toggle('on', j === 0)); },
+      controls(L) {
+        S6.sl = L.slider({ label: lab('dátum csúszka'), k: 'dátum csúszka', min: 1, max: 365, step: 1, value: Math.floor(DAY_EQ), format: (v) => dateStr(v), onInput: (v) => { S6.man = 1; S6.day = v + .5; } });
+        locButtons(S6, locBtns6);
+      } },
+    { settle: 6,
+      enter() { resetDrag(); Object.assign(S7, { man: 0, day: DAY_DEC }); },
+      controls(L) { S7.sl = L.slider({ label: lab('dátum csúszka'), k: 'dátum csúszka', min: 1, max: 365, step: 1, value: Math.floor(DAY_JUN), format: (v) => dateStr(v), onInput: (v) => { S7.man = 1; S7.day = v + .5; } }); } },
+    { settle: 7.5,
+      enter() { resetDrag(); S8.t0 = 0; },
+      controls(L) { L.button(lab('lejátszás gomb'), () => { S8.t0 = L.st; }, 'lejátszás gomb'); } },
+    { settle: 3 },
+  ],
+  init(Lx) { L = Lx; c = L.ctx; loadData(); SKY.loadLand(window.FOLD_SZARAZFOLD); installDrag(); L.steps.forEach((s) => s.enter && s.enter(L)); },
+  draw(Lx) {
+    L = Lx; c = L.ctx; GA = 1; background();
+    DR.list = [];
+    const sp = L.sp;
+    if (L.step >= 0) sT[L.step] = L.st;
+    for (let i = 0; i < SCENES.length; i++) {
+      const w = clamp(1 - Math.abs(sp - i) * 2); if (w <= .005) continue;
+      GA = w; SCENES[i](sT[i], L.step === i && w > .5);
+    }
+    c.globalAlpha = 1;
+  },
+});
+})();
+</script>
+</body>
+</html>

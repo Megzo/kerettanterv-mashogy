@@ -19,6 +19,7 @@ Szabály: egyszerre legfeljebb 3 al-ügynök fut.
 | H | 11-lencse-szem lecke | 3. hullám | 36 p 40 mp | 334 590 (kimenet 157 945; cache-írás 415 751; cache-olvasás 13 184 665) | kész: 9 lépés, QA hibátlan |
 | I | 09-aram-otthon lecke | 3. hullám | 33 p 7 mp | 323 077 (kimenet 159 948; cache-írás 550 915; cache-olvasás 7 994 215) | kész: 9 lépés, QA hibátlan |
 | J | 03-mozgas-fekezes lecke | 4. hullám | 31 p 12 mp | 344 440 (kimenet 144 382; cache-írás 580 042; cache-olvasás 17 055 810) | kész: 9 lépés, QA hibátlan |
+| K | 15-fold-forgasa lecke (+ közös szárazföld-adatfájl) | 4. hullám | 43 p 31 mp | 92 161 a jelentés szerint (a naplóból: kimenet 188 208; cache-írás 648 166; cache-olvasás 18 886 375 – a jelentett szám itt valószínűleg kontextus-tömörítés miatt alacsony) | kész: 9 lépés, QA hibátlan |
 
 A token-oszlop az al-ügynök saját fogyasztása (a koordináló fő munkamenet nélkül).
 Az első szám a Claude Code által jelentett al-ügynök-tokenszám; zárójelben az API-hívások
@@ -42,3 +43,4 @@ kimenet ~60 ezer, cache-írás ~169 ezer token (cache-olvasás ~6,8 millió).
 | 11-lencse-szem | 9 | 37 perc, ~335 ezer token | 0 JS-hiba, 0 túlcsordulás | 7. lépés (rövidlátás) átnézve | drag a 10-es leckéből másolva; egyszerűsített szemmodell (1 mm ≈ 3,5 D, valóságban ≈ 2,7 D) |
 | 09-aram-otthon | 9 | 33 perc, ~323 ezer token | 0 JS-hiba, 0 túlcsordulás | áramütés-lépés biztonsági szövege átnézve | áramár (36 Ft/kWh) és készenléti teljesítmény tanári frissítésre jelölve |
 | 03-mozgas-fekezes | 9 | 31 perc, ~344 ezer token | 0 JS-hiba, 0 túlcsordulás | féktávolság-számok utánaszámolva (30 km/h, 0,5 s, száraz: 9,1 m; 130 km/h, 2 s, jég: 724 m) | saját hibát talált és javított (gyorsítás helyett lassítva futott); `.lp-text` utolsó margója → motorjavítás-jelölt |
+| 15-fold-forgasa | 9 | 43,5 perc, a legdrágább (kimenet 188 ezer) | 0 JS-hiba, 0 túlcsordulás | delelés (42,5° / 65,9° / 19,1°) és nappalhossz (15 h 46 min fénytörés nélkül) utánaszámolva; az évszakos keringési ábra tengelyiránya helyes | kupolán a 30°/60° felirat kicsit átfed a Nap pályájával |
