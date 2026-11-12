@@ -22,6 +22,7 @@ Szabály: egyszerre legfeljebb 3 al-ügynök fut.
 | K | 15-fold-forgasa lecke (+ közös szárazföld-adatfájl) | 4. hullám | 43 p 31 mp | 92 161 a jelentés szerint (a naplóból: kimenet 188 208; cache-írás 648 166; cache-olvasás 18 886 375 – a jelentett szám itt valószínűleg kontextus-tömörítés miatt alacsony) | kész: 9 lépés, QA hibátlan |
 | L | 06-halmazallapot lecke | 4. hullám | 25 p 11 mp | 309 894 (kimenet 131 144; cache-írás 547 280; cache-olvasás 7 437 344) | kész: 8 lépés, QA hibátlan |
 | M | 12-hullam-hang lecke | 5. hullám | 26 p 37 mp | 295 342 (kimenet 125 725; cache-írás 287 294; cache-olvasás 7 825 250) | kész: 9 lépés, QA hibátlan |
+| N | 13-szinek lecke | 5. hullám | 29 p 31 mp | 293 084 (kimenet 143 589; cache-írás 284 790; cache-olvasás 10 190 168) | kész: 9 lépés, QA hibátlan |
 
 A token-oszlop az al-ügynök saját fogyasztása (a koordináló fő munkamenet nélkül).
 Az első szám a Claude Code által jelentett al-ügynök-tokenszám; zárójelben az API-hívások
@@ -48,3 +49,4 @@ kimenet ~60 ezer, cache-írás ~169 ezer token (cache-olvasás ~6,8 millió).
 | 15-fold-forgasa | 9 | 43,5 perc, a legdrágább (kimenet 188 ezer) | 0 JS-hiba, 0 túlcsordulás | delelés (42,5° / 65,9° / 19,1°) és nappalhossz (15 h 46 min fénytörés nélkül) utánaszámolva; az évszakos keringési ábra tengelyiránya helyes | kupolán a 30°/60° felirat kicsit átfed a Nap pályájával |
 | 06-halmazallapot | 8 | 25 perc, ~310 ezer token | 0 JS-hiba, 0 túlcsordulás | 5. lépés energiamérlege utánaszámolva (1 kg, 2000 W: 42 + 334 + 418 + 2256 = 3050 kJ, 25,4 perc) | az 5. lépés nyugalmi állapota már az elforrt, üres edény (buborék nélkül) – javítás-jelölt |
 | 12-hullam-hang | 9 | 26,5 perc, ~295 ezer token | 0 JS-hiba, 0 túlcsordulás | hangsebesség (331 + 0,6·t), 1 km-es verseny, 20 Hz → 17,15 m, 12. bund → 220 Hz, zajexpozíció (88 dB → 4 óra) utánaszámolva | Web Audio hang (kattintásra); `L.probe` tesztkampó |
+| 13-szinek | 9 | 29,5 perc, ~293 ezer token | 0 JS-hiba, 0 túlcsordulás | prizma-eltérítés utánaszámolva (55°, flint: 47,5° / 51,4°) | az ügynök a koordinátor briefjében hibát talált: a Rayleigh-arány 400/700 nm-re 9,4× (nem 5,5×); 450/700 nm-re 5,9× – a lecke a helyes értéket használja |

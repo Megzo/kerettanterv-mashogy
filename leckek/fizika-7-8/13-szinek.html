@@ -1,0 +1,1117 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Miért kék az ég? — Fizika</title>
+<link rel="stylesheet" href="../../shared/lesson.css">
+<style>
+  .lp-text b { color: var(--ink); }
+  .lp-text > :last-child { margin-bottom: 0; }
+  .lp-controls { gap: 10px; }
+  #lesson-canvas { touch-action: none; }
+</style>
+<!-- A lecke által várt tartalomkulcsok. A tools/build_lesson.py ez alapján ellenőrzi a .md-t.
+     labels: felirat → max. karakterszám (null = alapértelmezett 32) · data: adat → mértékegység, tartomány -->
+<script type="application/json" id="lesson-spec">
+{
+  "steps": 9,
+  "labels": {
+    "húzd": 12, "vörös": 12, "ibolya": 12, "kék": 12, "zöld": 12, "sárga": 12, "narancs": 12,
+    "cián": 12, "bíbor": 12, "fehér": 12, "fekete": 18, "ernyő": 14, "prizma": 14, "fehér fény": 18,
+    "törésmutató felirat": 30, "eltérülés felirat": 30, "beesési merőleges": 22,
+    "nagyítás nélkül": 40, "szög csúszka": 30,
+    "rés": 12, "második prizma": 18, "nem bomlik": 30, "hullámhossz felirat": 18, "hullám": 30, "egy hullámhossz": 18,
+    "hullámhossz csúszka": 30,
+    "napfény": 14, "esőcsepp": 14, "szög tengely": 22, "hely tengely": 34,
+    "legtöbb fény": 30, "fejed árnyéka": 30, "Nap mögötted": 32, "sugár csúszka": 30, "középen": 12, "szélén": 12,
+    "lámpa fénye": 22, "visszavert fény": 22, "alma": 14, "levél": 14, "papír": 14, "szem": 12,
+    "sötétben": 40, "lámpa gomb": 22, "vörös lámpa": 18, "zöld lámpa": 18, "kék lámpa": 18,
+    "képernyő": 30, "csapok": 36, "n grafikon": 34, "messziről": 22, "kiegészítő": 30, "pár vörös": 20, "pár zöld": 20, "pár kék": 20,
+    "vörös csúszka": 30, "zöld csúszka": 30, "kék csúszka": 30, "fény plusz fény": 34,
+    "festék elnyeli": 30, "cián elnyeli": 30, "bíbor elnyeli": 30, "sárga elnyeli": 30, "festék mínusz": 34,
+    "cián csúszka": 30, "bíbor csúszka": 30, "sárga csúszka": 30, "papír felirat": 28,
+    "szórás cím": 34, "arány felirat": 36, "eljut": 34, "út felirat": 30, "Nap fent": 22, "Nap most": 22,
+    "nem méretarányos": 26, "felhő": 36, "tenger tükröz": 36, "sivatag kék": 36, "nap csúszka": 30, "talaj gomb": 26,
+    "levegő": 14, "Föld": 12, "te": 6,
+    "össz prizma": 30, "össz newton": 30, "össz szivárvány": 30, "össz tárgy": 30, "össz fény": 30, "össz ég": 30
+  },
+  "data": {
+    "vörös hullámhossza":        {"unit": "nm", "min": 650, "max": 750},
+    "ibolya hullámhossza":       {"unit": "nm", "min": 380, "max": 420},
+    "kék hullámhossza":          {"unit": "nm", "min": 440, "max": 490},
+    "üveg törésmutatója vörösre": {"unit": "", "min": 1.45, "max": 1.75},
+    "üveg törésmutatója ibolyára": {"unit": "", "min": 1.46, "max": 1.80},
+    "kezdő beesési szög":        {"unit": "°", "min": 45, "max": 80},
+    "látható tartomány alja":    {"unit": "nm", "min": 370, "max": 400},
+    "ibolya–kék határ":          {"unit": "nm", "min": 420, "max": 460},
+    "kék–zöld határ":            {"unit": "nm", "min": 480, "max": 510},
+    "zöld–sárga határ":          {"unit": "nm", "min": 550, "max": 580},
+    "sárga–narancs határ":       {"unit": "nm", "min": 580, "max": 600},
+    "narancs–vörös határ":       {"unit": "nm", "min": 600, "max": 640},
+    "látható tartomány teteje":  {"unit": "nm", "min": 700, "max": 780},
+    "kezdő hullámhossz":         {"unit": "nm", "min": 400, "max": 700},
+    "víz törésmutatója vörösre": {"unit": "", "min": 1.32, "max": 1.34},
+    "víz törésmutatója ibolyára": {"unit": "", "min": 1.335, "max": 1.35},
+    "Nap magassága szivárványkor": {"unit": "°", "min": 5, "max": 30},
+    "alma ennél hosszabbat ver vissza": {"unit": "nm", "min": 570, "max": 640},
+    "levél legjobban visszavert": {"unit": "nm", "min": 520, "max": 570},
+    "vörös lámpa hullámhossza":  {"unit": "nm", "min": 610, "max": 660},
+    "zöld lámpa hullámhossza":   {"unit": "nm", "min": 510, "max": 550},
+    "kék lámpa hullámhossza":    {"unit": "nm", "min": 440, "max": 480},
+    "szórt hányad függőlegesen": {"unit": "%", "min": 5, "max": 15},
+    "kezdő napmagasság":         {"unit": "°", "min": 10, "max": 90}
+  }
+}
+</script>
+</head>
+<body>
+<script src="13-szinek.content.js"></script>
+<script src="../../shared/lesson.js"></script>
+<script>
+(function () {
+'use strict';
+const U = Lesson.U, { clamp, lerp, out, inOut, TAU } = U, fmt = U.fmt;
+const F = Lesson.FONTS;
+/* ── paletta (világos téma, lásd SZERZODES.md) – ugyanaz, mint a 10–11. leckében ── */
+const INK = '#1c2440', MUT = '#565d72', RED = '#c8401c', TEAL = '#0a6f86', GOOD = '#1d7a45', BAD = '#b3261e',
+  CARD = '#fffaf1', LINE = 'rgba(28,36,64,.16)', WATER = '#1b5a94', AMB_D = '#8a5a00';
+const NIGHT = '#141a2e', NIGHT2 = '#0e1222', LT = '#f3ead6', LT2 = '#b4bacb', VIOL = '#5b2aa8';
+const GLASS_FILL = 'rgba(160,205,235,.16)', GLASS_LINE = 'rgba(190,225,245,.85)';
+let L, c, GA = 1;
+const al = (a = 1) => { c.globalAlpha = GA * clamp(a); };
+const lab = (k) => L.lab(k), num = (k) => L.num(k);
+const T = (k, x, y, o = {}) => L.tx(lab(k), x, y, Object.assign({ k }, o));
+const TP = (k, x, y, o = {}) => L.pill(lab(k), x, y, Object.assign({ k }, o));
+const tx = (s, x, y, o) => L.tx(s, x, y, o);
+const rr = (x, y, w, h, r) => { c.beginPath(); c.roundRect(x, y, w, h, r); };
+const ln = (x1, y1, x2, y2, col, w = 2, dash) => { c.beginPath(); c.moveTo(x1, y1); c.lineTo(x2, y2); c.strokeStyle = col; c.lineWidth = w; c.setLineDash(dash || []); c.stroke(); c.setLineDash([]); };
+const deg = Math.PI / 180;
+const labN = (k, s) => lab(k).replace('#', s);
+const fdeg = (v, d = 1) => fmt(v, d) + '°';
+/* sötét „vetítővászon” doboz a világos lapon (ahol a fénynek világítania kell) */
+const PILL_D = { s: 22, w: 700, c: INK, bg: CARD, pad: 9 };   // felirat a sötét dobozban: papírszínű pirula
+function nightBox(x, y, w, h, a) {
+  al(a); rr(x, y, w, h, 18); c.fillStyle = NIGHT; c.fill(); c.strokeStyle = INK; c.lineWidth = 3; c.stroke();
+}
+function card(x, y, w, h, a) { al(a); rr(x, y, w, h, 18); c.fillStyle = CARD; c.fill(); c.strokeStyle = LINE; c.lineWidth = 2; c.stroke(); }
+function clipRect(x, y, w, h, r = 18) { c.save(); rr(x, y, w, h, r); c.clip(); }
+
+function background() {
+  c.globalAlpha = 1;
+  const g = c.createRadialGradient(680, 480, 100, 680, 540, 1300); g.addColorStop(0, '#f7f1e6'); g.addColorStop(1, '#efe6d6');
+  c.fillStyle = g; c.fillRect(0, 0, 1920, 1080);
+  c.strokeStyle = 'rgba(28,36,64,.045)'; c.lineWidth = 1; c.beginPath();
+  for (let x = 0; x <= 1920; x += 40) { c.moveTo(x + .5, 0); c.lineTo(x + .5, 1080); }
+  for (let y = 0; y <= 1080; y += 40) { c.moveTo(0, y + .5); c.lineTo(1920, y + .5); }
+  c.stroke();
+}
+function arrowHead(x1, y1, x2, y2, col, s = 16) {
+  const a = Math.atan2(y2 - y1, x2 - x1);
+  c.beginPath(); c.moveTo(x2, y2); c.lineTo(x2 - s * Math.cos(a - .42), y2 - s * Math.sin(a - .42)); c.lineTo(x2 - s * Math.cos(a + .42), y2 - s * Math.sin(a + .42)); c.closePath();
+  c.fillStyle = col; c.fill();
+}
+
+/* ════════ színtan ════════
+   CIE 1931 színillesztő függvények (Wyman–Sloan–Shirley 2013, többlebenyes analitikus közelítés)
+   → XYZ → lineáris sRGB → gamma. Egy spektrum „látott” színe: ∫ S(λ)·x̄ȳz̄(λ) dλ, fehérre hangolva
+   (a referencia-fény színe = fehér; ez a szem színállandóságának egyszerű modellje). */
+function gpw(l, m, s1, s2) { const t = (l - m) / (l < m ? s1 : s2); return Math.exp(-.5 * t * t); }
+function cmf(l) {
+  return [1.056 * gpw(l, 599.8, 37.9, 31.0) + 0.362 * gpw(l, 442.0, 16.0, 26.7) - 0.065 * gpw(l, 501.1, 20.4, 26.2),
+    0.821 * gpw(l, 568.8, 46.9, 40.5) + 0.286 * gpw(l, 530.9, 16.3, 31.1),
+    1.217 * gpw(l, 437.0, 11.8, 36.0) + 0.681 * gpw(l, 459.0, 26.0, 13.8)];
+}
+const xyz2lin = (X, Y, Z) => [3.2406 * X - 1.5372 * Y - 0.4986 * Z, -0.9689 * X + 1.8758 * Y + 0.0415 * Z, 0.0557 * X - 0.2040 * Y + 1.0570 * Z];
+const gam = (v) => { v = clamp(v); return v <= .0031308 ? 12.92 * v : 1.055 * Math.pow(v, 1 / 2.4) - .055; };
+const LAMS = []; for (let l = 380; l <= 780; l += 5) LAMS.push(l);
+const CMFS = LAMS.map(cmf);
+function linOf(S) {
+  let X = 0, Y = 0, Z = 0;
+  for (let i = 0; i < LAMS.length; i++) { const s = S(LAMS[i]); if (!s) continue; X += s * CMFS[i][0]; Y += s * CMFS[i][1]; Z += s * CMFS[i][2]; }
+  return xyz2lin(X, Y, Z);
+}
+/* S spektrum színe a ref fehérhez (lineáris RGB, 1 = a fehér fényben a teljesen visszaverő felület) */
+const perceive = (S, ref) => { const a = linOf(S); return [a[0] / ref[0], a[1] / ref[1], a[2] / ref[2]]; };
+const css = (v, a = 1, k = 1) => `rgba(${Math.round(255 * gam(v[0] * k))},${Math.round(255 * gam(v[1] * k))},${Math.round(255 * gam(v[2] * k))},${a})`;
+/* egyetlen hullámhossz megjelenítési színe. A tiszta spektrumszín kívül esik a kijelző színterén,
+   ezért a szokásos (Bruton-féle) szakaszonként lineáris közelítést használjuk – ez a megjelenítéshez kell,
+   a tárgyak, festékek, az ég színét a fenti színillesztő függvények adják. */
+const SPC = {};
+function specLin(l) {
+  l = Math.round(l); if (SPC[l]) return SPC[l];
+  let r = 0, g = 0, b = 0;
+  if (l < 440) { r = (440 - l) / 60; b = 1; } else if (l < 490) { g = (l - 440) / 50; b = 1; } else if (l < 510) { g = 1; b = (510 - l) / 20; }
+  else if (l < 580) { r = (l - 510) / 70; g = 1; } else if (l < 645) { r = 1; g = (645 - l) / 65; } else r = 1;
+  return (SPC[l] = [r, g, b].map((q) => Math.pow(clamp(q), 2.2)));
+}
+const spec = (l, a = 1, k = 1) => css(specLin(l), a, k);
+/* sötét változat (szöveg/körvonal a papíron) */
+const specD = (l) => css(specLin(l), 1, .3);
+const sig = (x) => 1 / (1 + Math.exp(-x));
+const gauss = (l, m, s) => Math.exp(-.5 * ((l - m) / s) * ((l - m) / s));
+/* színnév a hullámhosszhoz (az .md határai szerint) */
+function colourKey(l) {
+  const b = [['ibolya–kék határ', 'ibolya'], ['kék–zöld határ', 'kék'], ['zöld–sárga határ', 'zöld'], ['sárga–narancs határ', 'sárga'], ['narancs–vörös határ', 'narancs']];
+  for (const [k, n] of b) if (l < num(k)) return n;
+  return 'vörös';
+}
+
+/* ════════ geometriai optika (a 11. lecke Snellius–Descartes-törvénye vektoros alakban) ════════ */
+const dot = (a, b) => a[0] * b[0] + a[1] * b[1], add = (a, b) => [a[0] + b[0], a[1] + b[1]], sub = (a, b) => [a[0] - b[0], a[1] - b[1]], mul = (a, k) => [a[0] * k, a[1] * k];
+const nrm = (a) => { const l = Math.hypot(a[0], a[1]) || 1; return [a[0] / l, a[1] / l]; };
+const rot = (a, f) => [a[0] * Math.cos(f) - a[1] * Math.sin(f), a[0] * Math.sin(f) + a[1] * Math.cos(f)];
+/* d: beeső egységvektor, n: a beesés oldala felé mutató normális; n1 → n2. null = teljes visszaverődés */
+function refract(d, n, n1, n2) { const r = n1 / n2, ci = -dot(n, d), k = 1 - r * r * (1 - ci * ci); if (k < 0) return null; return add(mul(d, r), mul(n, r * ci - Math.sqrt(k))); }
+const reflect = (d, n) => sub(d, mul(n, 2 * dot(d, n)));
+function segHit(P, d, A, B) {
+  const ex = B[0] - A[0], ey = B[1] - A[1], den = d[0] * ey - d[1] * ex; if (Math.abs(den) < 1e-9) return null;
+  const ax = A[0] - P[0], ay = A[1] - P[1], t = (ax * ey - ay * ex) / den, u = (ax * d[1] - ay * d[0]) / den;
+  return t > 1e-6 && u >= -1e-9 && u <= 1 + 1e-9 ? { t, u } : null;
+}
+/* sugár egy üveg-sokszögön át: belépés, (esetleges teljes visszaverődés), kilépés */
+function tracePoly(P0, d0, V, n) {
+  const cen = V.reduce((s, p) => [s[0] + p[0] / V.length, s[1] + p[1] / V.length], [0, 0]);
+  const pts = [P0]; let P = P0, d = d0, inside = false, last = -1;
+  for (let it = 0; it < 6; it++) {
+    let best = null;
+    for (let f = 0; f < V.length; f++) { if (f === last) continue; const h = segHit(P, d, V[f], V[(f + 1) % V.length]); if (h && (!best || h.t < best.t)) best = { t: h.t, f }; }
+    if (!best) break;
+    const A = V[best.f], B = V[(best.f + 1) % V.length], Q = add(P, mul(d, best.t));
+    let no = nrm([B[1] - A[1], -(B[0] - A[0])]); if (dot(no, sub(Q, cen)) < 0) no = mul(no, -1);
+    pts.push(Q); last = best.f; P = Q;
+    if (!inside) { d = refract(d, no, 1, n); inside = true; }
+    else { const e = refract(d, mul(no, -1), n, 1); if (e) { d = e; inside = false; break; } d = reflect(d, no); }
+  }
+  return { pts, dir: d, inside };
+}
+/* háromszög-prizma: bal alsó sarok, oldal, elforgatás; flip → csúccsal lefelé */
+function prismVerts(cx, cy, s, flip) {
+  const h = s * Math.sqrt(3) / 2, k = flip ? -1 : 1;
+  return [[cx, cy - k * h * 2 / 3], [cx + s / 2, cy + k * h / 3], [cx - s / 2, cy + k * h / 3]];
+}
+function drawPrism(V, a, lt = true) {
+  al(a); c.beginPath(); V.forEach((p, i) => i ? c.lineTo(p[0], p[1]) : c.moveTo(p[0], p[1])); c.closePath();
+  c.fillStyle = lt ? GLASS_FILL : 'rgba(140,195,230,.35)'; c.fill(); c.strokeStyle = lt ? GLASS_LINE : WATER; c.lineWidth = 2.5; c.lineJoin = 'round'; c.stroke();
+}
+/* Cauchy-képlet két megadott törésmutatóból: n(λ) = A + B/λ² */
+function cauchy(n7, n4) {
+  const l7 = num('vörös hullámhossza') / 1000, l4 = num('ibolya hullámhossza') / 1000;
+  const B = (n4 - n7) / (1 / (l4 * l4) - 1 / (l7 * l7)), A = n7 - B / (l7 * l7);
+  return (l) => A + B / ((l / 1000) * (l / 1000));
+}
+let nGlass, nWater;
+/* elemlámpa ikon (a fény a +x irányba indul) */
+function torch(P, dir, a, col = '#fff6dc') {
+  al(a); c.save(); c.translate(P[0], P[1]); c.rotate(Math.atan2(dir[1], dir[0]));
+  rr(-74, -15, 62, 30, 6); c.fillStyle = '#3a4260'; c.fill(); c.strokeStyle = '#8b93ad'; c.lineWidth = 2; c.stroke();
+  c.beginPath(); c.moveTo(-14, -15); c.lineTo(0, -22); c.lineTo(0, 22); c.lineTo(-14, 15); c.closePath(); c.fillStyle = '#4a5374'; c.fill(); c.stroke();
+  c.beginPath(); c.ellipse(0, 0, 4, 20, 0, 0, TAU); c.fillStyle = col; c.fill();
+  c.restore();
+}
+/* fénysugár a sötét dobozban (additív keverés) */
+function beam(pts, col, w, a) {
+  if (pts.length < 2 || a <= .01) return;
+  al(a); c.beginPath(); pts.forEach((p, i) => i ? c.lineTo(p[0], p[1]) : c.moveTo(p[0], p[1]));
+  c.strokeStyle = col; c.lineWidth = w; c.lineJoin = 'round'; c.lineCap = 'round'; c.stroke();
+}
+/* töröttvonal az első q hányadáig */
+function partial(pts, q) {
+  if (q >= 1) return pts; if (q <= 0) return [pts[0]];
+  let tot = 0; const seg = []; for (let i = 1; i < pts.length; i++) { const l = Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]); seg.push(l); tot += l; }
+  let rem = tot * q; const o = [pts[0]];
+  for (let i = 1; i < pts.length; i++) { if (rem >= seg[i - 1]) { o.push(pts[i]); rem -= seg[i - 1]; continue; } const f = rem / (seg[i - 1] || 1); o.push([lerp(pts[i - 1][0], pts[i][0], f), lerp(pts[i - 1][1], pts[i][1], f)]); break; }
+  return o;
+}
+const RAYS = []; for (let l = 400; l <= 700; l += 10) RAYS.push(l);
+/* egyenes és a doboz határa: meddig mehet a sugár a dobozon belül */
+function tBox(P, d, B) {
+  let t = 1e9;
+  if (d[0] > 1e-9) t = Math.min(t, (B.x + B.w - P[0]) / d[0]); if (d[0] < -1e-9) t = Math.min(t, (B.x - P[0]) / d[0]);
+  if (d[1] > 1e-9) t = Math.min(t, (B.y + B.h - P[1]) / d[1]); if (d[1] < -1e-9) t = Math.min(t, (B.y - P[1]) / d[1]);
+  return Math.max(0, t);
+}
+
+/* ── húzható elemek (helyi bővítés, a 10–11. leckéből: a motor csak L.pointer-t ad) ── */
+const DR = { list: [], act: null, hov: null, used: {} };
+function grab(id, x, y, r, fn) { DR.list.push({ id, x, y, r, fn }); }
+function pick(p) {
+  let best = null, bd = 1e9;
+  if (p.x > 1370) return null;
+  for (const h of DR.list) { const d = Math.hypot(p.x - h.x, p.y - h.y); if (d < h.r + 12 && d < bd) { bd = d; best = h; } }
+  return best;
+}
+function installDrag() {
+  const st = L.stage;
+  st.addEventListener('pointerdown', (e) => {
+    if (e.target.closest && e.target.closest('#lesson-panel')) return;
+    const p = L.toStage(e), h = pick(p); if (!h) return;
+    DR.act = { id: h.id, fn: h.fn, dx: h.x - p.x, dy: h.y - p.y }; DR.used[h.id] = 1; DR.used.any = 1;
+    st.style.cursor = 'grabbing'; e.preventDefault();
+  });
+  window.addEventListener('pointermove', (e) => {
+    const p = L.toStage(e);
+    if (DR.act) { DR.act.fn(p.x + DR.act.dx, p.y + DR.act.dy); return; }
+    const h = (e.target.closest && e.target.closest('#lesson-panel')) ? null : pick(p);
+    DR.hov = h ? h.id : null; st.style.cursor = h ? 'grab' : '';
+  });
+  window.addEventListener('pointerup', () => { DR.act = null; st.style.cursor = DR.hov ? 'grab' : ''; });
+}
+const isHot = (id) => DR.hov === id || (DR.act && DR.act.id === id);
+function ring(id, x, y, r, col = TEAL) {
+  if (!isHot(id)) return;
+  c.beginPath(); c.arc(x, y, r, 0, TAU); c.setLineDash([7, 6]); c.strokeStyle = U.rgba(col, .9); c.lineWidth = 3; c.stroke(); c.setLineDash([]);
+}
+function hint(x, y, a) {
+  if (DR.used.any || a <= .01) return;
+  const k = .5 + .5 * Math.sin(L.t * 3.2);
+  al(a * (.75 + .25 * k)); TP('húzd', x, y, { s: 22, w: 700, a: 'center', c: '#fff', bg: TEAL, pad: 10 }); al(a);
+}
+
+/* szem-ikon (a 10–11. leckéből) */
+function eyeIcon(x, y, ang, s, a) {
+  if (a <= .01) return;
+  al(a); c.save(); c.translate(x, y); c.rotate(ang);
+  c.beginPath(); c.moveTo(-s, 0); c.quadraticCurveTo(0, -s * 1.05, s, 0); c.quadraticCurveTo(0, s * 1.05, -s, 0); c.closePath();
+  c.fillStyle = CARD; c.fill();
+  c.save(); c.clip();
+  c.beginPath(); c.arc(s * .3, 0, s * .46, 0, TAU); c.fillStyle = TEAL; c.fill();
+  c.beginPath(); c.arc(s * .42, 0, s * .22, 0, TAU); c.fillStyle = INK; c.fill();
+  c.beginPath(); c.arc(s * .3, -s * .17, s * .09, 0, TAU); c.fillStyle = '#fff'; c.fill();
+  c.restore();
+  c.beginPath(); c.moveTo(-s, 0); c.quadraticCurveTo(0, -s * 1.05, s, 0); c.quadraticCurveTo(0, s * 1.05, -s, 0); c.closePath();
+  c.strokeStyle = '#8b93ad'; c.lineWidth = 2.5; c.lineJoin = 'round'; c.stroke();
+  c.restore();
+}
+/* spektrum-diagram a sötét dobozban: oszlopmagasság ∝ S(λ) */
+function specPlot(x, y, w, h, S, a, mx = 1) {
+  al(a); rr(x, y, w, h, 10); c.fillStyle = NIGHT2; c.fill(); c.strokeStyle = 'rgba(243,234,214,.28)'; c.lineWidth = 1.5; c.stroke();
+  const x0 = x + 10, x1 = x + w - 10, yb = y + h - 8, hh = h - 20, l0 = 390, l1 = 710, dx = (x1 - x0) / ((l1 - l0) / 5);
+  c.beginPath();
+  for (let l = l0; l <= l1; l += 5) {
+    const v = clamp(S(l) / mx), px = x0 + (l - l0) / (l1 - l0) * (x1 - x0);
+    if (v > .002) { c.fillStyle = spec(l); c.fillRect(px - dx / 2, yb - v * hh, dx + .6, v * hh); }
+    l === l0 ? c.moveTo(px, yb - v * hh) : c.lineTo(px, yb - v * hh);
+  }
+  c.strokeStyle = LT; c.lineWidth = 2; c.stroke();
+  ln(x0, yb, x1, yb, 'rgba(243,234,214,.5)', 1.5);
+}
+
+/* ════════ 1. Prizma ════════ */
+const B1 = { x: 40, y: 50, w: 1280, h: 700 };
+const S1 = { i: 55 };
+const PR1 = prismVerts(470, 330, 340);
+function prismRun(V, iDeg, frac, n) {
+  // a bal oldali lap: V[2] (bal alsó) → V[0] (csúcs); belső normális (0,866; 0,5)
+  const A = V[2], Bv = V[0], P = [lerp(A[0], Bv[0], frac), lerp(A[1], Bv[1], frac)];
+  const cen = [(V[0][0] + V[1][0] + V[2][0]) / 3, (V[0][1] + V[1][1] + V[2][1]) / 3];
+  const nin = nrm([Bv[1] - A[1], -(Bv[0] - A[0])]); const inw = dot(nin, sub(cen, P)) > 0 ? nin : mul(nin, -1);
+  const d0 = rot(inw, -iDeg * deg);
+  return { P, d0, nin: inw, ray: (l) => tracePoly(sub(P, mul(d0, 1)), d0, V, n(l)) };
+}
+function scene1(st, cur) {
+  const p0 = out(clamp(st / .6)), qb = clamp((st - .5) / .7), qi = clamp((st - 1.2) / .4), qo = clamp((st - 1.6) / 1.0),
+    pl = clamp((st - 2.4) / .6), pr = clamp((st - 3.0) / .6);
+  nightBox(B1.x, B1.y, B1.w, B1.h, p0);
+  const run = prismRun(PR1, S1.i, .5, nGlass);
+  const P0 = sub(run.P, mul(run.d0, Math.min(tBox(run.P, mul(run.d0, -1), { x: 120, y: 80, w: 1100, h: 640 }), 560)));
+  clipRect(B1.x, B1.y, B1.w, B1.h);
+  // beesési merőleges + szög
+  al(p0 * pl * .9); ln(run.P[0] - run.nin[0] * 120, run.P[1] - run.nin[1] * 120, run.P[0] + run.nin[0] * 90, run.P[1] + run.nin[1] * 90, LT2, 2, [8, 7]);
+  const an = Math.atan2(-run.nin[1], -run.nin[0]), ab = Math.atan2(-run.d0[1], -run.d0[0]);
+  let da = ab - an; while (da > Math.PI) da -= TAU; while (da < -Math.PI) da += TAU;
+  c.beginPath(); c.arc(run.P[0], run.P[1], 70, an, an + da, da < 0); c.strokeStyle = U.rgba('#e8c24a', 1); c.lineWidth = 3; c.stroke();
+  // sugarak
+  c.globalCompositeOperation = 'lighter';
+  beam(partial([P0, run.P], qb), 'rgba(255,250,235,1)', 9, p0 * .95);
+  const ex = {}, scr = {};
+  // ernyő: merőleges az 550 nm-es kilépő sugárra, a doboz széle előtt
+  const r550 = run.ray(550), E550 = r550.pts[r550.pts.length - 1];
+  const tS = tBox(E550, r550.dir, { x: B1.x + 40, y: B1.y + 40, w: B1.w - 120, h: B1.h - 150 });
+  const SC = add(E550, mul(r550.dir, tS)), sN = r550.dir, sT = [-sN[1], sN[0]];
+  for (const l of RAYS) {
+    const r = run.ray(l); if (r.inside) continue;
+    const E = r.pts[r.pts.length - 1];
+    const tt = dot(sub(SC, E), sN) / dot(r.dir, sN), H = add(E, mul(r.dir, tt));
+    ex[l] = E; scr[l] = H;
+    const a = p0 * .42 * (.6 + .4 * clamp((l - 400) / 40) * clamp((700 - l) / 40));
+    if (qi > 0) beam(partial([r.pts[1], E], qi), spec(l), 7, a);
+    if (qo > 0) beam(partial([E, H], qo), spec(l), 6, a);
+  }
+  c.globalCompositeOperation = 'source-over';
+  c.restore();
+  drawPrism(PR1, p0);
+  torch(P0, run.d0, p0);
+  // ernyő
+  const sh = 110, sA = add(SC, mul(sT, -sh)), sB = add(SC, mul(sT, sh));
+  al(p0 * clamp(qo * 3)); ln(sA[0] + sN[0] * 7, sA[1] + sN[1] * 7, sB[0] + sN[0] * 7, sB[1] + sN[1] * 7, '#d9d1bf', 12);
+  if (qo >= 1) {
+    c.globalCompositeOperation = 'lighter';
+    for (const l of RAYS) if (scr[l]) { al(p0 * .8); c.beginPath(); c.arc(scr[l][0], scr[l][1], 6, 0, TAU); c.fillStyle = spec(l); c.fill(); }
+    c.globalCompositeOperation = 'source-over';
+  }
+  const sTop = sA[1] < sB[1] ? sA : sB;
+  al(p0 * clamp(qo * 3)); T('ernyő', sTop[0] - 16, sTop[1] - 4, { s: 24, w: 600, c: LT2, a: 'right' });
+  // feliratok
+  al(p0 * qb); T('fehér fény', P0[0] + 10, P0[1] + 58, { s: 26, w: 700, c: LT });
+  al(p0); T('prizma', 470, 330 + 340 * Math.sqrt(3) / 6 + 44, { s: 26, w: 600, c: LT2, a: 'center' });
+  const l7 = 700, l4 = 400;
+  if (pl > 0 && scr[l7] && scr[l4]) {
+    al(p0 * pl);
+    const side = Math.sign(dot(sub(scr[l7], scr[l4]), sT)) || 1;
+    const pRed = add(sub(scr[l7], mul(sN, 150)), mul(sT, side * 40)), pVio = add(sub(scr[l4], mul(sN, 150)), mul(sT, -side * 40));
+    TP('vörös', pRed[0], pRed[1], Object.assign({}, PILL_D, { c: '#fff', bg: BAD, a: 'center' }));
+    TP('ibolya', pVio[0], pVio[1], Object.assign({}, PILL_D, { c: '#fff', bg: VIOL, a: 'center' }));
+  }
+  // beesési szög felirata
+  al(p0 * pl);
+  const pa = add(run.P, mul(nrm(add(mul(run.nin, -1), mul(run.d0, -1))), 104));
+  tx(fdeg(S1.i, 0), pa[0], pa[1] + 8, { f: F.M, s: 24, w: 700, a: 'center', c: '#e8c24a', k: 'szög csúszka' });
+  const pn = sub(run.P, mul(run.nin, 128));
+  T('beesési merőleges', pn[0] - 8, pn[1] - 6, { s: 22, w: 600, c: LT2, a: 'right' });
+  // kiírás
+  al(p0 * pr);
+  const n7 = nGlass(num('vörös hullámhossza')), n4 = nGlass(num('ibolya hullámhossza'));
+  const devOf = (l) => { const r = run.ray(l); return r.inside ? NaN : Math.acos(clamp(dot(r.dir, run.d0), -1, 1)) / deg; };
+  const RX = 60, RY = 812;
+  const w1 = T('törésmutató felirat', RX, RY, { s: 28, w: 600 }).w;
+  let xx = RX + w1 + 18;
+  xx += T('vörös', xx, RY, { s: 28, w: 700, c: BAD }).w + 10;
+  xx += L.tx(fmt(n7, 3), xx, RY, { f: F.M, s: 28, w: 700, c: BAD, k: 'üveg törésmutatója vörösre' }).w + 34;
+  xx += T('ibolya', xx, RY, { s: 28, w: 700, c: VIOL }).w + 10;
+  L.tx(fmt(n4, 3), xx, RY, { f: F.M, s: 28, w: 700, c: VIOL, k: 'üveg törésmutatója ibolyára' });
+  const w2 = T('eltérülés felirat', RX, RY + 52, { s: 28, w: 600 }).w;
+  xx = RX + w2 + 18;
+  xx += T('vörös', xx, RY + 52, { s: 28, w: 700, c: BAD }).w + 10;
+  xx += L.tx(fdeg(devOf(700)), xx, RY + 52, { f: F.M, s: 28, w: 700, c: BAD, k: 'eltérülés felirat' }).w + 34;
+  xx += T('ibolya', xx, RY + 52, { s: 28, w: 700, c: VIOL }).w + 10;
+  L.tx(fdeg(devOf(400)), xx, RY + 52, { f: F.M, s: 28, w: 700, c: VIOL, k: 'eltérülés felirat' });
+  T('nagyítás nélkül', RX, RY + 100, { s: 24, c: MUT });
+  // törésmutató a hullámhossz függvényében (Cauchy-görbe a két megadott értékből)
+  const GX = 800, GY = 780, GW = 520, GH = 250;
+  card(GX, GY, GW, GH, p0 * pr);
+  al(p0 * pr); T('n grafikon', GX + 24, GY + 42, { s: 24, w: 700 });
+  const x0 = GX + 90, x1 = GX + GW - 64, y0 = GY + 70, y1 = GY + GH - 50, nlo = 1.60, nhi = 1.66;
+  const lxp = (l) => x0 + (l - 400) / 300 * (x1 - x0), nyp = (n) => y1 - (n - nlo) / (nhi - nlo) * (y1 - y0);
+  ln(x0, y1, x1, y1, INK, 2); ln(x0, y0 - 4, x0, y1, INK, 2);
+  for (const n of [1.61, 1.63, 1.65]) { ln(x0 - 6, nyp(n), x0, nyp(n), INK, 2); tx(fmt(n, 2), x0 - 10, nyp(n) + 8, { f: F.M, s: 22, a: 'right', c: MUT }); }
+  for (const l of [400, 500, 600, 700]) tx(String(l), lxp(l), y1 + 28, { f: F.M, s: 22, a: 'center', c: MUT });
+  tx('nm', x1 + 26, y1 + 28, { f: F.M, s: 22, a: 'left', c: MUT });
+  for (let l = 400; l < 700; l += 4) ln(lxp(l), nyp(nGlass(l)), lxp(l + 4), nyp(nGlass(l + 4)), specD(l + 2), 5);
+  c.beginPath(); c.arc(lxp(700), nyp(n7), 7, 0, TAU); c.fillStyle = BAD; c.fill();
+  c.beginPath(); c.arc(lxp(400), nyp(n4), 7, 0, TAU); c.fillStyle = VIOL; c.fill();
+}
+
+/* ════════ 2. Newton kísérlete + hullámhossz ════════ */
+const B2 = { x: 40, y: 40, w: 1280, h: 560 };
+const S2 = { l: 530 };
+const PR2a = prismVerts(330, 220, 230);
+function scene2(st, cur) {
+  const p0 = out(clamp(st / .6)), q1 = clamp((st - .4) / 1.0), qs = clamp((st - 1.3) / .8), q2 = clamp((st - 2.0) / .8), pw = clamp((st - 2.4) / .8), pl = clamp((st - 2.9) / .6);
+  nightBox(B2.x, B2.y, B2.w, B2.h, p0);
+  const run = prismRun(PR2a, 55, .5, nGlass);
+  const P0 = sub(run.P, mul(run.d0, 170));
+  const r550 = run.ray(550), E550 = r550.pts[r550.pts.length - 1];
+  const SC = add(E550, mul(r550.dir, 340)), sN = r550.dir, sT = [-sN[1], sN[0]];
+  const hitScr = (l) => { const r = run.ray(l), E = r.pts[r.pts.length - 1], tt = dot(sub(SC, E), sN) / dot(r.dir, sN); return { E, H: add(E, mul(r.dir, tt)), dir: r.dir, pts: r.pts }; };
+  // második prizma (csúccsal lefelé): a bal lapja a rés után 150 px-re
+  const P2c = add(SC, mul(sN, 150)), s2 = 210, h2 = s2 * Math.sqrt(3) / 2;
+  const PR2b = prismVerts(P2c[0] + s2 / 4, P2c[1] - h2 / 6, s2, true);
+  clipRect(B2.x, B2.y, B2.w, B2.h);
+  c.globalCompositeOperation = 'lighter';
+  beam(partial([P0, run.P], clamp(q1 * 2)), 'rgba(255,250,235,1)', 8, p0 * .95);
+  const hs = {};
+  for (const l of RAYS) {
+    const h = hitScr(l); hs[l] = h;
+    const a = p0 * .42;
+    beam(partial([h.pts[1], h.E], clamp(q1 * 2 - .6)), spec(l), 6, a);
+    beam(partial([h.E, h.H], clamp(q1 * 2 - 1)), spec(l), 5, a);
+  }
+  // a kiválasztott szín a résen át a második prizmába
+  const hl = hitScr(S2.l), r2 = tracePoly(hl.H, hl.dir, PR2b, nGlass(S2.l));
+  const E2 = r2.pts[r2.pts.length - 1];
+  const SC2 = [1235, 0]; const t2 = (SC2[0] - E2[0]) / (r2.dir[0] || 1e-6), H2 = add(E2, mul(r2.dir, t2));
+  if (qs > 0) beam(partial([hl.H, ...r2.pts.slice(1), H2], qs), spec(S2.l), 7, p0 * .95);
+  c.globalCompositeOperation = 'source-over';
+  c.restore();
+  drawPrism(PR2a, p0); drawPrism(PR2b, p0 * clamp(qs * 3 + .3));
+  torch(P0, run.d0, p0);
+  // ernyő résssel
+  const sh = 120, slit = dot(sub(hl.H, SC), sT), gap = 7;
+  al(p0 * clamp(q1 * 2 - .8));
+  const ep = (v) => add(add(SC, mul(sT, v)), mul(sN, 6));
+  ln(...ep(-sh), ...ep(slit - gap), '#d9d1bf', 10); ln(...ep(slit + gap), ...ep(sh), '#d9d1bf', 10);
+  if (q1 >= 1) { c.globalCompositeOperation = 'lighter'; for (const l of RAYS) { if (Math.abs(l - S2.l) < 6) continue; al(p0 * .7); c.beginPath(); c.arc(hs[l].H[0], hs[l].H[1], 5, 0, TAU); c.fillStyle = spec(l); c.fill(); } c.globalCompositeOperation = 'source-over'; }
+  // második ernyő + folt
+  al(p0 * clamp(qs * 3)); ln(1243, H2[1] - 110, 1243, H2[1] + 110, '#d9d1bf', 12);
+  if (qs >= 1) { c.globalCompositeOperation = 'lighter'; al(p0); c.beginPath(); c.ellipse(1238, H2[1], 5, 12, 0, 0, TAU); c.fillStyle = spec(S2.l); c.fill(); c.globalCompositeOperation = 'source-over'; }
+  al(p0 * clamp(q1 * 2 - .8)); T('rés', ep(-sh)[0] - 26, ep(-sh)[1] - 4, { s: 24, w: 600, c: LT2, a: 'right' });
+  al(p0 * clamp(qs * 3)); T('második prizma', P2c[0] + 30, PR2b[0][1] + 44, { s: 24, w: 600, c: LT2, a: 'left' });
+  al(p0 * pl); TP('nem bomlik', 1228, H2[1] + 140, Object.assign({}, PILL_D, { a: 'right' }));
+  al(p0 * clamp(q1 * 2)); T('fehér fény', P0[0] - 60, P0[1] + 64, { s: 24, w: 700, c: LT });
+
+  // vonalzó: a látható tartomány
+  const lo = num('látható tartomány alja'), hi = num('látható tartomány teteje'), X0 = 90, X1 = 1270, Y = 660, Hs = 34;
+  const lx = (l) => X0 + (l - lo) / (hi - lo) * (X1 - X0);
+  al(p0 * pw);
+  for (let l = lo; l < hi; l += 1) { c.fillStyle = spec(l, 1, .25 + .75 * clamp((l - lo) / 30) * clamp((hi - l) / 50)); c.fillRect(lx(l), Y, lx(l + 1) - lx(l) + .7, Hs); }
+  c.strokeStyle = INK; c.lineWidth = 2.5; c.strokeRect(X0, Y, X1 - X0, Hs);
+  for (const l of [400, 500, 600, 700]) { ln(lx(l), Y - 8, lx(l), Y, INK, 2); tx(l + ' nm', lx(l), Y - 14, { f: F.M, s: 22, w: 600, a: 'center', c: MUT, qa: true }); }
+  const bnd = [lo, num('ibolya–kék határ'), num('kék–zöld határ'), num('zöld–sárga határ'), num('sárga–narancs határ'), num('narancs–vörös határ'), hi];
+  const names = ['ibolya', 'kék', 'zöld', 'sárga', 'narancs', 'vörös'];
+  for (let i = 0; i < 6; i++) {
+    if (i) ln(lx(bnd[i]), Y + Hs, lx(bnd[i]), Y + Hs + 12, INK, 2);
+    const mid = (lx(bnd[i]) + lx(bnd[i + 1])) / 2, two = i === 3;
+    T(names[i], mid, Y + Hs + (two ? 62 : 32), { s: 22, w: 600, a: 'center', c: INK });
+    if (two) ln(mid, Y + Hs + 4, mid, Y + Hs + 38, INK, 1.5, [4, 4]);
+  }
+  // jelölő
+  const mx = lx(S2.l);
+  c.beginPath(); c.moveTo(mx, Y - 2); c.lineTo(mx - 10, Y - 20); c.lineTo(mx + 10, Y - 20); c.closePath(); c.fillStyle = RED; c.fill();
+  c.strokeStyle = INK; c.lineWidth = 3; c.strokeRect(mx - 3, Y - 2, 6, Hs + 4);
+  // hullám
+  nightBox(40, 786, 1280, 244, p0 * pw);
+  al(p0 * pw);
+  const wl = S2.l * .36, yc = 930, amp = 50, wx0 = 520, wx1 = 1290;
+  c.save(); rr(40, 786, 1280, 244, 18); c.clip();
+  c.beginPath(); for (let x = wx0; x <= wx1; x += 2) { const y = yc - amp * Math.sin(TAU * (x - wx0) / wl - L.t * 2.4); x === wx0 ? c.moveTo(x, y) : c.lineTo(x, y); }
+  c.strokeStyle = spec(S2.l); c.lineWidth = 5; c.stroke();
+  c.restore();
+  // egy hullámhossz jelölése (két hegy között, a hullámmal együtt halad)
+  const ph = ((L.t * 2.4) / TAU) % 1, xc = wx0 + wl * ((ph + .25) % 1 + 1);
+  ln(xc, yc - amp - 18, xc + wl, yc - amp - 18, LT, 2.5); ln(xc, yc - amp - 28, xc, yc - amp - 8, LT, 2.5); ln(xc + wl, yc - amp - 28, xc + wl, yc - amp - 8, LT, 2.5);
+  T('egy hullámhossz', xc + wl / 2, yc - amp - 34, { s: 22, w: 600, a: 'center', c: LT, qa: true });
+  const wq = T('hullámhossz felirat', 80, 856, { s: 26, w: 600, c: LT2 }).w;
+  L.tx(fmt(S2.l) + ' nm', 80, 916, { f: F.M, s: 50, w: 700, c: LT, k: 'hullámhossz felirat' });
+  const sl = specLin(S2.l), lum = .2126 * sl[0] + .7152 * sl[1] + .0722 * sl[2];
+  TP(colourKey(S2.l), 80, 972, { s: 26, w: 700, c: lum < .3 ? '#fff' : INK, bg: spec(S2.l), pad: 12 });
+  T('hullám', 80 + Math.max(wq, 210) + 30, 856, { s: 22, c: LT2 });
+}
+
+/* ════════ 3. Szivárvány ════════ */
+const B3 = { x: 40, y: 50, w: 640, h: 600 };
+const S3 = { b: .86 };
+const DROP = { x: 450, y: 250, R: 175 };
+function dropRay(b, n) {
+  const C = [DROP.x, DROP.y], R = DROP.R;
+  const P1 = [C[0] - Math.sqrt(Math.max(0, R * R - b * b * R * R)), C[1] - b * R];
+  const d1 = refract([1, 0], nrm(sub(P1, C)), 1, n); const P2 = add(P1, mul(d1, -2 * dot(sub(P1, C), d1)));
+  const d2 = reflect(d1, nrm(sub(P2, C))); const P3 = add(P2, mul(d2, -2 * dot(sub(P2, C), d2)));
+  const d3 = refract(d2, mul(nrm(sub(P3, C)), -1), n, 1) || d2;
+  return { P1, P2, P3, d3, th: Math.atan2(d3[1], -d3[0]) / deg };
+}
+const thOf = (b, n) => { const i = Math.asin(b), r = Math.asin(b / n); return (4 * r - 2 * i) / deg; };
+const TMX = new Map();
+function thMax(n) {   // a szivárvány szöge: a kilépési szög maximuma (aranymetszéses keresés)
+  const key = n.toFixed(6); if (TMX.has(key)) return TMX.get(key);
+  let a = .5, b = .999; for (let k = 0; k < 60; k++) { const m1 = b - (b - a) * .618, m2 = a + (b - a) * .618; if (thOf(m1, n) < thOf(m2, n)) a = m1; else b = m2; }
+  const v = thOf((a + b) / 2, n); TMX.set(key, v); return v;
+}
+function scene3(st, cur) {
+  const p0 = out(clamp(st / .6)), qf = clamp((st - .4) / 1.2), qh = clamp((st - 1.4) / 1.2), pg = clamp((st - 2.2) / .8), ps = clamp((st - 2.6) / 1.0), pl = clamp((st - 3.2) / .6);
+  const n7 = nWater(700), n4 = nWater(400);
+  nightBox(B3.x, B3.y, B3.w, B3.h, p0);
+  clipRect(B3.x, B3.y, B3.w, B3.h);
+  // csepp
+  al(p0); c.beginPath(); c.arc(DROP.x, DROP.y, DROP.R, 0, TAU); c.fillStyle = 'rgba(120,180,230,.14)'; c.fill(); c.strokeStyle = GLASS_LINE; c.lineWidth = 2.5; c.stroke();
+  c.globalCompositeOperation = 'lighter';
+  const box = { x: B3.x, y: B3.y, w: B3.w, h: B3.h };
+  // halvány legyező: sok párhuzamos napsugár, egy színben – a kilépők a ~42°-os irány körül sűrűsödnek
+  for (let b = .06; b < .995; b += .04) {
+    const r = dropRay(b, nWater(620)), Pin = [B3.x, r.P1[1]];
+    const Pend = add(r.P3, mul(r.d3, tBox(r.P3, r.d3, box)));
+    beam(partial([Pin, r.P1, r.P2, r.P3, Pend], qf), 'rgba(255,236,200,1)', 2, p0 * .11);
+  }
+  // a kiválasztott sugár színekre bontva
+  if (qh > 0) {
+    const r0 = dropRay(S3.b, nWater(550));
+    beam(partial([[B3.x, r0.P1[1]], r0.P1], clamp(qh * 3)), 'rgba(255,250,235,1)', 6, p0);
+    for (const l of RAYS) {
+      const r = dropRay(S3.b, nWater(l)), Pend = add(r.P3, mul(r.d3, tBox(r.P3, r.d3, box)));
+      beam(partial([r.P1, r.P2, r.P3, Pend], clamp(qh * 1.5 - .5)), spec(l), 4, p0 * .5);
+    }
+  }
+  c.globalCompositeOperation = 'source-over';
+  // szög a kilépésnél
+  const rr7 = dropRay(S3.b, n7);
+  if (pl > 0) {
+    al(p0 * pl); ln(rr7.P3[0], rr7.P3[1], rr7.P3[0] - 190, rr7.P3[1], LT2, 2, [8, 7]);
+    c.beginPath(); c.arc(rr7.P3[0], rr7.P3[1], 120, Math.PI - rr7.th * deg, Math.PI); c.strokeStyle = '#e8c24a'; c.lineWidth = 3; c.stroke();
+    const am = Math.PI - rr7.th * deg * .3;
+    tx(fdeg(rr7.th), rr7.P3[0] + Math.cos(am) * 168, rr7.P3[1] + Math.sin(am) * 168 + 8, { f: F.M, s: 24, w: 700, a: 'center', c: '#e8c24a', k: 'szög tengely' });
+  }
+  c.restore();
+  al(p0); const wn = T('napfény', B3.x + 24, 300, { s: 24, w: 700, c: LT }).w;
+  ln(B3.x + 24, 316, B3.x + 24 + wn, 316, LT, 2.5); arrowHead(B3.x + 24, 316, B3.x + 34 + wn, 316, LT, 14);
+  T('esőcsepp', DROP.x + DROP.R * .55, DROP.y - DROP.R - 2, { s: 24, w: 600, c: LT2, a: 'left' });
+
+  // grafikon: kilépési szög a beesés helyének függvényében
+  card(40, 670, 640, 360, p0 * pg);
+  const GX0 = 130, GX1 = 650, GY0 = 700, GY1 = 950, th2y = (t) => GY1 - t / 45 * (GY1 - GY0), b2x = (b) => GX0 + b * (GX1 - GX0);
+  al(p0 * pg);
+  ln(GX0, GY1, GX1, GY1, INK, 2); ln(GX0, GY0 - 6, GX0, GY1, INK, 2);
+  for (const t of [0, 20, 40]) { ln(GX0 - 6, th2y(t), GX0, th2y(t), INK, 2); tx(t + '°', GX0 - 12, th2y(t) + 8, { f: F.M, s: 22, a: 'right', c: MUT }); }
+  T('középen', GX0, GY1 + 32, { s: 22, c: MUT, a: 'left' }); T('szélén', GX1, GY1 + 32, { s: 22, c: MUT, a: 'right' });
+  T('hely tengely', (GX0 + GX1) / 2, GY1 + 62, { s: 22, c: INK, a: 'center' });
+  const curve = (n, col) => { c.beginPath(); for (let k = 0; k <= 200; k++) { const b = k / 200 * .999, y = th2y(thOf(b, n)); k ? c.lineTo(b2x(b), y) : c.moveTo(b2x(b), y); } c.strokeStyle = col; c.lineWidth = 3.5; c.stroke(); };
+  const m7 = thMax(n7), m4 = thMax(n4);
+  ln(GX0, th2y(m7), GX1, th2y(m7), U.rgba(BAD, .5), 1.5, [6, 6]);
+  curve(n4, VIOL); curve(n7, BAD);
+  T('legtöbb fény', b2x(.86), th2y(m7) - 14, { s: 22, w: 600, c: BAD, a: 'center' });
+  ln(b2x(S3.b), GY0, b2x(S3.b), GY1, TEAL, 2.5, [7, 6]);
+  for (const [n, col] of [[n7, BAD], [n4, VIOL]]) { c.beginPath(); c.arc(b2x(S3.b), th2y(thOf(S3.b, n)), 7, 0, TAU); c.fillStyle = col; c.fill(); }
+  const ry = 742;
+  al(p0 * pg * .88); rr(GX0 + 8, ry - 30, 210, 112, 10); c.fillStyle = CARD; c.fill(); al(p0 * pg);
+  let xx = GX0 + 18; xx += T('vörös', xx, ry, { s: 24, w: 700, c: BAD }).w + 10;
+  L.tx(fdeg(thOf(S3.b, n7)), xx, ry, { f: F.M, s: 24, w: 700, c: BAD, k: 'szög tengely' });
+  xx = GX0 + 18; xx += T('ibolya', xx, ry + 34, { s: 24, w: 700, c: VIOL }).w + 10;
+  L.tx(fdeg(thOf(S3.b, n4)), xx, ry + 34, { f: F.M, s: 24, w: 700, c: VIOL, k: 'szög tengely' });
+  T('szög tengely', GX0 + 18, ry + 70, { s: 22, c: MUT });
+
+  // a szivárvány az égen
+  const WX = 720, WY = 50, WW = 600, WH = 980, HZ = 690, KD = 8.5, hs = num('Nap magassága szivárványkor');
+  const C3 = [WX + WW / 2, HZ + hs * KD];
+  al(p0 * ps); clipRect(WX, WY, WW, WH);
+  const sg = c.createLinearGradient(0, WY, 0, HZ); sg.addColorStop(0, '#39415a'); sg.addColorStop(1, '#7d879c');
+  c.fillStyle = sg; c.fillRect(WX, WY, WW, HZ - WY);
+  const gg = c.createLinearGradient(0, HZ, 0, WY + WH); gg.addColorStop(0, '#5f7f45'); gg.addColorStop(1, '#7c9a55');
+  c.fillStyle = gg; c.fillRect(WX, HZ, WW, WY + WH - HZ);
+  // eső
+  const rg = U.rng(7); c.strokeStyle = 'rgba(220,230,245,.22)'; c.lineWidth = 1.5; c.beginPath();
+  for (let k = 0; k < 70; k++) { const x = WX + rg() * WW, y = WY + rg() * (HZ - WY - 40); c.moveTo(x, y); c.lineTo(x - 5, y + 22); } c.stroke();
+  // ívek: minden hullámhossz a saját legnagyobb kilépési szögénél
+  const grow = clamp((st - 2.8) / 1.0);
+  for (let l = 400; l <= 700; l += 3) {
+    const R = thMax(nWater(l)) * KD;
+    al(p0 * ps * .55); c.beginPath(); c.arc(C3[0], C3[1], R, Math.PI + (1 - grow) * 1.2, TAU - (1 - grow) * 1.2); c.strokeStyle = spec(l); c.lineWidth = 3.2; c.stroke();
+  }
+  c.restore();
+  // árnyék és a Nappal szemközti pont
+  al(p0 * ps);
+  c.fillStyle = 'rgba(28,36,64,.55)';
+  c.beginPath(); c.moveTo(C3[0] - 34, WY + WH); c.lineTo(C3[0] - 12, C3[1] + 26); c.lineTo(C3[0] + 12, C3[1] + 26); c.lineTo(C3[0] + 34, WY + WH); c.closePath(); c.fill();
+  c.beginPath(); c.ellipse(C3[0], C3[1] + 8, 15, 18, 0, 0, TAU); c.fill();
+  al(p0 * pl);
+  ln(C3[0], C3[1], C3[0], C3[1] - m7 * KD, '#f3ead6', 2.2, [8, 6]);
+  c.beginPath(); c.arc(C3[0], C3[1], 6, 0, TAU); c.fillStyle = '#f3ead6'; c.fill();
+  L.pill(fdeg(m7), C3[0] + 16, C3[1] - m7 * KD - 26, { f: F.M, s: 22, w: 700, c: '#fff', bg: BAD, pad: 8, k: ['vörös', 'víz törésmutatója vörösre'] });
+  L.pill(fdeg(m4), C3[0] - 16, C3[1] - m4 * KD + 34, { f: F.M, s: 22, w: 700, c: '#fff', bg: VIOL, pad: 8, a: 'right', k: ['ibolya', 'víz törésmutatója ibolyára'] });
+  TP('fejed árnyéka', C3[0], C3[1] + 66, { s: 22, w: 700, c: INK, bg: CARD, pad: 9, a: 'center' });
+  L.pill(labN('Nap mögötted', fdeg(hs, 0)), WX + WW / 2, WY + 40, { s: 22, w: 700, c: INK, bg: CARD, pad: 9, a: 'center', k: ['Nap mögötted', 'Nap magassága szivárványkor'] });
+  al(p0 * ps); c.strokeStyle = INK; c.lineWidth = 3; rr(WX, WY, WW, WH, 18); c.stroke();
+}
+
+/* ════════ 4–5. A tárgy színe ════════ */
+const B4 = { x: 40, y: 40, w: 1280, h: 980 };
+const S4 = { on: 1, from: 1, t0: -9 }, S5 = { on: [1, 0, 0], from: [1, 0, 0], t0: -9 };
+const OBJ = [{ k: 'alma', x: 270 }, { k: 'levél', x: 680 }, { k: 'papír', x: 1090 }];
+const TABLE = 580;
+function reflOf(k) {
+  if (k === 'alma') { const e = num('alma ennél hosszabbat ver vissza'); return (l) => 0.05 + 0.75 * sig((l - e) / 12); }
+  if (k === 'levél') { const p = num('levél legjobban visszavert'); return (l) => 0.04 + 0.30 * gauss(l, p, 30); }
+  return () => 0.85;
+}
+const lampSpec = (l, ci) => gauss(l, num(['vörös lámpa hullámhossza', 'zöld lámpa hullámhossza', 'kék lámpa hullámhossza'][ci]), 14);
+let REF_FLAT, REF_RGB;
+function apple(x, y, r, col, hl, a) {
+  al(a);
+  const g = c.createRadialGradient(x - r * .35, y - r * .35, r * .1, x, y, r * 1.1);
+  g.addColorStop(0, css(col, 1, 1.25)); g.addColorStop(.7, css(col)); g.addColorStop(1, css(col, 1, .55));
+  c.beginPath(); c.moveTo(x, y - r * .75);
+  c.bezierCurveTo(x + r * .6, y - r * 1.15, x + r * 1.15, y - r * .6, x + r * .95, y + r * .2);
+  c.bezierCurveTo(x + r * .8, y + r * .95, x + r * .25, y + r * 1.05, x, y + r * .9);
+  c.bezierCurveTo(x - r * .25, y + r * 1.05, x - r * .8, y + r * .95, x - r * .95, y + r * .2);
+  c.bezierCurveTo(x - r * 1.15, y - r * .6, x - r * .6, y - r * 1.15, x, y - r * .75); c.closePath();
+  c.fillStyle = g; c.fill(); c.strokeStyle = 'rgba(243,234,214,.35)'; c.lineWidth = 2; c.stroke();
+  c.beginPath(); c.moveTo(x, y - r * .72); c.quadraticCurveTo(x + 4, y - r * 1.05, x + 14, y - r * 1.25); c.strokeStyle = css([.25, .14, .05], 1, Math.max(.15, hl[3])); c.lineWidth = 6; c.stroke();
+  // csillanás: a fényes felület a lámpa színét tükrözi
+  c.beginPath(); c.ellipse(x - r * .4, y - r * .38, r * .16, r * .1, -.6, 0, TAU); c.fillStyle = css(hl, .55 * hl[3]); c.fill();
+}
+function leaf(x, y, w, col, a) {
+  al(a);
+  const g = c.createLinearGradient(x - w / 2, y, x + w / 2, y); g.addColorStop(0, css(col, 1, .7)); g.addColorStop(.5, css(col, 1, 1.15)); g.addColorStop(1, css(col, 1, .7));
+  c.beginPath(); c.moveTo(x - w / 2, y); c.quadraticCurveTo(x - w * .1, y - w * .42, x + w / 2, y - w * .08); c.quadraticCurveTo(x + w * .05, y + w * .3, x - w / 2, y); c.closePath();
+  c.fillStyle = g; c.fill(); c.strokeStyle = 'rgba(243,234,214,.35)'; c.lineWidth = 2; c.stroke();
+  c.beginPath(); c.moveTo(x - w / 2, y); c.quadraticCurveTo(x, y - w * .07, x + w / 2, y - w * .08); c.strokeStyle = css(col, .9, .5); c.lineWidth = 3; c.stroke();
+}
+function paper(x, y, w, h, col, a) {
+  al(a); c.beginPath(); c.moveTo(x - w / 2 + 20, y - h); c.lineTo(x + w / 2 + 20, y - h); c.lineTo(x + w / 2 - 20, y); c.lineTo(x - w / 2 - 20, y); c.closePath();
+  c.fillStyle = css(col); c.fill(); c.strokeStyle = 'rgba(243,234,214,.35)'; c.lineWidth = 2; c.stroke();
+}
+function lampIcon(x, y, col, on, a) {
+  al(a); c.save(); c.translate(x, y);
+  rr(-34, -40, 68, 52, 10); c.fillStyle = '#3a4260'; c.fill(); c.strokeStyle = '#8b93ad'; c.lineWidth = 2; c.stroke();
+  c.beginPath(); c.ellipse(0, 14, 30, 9, 0, 0, TAU); c.fillStyle = on > .02 ? css(col, .25 + .75 * on) : '#2a3048'; c.fill(); c.strokeStyle = '#8b93ad'; c.stroke();
+  ln(0, -40, 0, -62, '#8b93ad', 3);
+  c.restore();
+}
+function objScene(st, cur, mode) {
+  const p0 = out(clamp(st / .6)), po = clamp((st - .4) / .8), pr = clamp((st - 1.2) / .8), ps = clamp((st - 1.8) / .8), pe = clamp((st - 2.4) / .8);
+  nightBox(B4.x, B4.y, B4.w, B4.h, p0);
+  // lámpák és bejövő spektrum
+  let I, lamps, ref, ints;
+  if (mode === 4) {
+    const k = lerp(S4.from, S4.on, U.smooth((L.st - S4.t0) / .5)) * (L.step === 3 ? 1 : S4.on);
+    ints = [k]; I = (l) => k; ref = REF_FLAT; lamps = [{ x: 680, col: [1, 1, 1], on: k }];
+  } else {
+    ints = [0, 1, 2].map((i) => L.step === 4 ? lerp(S5.from[i], S5.on[i], U.smooth((L.st - S5.t0) / .5)) : S5.on[i]);
+    I = (l) => ints[0] * lampSpec(l, 0) + ints[1] * lampSpec(l, 1) + ints[2] * lampSpec(l, 2); ref = REF_RGB;
+    lamps = [0, 1, 2].map((i) => ({ x: 520 + i * 160, col: perceive((l) => lampSpec(l, i), REF_RGB).map((v) => Math.max(0, v / Math.max(...perceive((q) => lampSpec(q, i), REF_RGB)))), on: ints[i] }));
+  }
+  const inLin = perceive(I, ref).map((v) => Math.max(0, v));
+  const mIn = Math.max(...inLin, 1e-6);
+  // fénykúpok
+  c.globalCompositeOperation = 'lighter';
+  for (const lp of lamps) {
+    if (lp.on < .01) continue;
+    al(p0 * po * .22 * lp.on);
+    const g = c.createLinearGradient(0, 120, 0, TABLE); g.addColorStop(0, css(lp.col, .9)); g.addColorStop(1, css(lp.col, .25));
+    c.beginPath(); c.moveTo(lp.x - 26, 130); c.lineTo(lp.x + 26, 130); c.lineTo(1250, TABLE); c.lineTo(110, TABLE); c.closePath(); c.fillStyle = g; c.fill();
+  }
+  c.globalCompositeOperation = 'source-over';
+  lamps.forEach((lp) => lampIcon(lp.x, 100, lp.col, lp.on, p0));
+  // asztal
+  al(p0); ln(80, TABLE, 1280, TABLE, 'rgba(243,234,214,.35)', 3);
+  // tárgyak
+  const EXPO = mode === 4 ? 1 : .85;   // a színes LED-ek fénye erősebb: a megjelenítéshez visszaszabályozzuk
+  const objs = OBJ.map((o) => { const R = reflOf(o.k); const col = perceive((l) => I(l) * R(l), ref).map((v) => Math.max(0, v) * EXPO); return { o, R, col }; });
+  const hl = inLin.map((v) => v / mIn).concat([clamp(mIn * 1.4)]);
+  const dark = Math.max(...ints) < .02;
+  objs.forEach(({ o, col }) => {
+    const a = p0 * po;
+    if (o.k === 'alma') apple(o.x, TABLE - 92, 82, col, hl, a);
+    else if (o.k === 'levél') leaf(o.x, TABLE - 70, 250, col, a);
+    else paper(o.x, TABLE - 6, 220, 120, col, a);
+    if (dark) { al(a * .6); c.setLineDash([7, 7]); c.strokeStyle = LT2; c.lineWidth = 2; c.beginPath(); c.arc(o.x, TABLE - 92, 110, 0, TAU); c.stroke(); c.setLineDash([]); }
+  });
+  // visszavert sugarak a szembe
+  const EYE = [1230, 300];
+  objs.forEach(({ o, col }) => {
+    const br = clamp(Math.max(...col) * 1.3); if (br < .02) return;
+    const S0 = [o.x + (o.k === 'papír' ? 40 : 0), TABLE - (o.k === 'alma' ? 175 : o.k === 'levél' ? 130 : 120)];
+    const m = Math.max(...col, 1e-6), cc = col.map((v) => v / m);
+    al(p0 * pe * br * .9); c.globalCompositeOperation = 'lighter';
+    const E = sub(EYE, mul(nrm(sub(EYE, S0)), 40));
+    ln(S0[0], S0[1], E[0], E[1], css(cc), 4, [14, 10]); arrowHead(S0[0], S0[1], E[0], E[1], css(cc), 16);
+    c.globalCompositeOperation = 'source-over';
+  });
+  eyeIcon(EYE[0], EYE[1], Math.PI + .25, 34, p0 * pe);
+  al(p0 * pe); T('szem', EYE[0], EYE[1] - 50, { s: 24, w: 600, c: LT2, a: 'center' });
+  // bejövő spektrum (bal fent)
+  const mx = mode === 4 ? 1 : 1;
+  al(p0 * ps); T('lámpa fénye', 80, 92, { s: 24, w: 700, c: LT });
+  specPlot(80, 108, 300, 120, I, p0 * ps, mx);
+  // tárgyak neve + visszavert spektrum
+  objs.forEach(({ o, R }) => {
+    al(p0 * po); TP(o.k, o.x, TABLE + 44, Object.assign({}, PILL_D, { a: 'center', s: 24 }));
+    al(p0 * pr); T('visszavert fény', o.x - 150, TABLE + 116, { s: 22, w: 600, c: LT2 });
+    specPlot(o.x - 150, TABLE + 132, 300, 260, (l) => I(l) * R(l), p0 * pr, mx);
+  });
+  if (dark) { al(p0 * clamp((L.st - (mode === 4 ? S4.t0 : S5.t0) - .3) / .5)); TP('sötétben', 680, 300, Object.assign({}, PILL_D, { a: 'center', s: 26 })); }
+  // a reflektorok színe kis pirulán (5. lépés)
+}
+const scene4 = (st, cur) => objScene(st, cur, 4);
+const scene5 = (st, cur) => objScene(st, cur, 5);
+
+/* ════════ 6. Fények összeadása ════════ */
+const B6 = { x: 40, y: 50, w: 860, h: 700 };
+const S6 = { a: [1, 1, 1], p: [] };
+const CR = 190;
+const P6 = () => [[355, 300], [585, 300], [470, 500]];
+const PRIM = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
+const inC = (p, q, r = CR) => Math.hypot(p[0] - q[0], p[1] - q[1]) < r;
+function regionLabels(P, names, st) {
+  // címke a „csak S halmaz” régió egy belső pontjában (ha van ilyen)
+  const res = [];
+  const cen = [(P[0][0] + P[1][0] + P[2][0]) / 3, (P[0][1] + P[1][1] + P[2][1]) / 3];
+  const subsets = [[0], [1], [2], [0, 1], [1, 2], [0, 2], [0, 1, 2]];
+  for (const S of subsets) {
+    let pt;
+    if (S.length === 1) { const o = nrm(sub(P[S[0]], cen)); pt = add(P[S[0]], mul(o, CR * .5)); if (Math.hypot(...sub(P[S[0]], cen)) < 1) pt = P[S[0]]; }
+    else if (S.length === 2) { const m = mul(add(P[S[0]], P[S[1]]), .5), o = nrm(sub(m, P[3 - S[0] - S[1]])); pt = add(m, mul(o, 40)); }
+    else pt = cen;
+    const ok = [0, 1, 2].every((i) => S.includes(i) ? inC(pt, P[i], CR - 22) : !inC(pt, P[i], CR + 22));
+    if (ok) res.push({ S, pt });
+  }
+  return res;
+}
+function drawCircles(P, colOf, mode) {
+  const subsets = [[0], [1], [2], [0, 1], [1, 2], [0, 2], [0, 1, 2]];
+  for (const S of subsets) {
+    c.save();
+    for (const i of S) { c.beginPath(); c.arc(P[i][0], P[i][1], CR, 0, TAU); c.clip(); }
+    c.fillStyle = colOf(S); c.fillRect(0, 0, 1400, 1080);
+    c.restore();
+  }
+}
+function scene6(st, cur) {
+  const p0 = out(clamp(st / .6)), pm = inOut(clamp((st - .3) / 1.4)), pl = clamp((st - 1.8) / .6), pk = clamp((st - 2.3) / .8), px = clamp((st - 2.8) / .8);
+  nightBox(B6.x, B6.y, B6.w, B6.h, p0);
+  const base = P6(), cen = [470, 367];
+  const P = S6.p.map((q, i) => [lerp(lerp(cen[0], base[i][0], 3.2) , q[0], pm), lerp(lerp(cen[1], base[i][1], 3.2), q[1], pm)]);
+  al(p0 * clamp(st / .9));
+  clipRect(B6.x, B6.y, B6.w, B6.h);
+  const lin = (S) => [0, 1, 2].map((ch) => S.reduce((s, i) => s + S6.a[i] * PRIM[i][ch], 0));
+  drawCircles(P, (S) => css(lin(S)));
+  c.restore();
+  const nm = { '0': 'vörös', '1': 'zöld', '2': 'kék', '0,1': 'sárga', '1,2': 'cián', '0,2': 'bíbor', '0,1,2': 'fehér' };
+  al(p0 * pl);
+  for (const { S, pt } of regionLabels(P)) {
+    const v = Math.min(...S.map((i) => S6.a[i])); if (v < .35) continue;
+    al(p0 * pl * clamp((v - .35) / .3));
+    TP(nm[S.join(',')], pt[0], pt[1], Object.assign({}, PILL_D, { a: 'center', s: S.length === 3 ? 26 : 22 }));
+  }
+  if (cur) {
+    P.forEach((q, i) => { grab('c6' + i, q[0], q[1], 60, (x, y) => { S6.p[i] = [clamp(x, B6.x + 70, B6.x + B6.w - 70), clamp(y, B6.y + 70, B6.y + B6.h - 70)]; }); });
+    P.forEach((q, i) => ring('c6' + i, q[0], q[1], CR, '#f3ead6'));
+    hint(P[0][0] - 60, P[0][1] - CR + 40, p0 * pl);
+  }
+  // képernyő-pixelek közelről
+  nightBox(40, 780, 860, 250, p0 * px);
+  al(p0 * px); T('képernyő', 70, 826, { s: 24, w: 700, c: LT });
+  const sx = 70, sy = 850, cw = 24, chh = 140;
+  for (let k = 0; k < 5; k++) for (let ch = 0; ch < 3; ch++) {
+    const x = sx + k * (cw * 3 + 14) + ch * cw;
+    rr(x, sy, cw - 5, chh, 5); c.fillStyle = '#05070d'; c.fill();
+    const col = PRIM[ch].map((v) => v * S6.a[ch]);
+    rr(x, sy, cw - 5, chh, 5); c.fillStyle = css(col); c.fill();
+  }
+  const mixed = lin([0, 1, 2]);
+  T('messziről', 620, 826, { s: 24, w: 700, c: LT });
+  rr(620, sy, 240, chh, 14); c.fillStyle = css(mixed); c.fill(); c.strokeStyle = 'rgba(243,234,214,.5)'; c.lineWidth = 2; c.stroke();
+  arrowHead(560, sy + chh / 2, 600, sy + chh / 2, LT, 22); ln(540, sy + chh / 2, 590, sy + chh / 2, LT, 4);
+  // kiegészítő színpárok
+  const KX = 940;
+  card(KX, 50, 380, 700, p0 * pk);
+  al(p0 * pk); T('kiegészítő', KX + 190, 100, { s: 26, w: 700, a: 'center', max: 340 });
+  const pairs = [['pár vörös', 0, [1, 2]], ['pár zöld', 1, [0, 2]], ['pár kék', 2, [0, 1]]];
+  pairs.forEach(([k, a, bset], j) => {
+    const y = 210 + j * 190, cx = KX + 190;
+    rr(KX + 40, y - 68, 300, 130, 16); c.fillStyle = NIGHT; c.fill();
+    const A = [cx - 42, y - 4], Bp = [cx + 42, y - 4], r = 56;
+    c.save(); c.beginPath(); c.arc(A[0], A[1], r, 0, TAU); c.fillStyle = css(PRIM[a]); c.fill(); c.restore();
+    const cb = [0, 1, 2].map((ch) => bset.reduce((s, i) => s + PRIM[i][ch], 0));
+    c.beginPath(); c.arc(Bp[0], Bp[1], r, 0, TAU); c.fillStyle = css(cb); c.fill();
+    c.save(); c.beginPath(); c.arc(A[0], A[1], r, 0, TAU); c.clip(); c.beginPath(); c.arc(Bp[0], Bp[1], r, 0, TAU); c.fillStyle = css([1, 1, 1]); c.fill(); c.restore();
+    T(k, cx, y + 92, { s: 24, w: 700, a: 'center' });
+  });
+  al(p0 * pk); T('fény plusz fény', KX + 190, 724, { s: 22, w: 600, a: 'center', c: TEAL, max: 340 });
+  // a szem háromféle csapja (érzékenységi görbék, közelítés)
+  card(KX, 780, 380, 250, p0 * px);
+  al(p0 * px); T('csapok', KX + 190, 822, { s: 22, w: 700, a: 'center' });
+  const cx0 = KX + 30, cx1 = KX + 350, cy1 = 1000, chh2 = 140;
+  const lxc = (l) => cx0 + (l - 390) / 320 * (cx1 - cx0);
+  ln(cx0, cy1, cx1, cy1, INK, 2);
+  for (let l = 390; l < 710; l += 4) { const x = lxc(l); c.fillStyle = spec(l, .9); c.fillRect(x, cy1 + 3, lxc(l + 4) - x + .5, 10); }
+  for (const [m, sg, col] of [[440, 24, '#1f4fb8'], [535, 40, GOOD], [565, 46, BAD]]) {
+    c.beginPath(); for (let l = 390; l <= 710; l += 3) { const y = cy1 - chh2 * gauss(l, m, sg); l === 390 ? c.moveTo(lxc(l), y) : c.lineTo(lxc(l), y); }
+    c.strokeStyle = col; c.lineWidth = 4; c.stroke();
+  }
+}
+
+/* ════════ 7. Festékek: elnyelés ════════ */
+const B7 = { x: 40, y: 50, w: 860, h: 700 };
+const S7 = { a: [1, 1, 1], p: [] };
+const PAPER = [0.93, 0.88, 0.78];   // a papír megjelenített színe (lineáris)
+const INKT = [
+  (l) => 0.03 + 0.92 * (1 - sig((l - 580) / 12)),                       // cián: a vöröset nyeli el
+  (l) => 0.04 + 0.91 * (1 - Math.exp(-Math.pow((l - 540) / 50, 4))),     // bíbor: a zöldet
+  (l) => 0.03 + 0.93 * sig((l - 500) / 11),                              // sárga: a kéket
+];
+function inkCol(S, amt) {
+  const Rf = (l) => S.reduce((p, i) => p * Math.pow(INKT[i](l), amt[i] * 1.6), 1);
+  const v = perceive(Rf, REF_FLAT);
+  return v.map((q, ch) => Math.max(0, q) * PAPER[ch]);
+}
+function scene7(st, cur) {
+  const p0 = out(clamp(st / .6)), pm = inOut(clamp((st - .3) / 1.4)), pl = clamp((st - 1.8) / .6), pk = clamp((st - 2.3) / .8), px = clamp((st - 2.8) / .8);
+  card(B7.x, B7.y, B7.w, B7.h, p0);
+  al(p0); rr(B7.x + 20, B7.y + 20, B7.w - 40, B7.h - 40, 10); c.fillStyle = css(PAPER); c.fill(); c.strokeStyle = LINE; c.lineWidth = 2; c.stroke();
+  T('papír felirat', B7.x + 44, B7.y + B7.h - 44, { s: 22, w: 600, c: MUT });
+  const base = P6(), cen = [470, 367];
+  const P = S7.p.map((q, i) => [lerp(lerp(cen[0], base[i][0], 3.2), q[0], pm), lerp(lerp(cen[1], base[i][1], 3.2), q[1], pm)]);
+  al(p0 * clamp(st / .9));
+  clipRect(B7.x + 20, B7.y + 20, B7.w - 40, B7.h - 40, 10);
+  const key = S7.a.join(',');
+  if (S7.ck !== key) { S7.ck = key; S7.cc = {}; for (const S of [[0], [1], [2], [0, 1], [1, 2], [0, 2], [0, 1, 2]]) S7.cc[S.join(',')] = inkCol(S, S7.a); }
+  drawCircles(P, (S) => css(S7.cc[S.join(',')]));
+  for (let i = 0; i < 3; i++) { c.beginPath(); c.arc(P[i][0], P[i][1], CR, 0, TAU); c.strokeStyle = 'rgba(28,36,64,.35)'; c.lineWidth = 2; c.stroke(); }
+  c.restore();
+  const nm = { '0': 'cián', '1': 'bíbor', '2': 'sárga', '0,1': 'kék', '1,2': 'vörös', '0,2': 'zöld', '0,1,2': 'fekete' };
+  for (const { S, pt } of regionLabels(P)) {
+    const v = Math.min(...S.map((i) => S7.a[i])); if (v < .35) continue;
+    al(p0 * pl * clamp((v - .35) / .3));
+    TP(nm[S.join(',')], pt[0], pt[1], { s: S.length === 3 ? 24 : 22, w: 700, c: INK, bg: CARD, bd: LINE, pad: 9, a: 'center' });
+  }
+  if (cur) {
+    P.forEach((q, i) => { grab('c7' + i, q[0], q[1], 60, (x, y) => { S7.p[i] = [clamp(x, B7.x + 80, B7.x + B7.w - 80), clamp(y, B7.y + 80, B7.y + B7.h - 80)]; }); });
+    P.forEach((q, i) => ring('c7' + i, q[0], q[1], CR, INK));
+    hint(P[0][0] - 60, P[0][1] - CR + 40, p0 * pl);
+  }
+  // mit nyel el a festék? (fehér fény → festék → a megmaradó spektrum)
+  const KX = 940;
+  card(KX, 50, 380, 700, p0 * pk);
+  al(p0 * pk); T('festék elnyeli', KX + 190, 100, { s: 26, w: 700, a: 'center', max: 340 });
+  [['cián elnyeli', 0], ['bíbor elnyeli', 1], ['sárga elnyeli', 2]].forEach(([k, i], j) => {
+    const y = 160 + j * 190;
+    const sw = inkCol([i], [1, 1, 1]);
+    c.beginPath(); c.arc(KX + 62, y + 50, 34, 0, TAU); c.fillStyle = css(sw); c.fill(); c.strokeStyle = 'rgba(28,36,64,.4)'; c.lineWidth = 2; c.stroke();
+    specPlot(KX + 110, y, 240, 100, (l) => Math.pow(INKT[i](l), 1.6), p0 * pk, 1);
+    al(p0 * pk); T(k, KX + 110, y + 136, { s: 22, w: 600, max: 250 });
+  });
+  al(p0 * pk); T('festék mínusz', KX + 190, 724, { s: 22, w: 600, a: 'center', c: RED, max: 340 });
+  // a festékek fénye ugyanabból a fehérből – emlékeztető a sávban
+  card(40, 780, 1280, 250, p0 * px);
+  al(p0 * px);
+  const row = (y, keys, cols, op, res, resKey) => {
+    let x = 80;
+    keys.forEach((k, i) => {
+      c.beginPath(); c.arc(x + 26, y, 26, 0, TAU); c.fillStyle = css(cols[i]); c.fill(); c.strokeStyle = 'rgba(28,36,64,.45)'; c.lineWidth = 2; c.stroke();
+      x += 64; x += T(k, x, y + 9, { s: 24, w: 700 }).w + 16;
+      if (i < keys.length - 1) { tx(op, x, y + 10, { f: F.M, s: 28, w: 700, c: MUT, qa: false }); x += 36; }
+    });
+    tx('=', x, y + 10, { f: F.M, s: 28, w: 700, c: MUT, qa: false }); x += 36;
+    c.beginPath(); c.arc(x + 26, y, 26, 0, TAU); c.fillStyle = css(res); c.fill(); c.strokeStyle = 'rgba(28,36,64,.45)'; c.lineWidth = 2; c.stroke();
+    T(resKey, x + 64, y + 9, { s: 24, w: 700 });
+  };
+  row(850, ['vörös', 'zöld', 'kék'], PRIM, '+', [1, 1, 1], 'fehér');
+  T('fény plusz fény', 1290, 860, { s: 24, w: 700, c: TEAL, a: 'right' });
+  row(960, ['cián', 'bíbor', 'sárga'], [inkCol([0], [1, 1, 1]), inkCol([1], [1, 1, 1]), inkCol([2], [1, 1, 1])], '+', inkCol([0, 1, 2], [1, 1, 1]), 'fekete');
+  T('festék mínusz', 1290, 970, { s: 24, w: 700, c: RED, a: 'right' });
+}
+
+/* ════════ 8. Miért kék az ég? ════════ */
+const S8 = { h: 45, desert: 0, t0: -9, from: 0 };
+const KY = (h) => 1 / (Math.sin(h * deg) + 0.50572 * Math.pow(h + 6.07995, -1.6364));   // Kasten–Young légtömeg
+function bb(l, Tk = 5778) { const m = l * 1e-9; return 1 / (Math.pow(m, 5) * (Math.exp(1.4388e-2 / (m * Tk)) - 1)); }
+const BB550 = bb(550), SUN = (l) => bb(l) / BB550;
+let REF_SUN;
+const tau = (l) => -Math.log(1 - num('szórt hányad függőlegesen') / 100) * Math.pow(550 / l, 4);
+function skyCols(h) {
+  const m = KY(Math.max(0, h));
+  const sun = perceive((l) => SUN(l) * Math.exp(-tau(l) * m), REF_SUN).map((v) => Math.max(0, v));
+  const tw = .25 + .75 * U.smooth(clamp((h + 1) / 14));
+  const zen = perceive((l) => 3.1 * SUN(l) * Math.pow(550 / l, 4) * tau(550) * Math.exp(-tau(l) * m * .035), REF_SUN).map((v) => Math.max(0, v) * tw);
+  const hor = perceive((l) => .92 * SUN(l) * (1 - Math.exp(-tau(l) * 38)) * Math.exp(-tau(l) * m * .55), REF_SUN).map((v) => Math.max(0, v) * (.35 + .65 * tw));
+  return { sun, zen, hor, m };
+}
+function scene8(st, cur) {
+  const p0 = out(clamp(st / .6)), pw = clamp((st - .3) / .8), pb = clamp((st - 1.2) / .8), pd = clamp((st - 1.8) / .8), pl = clamp((st - 2.4) / .6);
+  const h = S8.h, K = skyCols(h), dsr = L.step === 7 ? lerp(S8.from, S8.desert, U.smooth((L.st - S8.t0) / .6)) : S8.desert;
+  const WX = 40, WY = 50, WW = 1280, WH = 560, HZ = 470;
+  al(p0 * pw); clipRect(WX, WY, WW, WH);
+  const sg = c.createLinearGradient(0, WY, 0, HZ); sg.addColorStop(0, css(K.zen)); sg.addColorStop(.55, css(K.zen.map((v, i) => lerp(v, K.hor[i], .35)))); sg.addColorStop(1, css(K.hor));
+  c.fillStyle = sg; c.fillRect(WX, WY, WW, HZ - WY);
+  const sx = 860, sy = HZ - (h / 90) * 380 + 6;
+  const sm = Math.max(...K.sun, 1e-6), sc = K.sun.map((v) => v / sm);
+  c.globalCompositeOperation = 'lighter';
+  const gl = c.createRadialGradient(sx, sy, 10, sx, sy, 170); gl.addColorStop(0, css(sc, .3 * clamp(sm * 2))); gl.addColorStop(1, css(sc, 0));
+  c.fillStyle = gl; c.fillRect(WX, WY, WW, HZ - WY);
+  c.globalCompositeOperation = 'source-over';
+  c.beginPath(); c.arc(sx, sy, 30, 0, TAU); c.fillStyle = css(sc, 1, .7 + .3 * clamp(sm * 3)); c.fill();
+  // felhő (napsütötte)
+  const cl = K.sun.map((v, i) => Math.min(1, .25 * K.zen[i] + .8 * v));
+  for (const [x, y, r] of [[230, 150, 46], [285, 128, 60], [350, 148, 48], [300, 170, 44], [190, 172, 34]]) { c.beginPath(); c.arc(x, y, r, 0, TAU); c.fillStyle = css(cl); c.fill(); }
+  // talaj: tenger (az eget tükrözi) / sivatag
+  const sea = K.zen.map((v, i) => lerp(v, [.02, .07, .16][i], .45)), sand = K.sun.map((v, i) => v * [.62, .45, .26][i] * (.25 + .75 * clamp(sm * 1.4)) + K.zen[i] * .15);
+  const grd = sea.map((v, i) => lerp(v, sand[i], dsr));
+  const gg = c.createLinearGradient(0, HZ, 0, WY + WH); gg.addColorStop(0, css(grd, 1, 1.1)); gg.addColorStop(1, css(grd, 1, .7));
+  c.fillStyle = gg; c.fillRect(WX, HZ, WW, WY + WH - HZ);
+  if (dsr < 1) { c.globalAlpha = GA * p0 * pw * (1 - dsr) * .7; for (let k = 0; k < 9; k++) { const y = HZ + 8 + k * k * 1.6; ln(sx - 12 - k * 4, y, sx + 12 + k * 4, y, css(sc, .5), 3); } }
+  if (dsr > 0) { c.globalAlpha = GA * p0 * pw * dsr; c.beginPath(); c.moveTo(WX, HZ + 30); for (let x = WX; x <= WX + WW; x += 20) c.lineTo(x, HZ + 26 + 14 * Math.sin(x / 90)); c.lineTo(WX + WW, WY + WH); c.lineTo(WX, WY + WH); c.closePath(); c.fillStyle = css(sand, 1, .85); c.fill(); }
+  c.restore();
+  al(p0 * pw); c.strokeStyle = INK; c.lineWidth = 3; rr(WX, WY, WW, WH, 18); c.stroke();
+  al(p0 * pl); TP('felhő', 160, 236, { s: 22, w: 700, c: INK, bg: CARD, pad: 9 });
+  al(p0 * pl * (1 - dsr)); TP('tenger tükröz', 640, 560, { s: 22, w: 700, c: INK, bg: CARD, pad: 9, a: 'center' });
+  al(p0 * pl * dsr); TP('sivatag kék', 640, 560, { s: 22, w: 700, c: INK, bg: CARD, pad: 9, a: 'center' });
+
+  // a napfény útja a levegőben (vázlat, nem méretarányos)
+  card(40, 640, 600, 390, p0 * pd);
+  al(p0 * pd);
+  const E = { x: 340, y: 1460, R: 560, A: 110 }, O = [E.x, E.y - E.R];
+  c.save(); rr(40, 640, 600, 390, 18); c.clip();
+  c.beginPath(); c.arc(E.x, E.y, E.R + E.A, 0, TAU); c.fillStyle = 'rgba(70,150,215,.18)'; c.fill();
+  c.beginPath(); c.arc(E.x, E.y, E.R, 0, TAU); c.fillStyle = '#c9b48a'; c.fill(); c.strokeStyle = INK; c.lineWidth = 2.5; c.stroke();
+  // út: O-ból a Nap felé, a légkör széléig
+  const dS = [Math.cos(h * deg), -Math.sin(h * deg)], bq = dot(sub(O, [E.x, E.y]), dS), cq = (E.R) * (E.R) - (E.R + E.A) * (E.R + E.A);
+  const tl = -bq + Math.sqrt(bq * bq - cq), Q = add(O, mul(dS, tl));
+  ln(O[0], O[1], O[0], O[1] - E.A, MUT, 3, [8, 7]);
+  const gp = c.createLinearGradient(Q[0], Q[1], O[0], O[1]); gp.addColorStop(0, '#fff2c8'); gp.addColorStop(1, css(sc, 1, .8));
+  ln(Q[0], Q[1], O[0], O[1], '#7a4a00', 9); ln(Q[0], Q[1], O[0], O[1], gp, 5);
+  arrowHead(Q[0], Q[1], O[0] - dS[0] * 10, O[1] - dS[1] * 10, '#7a4a00', 18);
+  c.restore();
+  c.beginPath(); c.arc(O[0], O[1], 8, 0, TAU); c.fillStyle = RED; c.fill();
+  T('te', O[0] + 14, O[1] + 30, { s: 22, w: 700, c: RED });
+  T('levegő', 70, 912, { s: 22, w: 600, c: WATER, a: 'left' });
+  T('Föld', 610, 1010, { s: 22, w: 600, c: AMB_D, a: 'right' });
+  TP('nem méretarányos', 60, 1000, { s: 22, w: 600, c: MUT, bg: CARD, bd: LINE, pad: 8 });
+  // út-hossz sáv: méretarányos (1× → 11 px)
+  const bx = 60, bw = 11;
+  const yb = 690;
+  T('út felirat', bx, yb - 6, { s: 22, w: 600 });
+  rr(bx, yb + 10, bw * 1, 22, 4); c.fillStyle = MUT; c.fill();
+  T('Nap fent', bx + bw + 10, yb + 29, { s: 22, c: MUT });
+  rr(bx, yb + 44, Math.max(4, bw * K.m), 22, 4); c.fillStyle = '#d98a00'; c.fill(); c.strokeStyle = '#7a4a00'; c.lineWidth = 2; c.stroke();
+  L.tx(labN('Nap most', fmt(K.m, K.m < 10 ? 1 : 0) + '×'), bx + Math.max(4, bw * K.m) + 10, yb + 63, { s: 22, w: 700, c: '#7a4a00', k: 'Nap most' });
+
+  // szórás ∝ 1/λ⁴
+  card(680, 640, 640, 390, p0 * pb);
+  al(p0 * pb); T('szórás cím', 710, 684, { s: 24, w: 700 });
+  const lr = num('vörös hullámhossza'), lb2 = num('kék hullámhossza');
+  const bars = [400, 450, 500, 550, 600, 650, 700], X0 = 725, dx = 78, Yb = 900, Hk = 18;
+  bars.forEach((l, i) => {
+    const v = Math.pow(lr / l, 4), x = X0 + i * dx, hgt = v * Hk;
+    rr(x, Yb - hgt, 52, hgt, 4); c.fillStyle = spec(l); c.fill(); c.strokeStyle = INK; c.lineWidth = 2; c.stroke();
+    tx(fmt(v, 1).replace(',0', '') + '×', x + 26, Yb - hgt - 10, { f: F.M, s: 22, w: 700, a: 'center', c: INK, qa: true });
+    tx(String(l), x + 26, Yb + 26, { f: F.M, s: 22, a: 'center', c: MUT });
+  });
+  tx('nm', X0 + 6 * dx + 64, Yb + 26, { f: F.M, s: 22, a: 'left', c: MUT });
+  // ami a Napból egyenesen eljut hozzád
+  const ry = 960;
+  T('eljut', 710, ry, { s: 22, w: 600 });
+  rr(710, ry + 14, 600, 40, 8); c.fillStyle = NIGHT2; c.fill();
+  for (let l = 400; l < 700; l += 2) { const tr = Math.exp(-tau(l) * K.m); c.fillStyle = spec(l, 1, tr); c.fillRect(710 + 8 + (l - 400) / 300 * 584, ry + 20, 584 / 150 + .6, 28); }
+  L.tx(labN('arány felirat', fmt(Math.pow(lr / lb2, 4), 1)), 1300, 718, { s: 22, w: 700, a: 'right', c: TEAL, k: ['arány felirat', 'kék hullámhossza', 'vörös hullámhossza'] });
+}
+
+/* ════════ 9. Összefoglalás ════════ */
+function scene9(st) {
+  const p0 = out(clamp(st / .6));
+  const cards = [['össz prizma', drawS1], ['össz newton', drawS2], ['össz szivárvány', drawS3], ['össz tárgy', drawS4], ['össz fény', drawS5], ['össz ég', drawS6]];
+  cards.forEach(([k, fn], i) => {
+    const q = out(clamp((st - .3 - i * .35) / .6)); if (q <= 0) return;
+    const col = i % 3, row = Math.floor(i / 3), x = 50 + col * 430, y = 70 + row * 480 + (1 - q) * 30, w = 400, h = 450;
+    al(p0 * q); rr(x, y, w, h, 20); c.fillStyle = CARD; c.fill(); c.strokeStyle = LINE; c.lineWidth = 2; c.stroke();
+    tx(String(i + 1), x + 26, y + 46, { f: F.D, s: 40, w: 600, c: RED, qa: false });
+    c.save(); c.translate(x, y); fn(p0 * q); c.restore();
+    al(p0 * q); T(k, x + w / 2, y + h - 34, { s: 26, w: 700, a: 'center', max: w - 40 });
+  });
+}
+function miniNight(a) { al(a); rr(30, 70, 340, 290, 14); c.fillStyle = NIGHT; c.fill(); }
+function drawS1(a) {
+  miniNight(a);
+  const V = prismVerts(170, 220, 130), run = prismRun(V, 55, .5, nGlass);
+  c.save(); rr(30, 70, 340, 290, 14); c.clip(); c.globalCompositeOperation = 'lighter';
+  beam([sub(run.P, mul(run.d0, 140)), run.P], '#fff6e0', 5, a);
+  for (const l of RAYS) { const r = run.ray(l), E = r.pts[r.pts.length - 1]; beam([r.pts[1], E, add(E, mul(r.dir, 220))], spec(l), 4, a * .5); }
+  c.restore(); drawPrism(V, a);
+}
+function drawS2(a) {
+  miniNight(a);
+  c.save(); rr(30, 70, 340, 290, 14); c.clip(); c.globalCompositeOperation = 'lighter';
+  const V = prismVerts(200, 210, 120, true);
+  const P = [60, 150], d = nrm([1, .45]), r = tracePoly(P, d, V, nGlass(530)), E = r.pts[r.pts.length - 1];
+  beam([...r.pts, add(E, mul(r.dir, 200))], spec(530), 6, a);
+  c.restore(); drawPrism(V, a);
+  al(a); ln(60, 105, 60, 142, '#d9d1bf', 8); ln(60, 158, 60, 195, '#d9d1bf', 8);
+}
+function drawS3(a) {
+  al(a); rr(30, 70, 340, 290, 14); c.fillStyle = '#5a647a'; c.fill();
+  c.save(); rr(30, 70, 340, 290, 14); c.clip();
+  for (let l = 400; l <= 700; l += 4) { c.beginPath(); c.arc(200, 400, thMax(nWater(l)) * 6.2, Math.PI, TAU); c.strokeStyle = spec(l); c.globalAlpha = GA * a * .6; c.lineWidth = 3; c.stroke(); }
+  c.restore();
+}
+function drawS4(a) {
+  miniNight(a);
+  apple(130, 230, 60, perceive((l) => reflOf('alma')(l), REF_FLAT), [1, 1, 1, .9], a);
+  al(a); c.globalCompositeOperation = 'lighter'; ln(180, 170, 320, 110, css([1, .1, .08]), 4, [10, 8]); arrowHead(180, 170, 320, 110, css([1, .1, .08]), 16); c.globalCompositeOperation = 'source-over';
+  specPlot(200, 250, 150, 90, (l) => reflOf('alma')(l), a);
+}
+function drawS5(a) {
+  miniNight(a);
+  c.save(); rr(30, 70, 340, 290, 14); c.clip();
+  const P = [[105, 185], [175, 185], [140, 245]];
+  for (let i = 0; i < 3; i++) { c.globalCompositeOperation = 'lighter'; c.beginPath(); c.arc(P[i][0], P[i][1], 58, 0, TAU); c.fillStyle = css(PRIM[i]); c.globalAlpha = GA * a; c.fill(); }
+  c.globalCompositeOperation = 'source-over'; c.restore();
+  al(a);
+  const Q = [[290, 175], [334, 175], [312, 214]], cc = [inkCol([0], [1, 1, 1]), inkCol([1], [1, 1, 1]), inkCol([2], [1, 1, 1])];
+  rr(240, 105, 120, 220, 10); c.fillStyle = css(PAPER); c.fill();
+  c.save(); rr(240, 105, 120, 220, 10); c.clip(); c.globalCompositeOperation = 'multiply';
+  for (let i = 0; i < 3; i++) { c.beginPath(); c.arc(Q[i][0] - 12, Q[i][1] + 30, 36, 0, TAU); c.fillStyle = css(cc[i]); c.fill(); }
+  c.restore();
+}
+function drawS6(a) {
+  al(a); c.save(); rr(30, 70, 340, 290, 14); c.clip();
+  const K = skyCols(45), g = c.createLinearGradient(0, 70, 0, 300); g.addColorStop(0, css(K.zen)); g.addColorStop(1, css(K.hor));
+  c.fillStyle = g; c.fillRect(30, 70, 170, 290);
+  const K2 = skyCols(1), g2 = c.createLinearGradient(0, 70, 0, 300); g2.addColorStop(0, css(K2.zen)); g2.addColorStop(1, css(K2.hor));
+  c.fillStyle = g2; c.fillRect(200, 70, 170, 290);
+  c.beginPath(); c.arc(110, 140, 22, 0, TAU); c.fillStyle = css(K.sun.map((v) => v / Math.max(...K.sun))); c.fill();
+  c.beginPath(); c.arc(285, 300, 22, 0, TAU); c.fillStyle = css(K2.sun.map((v) => v / Math.max(...K2.sun))); c.fill();
+  c.fillStyle = '#2a3a52'; c.fillRect(30, 300, 340, 60);
+  c.restore();
+}
+
+/* ════════════════════════════════════════════════════════════════ */
+const sT = new Array(9).fill(0);
+const SCENES = [scene1, scene2, scene3, scene4, scene5, scene6, scene7, scene8, scene9];
+const resetDrag = () => { DR.used = {}; DR.act = null; };
+let b4 = null, b5 = [], b8 = null;
+const setOn = (b, on) => b && b.classList.toggle('on', !!on);
+const pct = (v) => fmt(v * 100) + ' %';
+/* tesztelési horog */
+window.__L13 = { S1, S2, S3, S4, S5, S6, S7, S8, thMax, thOf, dropRay, KY, skyCols, nG: () => nGlass, nW: () => nWater, prismRun, PR1 };
+L = Lesson.create({
+  content: window.LESSON_CONTENT,
+  home: false,
+  steps: [
+    { settle: 3.8,
+      enter() { resetDrag(); S1.i = num('kezdő beesési szög'); },
+      controls(L) { L.slider({ label: lab('szög csúszka'), k: 'szög csúszka', min: 45, max: 80, step: 1, value: num('kezdő beesési szög'), format: (v) => fmt(v) + '°', onInput: (v) => { S1.i = v; } }); } },
+    { settle: 3.6,
+      enter() { resetDrag(); S2.l = num('kezdő hullámhossz'); },
+      controls(L) { L.slider({ label: lab('hullámhossz csúszka'), k: 'hullámhossz csúszka', min: 400, max: 700, step: 5, value: num('kezdő hullámhossz'), format: (v) => fmt(v) + ' nm', onInput: (v) => { S2.l = v; } }); } },
+    { settle: 3.9,
+      enter() { resetDrag(); S3.b = .86; },
+      controls(L) { L.slider({ label: lab('sugár csúszka'), k: 'sugár csúszka', min: 0, max: .99, step: .01, value: .86, format: pct, onInput: (v) => { S3.b = v; } }); } },
+    { settle: 3.4,
+      enter() { resetDrag(); Object.assign(S4, { on: 1, from: 1, t0: -9 }); setOn(b4, 0); },
+      controls(L) { b4 = L.button(lab('lámpa gomb'), () => { const k = lerp(S4.from, S4.on, U.smooth((L.st - S4.t0) / .5)); S4.from = k; S4.on = S4.on ? 0 : 1; S4.t0 = L.st; setOn(b4, !S4.on); }, 'lámpa gomb'); } },
+    { settle: 3.4,
+      enter() { resetDrag(); Object.assign(S5, { on: [1, 0, 0], from: [1, 0, 0], t0: -9 }); b5.forEach((b, i) => setOn(b, S5.on[i])); },
+      controls(L) {
+        b5 = ['vörös lámpa', 'zöld lámpa', 'kék lámpa'].map((k, i) => L.button(lab(k), () => {
+          S5.from = [0, 1, 2].map((j) => lerp(S5.from[j], S5.on[j], U.smooth((L.st - S5.t0) / .5)));
+          S5.on[i] = S5.on[i] ? 0 : 1; S5.t0 = L.st; setOn(b5[i], S5.on[i]);
+        }, k));
+        b5.forEach((b, i) => setOn(b, i === 0));
+      } },
+    { settle: 3.6,
+      enter() { resetDrag(); S6.a = [1, 1, 1]; S6.p = P6(); },
+      controls(L) { ['vörös csúszka', 'zöld csúszka', 'kék csúszka'].forEach((k, i) => L.slider({ label: lab(k), k, min: 0, max: 1, step: .01, value: 1, format: pct, onInput: (v) => { S6.a[i] = v; } })); } },
+    { settle: 3.6,
+      enter() { resetDrag(); S7.a = [1, 1, 1]; S7.p = P6(); },
+      controls(L) { ['cián csúszka', 'bíbor csúszka', 'sárga csúszka'].forEach((k, i) => L.slider({ label: lab(k), k, min: 0, max: 1, step: .01, value: 1, format: pct, onInput: (v) => { S7.a[i] = v; } })); } },
+    { settle: 3.2,
+      enter() { resetDrag(); Object.assign(S8, { h: num('kezdő napmagasság'), desert: 0, from: 0, t0: -9 }); setOn(b8, 0); },
+      controls(L) {
+        L.slider({ label: lab('nap csúszka'), k: 'nap csúszka', min: 0, max: 90, step: 1, value: num('kezdő napmagasság'), format: (v) => fmt(v) + '°', onInput: (v) => { S8.h = v; } });
+        b8 = L.button(lab('talaj gomb'), () => { S8.from = lerp(S8.from, S8.desert, U.smooth((L.st - S8.t0) / .6)); S8.desert = S8.desert ? 0 : 1; S8.t0 = L.st; setOn(b8, S8.desert); }, 'talaj gomb');
+      } },
+    { settle: 2.6 },
+  ],
+  init(Lx) {
+    L = Lx; c = L.ctx; installDrag();
+    nGlass = cauchy(num('üveg törésmutatója vörösre'), num('üveg törésmutatója ibolyára'));
+    nWater = cauchy(num('víz törésmutatója vörösre'), num('víz törésmutatója ibolyára'));
+    REF_FLAT = linOf(() => 1);
+    REF_RGB = linOf((l) => lampSpec(l, 0) + lampSpec(l, 1) + lampSpec(l, 2));
+    REF_SUN = linOf(SUN);
+    L.steps.forEach((s) => s.enter && s.enter(L));
+  },
+  draw(Lx) {
+    L = Lx; c = L.ctx; GA = 1; background();
+    DR.list = [];
+    const sp = L.sp;
+    if (L.step >= 0) sT[L.step] = L.st;
+    for (let i = 0; i < SCENES.length; i++) {
+      const w = clamp(1 - Math.abs(sp - i) * 2); if (w <= .005) continue;
+      GA = w; SCENES[i](sT[i], L.step === i && w > .5);
+    }
+    c.globalAlpha = 1; c.globalCompositeOperation = 'source-over';
+  },
+});
+})();
+</script>
+</body>
+</html>
