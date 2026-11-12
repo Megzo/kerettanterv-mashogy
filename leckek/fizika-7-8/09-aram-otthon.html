@@ -1,0 +1,995 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Miért old le a biztosíték? — Fizika</title>
+<link rel="stylesheet" href="../../shared/lesson.css">
+<style>
+  .lp-text b { color: var(--ink); }
+  .lp-text sub { font-size: .6em; vertical-align: -.25em; line-height: 0; font-style: italic; }
+</style>
+<!-- A lecke által várt tartalomkulcsok. A tools/build_lesson.py ez alapján ellenőrzi a .md-t.
+     labels: felirat → max. karakterszám (null = alapértelmezett 32) · data: adat → mértékegység, tartomány -->
+<script type="application/json" id="lesson-spec">
+{
+  "steps": 9,
+  "labels": {
+    "konnektor": 20, "vízforraló": 14, "hajszárító": 14, "mikró": 14, "tévé": 14, "lámpa": 14,
+    "áramerősség": 18, "feszültség": 18, "teljesítmény": 18, "ellenállás": 14, "lassítva": 48,
+    "kismegszakító": 16, "FI-relé": 12, "leoldott": 22, "bekapcsolva": 22,
+    "be-ki gomb": 24, "tápvezeték": 20, "fűtőszál": 12, "vezeték": 12, "áram mindkettőben": 22, "hő 1 s alatt": 14,
+    "nagyítás": 34, "meglökik": 44, "melegítés ideje": 22, "felgyorsítva": 22, "forr": 16, "egy cella": 40,
+    "fogyasztásmérő": 20, "áram 230 V-on": 44,
+    "tengely P": 22, "tengely t": 22, "húzd": 12, "ugyanannyi energia": 26, "kWh jelentése": 36, "tévé csúszka": 34,
+    "izzó": 18, "ugyanannyi fény": 22, "főleg hő": 16, "kevés hő": 16, "készenlét": 26, "éjjel-nappal": 28,
+    "egy év alatt": 30, "napi csúszka": 34, "naponta": 20,
+    "konyha": 12, "fürdő": 12, "nappali": 12, "közös vezetékben": 24, "visszakapcsol gomb": 22, "túlterhelés": 30,
+    "rövidzár gomb": 20, "javítás gomb": 34, "nélküle gomb": 30, "sérült szigetelés": 26, "rövidzár": 26,
+    "vezeték hőmérséklete": 26, "zárlat óta": 40, "alig melegedett": 38, "tűzveszély": 34, "kismegszakító nélkül": 26, "állólámpa": 14,
+    "földelés gomb": 22, "FI gomb": 22, "mosógép": 22, "zárlat a házra": 22, "a ház": 10, "védővezeték": 20, "nincs bekötve": 22,
+    "fázis": 16, "nulla": 16, "kimenő áram": 26, "visszajövő áram": 26, "különbség": 26, "nincs FI": 26, "földelő": 14,
+    "működik": 30, "életveszély": 34, "nem old le": 40, "FI leold": 40, "biztonságos": 40, "a föld visszavezeti": 34,
+    "feszültség csúszka": 30, "konnektor gomb": 22, "nem érzed": 22, "érezhető": 22, "nem tudod elengedni": 26, "fibrilláció": 30,
+    "FI-relé határa": 22, "legrosszabb eset": 34, "a testen át": 22,
+    "áramár": 16, "összegzés Joule": 12, "összegzés Joule 2": 44, "összegzés P": 44, "összegzés E": 44, "összegzés védelem 1": 44, "összegzés védelem 2": 44, "tanulság": 76
+  },
+  "data": {
+    "hálózati feszültség":          {"unit": "V", "min": 220, "max": 240},
+    "vízforraló teljesítménye":     {"unit": "W", "min": 1000, "max": 3000},
+    "hajszárító teljesítménye":     {"unit": "W", "min": 800, "max": 2400},
+    "mikró teljesítménye":          {"unit": "W", "min": 600, "max": 1600},
+    "tévé teljesítménye":           {"unit": "W", "min": 30, "max": 300},
+    "LED-lámpa teljesítménye":      {"unit": "W", "min": 4, "max": 15},
+    "kismegszakító névleges árama": {"unit": "A", "min": 6, "max": 25},
+    "áram ára":                     {"unit": "Ft/kWh", "min": 10, "max": 200},
+    "az emberi test ellenállása":   {"unit": "Ω", "min": 500, "max": 5000},
+    "vezetékhurok ellenállása":     {"unit": "Ω", "min": 0.1, "max": 2},
+    "tápvezeték ellenállása":       {"unit": "Ω", "min": 0.01, "max": 0.5},
+    "víz tömege":                   {"unit": "kg", "min": 0.5, "max": 1.7},
+    "víz fajhője":                  {"unit": "J/(kg·°C)", "min": 4100, "max": 4250},
+    "kezdeti vízhőmérséklet":       {"unit": "°C", "min": 5, "max": 30},
+    "vízforralás ideje":            {"unit": "perc", "min": 1, "max": 10},
+    "tévézés ideje":                {"unit": "perc", "min": 0, "max": 120},
+    "izzólámpa teljesítménye":      {"unit": "W", "min": 25, "max": 100},
+    "napi világítás":               {"unit": "óra", "min": 0, "max": 12},
+    "készenléti teljesítmény":      {"unit": "W", "min": 0.1, "max": 5},
+    "kioldási idő rövidzárnál":     {"unit": "ms", "min": 2, "max": 100},
+    "a vezeték melegedése 100 A-nél": {"unit": "°C/s", "min": 5, "max": 100},
+    "a szigetelés tűréshatára":     {"unit": "°C", "min": 70, "max": 250},
+    "mosógép teljesítménye":        {"unit": "W", "min": 1000, "max": 2500},
+    "FI-relé érzékenysége":         {"unit": "mA", "min": 10, "max": 30},
+    "FI-relé kioldási ideje":       {"unit": "ms", "min": 10, "max": 300},
+    "érezhető áram":                {"unit": "mA", "min": 0.5, "max": 2},
+    "elengedési határ":             {"unit": "mA", "min": 5, "max": 20},
+    "fibrillációs áram":            {"unit": "mA", "min": 30, "max": 100}
+  }
+}
+</script>
+</head>
+<body>
+<script src="09-aram-otthon.content.js"></script>
+<script src="../../shared/lesson.js"></script>
+<script>
+(function () {
+'use strict';
+const U = Lesson.U, { clamp, lerp, smooth, out, inOut, TAU } = U, fmt = U.fmt;
+const F = Lesson.FONTS;
+/* ── paletta (világos téma, lásd SZERZODES.md) – azonos a 08-aramkor leckével ── */
+const INK = '#1c2440', MUT = '#565d72', RED = '#c8401c', TEAL = '#0a6f86', GOOD = '#1d7a45', BAD = '#b3261e',
+  CARD = '#fffaf1', LINE = 'rgba(28,36,64,.16)';
+/* háztartási vezeték erei (szabványos színek): fázis barna, nulla kék, védővezeték zöld-sárga */
+const BROWN = '#8a5a2b', BLUE = '#2f6db0', GREEN = '#3c8a3c', YEL = '#e3b505';
+const DARK = { [BROWN]: '#3f2a14', [BLUE]: '#173a63', [GREEN]: '#1f4d1f' };
+let L, c, GA = 1;
+const al = (a = 1) => { c.globalAlpha = GA * clamp(a); };
+const lab = (k) => L.lab(k), num = (k) => L.num(k);
+const T = (k, x, y, o = {}) => L.tx(lab(k), x, y, Object.assign({ k }, o));
+const tx = (s, x, y, o) => L.tx(s, x, y, o);
+const rr = (x, y, w, h, r) => { c.beginPath(); c.roundRect(x, y, w, h, r); };
+const ln = (x1, y1, x2, y2, col, w = 2, dash) => { c.beginPath(); c.moveTo(x1, y1); c.lineTo(x2, y2); c.strokeStyle = col; c.lineWidth = w; c.setLineDash(dash || []); c.stroke(); c.setLineDash([]); };
+const mod = (a, n) => ((a % n) + n) % n;
+
+/* ════════ fizika: egyetlen forrás minden jelenetnek ════════
+   Ohmos fogyasztók 230 V-os (effektív) hálózaton: I = P / U. Párhuzamos kapcsolás: minden készülék
+   230 V-ot kap, a közös vezetékben az áramok összeadódnak. E = P · t. Az áramerősségeket 0,01 A-re
+   kerekítve számoljuk, és a kismegszakító ugyanebből a kerekített összegből dönt (kijelzés = döntés). */
+const Un = () => num('hálózati feszültség');
+const In = () => num('kismegszakító névleges árama');
+const price = () => num('áram ára');
+const r2 = (x) => Math.round(x * 100) / 100;
+const Idev = (kP) => r2(num(kP) / Un());
+const fA = (I, d = 2) => fmt(I, d) + ' A', fA3 = (I) => fA(I, I < 1 ? 3 : 2), fV = (u, d = 0) => fmt(u, d) + ' V', fW = (p) => fmt(p) + ' W';
+const fR = (r, d = 1) => fmt(r, d) + ' Ω', fFt = (x) => fmt(x, x < 10 ? 1 : 0) + ' Ft';
+const fkWh = (e) => fmt(e, e < 10 ? 2 : 1) + ' kWh';
+const sig2 = (x) => { if (!(x > 0)) return 0; const e = Math.floor(Math.log10(x)) - 1, p = Math.pow(10, e); return Math.round(x / p) * p; };
+const sigD = (x) => Math.max(0, 1 - Math.floor(Math.log10(Math.max(x, 1e-9))));
+/* váltakozó áram: a pöttyök oda-vissza lengenek; kitérés ∝ áramerősség (lassítva; valójában 50 Hz) */
+const OM = TAU * 1.1, KAC = 2.6, AMAX = 42;
+const acA = (I) => Math.min(AMAX, KAC * I);
+const acS = () => Math.sin(L.t * OM);
+
+/* ── állapot-eseménylista: [{t, s}] – az állapot L.st-ből zárt alakban számolható (mint a 08-ban) ── */
+function evNow(E, st) { let s = E[0].s; for (const e of E) { if (e.t <= st) s = e.s; else break; } return s; }
+function evSet(E, st, ch) {
+  const cur = Object.assign({}, evNow(E, st), ch);
+  while (E.length > 1 && E[E.length - 1].t > st) E.pop();
+  E.push({ t: st, s: cur }); return cur;
+}
+/* ∫ v(s) dt az eseményeken át (v szakaszonként állandó) */
+function integ(E, st, v) {
+  let p = 0;
+  for (let i = 0; i < E.length; i++) {
+    const a = E[i].t; if (st <= a) break;
+    const b = Math.min(st, i + 1 < E.length ? E[i + 1].t : Infinity); p += v(E[i].s) * (b - a);
+  }
+  return p;
+}
+/* elsőrendű késleltetés (pl. melegedés): az érték τ időállandóval követi f(s)-t – zárt alakban, eseményenként */
+function lagEv(E, st, f, tau, v0) {
+  let v = v0 == null ? f(E[0].s) : v0;
+  for (let i = 0; i < E.length; i++) {
+    const a = E[i].t; if (st <= a) break;
+    const b = Math.min(st, i + 1 < E.length ? E[i + 1].t : Infinity), g = f(E[i].s);
+    v = g + (v - g) * Math.exp(-(b - a) / tau);
+  }
+  return v;
+}
+/* mikor vált pred utoljára hamisból igazzá */
+function riseT(E, st, pred) { let t = -1, pv = false; for (const e of E) { if (e.t > st) break; const v = !!pred(e.s); if (v && !pv) t = e.t; pv = v; } return t; }
+/* utolsó esemény ideje, amelyre pred igaz */
+function lastT(E, st, pred) { let t = -1; for (const e of E) { if (e.t > st) break; if (pred(e.s)) t = e.t; } return t; }
+
+/* ── nyitott vezetékpálya (polyline) ── */
+function mkOpen(pts) {
+  const seg = []; let tot = 0;
+  for (let i = 0; i + 1 < pts.length; i++) { const a = pts[i], b = pts[i + 1], l = Math.hypot(b[0] - a[0], b[1] - a[1]); seg.push({ a, b, l, s0: tot }); tot += l; }
+  return { pts, seg, tot };
+}
+function pAt(P, s) {
+  s = clamp(s, 0, P.tot);
+  for (const g of P.seg) if (g.l > 0 && s <= g.s0 + g.l + 1e-9) { const t = (s - g.s0) / g.l; return { x: lerp(g.a[0], g.b[0], t), y: lerp(g.a[1], g.b[1], t) }; }
+  const g = P.seg[P.seg.length - 1]; return { x: g.b[0], y: g.b[1] };
+}
+/* párhuzamos eltolás (derékszögű töréseknél gérvágással) */
+function offPts(pts, d) {
+  const n = pts.length, o = [];
+  for (let i = 0; i < n; i++) {
+    const p = pts[i]; let n1 = null, n2 = null;
+    if (i > 0) { const a = pts[i - 1], l = Math.hypot(p[0] - a[0], p[1] - a[1]); n1 = [-(p[1] - a[1]) / l, (p[0] - a[0]) / l]; }
+    if (i < n - 1) { const b = pts[i + 1], l = Math.hypot(b[0] - p[0], b[1] - p[1]); n2 = [-(b[1] - p[1]) / l, (b[0] - p[0]) / l]; }
+    let m = n1 && n2 ? [n1[0] + n2[0], n1[1] + n2[1]] : (n1 || n2); const ml = Math.hypot(m[0], m[1]); m = [m[0] / ml, m[1] / ml];
+    const ref = n1 || n2, k = d / (m[0] * ref[0] + m[1] * ref[1]);
+    o.push([p[0] + m[0] * k, p[1] + m[1] * k]);
+  }
+  return o;
+}
+const poly = (pts) => { c.beginPath(); pts.forEach((p, i) => i ? c.lineTo(p[0], p[1]) : c.moveTo(p[0], p[1])); };
+/* elektron (−) és atommag (+) – a 08-aramkor rajzai */
+function electron(x, y, r = 8) {
+  c.beginPath(); c.arc(x, y, r, 0, TAU); c.fillStyle = TEAL; c.fill(); c.strokeStyle = '#063f4d'; c.lineWidth = 1.5; c.stroke();
+  ln(x - r * .5, y, x + r * .5, y, '#fffaf1', Math.max(1.4, r * .27));
+}
+function nucleus(x, y, r = 13) {
+  c.beginPath(); c.arc(x, y, r, 0, TAU); c.fillStyle = RED; c.fill(); c.strokeStyle = '#7a2410'; c.lineWidth = 2; c.stroke();
+  ln(x - r * .5, y, x + r * .5, y, '#fffaf1', 2.6); ln(x, y - r * .5, x, y + r * .5, '#fffaf1', 2.6);
+}
+/* melegedés színe: h = 0 hideg, 1 meleg (narancs), 1,5+ forró (vörös) */
+const hotCol = (base, h) => h <= 1 ? U.mix(base, '#f08a24', clamp(h)) : U.mix('#f08a24', '#ff3b1c', clamp(h - 1, 0, .6) / .6);
+/* egy ér: sötét körvonal + színes belső + melegedés-izzás + lengő elektronok (sgn: ±1 iránya) */
+function conductor(pts, col, heat, I, sgn, a, o = {}) {
+  al(a); c.lineJoin = 'round'; c.lineCap = 'round';
+  if (heat > .12) { poly(pts); c.strokeStyle = `rgba(255,120,40,${.28 * clamp(heat, 0, 1.6)})`; c.lineWidth = 26; c.stroke(); }
+  poly(pts); c.strokeStyle = DARK[col] || INK; c.lineWidth = o.w || 10; c.stroke();
+  poly(pts); c.strokeStyle = hotCol(col, heat); c.lineWidth = (o.w || 10) - 4; c.stroke();
+  if (o.stripes) { poly(pts); c.setLineDash([10, 12]); c.strokeStyle = YEL; c.lineWidth = (o.w || 10) - 5; c.stroke(); c.setLineDash([]); }
+  c.lineCap = 'butt';
+  if (o.nodots) return;
+  const P = mkOpen(pts), sp = 30, N = Math.floor(P.tot / sp), off = sgn * acA(I) * acS() + (o.jit ? (Math.sin(L.t * 31) * 6) : 0);
+  for (let i = 0; i <= N; i++) { const s = i * sp + 15 + off; if (s < 6 || s > P.tot - 6) continue; const p = pAt(P, s); electron(p.x, p.y, 5); }
+}
+/* kéteres kábel: fázis (barna) és nulla (kék); a két érben az elektronok ellentétes irányban mozognak */
+function cable(pts, I, heat, a, d = 9) {
+  al(a); c.lineJoin = 'round'; c.lineCap = 'round'; poly(pts); c.strokeStyle = 'rgba(28,36,64,.10)'; c.lineWidth = 2 * d + 18; c.stroke(); c.lineCap = 'butt';
+  conductor(offPts(pts, -d), BROWN, heat, I, 1, a); conductor(offPts(pts, d), BLUE, heat, I, -1, a);
+}
+function card(x, y, w, h, a) { al(a); rr(x, y, w, h, 18); c.fillStyle = CARD; c.fill(); c.strokeStyle = LINE; c.lineWidth = 2; c.stroke(); }
+function readout(s, x, y, k, a = 'left', sz = 26) { return L.pill(s, x, y, { k, a, s: sz, f: F.M, w: 700, bg: '#22302a', c: '#8df0a6', pad: 10, r: 8 }); }
+/* képletjel (kódban rögzített) */
+function sym(s, x, y, o) { return L.tx(s, x, y, Object.assign({ f: F.D, i: 1, w: 500, qa: false }, o)).w; }
+function formula(parts, x, y, fs, col, a = 'left') {
+  // parts: [szöveg, dőlt?] – a teljes szélességet előre méri, hogy középre is igazítható legyen
+  const gap = fs * .22; let w = 0;
+  for (const [s, i] of parts) w += L.measure(s, { f: F.D, i: i ? 1 : 0, w: 500, s: fs }).w + gap;
+  w -= gap; let xx = a === 'center' ? x - w / 2 : a === 'right' ? x - w : x;
+  for (const [s, i] of parts) xx += sym(s, xx, y, { s: fs, c: col, i: i ? 1 : 0 }) + gap;
+}
+function row2(k, v, x, y, col, kv, w, big) {
+  T(k, x, y, { s: 24, w: 500, c: MUT, max: w });
+  L.tx(v, x, y + 40, { k: kv, f: F.M, s: big ? 34 : 28, w: 700, c: col, max: w });
+}
+
+/* ── háttér ── */
+function background() {
+  c.globalAlpha = 1;
+  const g = c.createRadialGradient(680, 480, 100, 680, 540, 1300); g.addColorStop(0, '#f7f1e6'); g.addColorStop(1, '#efe6d6');
+  c.fillStyle = g; c.fillRect(0, 0, 1920, 1080);
+  c.strokeStyle = 'rgba(28,36,64,.045)'; c.lineWidth = 1; c.beginPath();
+  for (let x = 0; x <= 1920; x += 40) { c.moveTo(x + .5, 0); c.lineTo(x + .5, 1080); }
+  for (let y = 0; y <= 1080; y += 40) { c.moveTo(0, y + .5); c.lineTo(1920, y + .5); }
+  c.stroke();
+}
+
+/* ── húzás a vásznon (a 08-aramkor kódja) ── */
+const DR = { on: null, h: null };
+function drag(id, near, apply) { DR.h = { id, near, apply }; }
+function dragInit() {
+  const st = L.stage, P = (e) => L.toStage(e);
+  st.addEventListener('pointerdown', (e) => { const p = P(e); if (DR.h && DR.h.near(p.x, p.y)) { DR.on = DR.h.id; DR.h.apply(p.x, p.y); } });
+  st.addEventListener('pointermove', (e) => {
+    const p = P(e);
+    if (DR.on && DR.h && DR.h.id === DR.on) DR.h.apply(p.x, p.y);
+    L.canvas.style.cursor = DR.on ? 'grabbing' : DR.h && DR.h.near(p.x, p.y) ? 'grab' : '';
+  });
+  window.addEventListener('pointerup', () => { DR.on = null; });
+}
+
+/* ════════ rajzok: konnektor, készülékek, kismegszakító, ember ════════ */
+function socket(x, y, a, sz = 100) {
+  al(a); const h = sz / 2;
+  rr(x - h + 4, y - h + 6, sz, sz, 16); c.fillStyle = 'rgba(28,36,64,.15)'; c.fill();
+  rr(x - h, y - h, sz, sz, 16); c.fillStyle = '#f4efe6'; c.fill(); c.strokeStyle = INK; c.lineWidth = 3; c.stroke();
+  c.beginPath(); c.arc(x, y, sz * .34, 0, TAU); c.fillStyle = '#e2dccf'; c.fill(); c.strokeStyle = '#6b7380'; c.lineWidth = 2.5; c.stroke();
+  for (const s of [-1, 1]) { c.beginPath(); c.arc(x + s * sz * .14, y, sz * .055, 0, TAU); c.fillStyle = INK; c.fill(); }
+  for (const s of [-1, 1]) { rr(x - sz * .07, y + s * sz * .34 - sz * .03, sz * .14, sz * .06, 2); c.fillStyle = '#9aa3ae'; c.fill(); }
+}
+/* készülék-ikonok: (x, y) közép, s nagyítás, on: működik */
+function withT(x, y, s, f) { c.save(); c.translate(x, y); c.scale(s, s); f(3 / s); c.restore(); }
+function steam(x, y, a, n = 3) {
+  al(a); c.lineCap = 'round';
+  for (let i = 0; i < n; i++) {
+    const ph = mod(L.t * .7 + i / n, 1), yy = y - ph * 50, xx = x + (i - (n - 1) / 2) * 16;
+    c.globalAlpha = GA * a * Math.sin(ph * Math.PI) * .8; c.beginPath();
+    for (let k = 0; k <= 10; k++) { const q = k / 10; c.lineTo(xx + Math.sin(q * 6 + L.t * 3 + i) * 5, yy - q * 34); }
+    c.strokeStyle = '#8a93a6'; c.lineWidth = 3; c.stroke();
+  }
+  c.lineCap = 'butt';
+}
+function kettleI(x, y, s, on, a) {
+  al(a); withT(x, y, s, (lw) => {
+    c.beginPath(); c.moveTo(40, -38); c.bezierCurveTo(80, -36, 82, 26, 46, 30); c.strokeStyle = INK; c.lineWidth = 12; c.stroke(); c.strokeStyle = '#2a3350'; c.lineWidth = 7; c.stroke();
+    c.beginPath(); c.moveTo(-36, -36); c.lineTo(-66, -52); c.lineTo(-60, -34); c.lineTo(-40, -20); c.closePath(); c.fillStyle = '#c9ced6'; c.fill(); c.strokeStyle = INK; c.lineWidth = lw; c.stroke();
+    c.beginPath(); c.moveTo(-38, -48); c.lineTo(38, -48); c.lineTo(48, 38); c.lineTo(-48, 38); c.closePath(); c.fillStyle = '#dfe3ea'; c.fill(); c.strokeStyle = INK; c.lineWidth = lw; c.stroke();
+    rr(-30, -60, 60, 13, 5); c.fillStyle = '#c9ced6'; c.fill(); c.stroke();
+    rr(-10, -30, 20, 56, 6); c.fillStyle = on ? 'rgba(240,150,90,.75)' : 'rgba(70,150,215,.5)'; c.fill(); c.strokeStyle = '#1b5a94'; c.lineWidth = lw * .8; c.stroke();
+    rr(-56, 38, 112, 15, 5); c.fillStyle = '#2a3350'; c.fill();
+    c.beginPath(); c.arc(32, 45, 4, 0, TAU); c.fillStyle = on ? '#ff7a1a' : '#6b7380'; c.fill();
+  });
+  if (on) steam(x - 64 * s, y - 56 * s, a);
+}
+function dryerI(x, y, s, on, a) {
+  al(a); withT(x, y, s, (lw) => {
+    if (on) { c.lineCap = 'round'; for (let i = -1; i <= 1; i++) { c.beginPath(); for (let k = 0; k <= 12; k++) { const q = k / 12; c.lineTo(66 + q * 50, -16 + i * 13 + Math.sin(q * 9 - L.t * 9 + i) * 4); } c.strokeStyle = U.rgba(RED, .75); c.lineWidth = 3.5; c.stroke(); } c.lineCap = 'butt'; }
+    c.save(); c.translate(-26, 4); c.rotate(.22); rr(-15, 0, 30, 66, 10); c.fillStyle = '#0a6f86'; c.fill(); c.strokeStyle = '#063f4d'; c.lineWidth = lw; c.stroke(); c.restore();
+    rr(28, -32, 36, 34, 6); c.fillStyle = '#2a3350'; c.fill(); c.strokeStyle = INK; c.lineWidth = lw; c.stroke();
+    rr(-62, -44, 96, 56, 26); c.fillStyle = '#0a6f86'; c.fill(); c.strokeStyle = '#063f4d'; c.lineWidth = lw; c.stroke();
+    c.beginPath(); c.arc(-40, -16, 15, 0, TAU); c.fillStyle = '#c9ced6'; c.fill(); c.stroke();
+    for (let i = 0; i < 4; i++) ln(-40 + Math.cos(i * 1.57 + (on ? L.t * 14 : 0)) * 11, -16 + Math.sin(i * 1.57 + (on ? L.t * 14 : 0)) * 11, -40, -16, '#2a3350', 2.5);
+  });
+}
+function microI(x, y, s, on, a) {
+  al(a); withT(x, y, s, (lw) => {
+    rr(-68, -46, 136, 92, 10); c.fillStyle = '#dfe3ea'; c.fill(); c.strokeStyle = INK; c.lineWidth = lw; c.stroke();
+    rr(-58, -36, 84, 72, 6); c.fillStyle = on ? '#f3cf6a' : '#2a3350'; c.fill(); c.strokeStyle = INK; c.stroke();
+    if (on) { c.beginPath(); c.ellipse(-16, 22, 28, 7, 0, 0, TAU); c.fillStyle = 'rgba(28,36,64,.25)'; c.fill(); }
+    rr(34, -36, 26, 72, 4); c.fillStyle = '#c9ced6'; c.fill(); c.stroke();
+    for (const yy of [-16, 14]) { c.beginPath(); c.arc(47, yy, 7, 0, TAU); c.fillStyle = '#6b7380'; c.fill(); }
+  });
+}
+function tvI(x, y, s, on, a, standby) {
+  al(a); withT(x, y, s, (lw) => {
+    c.beginPath(); c.moveTo(-14, 40); c.lineTo(14, 40); c.lineTo(26, 56); c.lineTo(-26, 56); c.closePath(); c.fillStyle = '#2a3350'; c.fill();
+    rr(-74, -52, 148, 94, 8); c.fillStyle = INK; c.fill();
+    rr(-66, -44, 132, 76, 4);
+    if (on) { const g = c.createLinearGradient(0, -44, 0, 32); g.addColorStop(0, '#7fc3d6'); g.addColorStop(1, '#2f8fa8'); c.fillStyle = g; c.fill();
+      c.beginPath(); c.arc(30, -18, 11, 0, TAU); c.fillStyle = '#f6d27a'; c.fill();
+      c.beginPath(); c.moveTo(-66, 32); c.lineTo(-30, 0); c.lineTo(0, 22); c.lineTo(28, 2); c.lineTo(66, 32); c.closePath(); c.fillStyle = '#1d7a45'; c.fill();
+    } else { c.fillStyle = '#2a3350'; c.fill(); }
+    if (standby && !on) { c.beginPath(); c.arc(62, 37, 4.5, 0, TAU); c.fillStyle = '#ff3b1c'; c.fill(); }
+  });
+}
+function lampI(x, y, s, on, a) {
+  if (on) { al(a); const g = c.createRadialGradient(x, y - 10 * s, 10 * s, x, y - 10 * s, 110 * s); g.addColorStop(0, 'rgba(255,210,80,.55)'); g.addColorStop(1, 'rgba(255,210,80,0)'); c.fillStyle = g; c.beginPath(); c.arc(x, y - 10 * s, 110 * s, 0, TAU); c.fill(); }
+  al(a); withT(x, y, s, (lw) => {
+    ln(0, -12, 0, 42, '#2a3350', 6);
+    c.beginPath(); c.ellipse(0, 46, 32, 9, 0, 0, TAU); c.fillStyle = '#2a3350'; c.fill();
+    c.beginPath(); c.moveTo(-24, -56); c.lineTo(24, -56); c.lineTo(42, -12); c.lineTo(-42, -12); c.closePath(); c.fillStyle = on ? '#f6d27a' : '#ece3cc'; c.fill(); c.strokeStyle = INK; c.lineWidth = lw; c.stroke();
+  });
+}
+const DEVS = {
+  kettle: { k: 'vízforraló', P: 'vízforraló teljesítménye', d: kettleI },
+  dryer: { k: 'hajszárító', P: 'hajszárító teljesítménye', d: dryerI },
+  micro: { k: 'mikró', P: 'mikró teljesítménye', d: microI },
+  tv: { k: 'tévé', P: 'tévé teljesítménye', d: tvI },
+  lamp: { k: 'lámpa', P: 'LED-lámpa teljesítménye', d: lampI },
+};
+/* kismegszakító (on: 1 = felkapcsolva, 0 = leoldva) */
+function breakerG(x, y, on, a, h = 112) {
+  al(a); rr(x - 31, y - h / 2, 62, h, 8); c.fillStyle = '#eef0f3'; c.fill(); c.strokeStyle = INK; c.lineWidth = 2.5; c.stroke();
+  rr(x - 15, y - 26, 30, 52, 5); c.fillStyle = '#2a3350'; c.fill();
+  const ly = lerp(y + 4, y - 22, clamp(on)); rr(x - 11, ly, 22, 18, 4); c.fillStyle = on > .5 ? '#3fae6a' : '#e0503a'; c.fill(); c.strokeStyle = INK; c.lineWidth = 1.5; c.stroke();
+}
+/* FI-relé modul (szélesebb, T teszgombbal) */
+function fiG(x, y, on, a, act = 1) {
+  al(a * (act ? 1 : .3)); rr(x - 50, y - 56, 100, 112, 8); c.fillStyle = '#eef0f3'; c.fill(); c.strokeStyle = INK; c.lineWidth = 2.5; c.stroke();
+  rr(x - 36, y - 26, 30, 52, 5); c.fillStyle = '#2a3350'; c.fill();
+  const ly = lerp(y + 4, y - 22, clamp(on)); rr(x - 32, ly, 22, 18, 4); c.fillStyle = on > .5 ? '#3fae6a' : '#e0503a'; c.fill(); c.strokeStyle = INK; c.lineWidth = 1.5; c.stroke();
+  c.beginPath(); c.arc(x + 24, y - 10, 11, 0, TAU); c.fillStyle = '#f2c14e'; c.fill(); c.strokeStyle = INK; c.stroke();
+  ln(x + 18, y - 15, x + 30, y - 15, INK, 2.2); ln(x + 24, y - 15, x + 24, y - 4, INK, 2.2);
+}
+function panelBox(x, y, w, h, a) {
+  al(a); rr(x + 5, y + 7, w, h, 14); c.fillStyle = 'rgba(28,36,64,.14)'; c.fill();
+  rr(x, y, w, h, 14); c.fillStyle = '#e6e1d6'; c.fill(); c.strokeStyle = INK; c.lineWidth = 3; c.stroke();
+}
+/* ember oldalnézetből, balra néz; kéz → (hx, hy); shock: áramütés kiemelése */
+function personSide(x, yF, s, hx, hy, shock, a) {
+  al(a); c.lineCap = 'round';
+  const hip = [x, yF - 92 * s], sh = [x - 4 * s, yF - 160 * s], head = [x - 2 * s, yF - 196 * s];
+  const seg = (p, q, w, col) => { ln(p[0], p[1], q[0], q[1], INK, w + 5); ln(p[0], p[1], q[0], q[1], col, w); };
+  if (shock > .01) {
+    al(a * shock); c.lineCap = 'round'; c.beginPath(); c.moveTo(hx, hy); c.lineTo(sh[0], sh[1]); c.lineTo(hip[0], hip[1]); c.lineTo(x - 14 * s, yF); c.moveTo(hip[0], hip[1]); c.lineTo(x + 16 * s, yF);
+    c.strokeStyle = 'rgba(255,60,30,.45)'; c.lineWidth = 46 * s; c.stroke(); al(a);
+  }
+  seg(hip, [x + 16 * s, yF], 15 * s, '#2a3350'); seg(hip, [x - 14 * s, yF], 15 * s, '#2a3350');
+  seg(sh, [x + 10 * s, yF - 104 * s], 12 * s, '#e2b48c');
+  seg(sh, hip, 40 * s, TEAL);
+  seg(sh, [hx, hy], 12 * s, '#e2b48c');
+  c.beginPath(); c.arc(head[0], head[1], 23 * s, 0, TAU); c.fillStyle = '#e2b48c'; c.fill(); c.strokeStyle = INK; c.lineWidth = 2.5; c.stroke();
+  c.beginPath(); c.arc(head[0] - 6 * s, head[1] - 10 * s, 22 * s, Math.PI * 1.05, Math.PI * 1.95); c.strokeStyle = '#3a2a1a'; c.lineWidth = 8 * s; c.stroke();
+  c.lineCap = 'butt';
+}
+/* villám-jel (zárlat, szikra) */
+function spark(x, y, r, a) {
+  if (a <= .01) return; al(a);
+  c.beginPath(); for (let i = 0; i < 10; i++) { const ang = i / 10 * TAU + L.t * 3, rr_ = i % 2 ? r * .45 : r; c.lineTo(x + Math.cos(ang) * rr_, y + Math.sin(ang) * rr_); } c.closePath();
+  c.fillStyle = '#ffd23a'; c.fill(); c.strokeStyle = '#b3261e'; c.lineWidth = 2.5; c.stroke();
+}
+function bolt(x, y, s, a) {
+  al(a); c.beginPath(); c.moveTo(x + 6 * s, y - 22 * s); c.lineTo(x - 10 * s, y + 3 * s); c.lineTo(x + 1 * s, y + 3 * s); c.lineTo(x - 6 * s, y + 22 * s); c.lineTo(x + 12 * s, y - 5 * s); c.lineTo(x + 1 * s, y - 5 * s); c.closePath();
+  c.fillStyle = '#ffd23a'; c.fill(); c.strokeStyle = BAD; c.lineWidth = 2.5; c.stroke();
+}
+function earthSym(x, y, a) { al(a); for (let i = 0; i < 3; i++) ln(x - 26 + i * 8, y + i * 9, x + 26 - i * 8, y + i * 9, INK, 3.5); }
+
+/* ════════ 1. A fűtőszál melegszik ════════ */
+const E1 = [], SPEED1 = 40;
+const Pk = () => num('vízforraló teljesítménye'), Ik = () => Idev('vízforraló teljesítménye');
+const onInt1 = (st) => integ(E1, st, (s) => s.on ? 1 : 0);
+function water1(st) { return Math.min(100, num('kezdeti vízhőmérséklet') + Pk() * onInt1(st) * SPEED1 / (num('víz tömege') * num('víz fajhője'))); }
+const K1 = ['vízforraló teljesítménye', 'hálózati feszültség'];
+const RNG1 = (() => { const r = U.rng(7), a = []; for (let i = 0; i < 16; i++) a.push([r(), r(), r()]); return a; })();
+function scene1(st, cur) {
+  const p0 = out(clamp(st / .6)), S = evNow(E1, st), I = S.on ? Ik() : 0, g = lagEv(E1, st, (s) => s.on ? 1 : 0, .6), Tw = water1(st);
+  // konnektor + tápvezeték
+  socket(120, 520, p0); al(p0); L.tx(lab('konnektor') + ' · ' + L.val('hálózati feszültség'), 120, 445, { k: ['konnektor', 'hálózati feszültség'], s: 24, w: 600, a: 'center', c: MUT });
+  const cab = [[170, 520], [330, 520], [330, 815], [440, 815]];
+  cable(cab, I, 0, p0);
+  al(p0); T('tápvezeték', 300, 690, { s: 24, w: 600, a: 'right', c: MUT });
+  // vízforraló (metszet)
+  al(p0);
+  c.beginPath(); c.moveTo(820, 430); c.bezierCurveTo(930, 440, 930, 720, 822, 740); c.strokeStyle = INK; c.lineWidth = 26; c.stroke(); c.strokeStyle = '#2a3350'; c.lineWidth = 18; c.stroke();
+  c.beginPath(); c.moveTo(500, 400); c.lineTo(430, 368); c.lineTo(442, 404); c.lineTo(496, 450); c.closePath(); c.fillStyle = '#c9ced6'; c.fill(); c.strokeStyle = INK; c.lineWidth = 3; c.stroke();
+  c.beginPath(); c.moveTo(500, 390); c.lineTo(790, 390); c.lineTo(830, 790); c.lineTo(460, 790); c.closePath(); c.fillStyle = '#dfe3ea'; c.fill(); c.strokeStyle = INK; c.lineWidth = 3.5; c.stroke();
+  // víz (színe a hőmérséklettel)
+  const wt = clamp((Tw - 20) / 80);
+  c.beginPath(); c.moveTo(503, 460); c.lineTo(787, 460); c.lineTo(814, 776); c.lineTo(476, 776); c.closePath();
+  c.fillStyle = U.mix('#a9cdea', '#f2b48e', wt); c.fill(); ln(503, 460, 787, 460, '#1b5a94', 3);
+  rr(486, 368, 318, 24, 8); c.fillStyle = '#c9ced6'; c.fill(); c.strokeStyle = INK; c.lineWidth = 3; c.stroke();
+  // buborékok forrásnál
+  if (Tw > 92) {
+    const q = clamp((Tw - 92) / 8);
+    for (let i = 0; i < 14; i++) { const ph = mod(L.t * (.5 + RNG1[i][0] * .6) + RNG1[i][1], 1); const bx = 520 + RNG1[i][2] * 260, by = 740 - ph * 270;
+      al(p0 * q * (1 - ph * .6)); c.beginPath(); c.arc(bx + Math.sin(L.t * 4 + i) * 4, by, 5 + RNG1[i][0] * 6, 0, TAU); c.strokeStyle = '#1b5a94'; c.lineWidth = 2; c.stroke(); }
+    steam(450, 360, p0 * q, 3);
+  }
+  // talp + belső vezetékek + fűtőszál
+  al(p0); rr(440, 790, 410, 52, 12); c.fillStyle = '#2a3350'; c.fill();
+  const lo = offPts(cab, -9), no = offPts(cab, 9), le = lo[lo.length - 1], ne = no[no.length - 1];
+  const coilL = [[le[0], le[1]], [520, le[1]], [520, 732]], coilN = [[ne[0], ne[1]], [770, ne[1]], [770, 732]];
+  conductor(coilL, BROWN, 0, I, 1, p0); conductor(coilN, BLUE, 0, I, -1, p0);
+  const cg = clamp(g);
+  if (cg > .02) { al(p0 * cg); const gr = c.createRadialGradient(645, 728, 10, 645, 728, 190); gr.addColorStop(0, 'rgba(255,120,30,.55)'); gr.addColorStop(1, 'rgba(255,120,30,0)'); c.fillStyle = gr; c.beginPath(); c.arc(645, 728, 190, 0, TAU); c.fill(); }
+  al(p0); c.beginPath(); for (let i = 0; i <= 14; i++) c.lineTo(520 + i * 250 / 14, 732 + (i % 2 ? -26 : 0)); c.lineJoin = 'round';
+  c.strokeStyle = '#3a2a1a'; c.lineWidth = 11; c.stroke(); c.strokeStyle = U.mix('#7a7f8a', '#ff6a1a', cg); c.lineWidth = 6; c.stroke();
+  // feliratok a kanna alatt
+  al(p0); T('fűtőszál', 645, 885, { s: 26, w: 700, a: 'center', c: cg > .5 ? RED : INK });
+  ln(645, 860, 645, 845, U.rgba(MUT, .7), 2, [5, 5]);
+  readout(fmt(Tw, 0) + ' °C', 645, 545, ['kezdeti vízhőmérséklet', 'víz tömege', 'víz fajhője', 'vízforraló teljesítménye'], 'center', 30);
+  if (Tw >= 100) { al(p0); L.pill(lab('forr'), 645, 605, { k: 'forr', a: 'center', s: 24, w: 700, bg: RED, c: '#fffaf1', pad: 10 }); }
+  // óra (felgyorsítva)
+  const sec = onInt1(st) * SPEED1, mm = Math.floor(sec / 60), ss = Math.floor(sec % 60);
+  al(p0); T('melegítés ideje', 470, 950, { s: 24, w: 500, c: MUT });
+  const mw = L.measure(lab('melegítés ideje'), { s: 24, w: 500 }).w;
+  L.tx(mm + ':' + String(ss).padStart(2, '0'), 486 + mw, 950, { f: F.M, s: 28, w: 700, c: INK, k: 'melegítés ideje' });
+  T('felgyorsítva', 470, 992, { s: 22, w: 500, c: MUT });
+  // nagyítás: a fűtőszál belseje
+  const cx = 1110, cy = 300, R = 168;
+  al(p0 * .8); ln(700, 712, cx - R * .74, cy + R * .68, U.rgba(MUT, .7), 2, [6, 6]); c.beginPath(); c.arc(700, 712, 22, 0, TAU); c.strokeStyle = U.rgba(MUT, .7); c.lineWidth = 2; c.stroke();
+  al(p0); c.beginPath(); c.arc(cx, cy, R, 0, TAU); c.fillStyle = U.mix('#e9e4da', '#f7c9a0', cg); c.fill();
+  c.save(); c.beginPath(); c.arc(cx, cy, R - 2, 0, TAU); c.clip();
+  const jit = 1.5 + 9 * cg;
+  for (let r = 0; r < 5; r++) for (let q = 0; q < 5; q++) {
+    const i = r * 5 + q, nx = cx - 136 + q * 68 + (r % 2) * 20, ny = cy - 130 + r * 65;
+    nucleus(nx + Math.sin(L.t * 23 + i * 1.7) * jit, ny + Math.cos(L.t * 19 + i * 2.3) * jit, 15);
+  }
+  const ac = I > 0 ? 34 * acS() : 0;
+  RNG1.forEach((p, i) => {
+    const ex = cx - R + mod(p[0] * 2 * R + ac + Math.sin(L.t * (3 + p[1] * 3) + i) * 14, 2 * R), ey = cy - R + 20 + p[2] * (2 * R - 40) + Math.sin(L.t * (4 + p[0] * 4) + i * 2) * 10;
+    electron(ex, ey, 8);
+  });
+  c.restore();
+  al(p0); c.beginPath(); c.arc(cx, cy, R, 0, TAU); c.strokeStyle = INK; c.lineWidth = 4; c.stroke();
+  T('nagyítás', cx, 105, { s: 26, w: 700, a: 'center', c: INK, max: 470 });
+  T('meglökik', 1325, 510, { s: 24, w: 600, a: 'right', c: RED, max: 385 });
+  // kártya: ugyanaz az áram, más ellenállás → más hő
+  const Rk = Un() / Ik(), Rc = num('tápvezeték ellenállása'), Pc = Ik() * Ik() * Rc;
+  card(930, 580, 400, 300, p0); al(p0);
+  T('áram mindkettőben', 955, 632, { s: 24, w: 500, c: MUT, max: 230 });
+  L.tx(fA(I), 1310, 634, { k: K1, f: F.M, s: 28, w: 700, a: 'right', c: TEAL });
+  ln(950, 660, 1310, 660, LINE, 2);
+  T('fűtőszál', 1200, 710, { s: 26, w: 700, a: 'right', c: RED }); T('vezeték', 1310, 710, { s: 26, w: 700, a: 'right', c: INK });
+  T('ellenállás', 955, 772, { s: 24, w: 500, c: MUT, max: 125 });
+  L.tx(fR(Rk), 1200, 772, { k: K1, f: F.M, s: 24, w: 700, a: 'right', c: INK });
+  L.tx(fR(Rc, 2), 1310, 772, { k: 'tápvezeték ellenállása', f: F.M, s: 24, w: 700, a: 'right', c: INK });
+  T('hő 1 s alatt', 955, 836, { s: 24, w: 500, c: MUT, max: 125 });
+  L.tx('≈ ' + fmt(S.on ? sig2(Pk() - Pc) : 0) + ' J', 1200, 836, { k: K1.concat('tápvezeték ellenállása'), f: F.M, s: 24, w: 700, a: 'right', c: RED });
+  L.tx('≈ ' + fmt(S.on ? sig2(Pc) : 0, S.on ? sigD(Pc) : 0) + ' J', 1310, 836, { k: K1.concat('tápvezeték ellenállása'), f: F.M, s: 24, w: 700, a: 'right', c: INK });
+}
+
+/* ════════ 2. Teljesítmény = feszültség × áramerősség ════════ */
+const E2 = [], ORDER2 = ['lamp', 'tv', 'micro', 'dryer', 'kettle'];
+let B2 = [];
+function scene2(st, cur) {
+  const p0 = out(clamp(st / .6)), S = evNow(E2, st), D = DEVS[S.d], P = num(D.P), I = P / Un(), t0 = lastT(E2, st, () => true);
+  const kk = [D.P, 'hálózati feszültség'];
+  if (cur) B2.forEach((b, i) => b.classList.toggle('on', ORDER2[i] === S.d));
+  socket(110, 420, p0);
+  // konnektoros fogyasztásmérő
+  al(p0); rr(168, 300, 170, 250, 22); c.fillStyle = '#e9edf2'; c.fill(); c.strokeStyle = INK; c.lineWidth = 3; c.stroke();
+  rr(184, 322, 138, 150, 10); c.fillStyle = '#22302a'; c.fill();
+  tx(fV(Un()), 308, 362, { k: 'hálózati feszültség', f: F.M, s: 26, w: 700, a: 'right', c: '#8df0a6', max: 120 });
+  tx(fA3(I), 308, 408, { k: kk, f: F.M, s: 26, w: 700, a: 'right', c: '#8df0a6', max: 120 });
+  tx(fW(P), 308, 454, { k: D.P, f: F.M, s: 26, w: 700, a: 'right', c: '#8df0a6', max: 120 });
+  T('fogyasztásmérő', 253, 600, { s: 24, w: 600, a: 'center', c: MUT });
+  cable([[338, 505], [615, 505]], I, 0, p0);
+  al(p0); T('lassítva', 80, 662, { s: 22, w: 500, c: MUT, max: 820 });
+  // a készülék
+  const pop = U.outBack(clamp((st - t0) / .45));
+  D.d(705, 430, 1.8 * (.85 + .15 * pop), true, p0, false);
+  al(p0); T(D.k, 705, 610, { s: 30, w: 700, a: 'center', c: INK });
+  // kártya
+  const vx = 940, vy = 140, w = 390;
+  card(vx, vy, w, 560, p0); al(p0);
+  row2('feszültség', fV(Un()), vx + 28, vy + 56, INK, 'hálózati feszültség', w - 56, true);
+  row2('áramerősség', fA3(I), vx + 28, vy + 156, TEAL, kk, w - 56, true);
+  row2('teljesítmény', fW(P), vx + 28, vy + 256, RED, D.P, w - 56, true);
+  ln(vx + 24, vy + 350, vx + w - 24, vy + 350, LINE, 2);
+  formula([['P', 1], ['=', 0], ['U', 1], ['·', 0], ['I', 1]], vx + w / 2, vy + 440, 68, RED, 'center');
+  al(p0); tx(fV(Un()) + ' · ' + fA3(I) + ' ≈ ' + fW(P), vx + w / 2, vy + 510, { k: kk, f: F.M, s: 22, w: 700, a: 'center', c: INK, max: w - 40 });
+  // oszlopok: ugyanaz a 230 V, nagyon különböző áram
+  al(p0); T('áram 230 V-on', 80, 712, { s: 26, w: 700, c: INK, max: 820 });
+  ORDER2.forEach((id, i) => {
+    const d = DEVS[id], Ii = num(d.P) / Un(), y = 762 + i * 56, sel = id === S.d, bw = Ii * 60;
+    al(p0 * (sel ? 1 : .55)); T(d.k, 300, y + 8, { s: 24, w: sel ? 700 : 500, a: 'right', c: INK });
+    rr(320, y - 14, Math.max(3, bw), 28, 5); c.fillStyle = sel ? TEAL : U.rgba(MUT, .55); c.fill();
+    tx(fA3(Ii), 334 + bw, y + 8, { k: [d.P, 'hálózati feszültség'], f: F.M, s: 22, w: 700, c: sel ? TEAL : MUT });
+  });
+}
+
+/* ════════ 3. kWh és forint ════════ */
+const E3 = [];
+let SL3 = null;
+const G3 = { x0: 150, y1: 640, PXM: 7, PYW: .22, TM: 120 };
+const tk3 = () => num('vízforralás ideje');
+function tiles(x, y1, wpx, hpx, Pw, tmin, col, a, fillW) {
+  // téglalap: (x, y1−hpx) … (x+wpx, y1); 0,01 kWh-s cellákra osztva; fillW: kitöltött szélesség px
+  const E = Pw * tmin / 60 / 1000, n = E / .01;
+  al(a); rr(x, y1 - hpx, wpx, hpx, 0); c.strokeStyle = U.rgba(col, .5); c.lineWidth = 2; c.setLineDash([6, 5]); c.stroke(); c.setLineDash([]);
+  if (fillW <= 0) return;
+  c.save(); c.beginPath(); c.rect(x, y1 - hpx - 2, fillW, hpx + 4); c.clip();
+  c.fillStyle = U.rgba(col, .78); c.fillRect(x, y1 - hpx, wpx, hpx);
+  c.strokeStyle = '#fffaf1'; c.lineWidth = 2; c.beginPath();
+  if (hpx > wpx) for (let i = 1; i < n; i++) { const yy = y1 - hpx * i / n; c.moveTo(x, yy); c.lineTo(x + wpx, yy); }
+  else for (let i = 1; i < n; i++) { const xx = x + wpx * i / n; c.moveTo(xx, y1 - hpx); c.lineTo(xx, y1); }
+  c.stroke(); c.restore();
+  rr(x, y1 - hpx, fillW, hpx, 0); c.strokeStyle = col; c.lineWidth = 2.5; c.stroke();
+}
+function scene3(st, cur) {
+  const p0 = out(clamp(st / .6)), S = evNow(E3, st), G = G3, tv = S.tv, tk = tk3();
+  const Pk_ = num('vízforraló teljesítménye'), Pt = num('tévé teljesítménye');
+  const X = (m) => G.x0 + m * G.PXM, Y = (p) => G.y1 - p * G.PYW;
+  const m = S.sweep ? lerp(0, Math.max(tv, tk), inOut(clamp((st - .7) / 3))) : 1e9;
+  if (cur) drag('tv', (x, y) => Math.abs(x - X(tv)) < 30 && y > Y(Pt) - 70 && y < G.y1 + 20, (x) => {
+    const v = clamp(Math.round((x - G.x0) / G.PXM / 5) * 5, 0, G.TM); if (v !== evNow(E3, L.st).tv || evNow(E3, L.st).sweep) { evSet(E3, L.st, { tv: v, sweep: false }); SL3 && SL3.set(v); }
+  });
+  // tengelyek
+  al(p0); c.strokeStyle = LINE; c.lineWidth = 1.2; c.beginPath();
+  for (let mm = 30; mm <= G.TM; mm += 30) { c.moveTo(X(mm), Y(0)); c.lineTo(X(mm), Y(2000)); }
+  for (let p = 500; p <= 2000; p += 500) { c.moveTo(X(0), Y(p)); c.lineTo(X(G.TM), Y(p)); }
+  c.stroke();
+  ln(X(0), Y(0), X(G.TM) + 20, Y(0), INK, 2.5); ln(X(0), Y(0), X(0), Y(2000) - 24, INK, 2.5);
+  for (let mm = 0; mm <= G.TM; mm += 30) tx(String(mm), X(mm), Y(0) + 32, { f: F.M, s: 22, a: 'center', c: MUT });
+  for (let p = 0; p <= 2000; p += 500) tx(fmt(p), X(0) - 12, Y(p) + 8, { f: F.M, s: 22, a: 'right', c: MUT });
+  T('tengely P', X(0) - 6, Y(2000) - 40, { s: 24, w: 600, c: INK });
+  T('tengely t', X(G.TM) + 10, Y(0) + 72, { s: 24, w: 600, a: 'right', c: INK });
+  // tévé (alacsony, hosszú) és vízforraló (magas, keskeny)
+  tiles(X(0), Y(0), tv * G.PXM, Pt * G.PYW, Pt, tv, TEAL, p0, Math.min(m, tv) * G.PXM);
+  tiles(X(0), Y(0), tk * G.PXM, Pk_ * G.PYW, Pk_, tk, RED, p0, Math.min(m, tk) * G.PXM);
+  al(p0); L.tx(lab('vízforraló') + ' · ' + fW(Pk_), X(tk) + 16, Y(Pk_) + 26, { k: ['vízforraló', 'vízforraló teljesítménye'], s: 26, w: 700, c: RED });
+  { const s_ = lab('tévé') + ' · ' + fW(Pt), o_ = { k: ['tévé', 'tévé teljesítménye'], s: 26, w: 700, c: TEAL }, tw = L.measure(s_, o_).w;
+    if (X(tv) + 34 + tw < 1020) L.tx(s_, X(tv) + 34, Y(Pt) - 26, o_); else L.tx(s_, X(tv) - 34, Y(Pt) - 26, Object.assign({ a: 'right' }, o_)); }
+  // húzható fogantyú
+  const hx = X(tv), hy = Y(Pt) - 34;
+  al(p0); ln(hx, Y(Pt) - 8, hx, hy + 14, TEAL, 3); c.beginPath(); c.arc(hx, hy, 14, 0, TAU); c.fillStyle = DR.on === 'tv' ? TEAL : CARD; c.fill(); c.strokeStyle = TEAL; c.lineWidth = 3; c.stroke();
+  const moved = E3.some((e) => e.t <= st && !e.s.sweep);
+  al(p0 * (moved ? 0 : clamp((st - 3.8) / .5))); T('húzd', hx, hy - 26, { s: 24, w: 700, a: 'center', c: TEAL });
+  // kártya
+  const Ek = Pk_ * Math.min(m, tk) / 60 / 1000, Et = Pt * Math.min(m, tv) / 60 / 1000;
+  const vx = 1040, vy = 140, w = 290;
+  card(vx, vy, w, 520, p0); al(p0);
+  const blk = (k, P_, t, E, col, y, kp, kt) => {
+    T(k, vx + 24, y, { s: 26, w: 700, c: col });
+    L.tx(fW(P_) + ' · ' + fmt(t) + ' perc', vx + 24, y + 42, { k: [kp, kt], f: F.M, s: 22, w: 700, c: INK, max: w - 48 });
+    L.tx('= ' + fkWh(E), vx + 24, y + 86, { k: [kp, kt], f: F.M, s: 28, w: 700, c: col, max: w - 48 });
+    L.tx('≈ ' + fFt(E * price()), vx + 24, y + 128, { k: [kp, kt, 'áram ára'], f: F.M, s: 24, w: 700, c: MUT, max: w - 48 });
+  };
+  blk('vízforraló', Pk_, tk, Ek, RED, vy + 54, 'vízforraló teljesítménye', 'vízforralás ideje');
+  ln(vx + 24, vy + 212, vx + w - 24, vy + 212, LINE, 2);
+  blk('tévé', Pt, tv, Et, TEAL, vy + 264, 'tévé teljesítménye', 'tévézés ideje');
+  const done = m >= Math.max(tv, tk);
+  const eq = done && Math.abs(Pk_ * tk - Pt * tv) < 1e-6;
+  al(p0 * (eq ? clamp((st - lastT(E3, st, () => true) - (S.sweep ? 3.7 : 0)) / .4) : 0));
+  L.pill(lab('ugyanannyi energia'), vx + w / 2, vy + 470, { k: 'ugyanannyi energia', a: 'center', s: 22, w: 700, bg: RED, c: '#fffaf1', pad: 12 });
+  // alsó kártya: E = P · t
+  card(60, 760, 1270, 250, p0);
+  formula([['E', 1], ['=', 0], ['P', 1], ['·', 0], ['t', 1]], 110, 900, 76, RED);
+  al(p0); T('kWh jelentése', 520, 870, { s: 30, w: 700, c: INK, max: 760 });
+  L.tx(lab('áramár') + ': ' + L.val('áram ára'), 520, 930, { k: ['áramár', 'áram ára'], s: 26, w: 500, c: MUT, max: 760 });
+  al(p0); rr(520, 958, 18, 30, 0); c.fillStyle = U.rgba(TEAL, .78); c.fill(); rr(538, 958, 18, 30, 0); c.fill(); ln(538, 958, 538, 988, '#fffaf1', 2);
+  T('egy cella', 572, 982, { s: 24, w: 500, c: MUT, max: 700 });
+}
+
+/* ════════ 4. Izzó, LED, készenlét ════════ */
+const E4 = [];
+let SL4 = null;
+function bulbG(x, y, b, a, R, led) {
+  const v = clamp(b);
+  al(a);
+  if (v > .01) {
+    const g = c.createRadialGradient(x, y, R * .3, x, y, R + 130 * v);
+    g.addColorStop(0, `rgba(255,210,80,${.8 * v})`); g.addColorStop(.45, `rgba(255,200,70,${.35 * v})`); g.addColorStop(1, 'rgba(255,200,70,0)');
+    c.fillStyle = g; c.beginPath(); c.arc(x, y, R + 130 * v, 0, TAU); c.fill();
+  }
+  rr(x - 22, y + R - 6, 44, 34, 6); c.fillStyle = '#9aa3ae'; c.fill(); c.strokeStyle = '#141a2e'; c.lineWidth = 2.5; c.stroke();
+  for (let i = 1; i < 4; i++) ln(x - 22, y + R - 6 + i * 8.5, x + 22, y + R - 6 + i * 8.5, '#6b7380', 2);
+  c.beginPath(); c.arc(x, y, R, 0, TAU); c.fillStyle = U.mix('#f4efe4', '#ffe27a', v); c.fill(); c.strokeStyle = INK; c.lineWidth = 3; c.stroke();
+  if (!led) {
+    const fc = U.mix('#3a3f4a', '#ff8a14', clamp(v * 1.4));
+    ln(x - 16, y + R - 6, x - 16, y + 4, '#6b7380', 2.5); ln(x + 16, y + R - 6, x + 16, y + 4, '#6b7380', 2.5);
+    c.beginPath(); for (let i = 0; i <= 8; i++) c.lineTo(x - 16 + i * 4, y + 4 + (i % 2 ? -9 : 0)); c.strokeStyle = fc; c.lineWidth = 3; c.stroke();
+  } else {
+    rr(x - 22, y - 2, 44, 18, 4); c.fillStyle = '#e9edf2'; c.fill(); c.strokeStyle = INK; c.lineWidth = 2; c.stroke();
+    for (let i = 0; i < 3; i++) { rr(x - 17 + i * 13, y + 2, 8, 9, 2); c.fillStyle = v > .1 ? '#fff6c8' : '#c9ced6'; c.fill(); c.strokeStyle = '#6b7380'; c.lineWidth = 1.2; c.stroke(); }
+  }
+  c.beginPath(); c.ellipse(x - R * .42, y - R * .42, R * .16, R * .26, -.7, 0, TAU); c.fillStyle = 'rgba(255,255,255,.55)'; c.fill();
+}
+function heatWaves(x, y, n, amp, a) {
+  al(a); c.lineCap = 'round';
+  for (let i = 0; i < n; i++) {
+    const xx = x + (i - (n - 1) / 2) * 30, ph = L.t * 2.2 + i;
+    c.beginPath(); for (let k = 0; k <= 14; k++) { const q = k / 14; c.lineTo(xx + Math.sin(q * 7 + ph * 2) * amp, y - q * 70 - mod(ph, 1) * 10); }
+    c.strokeStyle = U.rgba(RED, .8); c.lineWidth = 3.5; c.stroke();
+  }
+  c.lineCap = 'butt';
+}
+function scene4(st, cur) {
+  const p0 = out(clamp(st / .6)), S = evNow(E4, st), h = S.h, gr = out(clamp((st - .8) / 1.4));
+  const Pi = num('izzólámpa teljesítménye'), Pl = num('LED-lámpa teljesítménye'), Ps = num('készenléti teljesítmény');
+  // lámpák
+  bulbG(230, 270, 1, p0, 66, false); bulbG(590, 270, 1, p0, 66, true);
+  heatWaves(230, 165, 4, 6, p0 * .9); heatWaves(590, 165, 1, 4, p0 * .5);
+  al(p0); T('főleg hő', 330, 120, { s: 24, w: 700, c: RED }); T('kevés hő', 650, 120, { s: 24, w: 600, c: MUT });
+  L.tx(lab('izzó') + ' · ' + fW(Pi), 230, 400, { k: ['izzó', 'izzólámpa teljesítménye'], s: 26, w: 700, a: 'center', c: INK });
+  L.tx(lab('lámpa') + ' · ' + fW(Pl), 590, 400, { k: ['lámpa', 'LED-lámpa teljesítménye'], s: 26, w: 700, a: 'center', c: INK });
+  L.pill(lab('ugyanannyi fény'), 410, 456, { k: 'ugyanannyi fény', a: 'center', s: 24, w: 700, bg: CARD, bd: '#b8860b', c: INK, pad: 10 });
+  tvI(1030, 260, 1.45, false, p0, true);
+  al(p0); L.tx(lab('készenlét') + ' · ' + fmt(Ps, 1) + ' W', 1030, 400, { k: ['készenlét', 'készenléti teljesítmény'], s: 26, w: 700, a: 'center', c: INK, max: 520 });
+  T('éjjel-nappal', 1030, 446, { s: 24, w: 600, a: 'center', c: BAD });
+  // éves fogyasztás
+  card(60, 500, 1270, 520, p0); al(p0);
+  T('egy év alatt', 96, 556, { s: 28, w: 700, c: INK, max: 600 });
+  const rows = [
+    ['izzó', Pi, h, RED, ['izzó', 'izzólámpa teljesítménye', 'napi világítás']],
+    ['lámpa', Pl, h, TEAL, ['lámpa', 'LED-lámpa teljesítménye', 'napi világítás']],
+    ['készenlét', Ps, 24, BAD, ['készenlét', 'készenléti teljesítmény']],
+  ];
+  const SC = 3.0;
+  rows.forEach(([k, P, hh, col, ks], i) => {
+    const y = 640 + i * 128, E = P * hh * 365 / 1000, bw = E * SC * gr;
+    al(p0); L.tx(lab(k) + ': ' + fmt(P, P % 1 ? 1 : 0) + ' W · ' + fmt(hh, hh % 1 ? 1 : 0) + ' ' + lab('naponta'), 96, y, { k: ks.concat('naponta'), s: 24, w: 500, c: MUT, max: 760 });
+    rr(96, y + 18, Math.max(4, bw), 44, 6); c.fillStyle = U.rgba(col, .82); c.fill(); c.strokeStyle = col; c.lineWidth = 2; c.stroke();
+    al(p0 * clamp(gr * 3)); L.tx(fkWh(E * gr) + ' · ' + fFt(E * gr * price()), 116 + Math.max(4, bw), y + 52, { k: ks.concat('áram ára'), f: F.M, s: 26, w: 700, c: col });
+  });
+}
+
+/* ════════ 5. Túlterhelés ════════ */
+const E5 = [], ORDER5 = ['kettle', 'micro', 'dryer', 'tv', 'lamp'], X5 = { kettle: 290, micro: 430, dryer: 590, tv: 790, lamp: 925 };
+let B5 = [];
+const TRIP5 = 1.2;   // animációs késleltetés (a valódi kismegszakító kis túllépésnél perceket vár)
+const I5 = (s) => r2(ORDER5.reduce((a, id) => a + (s.on[id] ? Idev(DEVS[id].P) : 0), 0));
+const live5 = (s) => s.tripped ? 0 : I5(s);
+function set5(t, ch) {
+  const prev = E5.length ? evNow(E5, t) : { on: {} }, cur = Object.assign({}, prev, ch, { on: Object.assign({}, prev.on, ch.on || {}) });
+  while (E5.length && E5[E5.length - 1].t > t) E5.pop();
+  if (E5.length && E5[E5.length - 1].t === t) E5.pop();
+  E5.push({ t, s: cur });
+  if (!cur.tripped && I5(cur) > In()) E5.push({ t: t + TRIP5, s: Object.assign({}, cur, { tripped: true, tripI: I5(cur) }) });
+}
+function scene5(st, cur) {
+  const p0 = out(clamp(st / .6)), S = evNow(E5, st), Itot = live5(S);
+  if (cur) B5.forEach((b, i) => b.classList.toggle('on', !!S.on[ORDER5[i]]));
+  // alaprajz
+  al(p0); rr(50, 140, 950, 720, 6); c.fillStyle = 'rgba(255,250,241,.55)'; c.fill(); c.strokeStyle = INK; c.lineWidth = 9; c.stroke();
+  for (const x of [490, 690]) { ln(x, 140, x, 690, INK, 7); ln(x, 780, x, 860, INK, 7); }
+  al(p0); T('konyha', 270, 830, { s: 26, w: 600, a: 'center', c: MUT }); T('fürdő', 590, 830, { s: 26, w: 600, a: 'center', c: MUT }); T('nappali', 845, 830, { s: 26, w: 600, a: 'center', c: MUT });
+  // elosztó + kismegszakító
+  const tr0 = riseT(E5, st, (s) => s.tripped), on01 = S.tripped ? 1 - smooth((st - tr0) / .25) : 1;
+  panelBox(70, 230, 110, 150, p0); breakerG(125, 305, on01, p0, 104);
+  al(p0); T('kismegszakító', 66, 420, { s: 24, w: 600, c: INK }); L.tx(L.val('kismegszakító névleges árama'), 66, 452, { k: 'kismegszakító névleges árama', f: F.M, s: 24, w: 700, c: INK });
+  // gerincvezeték szakaszonként: a szakasz árama = a mögötte lévő bekapcsolt készülékek összege
+  const xs = [180].concat(ORDER5.map((id) => X5[id]));
+  const segI = (s, i) => s.tripped ? 0 : r2(ORDER5.slice(i).reduce((a, id) => a + (s.on[id] ? Idev(DEVS[id].P) : 0), 0));
+  for (let i = 0; i < ORDER5.length; i++) {
+    const Ii = segI(S, i), heat = lagEv(E5, st, (s) => Math.pow(segI(s, i) / In(), 2), .7);
+    cable([[xs[i], 300], [xs[i + 1] + (i === ORDER5.length - 1 ? 9 : 0), 300]], Ii, heat, p0);
+  }
+  ORDER5.forEach((id, i) => {
+    const d = DEVS[id], x = X5[id], on = !!S.on[id], Ii = S.tripped || !on ? 0 : Idev(d.P);
+    cable([[x, 300], [x, 430]], Ii, 0, p0);
+    al(p0); rr(x - 17, 283, 34, 34, 6); c.fillStyle = '#e6e1d6'; c.fill(); c.strokeStyle = INK; c.lineWidth = 2.5; c.stroke();
+    socket(x, 450, p0 * (on ? 1 : .8), 52);
+    d.d(x, 560, .82, on && !S.tripped, p0 * (on ? 1 : .35), false);
+    al(p0 * (on ? 1 : .45)); T(d.k, x, 655, { s: 24, w: 700, a: 'center', c: INK });
+    if (on) { al(p0); L.pill(fA(Idev(d.P)), x, 700, { k: [d.P, 'hálózati feszültség'], a: 'center', s: 22, f: F.M, w: 700, bg: S.tripped ? CARD : TEAL, bd: TEAL, c: S.tripped ? MUT : '#fffaf1', pad: 7, r: 6 }); }
+  });
+  // kártya: a közös vezeték árama, halmozott oszlop
+  const vx = 1040, vy = 140, w = 290;
+  card(vx, vy, w, 720, p0); al(p0);
+  T('közös vezetékben', vx + w / 2, vy + 46, { s: 24, w: 600, a: 'center', c: MUT, max: w - 30 });
+  const Ishow = S.tripped ? 0 : I5(S);
+  L.tx(fA(Ishow), vx + w / 2, vy + 100, { k: ORDER5.map((id) => DEVS[id].P).concat('hálózati feszültség'), f: F.M, s: 40, w: 700, a: 'center', c: Ishow > In() ? BAD : INK });
+  const gx = vx + 40, gy0 = vy + 640, gh = 480, gmax = 24, Yg = (I) => gy0 - I / gmax * gh;
+  al(p0); rr(gx, Yg(gmax), 56, gh, 6); c.fillStyle = '#efe9dc'; c.fill(); c.strokeStyle = INK; c.lineWidth = 2; c.stroke();
+  let acc = 0; const cols = { kettle: '#c8401c', micro: '#b8860b', dryer: '#0a6f86', tv: '#565d72', lamp: '#1d7a45' };
+  for (const id of ORDER5) {
+    if (!S.on[id]) continue; const Ii = Idev(DEVS[id].P); if (S.tripped) continue;
+    const y1 = Yg(acc), y0 = Yg(Math.min(gmax, acc + Ii)); acc += Ii;
+    al(p0); c.fillStyle = cols[id]; c.fillRect(gx + 2, y0, 52, y1 - y0); c.strokeStyle = '#fffaf1'; c.lineWidth = 1.5; c.strokeRect(gx + 2, y0, 52, y1 - y0);
+    if (y1 - y0 >= 28 && Math.abs((y0 + y1) / 2 - Yg(In())) > 26) T(DEVS[id].k, gx + 70, (y0 + y1) / 2 + 8, { s: 22, w: 600, c: cols[id], max: w - 120 });
+  }
+  al(p0); ln(gx - 10, Yg(In()), gx + 66, Yg(In()), BAD, 3.5, [8, 5]);
+  L.tx(L.val('kismegszakító névleges árama'), vx + w - 18, Yg(In()) + 8, { k: 'kismegszakító névleges árama', f: F.M, s: 22, w: 700, a: 'right', c: BAD });
+  tx('0', gx - 10, gy0 + 8, { f: F.M, s: 22, a: 'right', c: MUT });
+  const stk = S.tripped ? 'leoldott' : 'bekapcsolva';
+  al(p0); L.pill(lab(stk), vx + w / 2, vy + 690, { k: stk, a: 'center', s: 26, w: 700, bg: S.tripped ? BAD : GOOD, c: '#fffaf1', pad: 12 });
+  if (S.tripped) { al(p0 * clamp((st - tr0) / .4)); L.pill(lab('túlterhelés') + ': ' + fA(S.tripI) + ' > ' + L.val('kismegszakító névleges árama'), 545, 90, { k: ['túlterhelés', 'kismegszakító névleges árama'], a: 'center', s: 26, w: 700, bg: BAD, c: '#fffaf1', pad: 12 }); }
+}
+
+/* ════════ 6. Rövidzár ════════ */
+const E6 = [];
+let B6 = null;
+const LOG0 = -3, LOG1 = 0, TL6 = 1.2;           // időtengely: 1 ms … 1 s, 1,2 mp (valós) / tizedes nagyságrend
+const tsim6 = (tau) => Math.pow(10, LOG0 + Math.min(tau, (LOG1 - LOG0) * TL6) / TL6);
+const Ish = () => Un() / num('vezetékhurok ellenállása');
+const tTrip6 = () => num('kioldási idő rövidzárnál') / 1000;
+function state6(st) {
+  const S = evNow(E6, st);
+  if (!S.fault) return { S, fault: false, tripped: false, ts: 0, I: Idev('LED-lámpa teljesítménye'), T: 20 };
+  const tau = st - S.tf, ts = tsim6(Math.max(0, tau)), tripped = !S.nb && ts >= tTrip6();
+  const rate = num('a vezeték melegedése 100 A-nél') * Math.pow(Ish() / 100, 2);
+  const T = 20 + rate * (S.nb ? ts : Math.min(ts, tTrip6()));
+  return { S, fault: true, tripped, ts, tau, I: tripped ? 0 : Ish(), T };
+}
+function scene6(st, cur) {
+  const p0 = out(clamp(st / .6)), Z = state6(st), S = Z.S;
+  if (cur && B6) B6.classList.toggle('on', !!S.nb);
+  const XF = 600, Y = 400;
+  // elosztó
+  panelBox(70, 300, 130, 200, p0);
+  if (S.nb) { al(p0); rr(110, 345, 50, 110, 8); c.strokeStyle = BAD; c.lineWidth = 3; c.setLineDash([6, 5]); c.stroke(); c.setLineDash([]); ln(112, 350, 158, 450, BAD, 4); }
+  else breakerG(135, 400, Z.tripped ? 1 - smooth((st - S.tf - Math.log10(tTrip6() / 1e-3) * TL6) / .2) : 1, p0, 104);
+  al(p0); T(S.nb ? 'kismegszakító nélkül' : 'kismegszakító', 70, 545, { s: 24, w: 600, c: S.nb ? BAD : INK });
+  // kábel: elosztó → sérülés → lámpa
+  const hot = Z.fault ? clamp((Z.T - 20) / (num('a szigetelés tűréshatára') - 20) * 1.5, 0, 1.6) : 0;
+  const Ia = Z.I, Ib = Z.fault ? 0 : Z.I;
+  al(p0); c.lineCap = 'round'; c.strokeStyle = 'rgba(28,36,64,.10)'; c.lineWidth = 36;
+  poly([[200, Y], [XF - 34, Y]]); c.stroke(); poly([[XF + 34, Y], [1080, Y], [1080, 840], [1130, 840]]); c.stroke(); c.lineCap = 'butt';
+  conductor([[200, Y - 9], [XF, Y - 9]], BROWN, hot, Math.min(Ia, 16), 1, p0, { jit: Z.fault && !Z.tripped });
+  conductor([[200, Y + 9], [XF, Y + 9]], BLUE, hot, Math.min(Ia, 16), -1, p0, { jit: Z.fault && !Z.tripped });
+  conductor(offPts([[XF, Y], [1080, Y], [1080, 840], [1130, 840]], -9), BROWN, 0, Ib, 1, p0);
+  conductor(offPts([[XF, Y], [1080, Y], [1080, 840], [1130, 840]], 9), BLUE, 0, Ib, -1, p0);
+  // sérült szigetelés
+  al(p0); rr(XF - 34, Y - 22, 68, 44, 8); c.strokeStyle = BAD; c.lineWidth = 2.5; c.setLineDash([5, 4]); c.stroke(); c.setLineDash([]);
+  T('sérült szigetelés', XF, Y - 44, { s: 24, w: 600, a: 'center', c: BAD });
+  if (Z.fault) { al(p0); ln(XF, Y - 9, XF, Y + 9, '#b87333', 6); spark(XF, Y, 30, p0 * (Z.tripped ? .25 : .9 + .1 * Math.sin(L.t * 40))); }
+  // tűz (csak kismegszakító nélkül, ha a szigetelés túlmelegszik)
+  if (S.nb && Z.T > num('a szigetelés tűréshatára')) {
+    const q = clamp((Z.T - num('a szigetelés tűréshatára')) / 120);
+    for (let i = 0; i < 9; i++) { const fx = 230 + i * 42, fh = (26 + 18 * Math.sin(L.t * 9 + i * 1.7)) * q; al(p0 * q);
+      c.beginPath(); c.moveTo(fx - 13, Y - 14); c.quadraticCurveTo(fx - 8, Y - 14 - fh * .6, fx, Y - 14 - fh); c.quadraticCurveTo(fx + 8, Y - 14 - fh * .6, fx + 13, Y - 14); c.closePath();
+      c.fillStyle = i % 2 ? '#ff8a14' : '#ffb52e'; c.fill(); }
+  }
+  // állólámpa
+  const lampOn = !Z.fault;
+  if (lampOn) { al(p0); const g = c.createRadialGradient(1180, 300, 20, 1180, 300, 190); g.addColorStop(0, 'rgba(255,210,80,.55)'); g.addColorStop(1, 'rgba(255,210,80,0)'); c.fillStyle = g; c.beginPath(); c.arc(1180, 300, 190, 0, TAU); c.fill(); }
+  al(p0); ln(1180, 330, 1180, 840, '#2a3350', 8); c.beginPath(); c.ellipse(1180, 848, 60, 13, 0, 0, TAU); c.fillStyle = '#2a3350'; c.fill();
+  c.beginPath(); c.moveTo(1140, 220); c.lineTo(1220, 220); c.lineTo(1250, 320); c.lineTo(1110, 320); c.closePath(); c.fillStyle = lampOn ? '#f6d27a' : '#ece3cc'; c.fill(); c.strokeStyle = INK; c.lineWidth = 3; c.stroke();
+  T('állólámpa', 1180, 190, { s: 24, w: 600, a: 'center', c: MUT });
+  // áramerősség és hőmérséklet
+  al(p0); T('áramerősség', 330, 300, { s: 24, w: 600, a: 'center', c: MUT });
+  readout(Z.I >= 100 ? fmt(Z.I) + ' A' : fA(Z.I, Z.I < 1 ? 2 : 1), 330, 345, Z.fault ? ['hálózati feszültség', 'vezetékhurok ellenállása'] : ['LED-lámpa teljesítménye', 'hálózati feszültség'], 'center', 30);
+  T('vezeték hőmérséklete', 400, 480, { s: 24, w: 600, a: 'center', c: MUT });
+  readout(fmt(Z.T, 0) + ' °C', 400, 525, ['a vezeték melegedése 100 A-nél', 'vezetékhurok ellenállása', 'kioldási idő rövidzárnál'], 'center', 28);
+  // képlet
+  card(140, 600, 880, 110, p0); al(p0);
+  formula([['I', 1], ['=', 0], ['U', 1], ['/', 0], ['R', 1]], 180, 672, 52, RED);
+  L.tx('= ' + fV(Un()) + ' / ' + fR(num('vezetékhurok ellenállása')) + ' = ' + fmt(Ish()) + ' A', 400, 668, { k: ['hálózati feszültség', 'vezetékhurok ellenállása'], f: F.M, s: 28, w: 700, c: INK, max: 600 });
+  // logaritmikus, lassított időtengely
+  const ax0 = 140, ax1 = 1020, ay = 900, XT = (t) => ax0 + (Math.log10(t) - LOG0) / (LOG1 - LOG0) * (ax1 - ax0);
+  al(p0); T('zárlat óta', ax0, 790, { s: 24, w: 600, c: INK, max: 880 });
+  ln(ax0, ay, ax1, ay, INK, 3);
+  [[1e-3, '0,001 s'], [1e-2, '0,01 s'], [1e-1, '0,1 s'], [1, '1 s']].forEach(([t, s]) => { ln(XT(t), ay - 10, XT(t), ay + 10, INK, 3); tx(s, XT(t), ay + 42, { f: F.M, s: 22, a: 'center', c: MUT }); });
+  if (!S.nb) { const xt = XT(tTrip6()); ln(xt, ay - 70, xt, ay, BAD, 3, [6, 5]); L.tx(lab('kismegszakító') + ': ' + L.val('kioldási idő rövidzárnál'), xt + 10, ay - 52, { k: ['kismegszakító', 'kioldási idő rövidzárnál'], s: 22, w: 700, c: BAD }); }
+  if (Z.fault) {
+    const xc = XT(Z.tripped ? tTrip6() : Z.ts); al(p0); rr(ax0, ay - 7, xc - ax0, 14, 7); c.fillStyle = U.rgba(RED, .55); c.fill();
+    c.beginPath(); c.arc(xc, ay, 11, 0, TAU); c.fillStyle = RED; c.fill(); c.strokeStyle = '#fffaf1'; c.lineWidth = 2.5; c.stroke();
+    L.tx(fmt(Z.tripped ? tTrip6() : Z.ts, 3) + ' s', clamp(xc, ax0 + 60, ax1 - 60), ay + 82, { f: F.M, s: 24, w: 700, a: 'center', c: RED, k: 'zárlat óta' });
+  }
+  // állapot
+  let k = null, col = BAD;
+  if (Z.fault && Z.tripped) { k = 'alig melegedett'; col = GOOD; }
+  else if (Z.fault && S.nb && Z.T > num('a szigetelés tűréshatára')) k = 'tűzveszély';
+  else if (Z.fault) k = 'rövidzár';
+  if (k) { al(p0); L.pill(lab(k), 620, 110, { k, a: 'center', s: 28, w: 700, bg: col, c: '#fffaf1', pad: 14 }); }
+}
+
+/* ════════ 7. Földelés és FI-relé ════════ */
+const E7 = [];
+let B7 = [];
+const T7 = { fault: .8, touch: 2.0, reach: .6, trip: .25 };
+function state7(st) {
+  const S = evNow(E7, st), tau = st - S.t0, U0 = Un();
+  const Im = Idev('mosógép teljesítménye'), Ib = U0 / num('az emberi test ellenállása');   // A
+  const fault = tau >= T7.fault, touch = tau >= T7.touch;
+  let tripAt = Infinity, by = null;
+  if (S.pe) { tripAt = T7.fault + T7.trip; by = S.fi ? 'FI' : 'MCB'; }                 // hibaáram a védővezetéken → nagy áram
+  else if (S.fi) { tripAt = T7.touch + T7.trip; by = 'FI'; }                            // a testen át elszivárgó áram
+  const tripped = tau >= tripAt;
+  const live = fault && !tripped && !S.pe;                                              // a ház feszültség alatt
+  const shock = live && touch;
+  const leak = shock ? Ib : 0, pefault = S.pe && fault && !tripped, lpe = pefault ? Un() / num('vezetékhurok ellenállása') : 0;
+  return { S, tau, fault, touch, tripped, by, tripAt, live, shock, Im: tripped ? 0 : Im, Ib, leak, pefault, lpe };
+}
+function scene7(st, cur) {
+  const p0 = out(clamp(st / .6)), Z = state7(st), S = Z.S, tau = Z.tau;
+  if (cur) { B7[0] && B7[0].classList.toggle('on', !!S.pe); B7[1] && B7[1].classList.toggle('on', !!S.fi); }
+  const yF = 900;
+  // padló, föld
+  al(p0); ln(40, yF, 1340, yF, INK, 3);
+  c.save(); c.beginPath(); c.rect(40, yF, 1300, 60); c.clip(); for (let x = 40; x < 1360; x += 22) ln(x, yF + 4, x - 18, yF + 26, U.rgba(INK, .35), 2); c.restore();
+  // elosztó: kismegszakító + FI-relé
+  panelBox(60, 140, 310, 260, p0);
+  const tOff = Z.tripped ? smooth((tau - Z.tripAt) / .2) : 0;
+  breakerG(140, 260, Z.by === 'MCB' ? 1 - tOff : 1, p0, 104);
+  fiG(285, 260, Z.by === 'FI' ? 1 - tOff : 1, p0, S.fi);
+  al(p0); T('kismegszakító', 140, 350, { s: 22, w: 600, a: 'center', c: INK, max: 160 });
+  al(p0 * (S.fi ? 1 : .4)); T('FI-relé', 285, 350, { s: 22, w: 600, a: 'center', c: INK });
+  // vezetékek: fázis, nulla, védővezeték
+  const Il = Z.Im + Z.leak + Z.lpe;
+  conductor([[370, 200], [800, 200], [800, 420]], BROWN, Z.pefault ? 1.3 : 0, Math.min(Il, 16), 1, p0, { w: 11 });
+  conductor([[370, 240], [740, 240], [740, 420]], BLUE, 0, Z.Im, -1, p0, { w: 11 });
+  const peCut = !S.pe;
+  conductor(peCut ? [[370, 280], [500, 280]] : [[370, 280], [700, 280], [700, 420]], GREEN, 0, 0, 1, p0, { w: 11, stripes: true, nodots: true });
+  if (peCut) { al(p0); ln(512, 270, 532, 290, BAD, 4); ln(532, 270, 512, 290, BAD, 4); T('nincs bekötve', 545, 312, { s: 22, w: 700, c: BAD, max: 180 }); }
+  if (Z.pefault) { al(p0 * (.6 + .4 * Math.sin(L.t * 30))); poly([[370, 280], [700, 280], [700, 420]]); c.strokeStyle = 'rgba(255,90,30,.6)'; c.lineWidth = 22; c.stroke(); }
+  conductor([[110, 400], [110, yF - 20]], GREEN, 0, 0, 1, p0, { w: 11, stripes: true, nodots: true });
+  earthSym(110, yF - 14, p0);
+  al(p0); T('fázis', 390, 188, { s: 22, w: 700, c: BROWN }); T('nulla', 390, 228, { s: 22, w: 700, c: BLUE }); T('védővezeték', 390, 268, { s: 22, w: 700, c: GREEN, max: 150 });
+  T('földelő', 140, yF - 40, { s: 22, w: 600, c: INK });
+  // mosógép (fémház)
+  const mx = 640, my = 420, mw = 300, mh = 400;
+  al(p0); rr(mx + 6, my + 8, mw, mh, 14); c.fillStyle = 'rgba(28,36,64,.15)'; c.fill();
+  rr(mx, my, mw, mh, 14); c.fillStyle = Z.live ? '#f1d6cf' : '#dfe3ea'; c.fill(); c.strokeStyle = Z.live ? BAD : INK; c.lineWidth = Z.live ? 5 : 3.5; c.stroke();
+  rr(mx + 14, my + 14, mw - 28, 50, 8); c.fillStyle = '#c9ced6'; c.fill();
+  c.beginPath(); c.arc(mx + mw / 2, my + 230, 105, 0, TAU); c.fillStyle = '#9aa3ae'; c.fill(); c.strokeStyle = INK; c.lineWidth = 3; c.stroke();
+  c.beginPath(); c.arc(mx + mw / 2, my + 230, 80, 0, TAU); c.fillStyle = Z.Im > 0 ? '#6fa8d6' : '#4a5468'; c.fill();
+  if (Z.Im > 0) { c.save(); c.translate(mx + mw / 2, my + 230); c.rotate(L.t * 4); for (let i = 0; i < 3; i++) { c.rotate(TAU / 3); rr(-8, 30, 16, 40, 5); c.fillStyle = 'rgba(255,255,255,.5)'; c.fill(); } c.restore(); }
+  al(p0); T('mosógép', mx + mw / 2, my + mh + 44, { s: 24, w: 700, a: 'center', c: INK });
+  if (Z.fault) { bolt(800, my + 40, 1.4, p0 * (Z.tripped ? .35 : 1)); al(p0); T('zárlat a házra', mx + mw / 2, my + 104, { s: 22, w: 700, a: 'center', c: BAD, max: 270 }); }
+  if (Z.live || (Z.fault && Z.tripped)) { al(p0); const hv = Z.live ? fV(Un()) : '0 V'; L.pill(lab('a ház') + ': ' + hv, mx + mw / 2, my + 370, { k: ['a ház', 'hálózati feszültség'], a: 'center', s: 24, w: 700, bg: Z.live ? BAD : GOOD, c: '#fffaf1', pad: 10 }); }
+  // ember: a kezét a gép oldalára teszi
+  const reach = smooth((tau - (T7.touch - T7.reach)) / T7.reach), hx = lerp(1020, mx + mw + 4, reach), hy = lerp(760, 600, reach);
+  const sh = Z.shock ? .7 + .3 * Math.sin(L.t * 25) : 0;
+  personSide(1110, yF, 1.45, hx, hy, sh, p0);
+  // szivárgó áram útja: a testen, a padlón és a földön át vissza
+  if (Z.shock) {
+    al(p0); c.setLineDash([12, 9]); c.lineDashOffset = -L.t * 40; poly([[1100, yF + 20], [110, yF + 20]]); c.strokeStyle = RED; c.lineWidth = 4; c.stroke(); c.setLineDash([]); c.lineDashOffset = 0;
+    al(p0); T('a föld visszavezeti', 600, yF + 92, { s: 22, w: 600, a: 'center', c: RED, max: 520 });
+  }
+  // FI-relé: kimenő és visszajövő áram
+  const vx = 120, vy = 450, w = 470;
+  card(vx, vy, w, 290, p0); al(p0 * (S.fi ? 1 : .62));
+  const rowF = (k, v, y, col, kk) => { T(k, vx + 24, y, { s: 24, w: 500, c: MUT, max: 260 }); L.tx(v, vx + w - 24, y, { k: kk, f: F.M, s: 26, w: 700, a: 'right', c: col }); };
+  const kI = ['mosógép teljesítménye', 'hálózati feszültség'], kL = kI.concat('az emberi test ellenállása');
+  rowF('kimenő áram', Z.lpe ? fmt(Z.Im + Z.lpe) + ' A' : fA(Z.Im + Z.leak), vy + 56, BROWN, Z.lpe ? kL.concat('vezetékhurok ellenállása') : kL);
+  rowF('visszajövő áram', fA(Z.Im), vy + 108, BLUE, kI);
+  ln(vx + 20, vy + 132, vx + w - 20, vy + 132, LINE, 2);
+  rowF('különbség', Z.lpe ? fmt(Z.lpe) + ' A' : fmt(Z.leak * 1000) + ' mA', vy + 176, (Z.leak + Z.lpe) * 1000 > num('FI-relé érzékenysége') ? BAD : INK, Z.lpe ? kL.concat('vezetékhurok ellenállása') : kL);
+  al(p0); if (S.fi) L.tx(lab('FI-relé') + ': ' + L.val('FI-relé érzékenysége'), vx + 24, vy + 238, { k: ['FI-relé', 'FI-relé érzékenysége'], s: 24, w: 700, c: TEAL, max: w - 48 });
+  else T('nincs FI', vx + 24, vy + 238, { s: 24, w: 700, c: BAD, max: w - 48 });
+  // állapot
+  let k = 'működik', col = GOOD;
+  if (Z.tripped) { k = !S.pe && S.fi ? 'FI leold' : 'biztonságos'; col = GOOD; }
+  else if (Z.shock) { k = 'életveszély'; col = BAD; }
+  else if (Z.fault) { k = 'zárlat a házra'; col = BAD; }
+  al(p0); L.pill(lab(k) + (k === 'FI leold' ? ' (' + L.val('FI-relé kioldási ideje') + ')' : ''), 1000, 110, { k: k === 'FI leold' ? [k, 'FI-relé kioldási ideje'] : k, a: 'center', s: 26, w: 700, bg: col, c: '#fffaf1', pad: 13 });
+  if (Z.shock && !S.fi) { al(p0 * clamp((tau - T7.touch - .5) / .4)); L.tx(lab('nem old le') + ' (' + fmt(Z.Ib, 2) + ' A < ' + L.val('kismegszakító névleges árama') + ')', 1000, 170, { k: ['nem old le', 'az emberi test ellenállása', 'kismegszakító névleges árama'], s: 24, w: 700, a: 'center', c: BAD, max: 640 }); }
+}
+
+/* ════════ 8. Áramütés ════════ */
+const E8 = [];
+let SL8 = null;
+const uAuto8 = (tau) => lerp(0, Un(), inOut(clamp((tau - .6) / 3.6)));
+const u8 = (s, st) => s.auto ? uAuto8(st - s.t0) : s.u;
+function scene8(st, cur) {
+  const p0 = out(clamp(st / .6)), S = evNow(E8, st), u = u8(S, st), Rb = num('az emberi test ellenállása'), Ima = u / Rb * 1000;
+  if (cur && S.auto && SL8) SL8.set(Math.round(u));
+  const z1 = num('érezhető áram'), z2 = num('elengedési határ'), z3 = num('fibrillációs áram'), zf = num('FI-relé érzékenysége');
+  const zone = Ima < z1 ? 0 : Ima < z2 ? 1 : Ima < z3 ? 2 : 3;
+  // ember szemből, két kézzel fogja a vezetékeket
+  const px = 300, sev = clamp(Math.log10(Math.max(Ima, .1) / .1) / 3.3);
+  al(p0); c.lineCap = 'round';
+  const seg = (a, b, w, col) => { ln(a[0], a[1], b[0], b[1], INK, w + 5); ln(a[0], a[1], b[0], b[1], col, w); };
+  const hL = [170, 360], hR = [430, 360], sL = [262, 470], sR = [338, 470];
+  if (Ima > .05) { al(p0 * (.25 + .6 * sev)); c.beginPath(); c.moveTo(hL[0], hL[1]); c.lineTo(sL[0], sL[1]); c.lineTo(px, 500); c.lineTo(sR[0], sR[1]); c.lineTo(hR[0], hR[1]); c.strokeStyle = `rgba(255,60,30,${.25 + .45 * sev})`; c.lineWidth = 44; c.stroke(); }
+  al(p0); seg([282, 640], [270, 860], 22, '#2a3350'); seg([318, 640], [330, 860], 22, '#2a3350');
+  seg(sL, hL, 16, '#e2b48c'); seg(sR, hR, 16, '#e2b48c');
+  rr(252, 452, 96, 200, 30); c.fillStyle = TEAL; c.fill(); c.strokeStyle = INK; c.lineWidth = 3; c.stroke();
+  c.beginPath(); c.arc(px, 410, 34, 0, TAU); c.fillStyle = '#e2b48c'; c.fill(); c.strokeStyle = INK; c.lineWidth = 3; c.stroke();
+  c.beginPath(); c.arc(px, 400, 33, Math.PI * 1.08, Math.PI * 1.92); c.strokeStyle = '#3a2a1a'; c.lineWidth = 12; c.stroke();
+  // szív
+  al(p0); c.save(); c.translate(px - 14, 520); c.scale(1.1, 1.1); c.beginPath(); c.moveTo(0, 6); c.bezierCurveTo(-14, -6, -6, -18, 0, -9); c.bezierCurveTo(6, -18, 14, -6, 0, 6);
+  c.fillStyle = zone === 3 ? (Math.sin(L.t * 18) > 0 ? '#ff3b1c' : '#b3261e') : '#d9534f'; c.fill(); c.restore();
+  c.lineCap = 'butt';
+  // feszültségforrás (váltakozó) a fej fölött
+  al(p0); rr(200, 140, 200, 96, 14); c.fillStyle = '#e9edf2'; c.fill(); c.strokeStyle = INK; c.lineWidth = 3; c.stroke();
+  readout(fV(u), 300, 188, Math.round(u) === Un() ? 'hálózati feszültség' : 'feszültség csúszka', 'center', 32);
+  c.lineCap = 'round';
+  conductor([[220, 236], [220, 290], [170, 290], [170, 350]], BROWN, 0, 0, 1, p0, { w: 10, nodots: true });
+  conductor([[380, 236], [380, 290], [430, 290], [430, 350]], BLUE, 0, 0, 1, p0, { w: 10, nodots: true });
+  // kártya: I = U / R
+  card(60, 880, 540, 160, p0); al(p0);
+  formula([['I', 1], ['=', 0], ['U', 1], ['/', 0], ['R', 1]], 90, 940, 46, RED);
+  L.tx('= ' + fV(u) + ' / ' + fR(Rb, 0), 280, 936, { k: ['feszültség csúszka', 'az emberi test ellenállása'], f: F.M, s: 24, w: 700, c: INK, max: 300 });
+  L.tx('= ' + fmt(Ima, Ima < 10 ? 1 : 0) + ' mA', 280, 984, { k: ['feszültség csúszka', 'az emberi test ellenállása'], f: F.M, s: 30, w: 700, c: RED, max: 300 });
+  T('legrosszabb eset', 90, 1024, { s: 22, w: 500, c: MUT, max: 490 });
+  // logaritmikus áram-skála
+  const bx = 700, bw = 80, yT = 140, yB = 880, Y = (ma) => yB - (Math.log10(ma) + 1) / 4 * (yB - yT);
+  const zones = [[.1, z1, '#e4e2dc', 'nem érzed', 'érezhető áram'], [z1, z2, '#f3e3a8', 'érezhető', 'elengedési határ'], [z2, z3, '#f2c08a', 'nem tudod elengedni', 'fibrillációs áram'], [z3, 1000, '#ec9f95', 'fibrilláció', 'fibrillációs áram']];
+  zones.forEach(([a, b, col, k, kd], i) => {
+    const y0 = Y(b), y1 = Y(a), act = i === zone;
+    al(p0); c.fillStyle = col; c.fillRect(bx, y0, bw, y1 - y0); c.strokeStyle = '#fffaf1'; c.lineWidth = 2; c.strokeRect(bx, y0, bw, y1 - y0);
+    al(p0 * (act ? 1 : .45)); T(k, bx + bw + 24, (y0 + y1) / 2 + 9, { s: act ? 28 : 24, w: act ? 700 : 500, c: i === 3 ? BAD : INK, max: 1340 - bx - bw - 24, k: [k, kd] });
+  });
+  al(p0); rr(bx, yT, bw, yB - yT, 4); c.strokeStyle = INK; c.lineWidth = 2.5; c.stroke();
+  const ymk = Y(clamp(Ima, .1, 1000));
+  [[.1, '0,1'], [1, '1'], [10, '10'], [100, '100'], [1000, '1000']].forEach(([v, s]) => { al(p0); ln(bx - 10, Y(v), bx, Y(v), INK, 2.5); al(p0 * (Math.abs(Y(v) - ymk) < 26 ? .12 : 1)); tx(s + ' mA', bx - 16, Y(v) + 8, { f: F.M, s: 22, a: 'right', c: MUT }); });
+  // FI-relé határa
+  al(p0); ln(bx - 6, Y(zf), bx + bw + 6, Y(zf), TEAL, 3.5, [7, 5]);
+  L.tx(lab('FI-relé határa') + ': ' + L.val('FI-relé érzékenysége'), bx + bw + 24, Y(zf) - 8, { k: ['FI-relé határa', 'FI-relé érzékenysége'], s: 22, w: 700, c: TEAL });
+  // jelölő
+  const ym = Y(clamp(Ima, .1, 1000));
+  al(p0); c.beginPath(); c.moveTo(bx - 4, ym); c.lineTo(bx - 26, ym - 14); c.lineTo(bx - 26, ym + 14); c.closePath(); c.fillStyle = RED; c.fill();
+  ln(bx, ym, bx + bw, ym, RED, 4);
+  ln(574, ym, bx - 26, ym, U.rgba(RED, .6), 2, [5, 5]);
+  L.pill(Ima < .1 ? '< 0,1 mA' : fmt(Ima, Ima < 10 ? 1 : 0) + ' mA', 570, ym, { k: ['feszültség csúszka', 'az emberi test ellenállása'], a: 'right', s: 24, f: F.M, w: 700, bg: RED, c: '#fffaf1', pad: 9, r: 8 });
+  T('a testen át', 570, ym - 36, { s: 22, w: 600, a: 'right', c: RED });
+}
+
+/* ════════ 9. Összefoglalás ════════ */
+function scene9(st) {
+  const p0 = out(clamp(st / .6)), q = (i) => p0 * clamp((st - .3 - i * .35) / .5);
+  const box = (i, x, y) => { card(x, y, 620, 340, q(i)); };
+  box(0, 60, 110); box(1, 710, 110); box(2, 60, 480); box(3, 710, 480);
+  // 1: Joule-hő – izzó fűtőszál
+  al(q(0)); c.beginPath(); for (let i = 0; i <= 10; i++) c.lineTo(110 + i * 24, 240 + (i % 2 ? -30 : 0)); c.lineJoin = 'round'; c.strokeStyle = '#3a2a1a'; c.lineWidth = 11; c.stroke(); c.strokeStyle = '#ff6a1a'; c.lineWidth = 6; c.stroke();
+  T('összegzés Joule', 400, 250, { f: F.D, s: 52, w: 560, c: RED, max: 260 });
+  T('összegzés Joule 2', 100, 340, { s: 26, w: 600, c: INK, max: 550 });
+  // 2: P = U · I
+  al(q(1)); formula([['P', 1], ['=', 0], ['U', 1], ['·', 0], ['I', 1]], 1020, 250, 84, RED, 'center');
+  T('összegzés P', 750, 340, { s: 26, w: 600, c: INK, max: 550 });
+  // 3: E = P · t
+  al(q(2)); formula([['E', 1], ['=', 0], ['P', 1], ['·', 0], ['t', 1]], 370, 610, 84, RED, 'center');
+  T('összegzés E', 100, 700, { s: 26, w: 600, c: INK, max: 550 });
+  L.tx(lab('áramár') + ': ' + L.val('áram ára'), 100, 760, { k: ['áramár', 'áram ára'], s: 26, w: 500, c: MUT, max: 550 });
+  // 4: védelem
+  breakerG(790, 585, 1, q(3), 96); fiG(900, 585, 1, q(3)); earthSym(1010, 600, q(3)); conductor([[1010, 540], [1010, 594]], GREEN, 0, 0, 1, q(3), { w: 11, stripes: true, nodots: true });
+  al(q(3)); T('összegzés védelem 1', 750, 700, { s: 26, w: 600, c: INK, max: 550 });
+  T('összegzés védelem 2', 750, 760, { s: 26, w: 600, c: INK, max: 550 });
+  const pm = clamp((st - 2) / .6);
+  al(p0 * pm); rr(60, 870, 1270, 130, 18); c.fillStyle = U.rgba(RED, .09); c.fill(); c.strokeStyle = U.rgba(RED, .5); c.lineWidth = 2; c.stroke();
+  T('tanulság', 695, 948, { f: F.D, i: 1, s: 36, w: 500, a: 'center', c: RED, max: 1220 });
+}
+
+/* ════════════════════════════════════════════════════════════════ */
+const sT = new Array(9).fill(0);
+const SCENES = [scene1, scene2, scene3, scene4, scene5, scene6, scene7, scene8, scene9];
+L = Lesson.create({
+  content: window.LESSON_CONTENT,
+  home: false,
+  steps: [
+    { settle: 6.5, enter() { E1.length = 0; E1.push({ t: 0, s: { on: false } }, { t: 1, s: { on: true } }); },
+      controls(L) { L.button(lab('be-ki gomb'), () => evSet(E1, L.st, { on: !evNow(E1, L.st).on }), 'be-ki gomb'); } },
+    { settle: 4.5, enter() { E2.length = 0; E2.push({ t: 0, s: { d: 'lamp' } }, { t: 1.4, s: { d: 'tv' } }, { t: 2.8, s: { d: 'kettle' } }); },
+      controls(L) { B2 = ORDER2.map((id) => L.button(lab(DEVS[id].k), () => evSet(E2, L.st, { d: id }), DEVS[id].k)); } },
+    { settle: 5, enter() { E3.length = 0; E3.push({ t: 0, s: { tv: num('tévézés ideje'), sweep: true } }); },
+      controls(L) {
+        SL3 = L.slider({ label: lab('tévé csúszka'), k: 'tévé csúszka', min: 0, max: G3.TM, step: 5, value: num('tévézés ideje'), format: (v) => v + ' perc',
+          onInput: (v) => evSet(E3, L.st, { tv: v, sweep: false }) });
+      } },
+    { settle: 3, enter() { E4.length = 0; E4.push({ t: 0, s: { h: num('napi világítás') } }); },
+      controls(L) {
+        SL4 = L.slider({ label: lab('napi csúszka'), k: 'napi csúszka', min: 0, max: 12, step: .5, value: num('napi világítás'), format: (v) => fmt(v, v % 1 ? 1 : 0) + ' óra',
+          onInput: (v) => evSet(E4, L.st, { h: v }) });
+      } },
+    { settle: 5.5, enter() {
+        E5.length = 0; set5(0, { tripped: false, tripI: 0, on: { lamp: true, tv: true } }); set5(1.0, { on: { kettle: true } }); set5(2.4, { on: { dryer: true } });
+      },
+      controls(L) {
+        B5 = ORDER5.map((id) => L.button(lab(DEVS[id].k), () => set5(L.st, { on: { [id]: !evNow(E5, L.st).on[id] } }), DEVS[id].k));
+                L.button(lab('visszakapcsol gomb'), () => set5(L.st, { tripped: false }), 'visszakapcsol gomb');
+      } },
+    { settle: 5.5, enter() { E6.length = 0; E6.push({ t: 0, s: { fault: false, nb: false, tf: 0 } }, { t: 1, s: { fault: true, nb: false, tf: 1 } }); },
+      controls(L) {
+        L.button(lab('rövidzár gomb'), () => evSet(E6, L.st, { fault: true, tf: L.st }), 'rövidzár gomb');
+        L.button(lab('javítás gomb'), () => evSet(E6, L.st, { fault: false }), 'javítás gomb');
+        B6 = L.button(lab('nélküle gomb'), () => evSet(E6, L.st, { nb: !evNow(E6, L.st).nb, fault: true, tf: L.st }), 'nélküle gomb');
+      } },
+    { settle: 4, enter() { E7.length = 0; E7.push({ t: 0, s: { pe: false, fi: false, t0: 0 } }); },
+      controls(L) {
+        B7 = [L.button(lab('földelés gomb'), () => evSet(E7, L.st, { pe: !evNow(E7, L.st).pe, t0: L.st }), 'földelés gomb'),
+          L.button(lab('FI gomb'), () => evSet(E7, L.st, { fi: !evNow(E7, L.st).fi, t0: L.st }), 'FI gomb')];
+      } },
+    { settle: 5, enter() { E8.length = 0; E8.push({ t: 0, s: { auto: true, t0: 0, u: Un() } }); },
+      controls(L) {
+        SL8 = L.slider({ label: lab('feszültség csúszka'), k: 'feszültség csúszka', min: 0, max: Un(), step: 1, value: Un(), format: (v) => v + ' V',
+          onInput: (v) => evSet(E8, L.st, { auto: false, u: v }) });
+        L.button(lab('konnektor gomb'), () => { evSet(E8, L.st, { auto: false, u: Un() }); SL8.set(Un()); }, 'konnektor gomb');
+      } },
+    { settle: 3 },
+  ],
+  init(Lx) { L = Lx; c = L.ctx; dragInit(); },
+  draw(Lx) {
+    L = Lx; c = L.ctx; GA = 1; background(); DR.h = null;
+    const sp = L.sp;
+    if (L.step >= 0) sT[L.step] = L.st;
+    for (let i = 0; i < SCENES.length; i++) {
+      const w = clamp(1 - Math.abs(sp - i) * 2); if (w <= .005) continue;
+      GA = w; SCENES[i](sT[i], L.step === i && w > .5);
+    }
+    c.globalAlpha = 1;
+  },
+});
+})();
+</script>
+</body>
+</html>

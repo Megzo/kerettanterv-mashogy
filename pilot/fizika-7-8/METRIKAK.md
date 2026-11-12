@@ -17,6 +17,7 @@ Szabály: egyszerre legfeljebb 3 al-ügynök fut.
 | F | 08-aramkor lecke | 3. hullám | 28 p 27 mp | 322 243 (kimenet 131 304; cache-írás 592 903; cache-olvasás 8 523 458) | kész: 9 lépés, QA hibátlan |
 | G | 02-energia lecke | 3. hullám | 34 p 46 mp | 360 501 (kimenet 145 801; cache-írás 508 804; cache-olvasás 11 995 273) | kész: 9 lépés, QA hibátlan |
 | H | 11-lencse-szem lecke | 3. hullám | 36 p 40 mp | 334 590 (kimenet 157 945; cache-írás 415 751; cache-olvasás 13 184 665) | kész: 9 lépés, QA hibátlan |
+| I | 09-aram-otthon lecke | 3. hullám | 33 p 7 mp | 323 077 (kimenet 159 948; cache-írás 550 915; cache-olvasás 7 994 215) | kész: 9 lépés, QA hibátlan |
 
 A token-oszlop az al-ügynök saját fogyasztása (a koordináló fő munkamenet nélkül).
 Az első szám a Claude Code által jelentett al-ügynök-tokenszám; zárójelben az API-hívások
@@ -38,3 +39,4 @@ kimenet ~60 ezer, cache-írás ~169 ezer token (cache-olvasás ~6,8 millió).
 | 08-aramkor | 9 | 28,5 perc, ~322 ezer token | 0 JS-hiba, 0 túlcsordulás | 6. lépés: Ohm/Kirchhoff számok és elektron- vs. technikai áramirány ellenőrizve | `L.pill` nem veszi figyelembe a `max`-ot (motor-hiány); árammérő-húzás lokálisan |
 | 02-energia | 9 | 35 perc, ~361 ezer token | 0 JS-hiba, 0 túlcsordulás | 7. lépés: energiamérleg ellenőrizve (1 kg, 1,6 m → 15,7 J = 6,7 + 0,7 + 8,3) | golyóhúzás lokálisan (a 3. lecke, ami saját drag-et ír) |
 | 11-lencse-szem | 9 | 37 perc, ~335 ezer token | 0 JS-hiba, 0 túlcsordulás | 7. lépés (rövidlátás) átnézve | drag a 10-es leckéből másolva; egyszerűsített szemmodell (1 mm ≈ 3,5 D, valóságban ≈ 2,7 D) |
+| 09-aram-otthon | 9 | 33 perc, ~323 ezer token | 0 JS-hiba, 0 túlcsordulás | áramütés-lépés biztonsági szövege átnézve | áramár (36 Ft/kWh) és készenléti teljesítmény tanári frissítésre jelölve |
