@@ -1,0 +1,1009 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hol van a tükörkép? — Fizika</title>
+<link rel="stylesheet" href="../../shared/lesson.css">
+<style>
+  .lp-text .big-fx { font-size: 46px; margin: 4px 0 14px; }
+  .lp-text b { color: var(--ink); }
+  #lesson-canvas { touch-action: none; }
+</style>
+<!-- A lecke által várt tartalomkulcsok. A tools/build_lesson.py ez alapján ellenőrzi a .md-t.
+     labels: felirat → max. karakterszám (null = alapértelmezett 32) · data: adat → mértékegység, tartomány -->
+<script type="application/json" id="lesson-spec">
+{
+  "steps": 9,
+  "labels": {
+    "lámpa": 16, "szem": 16, "tükör": 16, "gyertya": 16, "húzd": 12, "megvilágított": 20, "ernyő": 16,
+    "fénysebesség felirat": 26, "földkör": 44, "kartonlap": 20, "látod lámpa": 24, "nem látod lámpa": 24,
+    "egyenesbe gomb": 24, "eltolás gomb": 24,
+    "golyó": 16, "árnyék": 16, "árnyék arány": 44,
+    "teljes árnyék": 18, "félárnyék": 18, "grafikon cím": 26, "nagy lámpa": 16,
+    "egy lámpa gomb": 16, "két lámpa gomb": 16, "nagy lámpa gomb": 16,
+    "tévhit": 12, "látósugár": 28, "alma": 16, "könyv": 16, "látod alma": 24, "nem látod alma": 24,
+    "lámpa gomb": 22, "könyv gomb": 22,
+    "lézer": 16, "beesési merőleges": 22, "beeső sugár": 20, "visszavert sugár": 20,
+    "beesési szög felirat": 22, "visszaverődési szög felirat": 22, "szög csúszka": 30,
+    "felülnézet": 16, "látszólagos tér": 34, "kép": 12, "1. néző": 12, "2. néző": 12, "nem látja": 22,
+    "tárgytávolság": 16, "képtávolság": 16,
+    "látszik": 28, "teljes alak": 32, "elég": 30, "tükörkép": 16,
+    "tükör hossza csúszka": 30, "tükör alja csúszka": 30, "távolság csúszka": 30,
+    "doboz": 18, "lyuk": 12, "hátfal": 14, "hátfal képe": 30, "kép magassága": 28, "folt mérete": 28,
+    "lyuk csúszka": 30, "mélység csúszka": 30,
+    "össz egyenes": 30, "össz árnyék": 30, "össz látás": 30, "össz törvény": 30, "össz kép": 30, "össz fél": 30
+  },
+  "data": {
+    "fénysebesség":        {"unit": "km/s", "min": 250000, "max": 350000},
+    "Föld kerülete":       {"unit": "km", "min": 30000, "max": 50000},
+    "kezdő beesési szög":  {"unit": "°", "min": 0, "max": 85},
+    "testmagasság":        {"unit": "cm", "min": 120, "max": 200},
+    "szemmagasság":        {"unit": "cm", "min": 100, "max": 190},
+    "tükör hossza":        {"unit": "cm", "min": 10, "max": 120},
+    "tükör alja":          {"unit": "cm", "min": 0, "max": 120},
+    "távolság a tükörtől": {"unit": "cm", "min": 30, "max": 180},
+    "lyuk átmérője":       {"unit": "mm", "min": 0.5, "max": 12},
+    "doboz mélysége":      {"unit": "cm", "min": 15, "max": 40},
+    "gyertya magassága":   {"unit": "cm", "min": 15, "max": 32}
+  }
+}
+</script>
+</head>
+<body>
+<script src="10-arnyek-tukor.content.js"></script>
+<script src="../../shared/lesson.js"></script>
+<script>
+(function () {
+'use strict';
+const U = Lesson.U, { clamp, lerp, smooth, out, inOut, TAU } = U, fmt = U.fmt;
+const F = Lesson.FONTS;
+/* ── paletta (világos téma, lásd SZERZODES.md) ── */
+const INK = '#1c2440', MUT = '#565d72', RED = '#c8401c', TEAL = '#0a6f86', GOOD = '#1d7a45', BAD = '#b3261e',
+  CARD = '#fffaf1', LINE = 'rgba(28,36,64,.16)', AMB = '#d98a00', AMB_D = '#8a5a00', GLASS = '#2f6f93';
+let L, c, GA = 1;
+const al = (a = 1) => { c.globalAlpha = GA * clamp(a); };
+const lab = (k) => L.lab(k), num = (k) => L.num(k);
+const T = (k, x, y, o = {}) => L.tx(lab(k), x, y, Object.assign({ k }, o));
+const TP = (k, x, y, o = {}) => L.pill(lab(k), x, y, Object.assign({ k }, o));
+const tx = (s, x, y, o) => L.tx(s, x, y, o);
+const rr = (x, y, w, h, r) => { c.beginPath(); c.roundRect(x, y, w, h, r); };
+const ln = (x1, y1, x2, y2, col, w = 2, dash) => { c.beginPath(); c.moveTo(x1, y1); c.lineTo(x2, y2); c.strokeStyle = col; c.lineWidth = w; c.setLineDash(dash || []); c.stroke(); c.setLineDash([]); };
+const P = (pts) => { c.beginPath(); pts.forEach((p, i) => i ? c.lineTo(p[0], p[1]) : c.moveTo(p[0], p[1])); c.closePath(); };
+const deg = Math.PI / 180;
+/* felirat '#' helyére szám */
+const labN = (k, s) => lab(k).replace('#', s);
+
+function background() {
+  c.globalAlpha = 1;
+  const g = c.createRadialGradient(680, 480, 100, 680, 540, 1300); g.addColorStop(0, '#f7f1e6'); g.addColorStop(1, '#efe6d6');
+  c.fillStyle = g; c.fillRect(0, 0, 1920, 1080);
+  c.strokeStyle = 'rgba(28,36,64,.045)'; c.lineWidth = 1; c.beginPath();
+  for (let x = 0; x <= 1920; x += 40) { c.moveTo(x + .5, 0); c.lineTo(x + .5, 1080); }
+  for (let y = 0; y <= 1080; y += 40) { c.moveTo(0, y + .5); c.lineTo(1920, y + .5); }
+  c.stroke();
+}
+
+/* ── geometria ── */
+const cross = (ax, ay, bx, by) => ax * by - ay * bx;
+/* P + t·d metszése az [x1,y1]–[x2,y2] szakasszal → t vagy null */
+function segInt(px, py, dx, dy, s) {
+  const ex = s[2] - s[0], ey = s[3] - s[1], den = cross(dx, dy, ex, ey);
+  if (Math.abs(den) < 1e-12) return null;
+  const t = cross(s[0] - px, s[1] - py, ex, ey) / den, u = cross(s[0] - px, s[1] - py, dx, dy) / den;
+  return u < 0 || u > 1 ? null : t;
+}
+/* P + t·d metszése körrel → első pozitív t vagy null */
+function circInt(px, py, dx, dy, C) {
+  const fx = px - C.x, fy = py - C.y, dd = dx * dx + dy * dy, b = fx * dx + fy * dy, cc = fx * fx + fy * fy - C.r * C.r;
+  const disc = b * b - dd * cc; if (disc < 0) return null;
+  const q = Math.sqrt(disc), t1 = (-b - q) / dd, t2 = (-b + q) / dd;
+  return t1 > 1e-6 ? t1 : t2 > 1e-6 ? t2 : null;
+}
+function rayCast(px, py, dx, dy, segs, circs, tmax) {
+  let t = tmax;
+  for (const s of segs) { const r = segInt(px, py, dx, dy, s); if (r !== null && r > 1e-6 && r < t) t = r; }
+  for (const C of circs) { const r = circInt(px, py, dx, dy, C); if (r !== null && r < t) t = r; }
+  return t;
+}
+const rectSegs = (x, y, w, h) => [[x, y, x + w, y], [x + w, y, x + w, y + h], [x + w, y + h, x, y + h], [x, y + h, x, y]];
+/* a P→Q szakasz metszi-e a kört (Q a körön kívül) */
+function segHitsCircle(px, py, qx, qy, cx, cy, r) {
+  const dx = qx - px, dy = qy - py, fx = px - cx, fy = py - cy;
+  const a = dx * dx + dy * dy, b = fx * dx + fy * dy, cc = fx * fx + fy * fy - r * r;
+  if (cc <= 0) return true;
+  const disc = b * b - a * cc; if (disc < 0) return false;
+  const t1 = (-b - Math.sqrt(disc)) / a; return t1 >= 0 && t1 <= 1;
+}
+/* érintők P-ből a (C, r) körhöz: [{dir, tx, ty}] */
+function tangents(px, py, cx, cy, r) {
+  const d = Math.hypot(cx - px, cy - py); if (d <= r) return [];
+  const phi = Math.atan2(cy - py, cx - px), be = Math.asin(r / d), tl = Math.sqrt(d * d - r * r);
+  return [phi - be, phi + be].map((a) => ({ a, tx: px + Math.cos(a) * tl, ty: py + Math.sin(a) * tl }));
+}
+function arrowHead(x1, y1, x2, y2, col, s = 16) {
+  const a = Math.atan2(y2 - y1, x2 - x1);
+  c.beginPath(); c.moveTo(x2, y2); c.lineTo(x2 - s * Math.cos(a - .42), y2 - s * Math.sin(a - .42)); c.lineTo(x2 - s * Math.cos(a + .42), y2 - s * Math.sin(a + .42)); c.closePath();
+  c.fillStyle = col; c.fill();
+}
+function arrowLine(x1, y1, x2, y2, col, w = 3, at = 1, s = 16) {
+  ln(x1, y1, x2, y2, col, w);
+  const xm = lerp(x1, x2, at), ym = lerp(y1, y2, at); arrowHead(x1, y1, xm, ym, col, s);
+}
+
+/* ── húzható elemek (helyi bővítés: a motor csak L.pointer-t ad) ── */
+const DR = { list: [], act: null, hov: null, used: {} };
+function grab(id, x, y, r, fn) { DR.list.push({ id, x, y, r, fn }); }
+function pick(p) {
+  let best = null, bd = 1e9;
+  if (p.x > 1370) return null;
+  for (const h of DR.list) { const d = Math.hypot(p.x - h.x, p.y - h.y); if (d < h.r + 12 && d < bd) { bd = d; best = h; } }
+  return best;
+}
+function installDrag() {
+  const st = L.stage;
+  st.addEventListener('pointerdown', (e) => {
+    if (e.target.closest && e.target.closest('#lesson-panel')) return;
+    const p = L.toStage(e), h = pick(p); if (!h) return;
+    DR.act = { id: h.id, fn: h.fn, dx: h.x - p.x, dy: h.y - p.y }; DR.used[h.id] = 1;
+    st.style.cursor = 'grabbing'; e.preventDefault();
+  });
+  window.addEventListener('pointermove', (e) => {
+    const p = L.toStage(e);
+    if (DR.act) { DR.act.fn(p.x + DR.act.dx, p.y + DR.act.dy); return; }
+    const h = (e.target.closest && e.target.closest('#lesson-panel')) ? null : pick(p);
+    DR.hov = h ? h.id : null; st.style.cursor = h ? 'grab' : '';
+  });
+  window.addEventListener('pointerup', () => { DR.act = null; st.style.cursor = DR.hov ? 'grab' : ''; });
+}
+const isHot = (id) => DR.hov === id || (DR.act && DR.act.id === id);
+function ring(id, x, y, r) {
+  if (!isHot(id)) return;
+  c.beginPath(); c.arc(x, y, r, 0, TAU); c.setLineDash([7, 6]); c.strokeStyle = U.rgba(TEAL, .8); c.lineWidth = 2.5; c.stroke(); c.setLineDash([]);
+}
+function hint(id, x, y, a) {
+  if (DR.used[id] || a <= .01) return;
+  const k = .5 + .5 * Math.sin(L.t * 3.2);
+  al(a * (.75 + .25 * k)); TP('húzd', x, y, { s: 22, w: 700, a: 'center', c: '#fff', bg: TEAL, pad: 10 }); al(a);
+}
+
+/* ── rajzelemek ── */
+function bulb(x, y, a, on = 1, r = 22, socket = 'left') {
+  if (a <= .01) return;
+  al(a * on);
+  const g = c.createRadialGradient(x, y, r * .4, x, y, r * 4.2); g.addColorStop(0, 'rgba(255,214,110,.75)'); g.addColorStop(1, 'rgba(255,214,110,0)');
+  c.fillStyle = g; c.beginPath(); c.arc(x, y, r * 4.2, 0, TAU); c.fill();
+  al(a);
+  c.fillStyle = '#9aa1ae'; c.strokeStyle = '#3a4252'; c.lineWidth = 2;
+  if (socket === 'left') { rr(x - r - 16, y - 9, 18, 18, 3); } else { rr(x - 9, y - r - 16, 18, 18, 3); }
+  c.fill(); c.stroke();
+  c.beginPath(); c.arc(x, y, r, 0, TAU); c.fillStyle = U.mix('#e6e0d2', '#fff1b8', on); c.fill();
+  c.strokeStyle = AMB_D; c.lineWidth = 2.5; c.stroke();
+  c.beginPath(); c.moveTo(x - r * .35, y + r * .2); c.lineTo(x - r * .15, y - r * .3); c.lineTo(x + r * .15, y + r * .2); c.lineTo(x + r * .35, y - r * .3);
+  c.strokeStyle = U.mix('#8b8b8b', '#d97a00', on); c.lineWidth = 2; c.stroke();
+}
+/* szem oldalról / felülről; ang: nézési irány */
+function eyeIcon(x, y, ang, s, a) {
+  if (a <= .01) return;
+  al(a); c.save(); c.translate(x, y); c.rotate(ang);
+  c.beginPath(); c.moveTo(-s, 0); c.quadraticCurveTo(0, -s * 1.05, s, 0); c.quadraticCurveTo(0, s * 1.05, -s, 0); c.closePath();
+  c.fillStyle = CARD; c.fill();
+  c.save(); c.clip();
+  c.beginPath(); c.arc(s * .3, 0, s * .46, 0, TAU); c.fillStyle = TEAL; c.fill();
+  c.beginPath(); c.arc(s * .42, 0, s * .22, 0, TAU); c.fillStyle = INK; c.fill();
+  c.beginPath(); c.arc(s * .3, -s * .17, s * .09, 0, TAU); c.fillStyle = '#fff'; c.fill();
+  c.restore();
+  c.beginPath(); c.moveTo(-s, 0); c.quadraticCurveTo(0, -s * 1.05, s, 0); c.quadraticCurveTo(0, s * 1.05, -s, 0); c.closePath();
+  c.strokeStyle = INK; c.lineWidth = 2.5; c.lineJoin = 'round'; c.stroke();
+  c.restore();
+}
+function ball(x, y, r, a) {
+  al(a);
+  const g = c.createRadialGradient(x - r * .4, y - r * .4, r * .1, x, y, r); g.addColorStop(0, '#f2f4f7'); g.addColorStop(1, '#8e98a8');
+  c.beginPath(); c.arc(x, y, r, 0, TAU); c.fillStyle = g; c.fill(); c.strokeStyle = '#2c3644'; c.lineWidth = 2.5; c.stroke();
+}
+function apple(x, y, r, a, lit) {
+  al(a);
+  const base = U.mix('#3a2a2a', '#d4432a', lit), hi = U.mix('#4a3a3a', '#f08a6a', lit);
+  const g = c.createRadialGradient(x - r * .35, y - r * .35, r * .1, x, y, r); g.addColorStop(0, hi); g.addColorStop(1, base);
+  c.beginPath(); c.moveTo(x, y - r * .78);
+  c.bezierCurveTo(x + r * .55, y - r * 1.15, x + r * 1.15, y - r * .6, x + r, y + r * .1);
+  c.bezierCurveTo(x + r * .9, y + r * .9, x + r * .3, y + r * 1.05, x, y + r * .92);
+  c.bezierCurveTo(x - r * .3, y + r * 1.05, x - r * .9, y + r * .9, x - r, y + r * .1);
+  c.bezierCurveTo(x - r * 1.15, y - r * .6, x - r * .55, y - r * 1.15, x, y - r * .78); c.closePath();
+  c.fillStyle = g; c.fill(); c.strokeStyle = '#6e1a0e'; c.lineWidth = 2.5; c.stroke();
+  ln(x, y - r * .75, x + r * .1, y - r * 1.15, '#5a3a1a', 3);
+  c.beginPath(); c.ellipse(x + r * .35, y - r * 1.05, r * .28, r * .12, -.5, 0, TAU); c.fillStyle = U.mix('#3a4a3a', '#4f9a4a', lit); c.fill(); c.strokeStyle = '#1f4a1f'; c.lineWidth = 1.5; c.stroke();
+}
+/* tükör: (x1,y1)–(x2,y2), a hátoldal a (nx, ny) normális felé satírozva */
+function mirror(x1, y1, x2, y2, nx, ny, a, w = 7) {
+  al(a);
+  const len = Math.hypot(x2 - x1, y2 - y1), ux = (x2 - x1) / len, uy = (y2 - y1) / len;
+  c.strokeStyle = INK; c.lineWidth = 1.8; c.beginPath();
+  for (let s = 8; s < len; s += 16) { const px = x1 + ux * s + nx * w * .5, py = y1 + uy * s + ny * w * .5; c.moveTo(px, py); c.lineTo(px + nx * 16 - ux * 10, py + ny * 16 - uy * 10); }
+  c.stroke();
+  c.lineCap = 'round'; ln(x1, y1, x2, y2, GLASS, w); c.lineCap = 'butt';
+  ln(x1 - nx * w * .25, y1 - ny * w * .25, x2 - nx * w * .25, y2 - ny * w * .25, 'rgba(255,255,255,.7)', 1.5);
+}
+function candleTop(x, y, a) {   // gyertya felülnézetben
+  al(a);
+  const g = c.createRadialGradient(x, y, 4, x, y, 70); g.addColorStop(0, 'rgba(255,200,80,.55)'); g.addColorStop(1, 'rgba(255,200,80,0)');
+  c.fillStyle = g; c.beginPath(); c.arc(x, y, 70, 0, TAU); c.fill();
+  c.beginPath(); c.arc(x, y, 22, 0, TAU); c.fillStyle = '#f3ead6'; c.fill(); c.strokeStyle = '#7a6a4a'; c.lineWidth = 2.5; c.stroke();
+  c.beginPath(); c.arc(x, y, 8, 0, TAU); c.fillStyle = '#ffb02e'; c.fill(); c.strokeStyle = '#b5520a'; c.lineWidth = 2; c.stroke();
+}
+
+/* ════════ 1. A fény egyenesen halad ════════ */
+const Y1 = 560, LX1 = 170, CX1 = [430, 660, 890], HOLE = 17, CT = 8, CH = 340, EX1 = 1200;
+const S1 = { from: 0, to: 0, t0: -9, off: 0 };
+const s1off = (st) => lerp(S1.from, S1.to, inOut(clamp((st - S1.t0) / .6)));
+function card1(x, off, a) {
+  al(a); c.fillStyle = '#dcc39b'; c.strokeStyle = '#7a5a2a'; c.lineWidth = 2.5;
+  const y0 = Y1 + off - CH, y1 = Y1 + off + CH;
+  rr(x - CT, y0, CT * 2, CH - HOLE, 3); c.fill(); c.stroke();
+  rr(x - CT, Y1 + off + HOLE, CT * 2, CH - HOLE, 3); c.fill(); c.stroke();
+  return [y0, y1];
+}
+function scene1(st, cur) {
+  const p0 = out(clamp(st / .6)), off = s1off(st); S1.off = off;
+  const ys = [0, off, 0];
+  // a lyukakon átjutó sugarak meredekség-intervalluma (pontszerű lámpa, y = Y1 + s·(x − LX1))
+  let lo = -1e9, hi = 1e9; const I = [];
+  for (let i = 0; i < 3; i++) for (const xf of [CX1[i] - CT, CX1[i] + CT]) {
+    const dx = xf - LX1; lo = Math.max(lo, (ys[i] - HOLE) / dx); hi = Math.min(hi, (ys[i] + HOLE) / dx);
+    if (xf === CX1[i] + CT) I.push([lo, hi]);
+  }
+  const front = lerp(LX1, EX1, clamp((st - .7) / 1.1));
+  // szétterülő sugarak a lámpából (az első lapig vagy a kép széléig)
+  c.save(); c.beginPath(); c.rect(0, 0, front, 1080); c.clip();
+  for (let i = 0; i < 40; i++) {
+    const a = i / 40 * TAU + .04, dx = Math.cos(a), dy = Math.sin(a);
+    let t = 1600;
+    const tc = segInt(LX1, Y1, dx, dy, [CX1[0] - CT, Y1 - CH, CX1[0] - CT, Y1 + CH]); if (tc !== null && tc > 0) t = Math.min(t, tc);
+    const ex = LX1 + dx * t, ey = Y1 + dy * t;
+    const g = c.createLinearGradient(LX1, Y1, ex, ey); g.addColorStop(0, U.rgba(AMB, .6)); g.addColorStop(1, U.rgba(AMB, tc !== null && tc > 0 ? .35 : 0));
+    al(p0 * clamp((st - .5) / .5)); c.beginPath(); c.moveTo(LX1, Y1); c.lineTo(ex, ey); c.strokeStyle = g; c.lineWidth = 2; c.stroke();
+  }
+  // a lyukakon átjutó nyaláb, szakaszonként
+  const seg = (s0, s1, xa, xb) => { if (s0 > s1) return; P([[xa, Y1 + s0 * (xa - LX1)], [xb, Y1 + s0 * (xb - LX1)], [xb, Y1 + s1 * (xb - LX1)], [xa, Y1 + s1 * (xa - LX1)]]); c.fillStyle = 'rgba(255,190,60,.75)'; c.fill(); c.strokeStyle = AMB; c.lineWidth = 1.5; c.stroke(); };
+  al(p0);
+  const lo0 = (0 - HOLE) / (CX1[0] - CT - LX1), hi0 = HOLE / (CX1[0] - CT - LX1);
+  seg(lo0, hi0, LX1 + 24, CX1[0] - CT);
+  seg(I[0][0], I[0][1], CX1[0] - CT, CX1[1] - CT);
+  seg(I[1][0], I[1][1], CX1[1] - CT, CX1[2] - CT);
+  seg(I[2][0], I[2][1], CX1[2] - CT, EX1 - 26);
+  c.restore();
+  // lapok, lámpa, szem
+  bulb(LX1, Y1, p0, 1);
+  for (let i = 0; i < 3; i++) card1(CX1[i], ys[i], p0);
+  const sees = I[2][0] <= I[2][1] && front >= EX1 - 30;
+  eyeIcon(EX1, Y1, Math.PI, 30, p0);
+  al(p0);
+  T('lámpa', LX1, Y1 + 76, { s: 26, w: 600, a: 'center' });
+  T('szem', EX1, Y1 + 76, { s: 26, w: 600, a: 'center' });
+  T('kartonlap', CX1[2], Y1 + CH + 44, { s: 24, w: 500, a: 'center', c: MUT });
+  // fénysebesség
+  const pv = clamp((st - .3) / .5); al(p0 * pv);
+  const w0 = T('fénysebesség felirat', 60, 96, { s: 30, w: 600 }).w;
+  L.tx(L.val('fénysebesség'), 60 + w0 + 14, 96, { k: 'fénysebesség', f: F.M, s: 30, w: 700, c: RED });
+  L.tx(labN('földkör', fmt(num('fénysebesség') / num('Föld kerülete'), 1)), 60, 142, { k: ['földkör', 'Föld kerülete'], s: 26, c: MUT });
+  // állapot
+  const ps = clamp((st - 1.9) / .4); al(p0 * ps);
+  if (sees) TP('látod lámpa', EX1, Y1 - 92, { s: 26, w: 700, a: 'center', c: '#fff', bg: GOOD });
+  else TP('nem látod lámpa', EX1, Y1 - 92, { s: 26, w: 700, a: 'center', c: '#fff', bg: BAD });
+  al(p0);
+  if (cur) {
+    grab('lap', CX1[1], Y1 + off, 90, (x, y) => { const v = clamp(y - Y1, -150, 150); S1.from = S1.to = v; S1.t0 = -9; });
+    ring('lap', CX1[1], Y1 + off, 46);
+    hint('lap', CX1[1], Y1 + off - CH - 30, p0 * ps);
+  }
+}
+
+/* ════════ 2–3. Árnyék és félárnyék ════════ */
+const XS = 1080, FX0 = 40, FY0 = 150, FY1 = 930, CELL = 5, SPAN = 110;
+const S2 = {}, S3 = {};
+function sources(S, mode) {
+  if (mode === 0) return [[S.lx, S.ly]];
+  if (mode === 1) return [[S.lx, S.ly - SPAN], [S.lx, S.ly + SPAN]];
+  const o = []; for (let i = 0; i <= 40; i++) o.push([S.lx, S.ly - SPAN + 2 * SPAN * i / 40]); return o;
+}
+const endpoints = (S, mode) => (mode === 0 ? [[S.lx, S.ly]] : [[S.lx, S.ly - SPAN], [S.lx, S.ly + SPAN]]);
+function visFrac(px, py, src, S) {
+  let n = 0; for (const q of src) if (!segHitsCircle(px, py, q[0], q[1], S.bx, S.by, S.R)) n++;
+  return n / src.length;
+}
+function field(S, mode) {
+  S.cache = S.cache || {};
+  const key = [S.lx, S.ly, S.bx, S.by, S.R].join(',');
+  let F0 = S.cache[mode];
+  if (F0 && F0.key === key) return F0;
+  const gw = Math.ceil((XS - FX0) / CELL), gh = Math.ceil((FY1 - FY0) / CELL);
+  if (!F0) { F0 = { cv: document.createElement('canvas') }; F0.cv.width = gw; F0.cv.height = gh; S.cache[mode] = F0; }
+  const g = F0.cv.getContext('2d'), im = g.createImageData(gw, gh), d = im.data, src = sources(S, mode);
+  for (let j = 0; j < gh; j++) for (let i = 0; i < gw; i++) {
+    const px = FX0 + (i + .5) * CELL, py = FY0 + (j + .5) * CELL, f = visFrac(px, py, src, S), o = (j * gw + i) * 4;
+    const aL = .14 + .30 * Math.exp(-Math.hypot(px - S.lx, py - S.ly) / 650);
+    d[o] = lerp(52, 255, f); d[o + 1] = lerp(58, 204, f); d[o + 2] = lerp(86, 92, f); d[o + 3] = lerp(.40, aL, f) * 255;
+  }
+  g.putImageData(im, 0, 0); F0.key = key;
+  // ernyő-profil (2 px-enként, pontosan az ernyő előtt)
+  const fine = mode === 2 ? Array.from({ length: 161 }, (_, i) => [S.lx, S.ly - SPAN + 2 * SPAN * i / 160]) : src;
+  F0.prof = []; for (let y = FY0; y <= FY1; y += 2) F0.prof.push(visFrac(XS - .5, y, fine, S));
+  return F0;
+}
+function drawField(F0, a) {
+  if (a <= .01) return;
+  al(a); c.imageSmoothingEnabled = true; c.drawImage(F0.cv, FX0, FY0, F0.cv.width * CELL, F0.cv.height * CELL);
+}
+function screenStrip(prof, a) {
+  al(a);
+  for (let i = 0; i < prof.length; i++) { c.fillStyle = U.mix('#4a5070', '#ffd36a', prof[i]); c.fillRect(XS, FY0 + i * 2 - 1, 16, 3); }
+  c.strokeStyle = INK; c.lineWidth = 2.5; c.strokeRect(XS, FY0, 16, FY1 - FY0);
+}
+function runs(prof) {
+  const cls = (f) => (f < 1e-9 ? 'u' : f > 1 - 1e-9 ? 'l' : 'p'), o = [];
+  let s = 0;
+  for (let i = 1; i <= prof.length; i++) if (i === prof.length || cls(prof[i]) !== cls(prof[s])) { o.push({ k: cls(prof[s]), y0: FY0 + s * 2, y1: FY0 + (i - 1) * 2 }); s = i; }
+  return o;
+}
+function lampDraw(S, mode, a) {
+  if (mode === 0) bulb(S.lx, S.ly, a);
+  else if (mode === 1) { bulb(S.lx, S.ly - SPAN, a); bulb(S.lx, S.ly + SPAN, a); }
+  else {
+    al(a);
+    const g = c.createRadialGradient(S.lx, S.ly, 20, S.lx, S.ly, 230); g.addColorStop(0, 'rgba(255,214,110,.6)'); g.addColorStop(1, 'rgba(255,214,110,0)');
+    c.fillStyle = g; c.beginPath(); c.arc(S.lx, S.ly, 230, 0, TAU); c.fill();
+    rr(S.lx - 30, S.ly - SPAN - 14, 18, 2 * SPAN + 28, 4); c.fillStyle = '#9aa1ae'; c.fill(); c.strokeStyle = '#3a4252'; c.lineWidth = 2; c.stroke();
+    rr(S.lx - 12, S.ly - SPAN - 8, 24, 2 * SPAN + 16, 12); c.fillStyle = '#fff1b8'; c.fill(); c.strokeStyle = AMB_D; c.lineWidth = 2.5; c.stroke();
+  }
+}
+function tangentLines(S, mode, a) {
+  if (a <= .01) return;
+  c.save(); c.beginPath(); c.rect(FX0, FY0, XS - FX0, FY1 - FY0); c.clip();
+  al(a);
+  for (const [px, py] of endpoints(S, mode)) for (const t of tangents(px, py, S.bx, S.by, S.R)) {
+    const k = (XS - px) / Math.cos(t.a), ex = XS, ey = py + Math.sin(t.a) * k;
+    ln(px, py, ex, ey, AMB_D, 2, [10, 6]);
+    c.beginPath(); c.arc(t.tx, t.ty, 4, 0, TAU); c.fillStyle = AMB_D; c.fill();
+  }
+  c.restore();
+}
+function shadowScene(S, st, cur, step3) {
+  const p0 = out(clamp(st / .6)), mode = step3 ? S.mode : 0;
+  const pf = clamp((st - .4) / .8), pt = clamp((st - 1.2) / .8), pl = clamp((st - 2.0) / .6);
+  const F1 = field(S, mode);
+  if (step3 && S.prevMode != null && S.prevMode !== mode) {
+    const q = smooth((st - S.mt0) / .5);
+    drawField(field(S, S.prevMode), p0 * pf * (1 - q)); drawField(F1, p0 * pf * q);
+    if (q >= 1) S.prevMode = null;
+  } else drawField(F1, p0 * pf);
+  tangentLines(S, mode, p0 * pt);
+  // ernyő
+  al(p0); c.fillStyle = 'rgba(28,36,64,.06)'; c.fillRect(XS + 16, FY0, 8, FY1 - FY0);
+  screenStrip(F1.prof.map((f) => lerp(0, f, pf)), p0);
+  lampDraw(S, mode, p0); ball(S.bx, S.by, S.R, p0);
+  al(p0 * pl);
+  T(mode === 2 ? 'nagy lámpa' : 'lámpa', S.lx, S.ly + (mode ? SPAN : 0) + 66, { s: 26, w: 600, a: 'center' });
+  T('golyó', S.bx, S.by - S.R - 18, { s: 26, w: 600, a: 'center' });
+  T('ernyő', XS - 10, FY1 + 40, { s: 24, w: 600, a: 'right', c: MUT });
+  const R = runs(F1.prof);
+  if (!step3) {
+    // éles árnyék: a két érintő metszése az ernyővel
+    const tg = tangents(S.lx, S.ly, S.bx, S.by, S.R).map((t) => S.ly + Math.sin(t.a) * (XS - S.lx) / Math.cos(t.a));
+    const ya = Math.min(tg[0], tg[1]), yb = Math.max(tg[0], tg[1]), v0 = clamp(ya, FY0, FY1), v1 = clamp(yb, FY0, FY1);
+    if (v1 - v0 > 4) {
+      ln(XS + 36, v0, XS + 36, v1, INK, 2.5); ln(XS + 28, v0, XS + 44, v0, INK, 2.5); ln(XS + 28, v1, XS + 44, v1, INK, 2.5);
+      T('árnyék', XS + 54, U.clamp((v0 + v1) / 2 + 9, FY0 + 20, FY1 - 6), { s: 26, w: 700 });
+    }
+    const lit = R.filter((r) => r.k === 'l').sort((a, b) => (b.y1 - b.y0) - (a.y1 - a.y0))[0];
+    if (lit && lit.y1 - lit.y0 > 60) T('megvilágított', XS + 34, (lit.y0 + lit.y1) / 2 + 9, { s: 24, w: 500, c: MUT });
+    const ratio = (yb - ya) / (2 * S.R);
+    al(p0 * pl);
+    L.pill(labN('árnyék arány', fmt(ratio, 1)), 60, 86, { k: 'árnyék arány', s: 28, w: 600, bg: CARD, bd: LINE });
+  } else {
+    // grafikon: a fényforrás látható része az ernyő mentén
+    const PX0 = 1120, PX1 = 1320, pg = clamp((st - 1.6) / .8);
+    al(p0 * pg);
+    c.beginPath(); c.moveTo(PX0, FY0);
+    F1.prof.forEach((f, i) => c.lineTo(PX0 + (PX1 - PX0) * f, FY0 + i * 2)); c.lineTo(PX0, FY1); c.closePath();
+    c.fillStyle = 'rgba(255,200,80,.45)'; c.fill();
+    c.beginPath(); F1.prof.forEach((f, i) => (i ? c.lineTo : c.moveTo).call(c, PX0 + (PX1 - PX0) * f, FY0 + i * 2)); c.strokeStyle = AMB_D; c.lineWidth = 2.5; c.stroke();
+    ln(PX0, FY0, PX0, FY1, INK, 2); ln(PX1, FY0, PX1, FY1, LINE, 1.5, [6, 6]);
+    tx('0', PX0, FY1 + 32, { f: F.M, s: 22, a: 'center', c: MUT });
+    tx('100 %', PX1, FY1 + 32, { f: F.M, s: 22, a: 'center', c: MUT });
+    T('grafikon cím', 1330, FY0 - 22, { s: 24, w: 600, a: 'right', c: INK });
+    // tartomány-feliratok az ernyő előtt
+    al(p0 * pl);
+    const best = (k) => R.filter((r) => r.k === k && r.y1 - r.y0 > 26).sort((a, b) => (b.y1 - b.y0) - (a.y1 - a.y0))[0];
+    const u = best('u'), p = best('p');
+    let yu = u ? clamp((u.y0 + u.y1) / 2, FY0 + 24, FY1 - 24) : null, yp = p ? clamp((p.y0 + p.y1) / 2, FY0 + 24, FY1 - 24) : null;
+    if (yu != null && yp != null && Math.abs(yu - yp) < 46) { if (yp < yu) yp = yu - 46; else yp = yu + 46; }
+    if (yu != null) TP('teljes árnyék', XS - 14, yu, { s: 24, w: 700, a: 'right', bg: CARD, bd: LINE, pad: 8 });
+    if (yp != null) TP('félárnyék', XS - 14, yp, { s: 24, w: 700, a: 'right', bg: CARD, bd: LINE, pad: 8 });
+  }
+  al(p0);
+  if (cur) {
+    const lr = mode ? 70 : 56, ly = S.ly;
+    // 2. lépés: csak vízszintesen (közel/messze); 3. lépés: szabadon
+    grab('lámpa', S.lx, ly, mode ? 150 : 56, (x, y) => { S.lx = clamp(x, 80, S.bx - 180); if (step3) S.ly = clamp(y, 150 + SPAN + 30, 930 - SPAN - 30); });
+    grab('golyó', S.bx, S.by, S.R + 10, (x, y) => { S.bx = clamp(x, S.lx + 180, XS - S.R - 60); if (step3) S.by = clamp(y, 230, 850); });
+    ring('lámpa', S.lx, ly, mode ? SPAN + 40 : 46); ring('golyó', S.bx, S.by, S.R + 12);
+    hint('lámpa', S.lx, ly - (mode ? SPAN : 0) - 62, p0 * pl); hint('golyó', S.bx, S.by + S.R + 36, p0 * pl);
+  }
+}
+const scene2 = (st, cur) => shadowScene(S2, st, cur, false);
+const scene3 = (st, cur) => shadowScene(S3, st, cur, true);
+
+/* ════════ 4. Hogyan látunk? ════════ */
+const LP4 = { x: 240, y: 210 }, TY4 = 770, TX4 = [250, 790], AP4 = { x: 540, y: 722, r: 46 };
+const S4 = {};
+const lampA4 = (st) => lerp(S4.onFrom, S4.on, smooth((st - S4.onT0) / .35));
+const bookA4 = (st) => lerp(S4.bkFrom, S4.book, smooth((st - S4.bkT0) / .35));
+function scene4(st, cur) {
+  const p0 = out(clamp(st / .6)), E = S4.E, la = lampA4(st), ba = bookA4(st);
+  const bookR = [S4.bx - 17, S4.by - 120, 34, 240];
+  const segs = rectSegs(TX4[0], TY4, TX4[1] - TX4[0], 26).concat(S4.book ? rectSegs(...bookR) : []);
+  const apC = { x: AP4.x, y: AP4.y, r: AP4.r };
+  // asztal
+  al(p0); c.fillStyle = '#c99a62'; c.strokeStyle = '#6a4a22'; c.lineWidth = 2.5;
+  rr(TX4[0], TY4, TX4[1] - TX4[0], 26, 4); c.fill(); c.stroke();
+  rr(TX4[0] + 30, TY4 + 26, 22, 240, 3); c.fill(); c.stroke(); rr(TX4[1] - 52, TY4 + 26, 22, 240, 3); c.fill(); c.stroke();
+  ln(0, 1036, 1360, 1036, 'rgba(28,36,64,.35)', 2.5);
+  // lámpa zsinóron
+  ln(LP4.x, 0, LP4.x, LP4.y - 40, '#3a4252', 2.5);
+  // a lámpa szétterülő fénye
+  const pr = clamp((st - 3.2) / 1.2);
+  if (la > .01) {
+    c.save(); c.beginPath(); c.rect(0, 0, 1360, 1080); c.clip();
+    for (let i = 0; i < 18; i++) {
+      const a = (10 + i * 160 / 17) * deg, dx = Math.cos(a), dy = Math.sin(a);
+      const t = rayCast(LP4.x, LP4.y, dx, dy, segs.concat([[0, 1036, 1360, 1036], [1360, 0, 1360, 1080], [0, 0, 0, 1080]]), [apC], 2000) * pr;
+      const g = c.createLinearGradient(LP4.x, LP4.y, LP4.x + dx * t, LP4.y + dy * t); g.addColorStop(0, U.rgba(AMB, .55)); g.addColorStop(1, U.rgba(AMB, .12));
+      al(p0 * la); c.beginPath(); c.moveTo(LP4.x, LP4.y); c.lineTo(LP4.x + dx * t, LP4.y + dy * t); c.strokeStyle = g; c.lineWidth = 2; c.stroke();
+    }
+    c.restore();
+  }
+  // a lámpa → alma sugarak (5 sugár az alma látható szélességén)
+  let litN = 0;
+  const toA = Math.atan2(AP4.y - LP4.y, AP4.x - LP4.x), dA = Math.hypot(AP4.x - LP4.x, AP4.y - LP4.y), half = Math.asin(AP4.r * .85 / dA);
+  for (let i = 0; i < 5; i++) {
+    const a = toA + (i - 2) / 2 * half, dx = Math.cos(a), dy = Math.sin(a);
+    const tA = circInt(LP4.x, LP4.y, dx, dy, apC), tB = rayCast(LP4.x, LP4.y, dx, dy, segs, [], 2000);
+    const ok = tA !== null && tA < tB; if (ok && S4.on) litN++;
+    const t = (ok ? tA : tB) * pr;
+    if (la > .01) { al(p0 * la); arrowLine(LP4.x, LP4.y, LP4.x + dx * t, LP4.y + dy * t, AMB, 3, .55, 13); }
+  }
+  const lit = litN / 5, litA = lit * la;
+  // szórt fény az almáról
+  const ps = clamp((st - 4.3) / 1.0);
+  if (litA > .01 && ps > 0) {
+    for (let i = 0; i < 20; i++) {
+      const a = i / 20 * TAU + .1, dx = Math.cos(a), dy = Math.sin(a), sx = AP4.x + dx * (AP4.r + 2), sy = AP4.y + dy * (AP4.r + 2);
+      if (sy > TY4 - 2) continue;
+      const t = Math.min(rayCast(sx, sy, dx, dy, segs, [], 300), 300) * ps;
+      const g = c.createLinearGradient(sx, sy, sx + dx * 300, sy + dy * 300); g.addColorStop(0, U.rgba('#d4432a', .7)); g.addColorStop(1, U.rgba('#d4432a', 0));
+      al(p0 * litA); c.beginPath(); c.moveTo(sx, sy); c.lineTo(sx + dx * t, sy + dy * t); c.strokeStyle = g; c.lineWidth = 2.2; c.stroke();
+    }
+  }
+  // az almáról a szembe tartó sugár
+  const ea = Math.atan2(E.y - AP4.y, E.x - AP4.x), edx = Math.cos(ea), edy = Math.sin(ea);
+  const sx = AP4.x + edx * (AP4.r + 2), sy = AP4.y + edy * (AP4.r + 2), dE = Math.hypot(E.x - sx, E.y - sy) - 30;
+  const tE = rayCast(sx, sy, edx, edy, segs, [], dE), clear = tE >= dE - 1e-6;
+  const pe = clamp((st - 5.0) / .8);
+  if (litA > .01 && pe > 0) {
+    al(p0 * litA); const t = tE * pe;
+    if (clear && pe >= 1) arrowLine(sx, sy, sx + edx * t, sy + edy * t, RED, 5, 1, 22);
+    else ln(sx, sy, sx + edx * t, sy + edy * t, RED, 5);
+  }
+  // tévhit: „látósugár” a szemből
+  const pm = clamp((st - .7) / 1.2), px = clamp((st - 2.4) / .5), fade = lerp(1, .15, clamp((st - 3.0) / .6));
+  if (pm > 0) {
+    al(p0 * fade);
+    for (const o of [-.6, 0, .6]) {
+      const tx2 = AP4.x + Math.cos(ea + Math.PI / 2) * AP4.r * o, ty2 = AP4.y + Math.sin(ea + Math.PI / 2) * AP4.r * o;
+      const ex = lerp(E.x, tx2, pm * .9), ey = lerp(E.y, ty2, pm * .9);
+      ln(E.x, E.y, ex, ey, MUT, 3, [12, 9]); if (pm > .2) arrowHead(E.x, E.y, ex, ey, MUT, 14);
+    }
+    const mx = lerp(E.x, AP4.x, .5), my = lerp(E.y, AP4.y, .5) - 4;
+    if (px > 0) { c.lineCap = 'round'; ln(mx - 44, my - 44, mx - 44 + 88 * clamp(px * 2), my - 44 + 88 * clamp(px * 2), BAD, 8); if (px > .5) ln(mx + 44, my - 44, mx + 44 - 88 * clamp(px * 2 - 1), my - 44 + 88 * clamp(px * 2 - 1), BAD, 8); c.lineCap = 'butt'; }
+    al(p0 * fade * clamp(pm * 3));
+    const wT = L.measure(lab('tévhit'), { s: 22, w: 800, ls: '1px' }).w + 18, wL = L.measure(lab('látósugár'), { s: 26, w: 600 }).w, tot = wT + 12 + wL;
+    const x0 = clamp(mx - tot / 2, 50, 1330 - tot), y0 = Math.max(70, my - 104);
+    TP('tévhit', x0, y0, { s: 22, w: 800, c: '#fff', bg: BAD, pad: 9, ls: '1px' });
+    T('látósugár', x0 + wT + 12, y0 + 9, { s: 26, w: 600, c: BAD });
+  }
+  // tárgyak
+  bulb(LP4.x, LP4.y, p0, la, 24, 'top');
+  apple(AP4.x, AP4.y, AP4.r, p0, .25 + .75 * litA);
+  if (ba > .01) {
+    al(p0 * ba); c.save(); c.translate(S4.bx, S4.by);
+    rr(-17, -120, 34, 240, 4); c.fillStyle = '#3f6a9a'; c.fill(); c.strokeStyle = '#1b3558'; c.lineWidth = 2.5; c.stroke();
+    ln(-9, -112, -9, 112, 'rgba(255,255,255,.55)', 2); c.restore();
+  }
+  eyeIcon(E.x, E.y, ea + Math.PI, 30, p0);
+  al(p0 * clamp((st - 1.0) / .5));
+  T('lámpa', LP4.x + 52, LP4.y + 9, { s: 26, w: 600 });
+  TP('alma', AP4.x, AP4.y - AP4.r - 44, { s: 24, w: 600, a: 'center', bg: CARD, bd: LINE, pad: 8 });
+  if (ba > .3) TP('könyv', S4.bx, S4.by - 150, { s: 24, w: 600, a: 'center', bg: CARD, bd: LINE, pad: 8 });
+  const sees = S4.on && lit > 0 && clear, pv = clamp((st - 5.6) / .4);
+  al(p0 * pv);
+  TP(sees ? 'látod alma' : 'nem látod alma', E.x, E.y + 74, { s: 26, w: 700, a: 'center', c: '#fff', bg: sees ? GOOD : BAD });
+  al(p0);
+  if (cur) {
+    grab('szem4', E.x, E.y, 44, (x, y) => { E.x = clamp(x, 860, 1310); E.y = clamp(y, 160, 920); });
+    ring('szem4', E.x, E.y, 42); hint('szem4', E.x, E.y + 128, p0 * pv);
+    if (S4.book) {
+      grab('könyv', S4.bx, S4.by, 70, (x, y) => {
+        x = clamp(x, 330, 1290); y = clamp(y, 140, 900);
+        if (x > TX4[0] - 20 && x < TX4[1] + 20) y = Math.min(y, TY4 - 122);
+        if (Math.hypot(x - E.x, y - E.y) < 60) return;
+        S4.bx = x; S4.by = y;
+      });
+      ring('könyv', S4.bx, S4.by, 80); hint('könyv', S4.bx, S4.by + 152, p0 * ba);
+    }
+  }
+}
+
+/* ════════ 5. A visszaverődés törvénye ════════ */
+const H5 = { x: 690, y: 840 }, R5 = 460;
+const S5 = { a: 40 };
+function scene5(st, cur) {
+  const p0 = out(clamp(st / .6)), a = S5.a * deg, sa = Math.sin(a), ca = Math.cos(a);
+  const pi = clamp((st - .5) / .8), pr = clamp((st - 1.3) / .8), pn = clamp((st - 2.1) / .6), pa = clamp((st - 2.7) / .6), pc = clamp((st - 3.2) / .6);
+  const din = [-sa, -ca], dout = [sa, -ca];
+  // szögmérő
+  al(p0 * .9 * pn);
+  c.beginPath(); c.arc(H5.x, H5.y, 300, Math.PI, TAU); c.strokeStyle = LINE; c.lineWidth = 2; c.stroke();
+  for (let d = -90; d <= 90; d += 10) {
+    const an = -Math.PI / 2 + d * deg, r0 = d % 30 ? 288 : 278;
+    ln(H5.x + Math.cos(an) * r0, H5.y + Math.sin(an) * r0, H5.x + Math.cos(an) * 300, H5.y + Math.sin(an) * 300, 'rgba(28,36,64,.4)', 1.6);
+    if (d % 30 === 0 && d !== 0 && Math.abs(d) < 90) tx(Math.abs(d) + '°', H5.x + Math.cos(an) * 334, H5.y + Math.sin(an) * 334 + 8, { f: F.M, s: 22, a: 'center', c: MUT });
+  }
+  // tükör
+  mirror(140, H5.y, 1260, H5.y, 0, 1, p0, 8);
+  T('tükör', 1250, H5.y + 62, { s: 26, w: 600, a: 'right' });
+  // beesési merőleges
+  al(p0 * pn); ln(H5.x, H5.y, H5.x, H5.y - 620 * pn, INK, 2.5, [12, 9]);
+  T('beesési merőleges', H5.x, H5.y - 656, { s: 26, w: 600, a: 'center' });
+  c.beginPath(); c.rect(H5.x, H5.y - 26, 26, 26); c.strokeStyle = INK; c.lineWidth = 2; c.stroke();
+  // szögívek
+  al(p0 * pa);
+  if (S5.a > .5) {
+    c.beginPath(); c.moveTo(H5.x, H5.y); c.arc(H5.x, H5.y, 130, -Math.PI / 2 - a, -Math.PI / 2); c.closePath(); c.fillStyle = U.rgba(RED, .16); c.fill();
+    c.beginPath(); c.arc(H5.x, H5.y, 130, -Math.PI / 2 - a, -Math.PI / 2); c.strokeStyle = RED; c.lineWidth = 3; c.stroke();
+    c.beginPath(); c.moveTo(H5.x, H5.y); c.arc(H5.x, H5.y, 112, -Math.PI / 2, -Math.PI / 2 + a); c.closePath(); c.fillStyle = U.rgba(TEAL, .16); c.fill();
+    c.beginPath(); c.arc(H5.x, H5.y, 112, -Math.PI / 2, -Math.PI / 2 + a); c.strokeStyle = TEAL; c.lineWidth = 3; c.stroke();
+  }
+  if (S5.a >= 8) {   // a szögjel a szög felezőjén, legalább 30 px-re mindkét száltól
+    const rho = clamp(30 / Math.sin(a / 2), 78, 230), la = -Math.PI / 2 - a / 2, lb = -Math.PI / 2 + a / 2;
+    tx('α', H5.x + Math.cos(la) * rho, H5.y + Math.sin(la) * rho, { f: F.D, i: 1, s: 40, w: 600, a: 'center', b: 'middle', c: RED, k: 'beesési szög felirat' });
+    tx('β', H5.x + Math.cos(lb) * rho, H5.y + Math.sin(lb) * rho, { f: F.D, i: 1, s: 40, w: 600, a: 'center', b: 'middle', c: TEAL, k: 'visszaverődési szög felirat' });
+  }
+  // sugarak
+  al(p0);
+  // merőleges beesésnél a két sugár egybeesik: rajzban kissé szétválasztjuk őket
+  const off = S5.a < 4 ? (4 - S5.a) / 4 * 3.5 : 0, oi = [-ca * off, sa * off], oo = [ca * off, sa * off];
+  const s0 = [H5.x + din[0] * R5 + oi[0], H5.y + din[1] * R5 + oi[1]], hi = [H5.x + oi[0], H5.y + oi[1]], ho = [H5.x + oo[0], H5.y + oo[1]];
+  if (pr > 0) { const e = [ho[0] + dout[0] * 560 * pr, ho[1] + dout[1] * 560 * pr]; ln(ho[0], ho[1], e[0], e[1], TEAL, 5); arrowHead(ho[0], ho[1], e[0], e[1], TEAL, 22); }
+  if (pi > 0) { const e = [lerp(s0[0], hi[0], pi), lerp(s0[1], hi[1], pi)]; ln(s0[0], s0[1], e[0], e[1], RED, 5); arrowHead(s0[0], s0[1], lerp(s0[0], hi[0], pi * .55), lerp(s0[1], hi[1], pi * .55), RED, 22); }
+  c.beginPath(); c.arc(H5.x, H5.y, 6, 0, TAU); c.fillStyle = INK; c.fill();
+  // lézer
+  c.save(); c.translate(H5.x + din[0] * (R5 + 62), H5.y + din[1] * (R5 + 62)); c.rotate(Math.atan2(-din[1], -din[0]));
+  rr(-64, -19, 112, 38, 8); c.fillStyle = '#3a4252'; c.fill(); c.strokeStyle = INK; c.lineWidth = 2.5; c.stroke();
+  rr(48, -10, 16, 20, 3); c.fillStyle = '#9aa1ae'; c.fill(); c.stroke();
+  c.beginPath(); c.arc(-40, 0, 6, 0, TAU); c.fillStyle = RED; c.fill();
+  c.restore();
+  const lc = [H5.x + din[0] * (R5 + 62), H5.y + din[1] * (R5 + 62)], n2 = [ca, -sa];
+  if (S5.a < 30) T('lézer', Math.max(lc[0] + n2[0] * 60, H5.x + 18), lc[1] + n2[1] * 60 + 9, { s: 26, w: 600 });   // a merőleges és a visszavert sugár közé
+  else T('lézer', H5.x + din[0] * (R5 + 175), H5.y + din[1] * (R5 + 175) + 9, { s: 26, w: 600, a: 'center' });
+  const hs = S5.a > 50 ? 1 : -1;
+  // jelmagyarázat és szögek
+  al(p0 * pc);
+  rr(40, 40, 470, 120, 16); c.fillStyle = CARD; c.fill(); c.strokeStyle = LINE; c.lineWidth = 2; c.stroke();
+  ln(66, 82, 120, 82, RED, 5); ln(66, 130, 120, 130, TEAL, 5);
+  T('beeső sugár', 136, 91, { s: 26, w: 600 }); T('visszavert sugár', 136, 139, { s: 26, w: 600 });
+  rr(830, 40, 490, 120, 16); c.fillStyle = CARD; c.fill(); c.strokeStyle = LINE; c.lineWidth = 2; c.stroke();
+  T('beesési szög felirat', 856, 91, { s: 26, w: 500, c: MUT }); T('visszaverődési szög felirat', 856, 139, { s: 26, w: 500, c: MUT });
+  tx('α = ' + fmt(S5.a) + '°', 1300, 92, { f: F.M, s: 28, w: 700, a: 'right', c: RED, k: 'beesési szög felirat' });
+  tx('β = ' + fmt(S5.a) + '°', 1300, 140, { f: F.M, s: 28, w: 700, a: 'right', c: TEAL, k: 'visszaverődési szög felirat' });
+  al(p0);
+  if (cur) {
+    grab('lézer', lc[0], lc[1], 70, (x, y) => {
+      const v = Math.atan2(-(x - H5.x), -(y - H5.y)) / deg; S5.a = Math.round(clamp(v, 0, 85)); if (S5.sl) S5.sl.set(S5.a);
+    });
+    ring('lézer', lc[0], lc[1], 74); hint('lézer', lc[0] + hs * n2[0] * 72, lc[1] + hs * n2[1] * 72, p0 * pc);
+  }
+}
+
+/* ════════ 6. Hol van a tükörkép? ════════ */
+const MX6 = 720, M6 = [300, 780], SC6 = 100;   // 100 px = 1 m
+const S6 = {};
+function scene6(st, cur) {
+  const p0 = out(clamp(st / .6)), O = S6.O, Oi = { x: 2 * MX6 - O.x, y: O.y };
+  const pf = clamp((st - .6) / 1.0), pe = clamp((st - 1.8) / 1.2), px = clamp((st - 3.0) / 1.2), pim = clamp((st - 4.2) / .6), pd = clamp((st - 5.0) / .6);
+  // szoba + látszólagos tér
+  al(p0); c.fillStyle = 'rgba(201,154,98,.10)'; c.fillRect(60, 120, MX6 - 60, 840);
+  c.strokeStyle = 'rgba(28,36,64,.45)'; c.lineWidth = 3; c.strokeRect(60, 120, MX6 - 60, 840);
+  c.fillStyle = 'rgba(10,111,134,.06)'; c.fillRect(MX6, 120, 1340 - MX6, 840);
+  c.setLineDash([10, 8]); c.strokeStyle = U.rgba(TEAL, .4); c.lineWidth = 2; c.strokeRect(MX6, 120, 1340 - MX6, 840); c.setLineDash([]);
+  TP('felülnézet', 80, 84, { s: 22, w: 700, c: MUT, bg: CARD, bd: LINE, pad: 9, ls: '1px' });
+  T('látszólagos tér', (MX6 + 1340) / 2, 164, { f: F.D, i: 1, s: 28, w: 500, a: 'center', c: TEAL });
+  // szétszóródó sugarak a gyertyából (a tükrön visszaverődnek)
+  const wall = [[60, 120, MX6, 120], [60, 960, MX6, 960], [60, 120, 60, 960], [MX6, 120, MX6, M6[0]], [MX6, M6[1], MX6, 960]];
+  const mseg = [MX6, M6[0], MX6, M6[1]];
+  if (pf > 0) {
+    for (let i = 0; i < 30; i++) {
+      const a = i / 30 * TAU + .07, dx = Math.cos(a), dy = Math.sin(a);
+      const tw = rayCast(O.x, O.y, dx, dy, wall, [], 3000), tm = segInt(O.x, O.y, dx, dy, mseg);
+      al(p0 * pf * .4);
+      if (tm !== null && tm > 0 && tm < tw) {
+        const hx = O.x + dx * tm, hy = O.y + dy * tm, t2 = rayCast(hx, hy, -dx, dy, wall, [], 3000) * clamp(pf * 2 - 1);
+        ln(O.x, O.y, hx, hy, U.rgba(AMB, .7), 1.8); ln(hx, hy, hx - dx * t2, hy + dy * t2, U.rgba(AMB, .45), 1.8);
+      } else ln(O.x, O.y, O.x + dx * tw * pf, O.y + dy * tw * pf, U.rgba(AMB, .55), 1.8);
+    }
+  }
+  mirror(MX6, M6[0], MX6, M6[1], 1, 0, p0, 8);
+  al(p0); T('tükör', MX6 + 20, M6[0] + 8, { s: 26, w: 600, c: GLASS });
+  // a két néző
+  const eyes = [[S6.E1, '1. néző', 'e1'], [S6.E2, '2. néző', 'e2']];
+  for (const [E, key] of eyes) {
+    const t = (MX6 - E.x) / (Oi.x - E.x), My = E.y + t * (Oi.y - E.y), ok = My >= M6[0] && My <= M6[1];
+    E.ok = ok; E.My = My;
+    if (ok) {
+      // keskeny nyaláb a pupilla két széléhez
+      const nx = -(Oi.y - E.y), ny = Oi.x - E.x, nl = Math.hypot(nx, ny), w = 16, pts = [];
+      for (const s of [-1, 1]) { const ex = E.x + nx / nl * w * s, ey = E.y + ny / nl * w * s, tt = (MX6 - ex) / (Oi.x - ex); pts.push([ex, ey, MX6, ey + tt * (Oi.y - ey)]); }
+      al(p0 * pe * .22); P([[O.x, O.y], [pts[0][2], pts[0][3]], [pts[1][2], pts[1][3]]]); c.fillStyle = RED; c.fill();
+      P([[pts[0][2], pts[0][3]], [pts[0][0], pts[0][1]], [pts[1][0], pts[1][1]], [pts[1][2], pts[1][3]]]); c.fill();
+      al(p0);
+      const q1 = clamp(pe * 2), q2 = clamp(pe * 2 - 1);
+      if (q1 > 0) { ln(O.x, O.y, lerp(O.x, MX6, q1), lerp(O.y, My, q1), RED, 4); arrowHead(O.x, O.y, lerp(O.x, MX6, q1 * .6), lerp(O.y, My, q1 * .6), RED, 18); }
+      if (q2 > 0) { const ex = lerp(MX6, E.x, q2 * .93), ey = lerp(My, E.y, q2 * .93); ln(MX6, My, ex, ey, RED, 4); arrowHead(MX6, My, ex, ey, RED, 18); }
+      if (px > 0) {
+        al(p0 * .9); ln(MX6, My, lerp(MX6, Oi.x, px), lerp(My, Oi.y, px), TEAL, 3.5, [12, 9]);
+        al(p0 * .5); ln(pts[0][2], pts[0][3], lerp(pts[0][2], Oi.x, px), lerp(pts[0][3], Oi.y, px), TEAL, 1.6, [6, 7]);
+        ln(pts[1][2], pts[1][3], lerp(pts[1][2], Oi.x, px), lerp(pts[1][3], Oi.y, px), TEAL, 1.6, [6, 7]);
+      }
+      al(p0 * pe); c.beginPath(); c.arc(MX6, My, 6, 0, TAU); c.fillStyle = RED; c.fill();
+    }
+  }
+  // kép
+  if (pim > 0) {
+    al(p0 * pim * .85); c.beginPath(); c.arc(Oi.x, Oi.y, 22, 0, TAU); c.fillStyle = 'rgba(243,234,214,.75)'; c.fill();
+    c.setLineDash([6, 5]); c.strokeStyle = TEAL; c.lineWidth = 3; c.stroke(); c.setLineDash([]);
+    c.beginPath(); c.arc(Oi.x, Oi.y, 8, 0, TAU); c.fillStyle = 'rgba(255,176,46,.8)'; c.fill();
+    al(p0 * pim); T('kép', Oi.x, Oi.y + 58, { s: 26, w: 700, a: 'center', c: TEAL });
+  }
+  candleTop(O.x, O.y, p0);
+  al(p0); T('gyertya', O.x, O.y + 58, { s: 26, w: 600, a: 'center' });
+  for (const [E, key] of eyes) {
+    const ang = E.ok ? Math.atan2(E.My - E.y, MX6 - E.x) : Math.atan2((M6[0] + M6[1]) / 2 - E.y, MX6 - E.x);
+    eyeIcon(E.x, E.y, ang, 28, p0);
+    al(p0);
+    const wk = L.measure(lab(key), { s: 24, w: 700 }).w;
+    if (E.x - 40 - wk > 16) T(key, E.x - 40, E.y + 8, { s: 24, w: 700, a: 'right' }); else T(key, E.x, E.y - 44, { s: 24, w: 700, a: 'center' });
+    if (!E.ok) { al(p0 * clamp((st - 1.8) / .4)); TP('nem látja', E.x, E.y + 62, { s: 22, w: 700, a: 'center', c: '#fff', bg: BAD, pad: 9 }); }
+  }
+  // távolságok
+  if (pd > 0) {
+    al(p0 * pd);
+    const y = 1004, d = (MX6 - O.x) / SC6;
+    al(p0 * pd * .6); ln(O.x, O.y + 72, O.x, y, INK, 1.5, [5, 6]); ln(Oi.x, Oi.y + 72, Oi.x, y, TEAL, 1.5, [5, 6]);
+    al(p0 * pd);
+    ln(O.x, y, MX6, y, INK, 2.5); ln(MX6, y, Oi.x, y, TEAL, 2.5);
+    for (const x of [O.x, MX6, Oi.x]) ln(x, y - 10, x, y + 10, INK, 2.5);
+    const s = fmt(d, 1) + ' m';
+    L.tx(lab('tárgytávolság') + ' ' + s, MX6 - 14, y + 42, { k: 'tárgytávolság', s: 24, w: 600, a: 'right' });
+    L.tx(lab('képtávolság') + ' ' + s, MX6 + 14, y + 42, { k: 'képtávolság', s: 24, w: 600, a: 'left', c: TEAL });
+  }
+  al(p0);
+  if (cur) {
+    grab('gyertya', O.x, O.y, 36, (x, y) => { O.x = clamp(x, MX6 - 540, MX6 - 70); O.y = clamp(y, 220, 880); });
+    ring('gyertya', O.x, O.y, 36); hint('gyertya', O.x, O.y - 54, p0 * pd);
+    for (const [E, , id] of eyes) {
+      grab(id, E.x, E.y, 40, (x, y) => { E.x = clamp(x, 100, MX6 - 50); E.y = clamp(y, 170, 920); });
+      ring(id, E.x, E.y, 38); hint(id, E.x, E.y + (E.ok ? 64 : 112), p0 * pd);
+    }
+  }
+}
+
+/* ════════ 7. Mekkora tükör kell? ════════ */
+const K7 = 3, FY7 = 960, MX7 = 700;   // 3 px = 1 cm
+const S7 = {};
+const Y7 = (h) => FY7 - h * K7;
+function person(xe, dir, a, col, fill) {
+  const Hh = num('testmagasság'), e = num('szemmagasság'), X = (cm) => xe + dir * cm * K7;
+  al(a); c.strokeStyle = col; c.lineWidth = 2.5; c.fillStyle = fill; c.lineJoin = 'round';
+  const hr = 10, hc = Hh - hr;
+  // lábak, törzs, kar, fej
+  rr(Math.min(X(-14), X(2)), Y7(Hh * .5), 16 * K7, Hh * .5 * K7, 6); c.fill(); c.stroke();
+  rr(Math.min(X(-4), X(10)), Y7(5), 14 * K7, 5 * K7, 4); c.fill(); c.stroke();
+  rr(Math.min(X(-19), X(5)), Y7(Hh * .84), 24 * K7, Hh * .37 * K7, 18); c.fill(); c.stroke();
+  rr(Math.min(X(-11), X(-3)), Y7(Hh * .82), 8 * K7, Hh * .34 * K7, 10); c.fill(); c.stroke();
+  rr(Math.min(X(-11), X(-3)), Y7(Hh * .9), 8 * K7, 6 * K7, 3); c.fill(); c.stroke();
+  c.beginPath(); c.arc(X(-7), Y7(hc), hr * K7, 0, TAU); c.fill(); c.stroke();
+  c.beginPath(); c.arc(xe, Y7(e), 4, 0, TAU); c.fillStyle = col; c.fill();
+}
+function scene7(st, cur) {
+  const p0 = out(clamp(st / .6)), Hh = num('testmagasság'), e = num('szemmagasság');
+  const d = S7.d, yb = S7.yb, yt = S7.yb + S7.len, xe = MX7 - d * K7, xi = MX7 + d * K7;
+  const hB = 2 * yb - e, hT = 2 * yt - e, lo = clamp(hB, 0, Hh), hi = clamp(hT, 0, Hh), vis = Math.max(0, hi - lo);
+  const pr = clamp((st - .6) / 1.0), px = clamp((st - 1.6) / .9), pv = clamp((st - 2.5) / .6);
+  // padló, fal, látszólagos tér
+  al(p0);
+  c.fillStyle = 'rgba(10,111,134,.06)'; c.fillRect(MX7, 100, 1340 - MX7, FY7 - 100);
+  ln(40, FY7, 1340, FY7, INK, 3);
+  c.strokeStyle = 'rgba(28,36,64,.3)'; c.lineWidth = 1.5; c.beginPath(); for (let x = 50; x < 1340; x += 22) { c.moveTo(x, FY7 + 2); c.lineTo(x - 14, FY7 + 16); } c.stroke();
+  ln(MX7, 100, MX7, FY7, 'rgba(28,36,64,.35)', 2, [6, 6]);
+  // tükörkép (halvány) + a látható rész kiemelve
+  person(xi, -1, p0 * .28, TEAL, 'rgba(10,111,134,.10)');
+  if (vis > 0 && pv > 0) {
+    c.save(); c.beginPath(); c.rect(MX7 + 2, Y7(hi), 640, (hi - lo) * K7); c.clip();
+    person(xi, -1, p0 * pv, TEAL, 'rgba(10,111,134,.22)'); c.restore();
+    al(p0 * pv); ln(xi + 80, Y7(hi), xi + 80, Y7(lo), TEAL, 4); ln(xi + 70, Y7(hi), xi + 90, Y7(hi), TEAL, 4); ln(xi + 70, Y7(lo), xi + 90, Y7(lo), TEAL, 4);
+  }
+  al(p0); T('tükörkép', xi, Y7(Hh) - 48, { s: 26, w: 600, a: 'center', c: TEAL });
+  person(xe, 1, p0, INK, '#eadcc4');
+  mirror(MX7, Y7(yt), MX7, Y7(yb), 1, 0, p0, 8);
+  T('tükör', MX7 + 14, Y7(yt) - 14, { s: 24, w: 600, c: GLASS });
+  // a szélső sugarak: testpont → tükörszél → szem; meghosszabbítás a kép felé
+  const E = [xe, Y7(e)];
+  c.save(); c.beginPath(); c.rect(0, 225, 1360, 855); c.clip();   // a fenti kiírásokat ne keresztezzék a sugarak
+  for (const ym of [yt, yb]) {
+    const M = [MX7, Y7(ym)], h = 2 * ym - e;
+    let S = [xe, Y7(h)];
+    if (h < 0) { const k = (0 - ym) / (h - ym); S = [MX7 + (xe - MX7) * k, FY7]; }
+    let Si = [xi, Y7(h)]; if (h < 0) { const k = (0 - ym) / (h - ym); Si = [MX7 + (xi - MX7) * k, FY7]; }
+    al(p0); const q1 = clamp(pr * 2), q2 = clamp(pr * 2 - 1);
+    if (q1 > 0) { ln(S[0], S[1], lerp(S[0], M[0], q1), lerp(S[1], M[1], q1), RED, 3.5); arrowHead(S[0], S[1], lerp(S[0], M[0], q1 * .55), lerp(S[1], M[1], q1 * .55), RED, 16); }
+    if (q2 > 0) { const ex = lerp(M[0], E[0], q2), ey = lerp(M[1], E[1], q2); ln(M[0], M[1], ex, ey, RED, 3.5); arrowHead(M[0], M[1], lerp(M[0], E[0], q2 * .6), lerp(M[1], E[1], q2 * .6), RED, 16); }
+    if (px > 0) { al(p0 * .9); ln(M[0], M[1], lerp(M[0], Si[0], px), lerp(M[1], Si[1], px), TEAL, 2.5, [10, 8]); }
+  }
+  c.restore();
+  // távolság a padlón
+  al(p0);
+  const yd = FY7 + 44;
+  ln(xe, yd, MX7, yd, INK, 2); ln(MX7, yd, xi, yd, TEAL, 2);
+  for (const x of [xe, MX7, xi]) ln(x, yd - 9, x, yd + 9, INK, 2);
+  L.tx(fmt(d) + ' cm', (xe + MX7) / 2, yd + 36, { k: 'távolság csúszka', f: F.M, s: 22, w: 600, a: 'center' });
+  L.tx(fmt(d) + ' cm', (MX7 + xi) / 2, yd + 36, { k: 'távolság csúszka', f: F.M, s: 22, w: 600, a: 'center', c: TEAL });
+  // kiírás
+  al(p0 * pv);
+  const w1 = T('látszik', 60, 96, { s: 30, w: 600 }).w;
+  L.tx(fmt(vis) + ' cm', 60 + w1 + 14, 96, { k: 'látszik', f: F.M, s: 30, w: 700, c: vis >= Hh - .5 ? GOOD : RED });
+  L.tx('/ ' + L.val('testmagasság'), 60 + w1 + 14 + L.measure(fmt(vis) + ' cm', { f: F.M, s: 30, w: 700 }).w + 12, 96, { k: 'testmagasság', f: F.M, s: 26, c: MUT });
+  L.tx(labN('elég', fmt(Hh / 2) + ' cm'), 60, 142, { k: ['elég', 'testmagasság'], s: 26, c: MUT });
+  if (vis >= Hh - .5) TP('teljes alak', 60, 196, { s: 26, w: 700, c: '#fff', bg: GOOD });
+  al(p0);
+}
+
+/* ════════ 8. Camera obscura ════════ */
+const AY8 = 500, HX8 = 560, BH8 = 220, IN8 = { x: 1012, y: 200, w: 320, h: 470 };   // 1 px = 1 mm
+const S8 = {};
+let CAND = null;
+function candleSide(g, x, yTip, G, flameA = 1) {   // oldalnézet, (x, yTip) = a láng csúcsa, G = teljes magasság (mm)
+  const fl = 50, yB = yTip + G, yTop = yTip + fl;
+  g.fillStyle = '#f3ead6'; g.strokeStyle = '#7a6a4a'; g.lineWidth = 2.5;
+  g.beginPath(); g.roundRect(x - 22, yTop + 6, 44, yB - yTop - 6, 4); g.fill(); g.stroke();
+  g.strokeStyle = '#2a2a2a'; g.lineWidth = 2; g.beginPath(); g.moveTo(x, yTop + 6); g.lineTo(x, yTop - 2); g.stroke();
+  const fg = g.createRadialGradient(x, yTip + fl * .7, 2, x, yTip + fl * .6, fl * .7); fg.addColorStop(0, '#fff6c8'); fg.addColorStop(.5, '#ffc23a'); fg.addColorStop(1, '#f07a12');
+  g.globalAlpha *= flameA;
+  g.beginPath(); g.moveTo(x, yTip); g.bezierCurveTo(x + 16, yTip + fl * .45, x + 14, yTip + fl * .95, x, yTip + fl); g.bezierCurveTo(x - 14, yTip + fl * .95, x - 16, yTip + fl * .45, x, yTip); g.closePath();
+  g.fillStyle = fg; g.fill(); g.strokeStyle = '#b5520a'; g.lineWidth = 2; g.stroke();
+}
+function imageCanvas(G, s, blurPx, key) {
+  if (S8.img && S8.img.key === key) return S8.img.cv;
+  if (!CAND) { CAND = document.createElement('canvas'); }
+  CAND.width = 80; CAND.height = G + 20;
+  const g0 = CAND.getContext('2d'); g0.clearRect(0, 0, 80, G + 20);
+  g0.save(); g0.translate(0, G + 20); g0.scale(1, -1); candleSide(g0, 40, 10, G); g0.restore();   // fejjel lefelé
+  const cv = (S8.img && S8.img.cv) || document.createElement('canvas'); cv.width = IN8.w; cv.height = IN8.h;
+  const g = cv.getContext('2d'); g.clearRect(0, 0, IN8.w, IN8.h);
+  g.filter = blurPx > .2 ? `blur(${blurPx.toFixed(2)}px)` : 'none';
+  // a láng csúcsa (tengelytől oT-re) a kép alján: y = cy − oT·s ; az átfordított vásznon a csúcs a (G+20−10) sorban
+  const oT = (AY8 - 0.52 * G) - AY8, cy = IN8.h / 2;
+  const yTipImg = cy - oT * s;            // ide kerül a láng csúcsa
+  g.drawImage(CAND, IN8.w / 2 - 40 * s, yTipImg - (G + 10) * s, 80 * s, (G + 20) * s);
+  g.filter = 'none';
+  S8.img = { key, cv };
+  return cv;
+}
+function scene8(st, cur) {
+  const p0 = out(clamp(st / .6)), G = num('gyertya magassága') * 10, a = S8.a, b = S8.b * 10, cx = S8.cx, g = HX8 - cx;
+  const yT = AY8 - .52 * G, yB = yT + G, m = b / g, blob = a * (g + b) / g;
+  const pr = clamp((st - .7) / 1.0), pim = clamp((st - 1.7) / .7);
+  // doboz
+  al(p0);
+  c.fillStyle = 'rgba(28,36,64,.42)'; c.fillRect(HX8, AY8 - BH8, b, 2 * BH8);
+  c.fillStyle = '#5a4630'; c.strokeStyle = INK; c.lineWidth = 2.5;
+  rr(HX8 - 10, AY8 - BH8 - 10, b + 20, 10, 2); c.fill(); c.stroke();
+  rr(HX8 - 10, AY8 + BH8, b + 20, 10, 2); c.fill(); c.stroke();
+  rr(HX8 - 10, AY8 - BH8, 10, BH8 - a / 2, 0); c.fill(); c.stroke();
+  rr(HX8 - 10, AY8 + a / 2, 10, BH8 - a / 2, 0); c.fill(); c.stroke();
+  c.fillStyle = '#f1ead8'; rr(HX8 + b, AY8 - BH8, 8, 2 * BH8, 0); c.fill(); c.stroke();
+  // fénynyalábok a láng csúcsából és a gyertya talpából a lyukon át
+  const cones = [[yT + 2, 'rgba(255,190,60,.75)'], [yB - 2, 'rgba(250,215,150,.7)']];
+  for (const [py, col] of cones) {
+    const h1 = AY8 - a / 2, h2 = AY8 + a / 2, k = (g + b) / g;
+    const w1 = py + (h1 - py) * k, w2 = py + (h2 - py) * k;
+    const q1 = clamp(pr * 1.6), q2 = clamp(pr * 1.6 - .6) / .4;
+    al(p0);
+    P([[cx, py], [lerp(cx, HX8, q1), lerp(py, h1, q1)], [lerp(cx, HX8, q1), lerp(py, h2, q1)]]); c.fillStyle = col; c.fill();
+    if (q2 > 0) { const xe = lerp(HX8, HX8 + b, clamp(q2)); P([[HX8, h1], [xe, lerp(h1, w1, clamp(q2))], [xe, lerp(h2, w2, clamp(q2))], [HX8, h2]]); c.fillStyle = col; c.fill(); }
+    // középső sugár
+    const ce = py + (AY8 - py) * k;
+    ln(cx, py, lerp(cx, HX8, q1), lerp(py, AY8, q1), AMB_D, 2);
+    if (q2 > 0) { ln(HX8, AY8, lerp(HX8, HX8 + b, clamp(q2)), lerp(AY8, ce, clamp(q2)), AMB_D, 2); if (q2 >= 1) arrowHead(HX8, AY8, lerp(HX8, HX8 + b, .7), lerp(AY8, ce, .7), AMB_D, 14); }
+  }
+  // a kép a hátfalon (oldalnézetben egy sáv)
+  if (pim > 0) {
+    const i1 = AY8 - (yB - AY8) * m, i2 = AY8 + (AY8 - yT) * m;
+    al(p0 * pim); rr(HX8 + b - 6, Math.min(i1, i2) - blob / 2, 10, Math.abs(i2 - i1) + blob, 4); c.fillStyle = 'rgba(255,170,40,.9)'; c.fill();
+  }
+  // gyertya
+  al(p0); candleSide(c, cx, yT, G);
+  const gg = c.createRadialGradient(cx, yT + 30, 4, cx, yT + 30, 120); gg.addColorStop(0, 'rgba(255,200,80,.45)'); gg.addColorStop(1, 'rgba(255,200,80,0)');
+  c.fillStyle = gg; c.beginPath(); c.arc(cx, yT + 30, 120, 0, TAU); c.fill();
+  ln(30, yB, 520, yB, 'rgba(28,36,64,.4)', 2.5);
+  // feliratok
+  al(p0 * clamp((st - 1.0) / .5));
+  T('gyertya', cx, yB + 40, { s: 26, w: 600, a: 'center' });
+  T('lyuk', HX8 - 5, AY8 - BH8 - 34, { s: 24, w: 600, a: 'center' });
+  ln(HX8 - 5, AY8 - BH8 - 26, HX8 - 5, AY8 - BH8 - 14, INK, 2);
+  T('hátfal', HX8 + b + 8, AY8 - BH8 - 34, { s: 24, w: 600, a: 'right', c: MUT });
+  T('doboz', HX8 + b / 2, AY8 + BH8 + 50, { s: 26, w: 600, a: 'center' });
+  // nagyított lyuk-jelzés
+  al(p0); c.beginPath(); c.arc(HX8 - 5, AY8, Math.max(10, a / 2 + 8), 0, TAU); c.strokeStyle = U.rgba(RED, .8); c.lineWidth = 2.5; c.stroke();
+  // betekintő: a hátfal hátulról
+  al(p0);
+  rr(IN8.x, IN8.y, IN8.w, IN8.h, 14); c.fillStyle = '#2e3346'; c.fill(); c.strokeStyle = INK; c.lineWidth = 2.5; c.stroke();
+  T('hátfal képe', IN8.x + IN8.w / 2, IN8.y - 22, { s: 24, w: 600, a: 'center' });
+  if (pim > 0) {
+    const bright = clamp(.3 + .7 * (a / 6) * (a / 6));   // a fényesség a lyuk területével nő
+    const cv = imageCanvas(G, m, blob / 4, [G, m.toFixed(4), blob.toFixed(3)].join(','));
+    c.save(); rr(IN8.x, IN8.y, IN8.w, IN8.h, 14); c.clip();
+    al(p0 * pim * bright); c.drawImage(cv, IN8.x, IN8.y, IN8.w, IN8.h); c.restore();
+  }
+  al(p0 * pim);
+  L.tx(labN('kép magassága', fmt(G * m / 10, 1) + ' cm'), IN8.x + IN8.w / 2, IN8.y + IN8.h + 44, { k: ['kép magassága', 'gyertya magassága'], s: 26, w: 600, a: 'center' });
+  L.tx(labN('folt mérete', fmt(blob, 1) + ' mm'), IN8.x + IN8.w / 2, IN8.y + IN8.h + 86, { k: 'folt mérete', s: 26, w: 500, a: 'center', c: MUT });
+  al(p0);
+  if (cur) {
+    grab('gyertya8', cx, (yT + yB) / 2, 60, (x) => { S8.cx = clamp(x, 70, 300); });
+    ring('gyertya8', cx, (yT + yB) / 2, 150); hint('gyertya8', cx, yB + 92, p0 * pim);
+  }
+}
+
+/* ════════ 9. Összefoglalás ════════ */
+function scene9(st) {
+  const p0 = out(clamp(st / .6));
+  const cards = [['össz egyenes', drawS1], ['össz árnyék', drawS2], ['össz látás', drawS3], ['össz törvény', drawS4], ['össz kép', drawS5], ['össz fél', drawS6]];
+  cards.forEach(([k, fn], i) => {
+    const q = out(clamp((st - .3 - i * .35) / .6)); if (q <= 0) return;
+    const col = i % 3, row = Math.floor(i / 3), x = 50 + col * 430, y = 90 + row * 470 + (1 - q) * 30, w = 400, h = 430;
+    al(p0 * q); rr(x, y, w, h, 20); c.fillStyle = CARD; c.fill(); c.strokeStyle = LINE; c.lineWidth = 2; c.stroke();
+    tx(String(i + 1), x + 26, y + 46, { f: F.D, s: 40, w: 600, c: RED, qa: false });
+    c.save(); c.translate(x, y); fn(p0 * q); c.restore();
+    al(p0 * q); T(k, x + w / 2, y + h - 36, { s: 26, w: 700, a: 'center', max: w - 40 });
+  });
+}
+function drawS1(a) {   // egyenes vonal három lyukon át
+  al(a); ln(70, 200, 330, 200, AMB, 5); bulb(70, 200, a, 1, 18);
+  for (const x of [150, 210, 270]) { al(a); c.fillStyle = '#dcc39b'; c.strokeStyle = '#7a5a2a'; c.lineWidth = 2; rr(x - 6, 90, 12, 98, 2); c.fill(); c.stroke(); rr(x - 6, 212, 12, 98, 2); c.fill(); c.stroke(); }
+  eyeIcon(345, 200, Math.PI, 20, a);
+}
+function drawS2(a) {   // árnyék + félárnyék
+  al(a);   // az ernyő megvilágítása ugyanazzal a sugárvizsgálattal, mint a 3. lépésben
+  for (let y = 70; y < 330; y += 2) {
+    let f = 0; for (const ly of [160, 240]) if (!segHitsCircle(330, y + 1, 70, ly, 200, 200, 24)) f += .5;
+    c.fillStyle = U.mix('#4a5070', '#ffd36a', f); c.fillRect(330, y, 16, 2);
+  }
+  c.strokeStyle = INK; c.lineWidth = 2; c.strokeRect(330, 70, 16, 260);
+  bulb(70, 160, a, 1, 14); bulb(70, 240, a, 1, 14); ball(200, 200, 24, a);
+  al(a); for (const [ly, s] of [[160, 1], [240, 1]]) for (const t of tangents(70, ly, 200, 200, 24)) { const k = (330 - 70) / Math.cos(t.a); ln(70, ly, 330, ly + Math.sin(t.a) * k, AMB_D, 1.5, [6, 5]); }
+}
+function drawS3(a) {   // lámpa → alma → szem
+  bulb(80, 110, a, 1, 18, 'top'); apple(170, 260, 30, a, 1);
+  al(a); arrowLine(92, 126, 154, 226, AMB, 3.5, .6, 14); arrowLine(200, 252, 300, 210, RED, 4, 1, 16);
+  eyeIcon(320, 202, Math.atan2(252 - 210, 200 - 300), 22, a);
+}
+function drawS4(a) {   // α = β
+  mirror(60, 290, 340, 290, 0, 1, a, 6);
+  al(a); ln(200, 290, 200, 100, INK, 2, [8, 6]);
+  const an = 40 * deg; ln(200 - Math.sin(an) * 190, 290 - Math.cos(an) * 190, 200, 290, RED, 4); ln(200, 290, 200 + Math.sin(an) * 190, 290 - Math.cos(an) * 190, TEAL, 4);
+  arrowHead(200, 290, 200 + Math.sin(an) * 190, 290 - Math.cos(an) * 190, TEAL, 16);
+  c.beginPath(); c.arc(200, 290, 60, -Math.PI / 2 - an, -Math.PI / 2); c.strokeStyle = RED; c.lineWidth = 3; c.stroke();
+  c.beginPath(); c.arc(200, 290, 50, -Math.PI / 2, -Math.PI / 2 + an); c.strokeStyle = TEAL; c.lineWidth = 3; c.stroke();
+}
+function drawS5(a) {   // kép a tükör mögött
+  mirror(200, 90, 200, 320, 1, 0, a, 6);
+  candleTop(110, 200, a); al(a);
+  c.beginPath(); c.arc(290, 200, 18, 0, TAU); c.setLineDash([5, 4]); c.strokeStyle = TEAL; c.lineWidth = 2.5; c.stroke(); c.setLineDash([]);
+  ln(110, 150, 200, 150, INK, 2); ln(200, 150, 290, 150, TEAL, 2);
+  for (const x of [110, 200, 290]) ln(x, 142, x, 158, INK, 2);
+  tx('d', 155, 136, { f: F.D, i: 1, s: 34, w: 600, a: 'center', c: INK, qa: false }); tx('d', 245, 136, { f: F.D, i: 1, s: 34, w: 600, a: 'center', c: TEAL, qa: false });
+}
+function drawS6(a) {   // fél testmagasság
+  al(a); ln(40, 330, 360, 330, INK, 2.5);
+  const k = 1.4, H = 160, e = 148, X = 120, M = 220, Y = (h) => 330 - h * k * .9;
+  c.fillStyle = '#eadcc4'; c.strokeStyle = INK; c.lineWidth = 2;
+  rr(X - 22, Y(H) + 26, 24, Y(0) - Y(H) - 26, 8); c.fill(); c.stroke();
+  c.beginPath(); c.arc(X - 8, Y(H) + 12, 12, 0, TAU); c.fill(); c.stroke();
+  c.beginPath(); c.arc(X, Y(e), 2.5, 0, TAU); c.fillStyle = INK; c.fill();
+  mirror(M, Y(e / 2), M, Y((H + e) / 2), 1, 0, a, 6);
+  al(a); ln(X, Y(H), M, Y((H + e) / 2), RED, 2.5); ln(M, Y((H + e) / 2), X, Y(e), RED, 2.5);
+  ln(X, Y(0), M, Y(e / 2), RED, 2.5); ln(M, Y(e / 2), X, Y(e), RED, 2.5);
+  tx('½', M + 40, (Y(e / 2) + Y((H + e) / 2)) / 2 + 14, { f: F.D, s: 40, w: 600, a: 'center', c: RED, qa: false });
+}
+
+/* ════════════════════════════════════════════════════════════════ */
+const sT = new Array(9).fill(0);
+const SCENES = [scene1, scene2, scene3, scene4, scene5, scene6, scene7, scene8, scene9];
+const resetDrag = () => { DR.used = {}; DR.act = null; };
+let modeBtns = [];
+L = Lesson.create({
+  content: window.LESSON_CONTENT,
+  home: false,
+  steps: [
+    { settle: 3,
+      enter() { resetDrag(); Object.assign(S1, { from: 0, to: 0, t0: -9 }); },
+      controls(L) {
+        L.button(lab('egyenesbe gomb'), () => { S1.from = S1.off; S1.to = 0; S1.t0 = L.st; }, 'egyenesbe gomb');
+        L.button(lab('eltolás gomb'), () => { S1.from = S1.off; S1.to = 90; S1.t0 = L.st; }, 'eltolás gomb');
+      } },
+    { settle: 3,
+      enter() { resetDrag(); Object.assign(S2, { lx: 250, ly: 540, bx: 560, by: 540, R: 60 }); } },
+    { settle: 3.2,
+      enter() { resetDrag(); Object.assign(S3, { lx: 220, ly: 540, bx: 600, by: 540, R: 70, mode: 1, prevMode: null, mt0: 0 }); setModeBtns(); },
+      controls(L) {
+        const set = (m) => { if (m === S3.mode) return; S3.prevMode = S3.mode; S3.mode = m; S3.mt0 = L.st; setModeBtns(); };
+        modeBtns = [L.button(lab('egy lámpa gomb'), () => set(0), 'egy lámpa gomb'), L.button(lab('két lámpa gomb'), () => set(1), 'két lámpa gomb'),
+          L.button(lab('nagy lámpa gomb'), () => set(2), 'nagy lámpa gomb')];
+      } },
+    { settle: 6.2,
+      enter() { resetDrag(); Object.assign(S4, { E: { x: 1150, y: 560 }, on: 1, onFrom: 1, onT0: -9, book: 0, bkFrom: 0, bkT0: -9, bx: 880, by: 600 }); },
+      controls(L) {
+        L.button(lab('lámpa gomb'), () => { S4.onFrom = lampA4(L.st); S4.on = S4.on ? 0 : 1; S4.onT0 = L.st; }, 'lámpa gomb');
+        L.button(lab('könyv gomb'), () => { S4.bkFrom = bookA4(L.st); S4.book = S4.book ? 0 : 1; S4.bkT0 = L.st; }, 'könyv gomb');
+      } },
+    { settle: 4,
+      enter() { resetDrag(); S5.a = num('kezdő beesési szög'); },
+      controls(L) {
+        S5.sl = L.slider({ label: lab('szög csúszka'), k: 'szög csúszka', min: 0, max: 85, step: 1, value: num('kezdő beesési szög'), format: (v) => fmt(v) + '°', onInput: (v) => { S5.a = v; } });
+      } },
+    { settle: 5.8,
+      enter() { resetDrag(); S6.O = { x: 470, y: 560 }; S6.E1 = { x: 260, y: 300 }; S6.E2 = { x: 330, y: 850 }; } },
+    { settle: 3.4,
+      enter() { resetDrag(); Object.assign(S7, { len: num('tükör hossza'), yb: num('tükör alja'), d: num('távolság a tükörtől') }); },
+      controls(L) {
+        const f = (v) => fmt(v) + ' cm';
+        L.slider({ label: lab('tükör hossza csúszka'), k: 'tükör hossza csúszka', min: 10, max: 120, step: 1, value: num('tükör hossza'), format: f, onInput: (v) => { S7.len = v; } });
+        L.slider({ label: lab('tükör alja csúszka'), k: 'tükör alja csúszka', min: 0, max: 120, step: 1, value: num('tükör alja'), format: f, onInput: (v) => { S7.yb = v; } });
+        L.slider({ label: lab('távolság csúszka'), k: 'távolság csúszka', min: 30, max: 180, step: 5, value: num('távolság a tükörtől'), format: f, onInput: (v) => { S7.d = v; } });
+      } },
+    { settle: 3,
+      enter() { resetDrag(); Object.assign(S8, { a: num('lyuk átmérője'), b: num('doboz mélysége'), cx: 140 }); },
+      controls(L) {
+        L.slider({ label: lab('lyuk csúszka'), k: 'lyuk csúszka', min: .5, max: 12, step: .5, value: num('lyuk átmérője'), format: (v) => fmt(v, 1) + ' mm', onInput: (v) => { S8.a = v; } });
+        L.slider({ label: lab('mélység csúszka'), k: 'mélység csúszka', min: 15, max: 40, step: 1, value: num('doboz mélysége'), format: (v) => fmt(v) + ' cm', onInput: (v) => { S8.b = v; } });
+      } },
+    { settle: 3 },
+  ],
+  init(Lx) { L = Lx; c = L.ctx; installDrag(); L.steps.forEach((s) => s.enter && s.enter(L)); },
+  draw(Lx) {
+    L = Lx; c = L.ctx; GA = 1; background();
+    DR.list = [];
+    const sp = L.sp;
+    if (L.step >= 0) sT[L.step] = L.st;
+    for (let i = 0; i < SCENES.length; i++) {
+      const w = clamp(1 - Math.abs(sp - i) * 2); if (w <= .005) continue;
+      GA = w; SCENES[i](sT[i], L.step === i && w > .5);
+    }
+    c.globalAlpha = 1;
+  },
+});
+function setModeBtns() { modeBtns.forEach((b, i) => b && b.classList.toggle('on', i === S3.mode)); }
+})();
+</script>
+</body>
+</html>
