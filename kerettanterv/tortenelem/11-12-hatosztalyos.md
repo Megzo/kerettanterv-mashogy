@@ -1,0 +1,1848 @@
+# Történelem · 11–12. évfolyam
+
+> **Forrás:** [Történelem](https://www.oktatas.hu/pub_bin/dload/kozoktatas/kerettanterv/Tortenelem_6_evf.docx) – Oktatási Hivatal, [NAT 2020 kerettantervek](https://www.oktatas.hu/kozneveles/kerettantervek/2020_nat) · letöltve: 2026-11-12  
+> **Iskolatípus:** gimnázium (6 évfolyamos) · **Eredeti fájl:** `sources/oktatas.hu_2020_nat/gimn6_7-12/Tortenelem_6_evf.docx`  
+> Gépi konverzió: a szöveg a forrásé, csak a tagolás egységesített.
+
+## Témakörök áttekintése
+
+| # | Témakör | Javasolt óraszám |
+|---|---|---|
+| 1 | Az átalakulás évei | 15 óra |
+| 2 | A két világháború között | 9 óra |
+| 3 | A Horthy-korszak | 12 óra |
+| 4 | A második világháború | 19 óra |
+| 5 | A két világrendszer szembenállása | 9 óra |
+| 6 | Háborútól forradalomig | 12 óra |
+| 7 | Az 1956-os forradalom és szabadságharc | 7 óra |
+| 8 | A kádári diktatúra | 8 óra |
+| 9 | A kétpólusú világ és felbomlása | 9 óra |
+| 10 | A rendszerváltoztatás folyamata | 9 óra |
+| 11 | A világ a 21. században | 9 óra |
+| 12 | Magyarország a 21. században | 10 óra |
+| 13 | A magyarság és a magyarországi nemzetiségek a 20-21. században | 6 óra |
+| 14 | Népesedés és társadalom | 6 óra |
+| 15 | Mérlegen a magyar történelem | 6 óra |
+| | **Összesen** | **146 óra** |
+
+## A sáv bevezetője (a forrásból)
+
+A tanuló történelmi ismereteinek gyarapodása, információszerzési és forrásfeldolgozási kompetenciájának, valamint gondolkodási és érvelő készségeinek fejlődése lehetővé teszi, hogy a középiskola utolsó évfolyamaira birtokába kerüljön azoknak az általános kompetenciáknak, amelyek hozzájárulnak a társadalmi életben való hatékony tájékozódásához és részvételéhez.
+
+Az utolsó két év témakörei az első világháború végétől napjainkig terjedő időszakot ölelik fel. Feldolgozásuk során kiemelt szempont, hogy ez az időszak már közvetlen hatást gyakorol a jelen társadalmi, gazdasági és politikai viszonyaira, ezért különösképpen alkalmas a problémaközpontú megközelítésre. Az egyes témakörök, témák a korábbiaknál összetettebb feldolgozásra, komplexebb fejlesztésre adnak lehetőséget. A hat évfolyamos kerettanterv által biztosított bővebb időkeretben lehetőség nyílik a képzési szakasz végén a tanultak meghatározott szempontokból történő szintetizálására. Ezt szolgálják a 12. évfolyam végén szereplő hosszmetszeti témakörök.
+
+Az utolsó két év az érettségire való felkészülés időszaka. A különböző témakörök, összefüggések, jelenségek összefoglaló áttekintése külön időkeretet igényel – ez a kerettanterv ajánlása szerint 22 óra –, amit a helyi tantervek a vizsgakövetelmények figyelembevételével szabályozhatnak.
+
+A középiskolai történelemtanulás inspirációt nyújt arra, hogy a tanuló felnőttként, a középiskola befejezése után is érdeklődjék a történelem, illetve közéleti kérdések iránt, valamint hozzájárul ahhoz, hogy a tanuló az iskolából kikerülve hazáját szerető, demokratikus gondolkodású, kisebb-nagyobb közösségeiért felelősséget vállaló polgárrá; a társadalom tevékeny és autonóm tagjává váljék.
+
+**Fejlesztési területekhez kapcsolódó tanulási eredmények (Általános követelmények)**
+
+**Történelmi ismeretek**
+
+A nevelési-oktatási szakasz végére a tanuló:
+
+  - képes felidézni azokat az okokat és körülményeket, amelyek a történelmi Magyarország felbomlásához vezettek;
+
+  - tisztában van a trianoni békediktátum tartalmával és következményeivel, be tudja mutatni az ország talpra állását, a Horthy-korszak politikai, gazdasági, társadalmi és kulturális viszonyait, felismeri a magyar külpolitika mozgásterének korlátozottságát;
+
+  - össze tudja hasonlítani a nemzetiszocialista és a kommunista ideológiát és diktatúrát, példák segítségével bemutatja a rendszerek embertelenségét és a velük szembeni ellenállás formáit;
+
+  - képes felidézni a második világháború okait, a háború jellemzőit és fontosabb fordulópontjait, ismeri a holokausztot és a hozzávezető vezető okokat;
+
+  - bemutatja Magyarország revíziós lépéseit, a háborús részvételét, az ország német megszállását, a magyar zsidóság tragédiáját, a szovjet megszállást, a polgári lakosság szenvedését, a hadifoglyok embertelen sorsát;
+
+  - össze tudja hasonlítani a nyugati demokratikus világ és a kommunista szovjet blokk politikai és társadalmi berendezkedését, képes jellemezni a hidegháború időszakát, bemutatni a gyarmati rendszer felbomlását és az európai kommunista rendszerek összeomlását;
+
+  - bemutatja a kommunista diktatúra magyarországi kiépítését, működését és változatait, az 1956-os forradalom és szabadságharc okait, eseményeit, és hőseit, összefüggéseiben szemléli a rendszerváltoztatás folyamatát, felismerve annak történelmi jelentőségét;
+
+  - bemutatja a gyarmati rendszer felbomlásának következményeit, India, Kína és a közel-keleti régió helyzetét és jelentőségét;
+
+  - ismeri és reálisan látja a többpólusú világ jellemzőit napjainkban, elhelyezi Magyarországot a globális világ folyamataiban;
+
+  - bemutatja a határon túli magyarság helyzetét, a megmaradásért való küzdelmét Trianontól napjainkig;
+
+  - ismeri a magyar cigányság történetének főbb állomásait, bemutatja jelenkori helyzetét;
+
+  - ismeri a magyarság, illetve a Kárpát-medence népei együttélésének jellemzőit, példákat hoz a magyar nemzet és a közép-európai régió népeinek kapcsolatára, különös tekintettel a visegrádi együttműködésére;
+
+  - ismeri hazája államszervezetét, választási rendszerét;
+
+**A 11–12. évfolyamon a történelem tantárgy alapóraszáma: 186 óra.**
+
+**Négy mélységelvű téma javasolt óraszáma: 15–20 óra**
+
+**A témakörök áttekintő táblázata:**
+
+|                                                                |                      |
+| -------------------------------------------------------------- | -------------------- |
+| **Témakör**                                                    | **Javasolt óraszám** |
+| Az átalakulás évei                                             | 15                   |
+| A két világháború között                                       | 9                    |
+| A Horthy-korszak                                               | 12                   |
+| A második világháború                                          | 19                   |
+| A két világrendszer szembenállása                              | 9                    |
+| Háborútól forradalomig                                         | 12                   |
+| Az 1956-os forradalom és szabadságharc                         | 7                    |
+| A kádári diktatúra                                             | 8                    |
+| A kétpólusú világ és felbomlása                                | 9                    |
+| A rendszerváltoztatás folyamata                                | 9                    |
+| A világ a 21. században                                        | 9                    |
+| Magyarország a 21. században                                   | 10                   |
+| A magyarság és a magyarországi nemzetiségek a 20-21. században | 6                    |
+| Népesedés és társadalom                                        | 6                    |
+| Mérlegen a magyar történelem                                   | 6                    |
+| Ismétlés, felkészülés az érettségire                           | 22                   |
+| Évente két mélységelvű téma                                    | 18                   |
+| **Összes óraszám:**                                            | 186                  |
+
+## 1. Az átalakulás évei
+
+**Javasolt óraszám:** 15 óra
+
+**Ismeretek és fejlesztési feladatok:**
+
+<table>
+<tbody>
+<tr class="odd">
+<td><strong>Részletes követelmények</strong></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><strong>Témák</strong></td>
+<td><strong>Altémák</strong></td>
+<td><strong>Fogalmak és adatok/Lexikák</strong></td>
+<td><strong>Fejlesztési feladatok</strong></td>
+</tr>
+<tr class="odd">
+<td><em>Szocialista és nemzeti törekvések: a birodalmak bomlása</em></td>
+<td><ul>
+<li><blockquote>
+<p>A történelmi monarchiák bukása (Oroszország, Németország, Oszmán Birodalom).</p>
+</blockquote></li>
+<li><blockquote>
+<p>Forradalom és kommunista hatalomátvétel Oroszországban.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Az újraszülető Lengyelország.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Az olasz fasizmus.</p>
+</blockquote></li>
+</ul></td>
+<td><p><em>Fogalmak:</em> bolsevik, szovjet, örmény népirtás, egypártrendszer, fasizmus, Kommunisták Magyarországi Pártja (KMP), tanácsköztársaság, vörösterror, Lenin-fiúk,  ellenforradalom, fehér különítményes megtorlások, “vörös térkép,” kisantant, jóvátétel, Népszövetség, kisebbségvédelem, revízió, Rongyos Gárda.</p>
+<p><em>Személyek:</em> Kemal Atatürk, Vlagyimir I. Lenin, Woodrow Wilson, Georges Clemenceau, Benito Mussolini, Károlyi Mihály, Kun Béla, Horthy Miklós, Apponyi Albert.</p>
+<p><em>Kronológia:</em> 1917 a bolsevik hatalomátvétel, 1918. október 31. forradalom Magyarországon, 1919. március – augusztus a tanácsköztársaság, 1920. június 4. a trianoni békediktátum.</p>
+<p><em>Topográfia:</em> Kárpátalja, Felvidék, Délvidék, Erdély, Burgenland, Csehszlovákia, Jugoszlávia, Ausztria, trianoni Magyarország.</p></td>
+<td><ul>
+<li><p>Közép-Európa első világháború előtti és utáni térképének összehasonlítása, a területi változások azonosítása és indoklása.</p></li>
+<li><p>A bolsevik hatalomátvétel és a lenini proletárdiktatúra működésének bemutatása és értékelése források alapján.</p></li>
+<li><p>Magyarország megszállásának áttekintése térképek, szöveges források segítségével.</p></li>
+<li><p>A Károlyi-időszak kormányzati tevékenységének értékelése.</p></li>
+<li><p>A magyarországi proletárdiktatúra működésének elemzése források alapján.</p></li>
+<li><p>Az első világháborút követő területi és etnikai változások áttekintése térképen.</p></li>
+<li><p>A trianoni békediktátum okainak feltárása.</p></li>
+<li><p>A trianoni békediktátum értékelése a győztes hatalmak közép-európai politikájának tükrében.</p></li>
+<li><p>A trianoni békediktátum területi, népességi, gazdasági és katonai következményeinek bemutatása szöveges és képi források, ábrák és adatsorok segítségével.</p></li>
+<li><p>A trianoni határok végigkövetése, a határmegvonás konkrét okainak feltárása.</p></li>
+<li><p>A vesztes hatalmak területi veszteségeinek összehasonlítása.</p></li>
+</ul></td>
+</tr>
+<tr class="even">
+<td><em>Az Osztrák-Magyar Monarchia és a történelmi Magyarország szétesése</em></td>
+<td><ul>
+<li><blockquote>
+<p>A Monarchia és a történelmi Magyarország bomlása.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A forradalmi átalakulás kísérlete és kudarca.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Cseh és román támadás, a fegyveres ellenállás kérdése.</p>
+</blockquote></li>
+</ul></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><em>A tanácsköztársaság és az ellenforradalom</em></td>
+<td><ul>
+<li><blockquote>
+<p>A kommunista hatalomátvétel.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A proletárdiktatúra és a vörösterror.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Az északi hadjárat és a tanácsköztársaság veresége.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Az ellenforradalom győzelme.</p>
+</blockquote></li>
+</ul></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><em>A Párizs környéki békék </em></td>
+<td><ul>
+<li><blockquote>
+<p>A nagyhatalmi érdekek érvényesítése: az új világrend kialakítása. </p>
+</blockquote></li>
+<li><blockquote>
+<p>Az önrendelkezés elve és a hatalmi érdekek gyakorlata.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Jóvátétel, hadsereg-korlátozás, határváltozások.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A szétszabdalt közép-európai régió.</p>
+</blockquote></li>
+</ul></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><em>A trianoni békediktátum</em></td>
+<td><ul>
+<li><blockquote>
+<p>A magyar ügy a békekonferencián.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A magyar delegáció érvei.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Az ezeréves Magyarország felosztása, a döntés tartalmi elemei.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Az önrendelkezési elv megsértése</p>
+</blockquote></li>
+<li><blockquote>
+<p>A békediktátum etnikai és gazdasági következményei.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Az ellenállás példái: székely hadosztály, Balassagyarmat, Sopron.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A kisantant.</p>
+</blockquote></li>
+</ul></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+### Javasolt tevékenységek
+
+  - Kiselőadás / prezentáció készítése a korszak meghatározó személyiségeiről.
+
+  - Példák gyűjtése az 1919-es rendezetlen politikai viszonyok bemutatására (pl. vörösterror, román megszállás, különítmények, Rongyos Gárda).
+
+  - Bizonyítékok és adatok gyűjtése az elcsatolt  területeknek az ezeréves magyar kultúrában betöltött jelentős szerepéről (pl. történelmi személyiségek, művészek, tudósok, épületek, művészeti alkotások, intézmények).
+
+  - Különböző internetes revíziós témájú szövegek, képek, plakátok, dalok gyűjtése és vizsgálata, elemzése.
+
+  - A várpalotai Trianon Múzeum meglátogatása.
+
+## 2. A két világháború között
+
+**Javasolt óraszám:** 9 óra
+
+**Ismeretek és fejlesztési feladatok:**
+
+<table>
+<tbody>
+<tr class="odd">
+<td><strong>Részletes követelmények</strong></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><strong>Témák</strong></td>
+<td><strong>Altémák</strong></td>
+<td><strong>Fogalmak és adatok/Lexikák</strong></td>
+<td><strong>Fejlesztési feladatok</strong></td>
+</tr>
+<tr class="odd">
+<td><em>A kommunista Szovjetunió</em></td>
+<td><ul>
+<li><blockquote>
+<p>A totális diktatúra és a pártállam kiépítése.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A tervgazdaság</p>
+</blockquote></li>
+<li><blockquote>
+<p>Államosítás és a kollektivizálás.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A terror eszközei és áldozatai.</p>
+</blockquote></li>
+</ul></td>
+<td><p><em>Fogalmak:</em> egypártrendszer, totális állam, személyi kultusz, koncepciós per, GULAG, holodomor, államosítás, kollektivizálás, kulák, tervgazdaság, általános választójog, többpártrendszer, piacgazdaság, New Deal, fasizmus, nemzetiszocializmus, fajelmélet, antiszemitizmus, Führer, SS, Anschluss.</p>
+<p><em>Személyek:</em> Joszif V. Sztálin, Adolf Hitler, Franklin D.Roosevelt.</p>
+<p><em>Kronológia:</em> 1922 a Szovjetunió létrejötte, 1929 a gazdasági világválság kezdete, 1933 a náci hatalomátvétel, 1938 az Anschluss, a müncheni konferencia.</p>
+<p><em>Topográfia:</em> Szovjetunió, Kolima-vidék, Leningrád (Szentpétervár), Moszkva, Berlin.</p></td>
+<td><ul>
+<li><p>A sztálini Szovjetunió működésének bemutatása és értelmezése szöveges, képi források, adatsorok, ábrák segítségével.</p></li>
+<li><p>A világgazdasági válság és a rá adott válaszok bemutatása.</p></li>
+<li><p>A nemzetiszocialista Németország működésének bemutatása és értelmezése szöveges, képi források, adatsorok és  ábrák segítségével.</p></li>
+<li><p>A totális diktatúrák ideológiáinak és működésének összehasonlítása, érvelés a totális diktatúrák ellen.</p></li>
+</ul></td>
+</tr>
+<tr class="even">
+<td><em>A Nyugat és a gazdasági világválság</em></td>
+<td><ul>
+<li><blockquote>
+<p>A demokrácia működése</p>
+</blockquote></li>
+<li><blockquote>
+<p>A tőzsde, a hitelezés és a világkereskedelem összeomlása.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A munkanélküliség.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Állami beavatkozás a gazdaságba.</p>
+</blockquote></li>
+</ul></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><em>A nemzetiszocialista Németország</em></td>
+<td><ul>
+<li><blockquote>
+<p>A nemzetiszocialista ideológia és mozgalom.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A totális állam kiépítése.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A terror eszközei.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Terjeszkedés a háború előtt: Ausztria és Csehszlovákia.</p>
+</blockquote></li>
+</ul></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+### Javasolt tevékenységek
+
+  - Visszaemlékezések, források gyűjtése és prezentáció készítése a sztálini terror megnyilvánulásairól (pl. GULAG, holodomor, koncepciós perek).
+
+  - Különböző képi és szöveges források gyűjtése a sztálini diktatúra hétköznapjairól.
+
+  - Folyamatábra készítése a világgazdasági válság kirobbanásáról és kezeléséről, a folyamatábra szemléltetése az Amerikai Egyesült Államok példáján.
+
+  - Prezentáció készítése a náci terror megnyilvánulásairól (pl. kristályéjszaka, GESTAPO, koncentrációs táborok stb.).
+
+  - A korszak történelmi folyamatait reprezentáló statisztikai táblázatok, grafikonok, diagramok gyűjtése és tanulmányozása (pl. a német választások eredményei 1928-1933 között; a munkanélküliség alakulása az Egyesült Államokban 1929-1937 között).
+
+  - A korszakkal kapcsolatos dokumentum- és játékfilmek/filmrészletek megtekintése és értelmezése.
+
+## 3. A Horthy-korszak
+
+**Javasolt óraszám:** 12 óra
+
+**Ismeretek és fejlesztési feladatok:**
+
+<table>
+<tbody>
+<tr class="odd">
+<td><strong>Részletes követelmények</strong></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><strong>Témák</strong></td>
+<td><strong>Altémák</strong></td>
+<td><strong>Fogalmak és adatok/Lexikák</strong></td>
+<td><strong>Fejlesztési feladatok</strong></td>
+</tr>
+<tr class="odd">
+<td><em>Talpra állás Trianon után</em></td>
+<td><ul>
+<li><blockquote>
+<p>A király nélküli alkotmányos királyság.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Bethlen István miniszterelnöksége: a korlátozott parlamentarizmus rendszere a konszolidáció szolgálatában.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A gazdaság szerkezetváltása az 1920-as években. </p>
+</blockquote></li>
+<li><blockquote>
+<p>A klebelsbergi oktatás- és kultúrpolitika eredményei.</p>
+</blockquote></li>
+</ul></td>
+<td><p><em>Fogalmak:</em> kormányzó, Egységes Párt, numerus clausus, pengő, Magyar Nemzeti Bank, Szent István-i állameszme, magyar népi mozgalom, nyilasok.</p>
+<p><em>Személyek:</em> Bethlen István, Teleki Pál, Klebelsberg Kuno, Gömbös Gyula, Weiss Manfréd, Szent-Györgyi Albert.</p>
+<p><em>Kronológia:</em> 1920–1944 a Horthy-rendszer, 1921–31 Bethlen miniszterelnöksége, 1938 az első bécsi döntés, 1939 Kárpátalja visszacsatolása.</p></td>
+<td><ul>
+<li><p>A magyarországi korlátozott parlamentarizmus rendszerének értékelése.</p></li>
+<li><p>A korabeli politikai berendezkedés összehasonlítása más (közép-) európai országokéval.</p></li>
+<li><p>A bethleni gazdasági konszolidáció folyamatának és eredményeinek áttekintése képek, ábrák és adatsorok alapján.</p></li>
+<li><p>A magyarországi politikai irányzatok azonosítása szöveges források alapján.</p></li>
+<li><p>Szöveges források olvasása és értelmezése a Horthy-korszak főbb társadalmi kérdéseiről (pl. oktatás, társadalmi mobilitás, antiszemitizmus, földkérdés).</p></li>
+<li><p>A magyar külpolitika céljainak, lehetőségeinek és a revízió eredményeinek értékelése, elemzése térkép és statisztikai adatok alapján.</p></li>
+<li><p>A Horthy-korszak gazdasági, kulturális, politikai és társadalmi eredményeinek és problémáinak felidézése.</p></li>
+<li><p>A társadalmi változások bemutatása szöveges és képi források alapján.</p></li>
+</ul></td>
+</tr>
+<tr class="even">
+<td><em>A 1930-as évek Magyarországa</em></td>
+<td><ul>
+<li><blockquote>
+<p>A válság és hatása.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A belpolitika irányváltásai.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A külpolitika irányai és lehetőségei – a revízió első eredményei.</p>
+</blockquote></li>
+</ul></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><em>Ideológia, kultúra, társadalom</em></td>
+<td><ul>
+<li><blockquote>
+<p>Az ellenforradalmi gondolat: keresztény-nemzeti eszme és konzervativizmus.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A politikai antiszemitizmus.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Életmód, szabadidő, sport.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Társadalmi rétegződés és érintkezési formák. </p>
+</blockquote></li>
+<li><blockquote>
+<p>A földkérdés.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Tudomány és művészet a két világháború között.</p>
+</blockquote></li>
+</ul></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+### Javasolt tevékenységek
+
+  - Kiselőadás / prezentáció készítése a korszak kiemelkedő szereplőiről (pl. Horthy, Bethlen, Teleki).
+
+  - Kormánypárti és ellenzéki választási plakát készítése egy-egy fontos témakörben.
+
+  - A Horthy-korszak gazdasági fejlődéséről tanúskodó képek gyűjtése és bemutatása (pl. Csepeli Szabadkikötő, villamosított vasútvonal stb.).
+
+  - Folyamatábra készítése a Horthy-korszak pártviszonyairól, korlátozott parlamentáris rendszeréről.
+
+  - Vázlatkészítés idézetek és képi források felhasználásával a Horthy-korszak társadalmáról.
+
+## 4. A második világháború
+
+**Javasolt óraszám:** 19 óra
+
+**Ismeretek és fejlesztési feladatok:**
+
+<table>
+<tbody>
+<tr class="odd">
+<td><strong>Részletes követelmények</strong></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><strong>Témák</strong></td>
+<td><strong>Altémák</strong></td>
+<td><strong>Fogalmak és adatok/Lexikák</strong></td>
+<td><strong>Fejlesztési feladatok</strong></td>
+</tr>
+<tr class="odd">
+<td><em>A tengelyhatalmak sikerei</em></td>
+<td><ul>
+<li><blockquote>
+<p>Közép-Európa felosztása (Molotov-Ribbentrop paktum): német és szovjet megszállás.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Nyugat-Európa lerohanása.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Német támadás a Szovjetunió ellen.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Japán támadás az Egyesült Államok ellen.</p>
+</blockquote></li>
+</ul></td>
+<td><p><em>Fogalmak:</em> Molotov–Ribbentrop-paktum, tengelyhatalmak, szövetségesek, totális háború, kiugrási kísérlet, zsidótörvények, munkaszolgálat, gettó, deportálás, koncentrációs tábor, haláltábor, népirtás, holokauszt, partizán, Vörös Hadsereg, jaltai konferencia, háborús bűn, malenkij robot.</p>
+<p><em>Személyek:</em> Winston Churchill, Charles de Gaulle, Bárdossy László, Kállay Miklós, Bajcsy-Zsilinszky Endre, Edmund Veesenmayer, Szálasi Ferenc, Raoul Wallenberg, Salkaházi Sára, Apor Vilmos, Sztehlo Gábor, Richter Gedeon.</p>
+<p><em>Kronológia:</em> 1938 az első zsidótörvény, 1939 a második zsidótörvény, 1939–45 a második világháború, 1939. szeptember 1. Lengyelország lerohanása, 1940 a második bécsi döntés, 1941. április Jugoszlávia megtámadása, 1941. június 22. a Szovjetunió megtámadása; 1941. június 27. Magyarország deklarálja a hadiállapot beálltát, 1941. december 7. Pearl Harbor bombázása, 1941 a harmadik zsidótörvény, 1943. január vereség a Donnál, 1943. február a sztálingrádi csata vége, 1944. március 19. Magyarország német megszállása, 1944. június 6. partraszállás Normandiában, 1944. október 15. a kiugrási kísérlet, 1945. április a háború vége Magyarországon, 1945. május 9. az európai háború vége, 1945. augusztus 6. atomtámadás Hirosima ellen.</p>
+<p><em>Topográfia:</em> Sztálingrád, Normandia, Pearl Harbor, Hirosima, Észak-Erdély, Don-kanyar, Kamenyec Podolszk Árpád-vonal, Auschwitz, Újvidék, Drezda, Szolyva, Csúrog.</p></td>
+<td><ul>
+<li><blockquote>
+<p>A tengelyhatalmak 1939 előtti terjeszkedésének végigkövetése és értelmezése térkép alapján.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A második világháború főbb eseményeinek azonosítása térképeken.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A háború fegyvereinek és borzalmainak bemutatása különböző források alapján.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A második világháború jellegzetességeinek bemutatása  ábrák, adatsorok, képi és szöveges források alapján.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A magyar területi revízió megvalósulásának bemutatása térképek, képek, szöveges források és adatsorok alapján.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A magyar háborús szerepvállalás legfontosabb eseményeinek és az ország veszteségeinek bemutatása térképeken, képi és szöveges források segítségével (pl. Don-kanyar, Árpád-vonal, tordai ütközet, Budapest ostroma).</p>
+</blockquote></li>
+<li><blockquote>
+<p>A magyar szellemi és kulturális élet II. világháború idején bekövetkező veszteségeinek  (híres magyar tudósok, művészek származásuk vagy politikai nézeteik miatti emigrációja) értékelése.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A holokauszt folyamatának áttekintése képi források és szöveges visszaemlékezések feldolgozásával.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A nyilas terror áttekintése források alapján.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A tömeges deportálások és a szovjet megszállás  jellemzőinek és következményeinek áttekintése képi és szöveges források segítségével.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A határon kívül rekedt magyarság második világháború végi tragédiáinak bemutatása különböző források alapján.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Magyarország világháborúbeli sorsának, szerepének és mozgásterének bemutatása, valamint összehasonlítása más közép-európai országokéval.</p>
+</blockquote></li>
+</ul></td>
+</tr>
+<tr class="even">
+<td><em>A szövetségesek győzelme</em></td>
+<td><ul>
+<li><blockquote>
+<p>A keleti és a nyugati front.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A csendes-óceáni hadszíntér, az atombomba.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Európa felosztása</p>
+</blockquote></li>
+</ul></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><em>Magyarország a második világháborúban: mozgástér és kényszerpálya</em></td>
+<td><ul>
+<li><blockquote>
+<p>A területi revízió lépései.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A fegyveres semlegesség.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A Szovjetunió elleni háború.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A Don-kanyar.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A német megszállás és következményei.</p>
+</blockquote></li>
+</ul></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><em>A holokauszt</em></td>
+<td><ul>
+<li><blockquote>
+<p>Az „Endlösung” programja, a Wannsee-i konferencia.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Koncentrációs és megsemmisítő táborok.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Deportálások, kísérlet a zsidóság és a cigányság megsemmisítésére Európában.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A magyarországi zsidótörvények. </p>
+</blockquote></li>
+<li><blockquote>
+<p>A magyar holokauszt.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Áldozatok és bűnösök, felelősség és embermentés: néhány kiemelkedő példa</p>
+</blockquote></li>
+</ul></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><em>A második világháború jellemzői</em></td>
+<td><ul>
+<li><blockquote>
+<p>A villámháború és következményei.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A világháború fegyverei</p>
+</blockquote></li>
+<li><blockquote>
+<p>Háborús bűnök és a polgári lakosság elleni terror.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Az ellenállás formái.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A háború utáni számonkérések és a nürnbergi per.</p>
+</blockquote></li>
+</ul></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><em>Az ország pusztulása, deportálások a GULAG-ra</em></td>
+<td><ul>
+<li><blockquote>
+<p>A kiugrási kísérlet és a nyilas uralom.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A magyarországi hadszíntér, Budapest ostroma.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Megszabadulás és szovjet megszállás.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Az ország kifosztása, szovjet deportálások és tömeges erőszak.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A határon túli magyarok jogfosztása, megtorlások (délvidéki vérengzés, kárpátaljai deportálás, felvidéki jogfosztás).</p>
+</blockquote></li>
+</ul></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+### Javasolt tevékenységek
+
+  - A nagyhatalmak (Németország, Szovjetunió, Nagy-Britannia, Franciaország) világháború kitörésében játszott szerepének megvitatása.
+
+  - Beszámoló készítése az európai és/vagy csendes-óceáni hadszínterek egyik jelentős csatájáról.
+
+  - A korszakkal kapcsolatos filmek / filmrészletek megtekintése és értelmezése.
+
+  - A magyar honvédség háborús részvétele főbb helyszíneinek nyomon követése térképen.
+
+  - Családi történetek, fényképek, tárgyak gyűjtése feldolgozása, bemutatása a második világháborúból.
+
+  - Emigrációba kényszerült híres magyar tudósok, művészek életművének bemutatása.
+
+  - Kiselőadás készítése a budapesti gettó életéről visszaemlékezések alapján.
+
+  - Második világháborús emlékművek, emlékhelyek, sírok felkeresése a lakóhelyen és környékén.
+
+  - A Holokauszt Emlékközpont meglátogatása.
+
+  - A felelősség és embermentés kérdéseinek megbeszélése.
+
+  - A Malenkij Robot Múzeum meglátogatása.
+
+  - Beszámoló készítése a határon túli magyarság körében folytatott etnikai tisztogatásokról források alapján.
+
+  - Játék- vagy dokumentumfilmek megtekintése a határon túli magyarság körében folytatott etnikai tisztogatásokról (pl. Örök tél, Népirtás Pozsonyligetfalun).
+
+## 5. A két világrendszer szembenállása
+
+**Javasolt óraszám:** 9 óra
+
+**Ismeretek és fejlesztési feladatok:**
+
+<table>
+<tbody>
+<tr class="odd">
+<td><strong>Részletes követelmények</strong></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>  <strong>Témák</strong></td>
+<td><strong>Altémák</strong></td>
+<td><strong>Fogalmak és adatok/Lexikák</strong></td>
+<td><strong>Fejlesztési feladatok</strong></td>
+</tr>
+<tr class="odd">
+<td><em>A kétpólusú világ kialakulása</em></td>
+<td><ul>
+<li><blockquote>
+<p>Az ENSZ megalapítása.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A párizsi béke.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Kitelepítések és lakosságcserék a háború után.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A szovjet-amerikai szembenállás és a két érdekszféra kialakulása.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A két világrend jellemzői.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A két Németország.</p>
+</blockquote></li>
+</ul></td>
+<td><p><em>Fogalmak:</em> Egyesült Nemzetek Szervezete (ENSZ), kitelepítés, hidegháború, vasfüggöny, szuperhatalom, Kölcsönös Gazdasági Segítség Tanácsa (KGST), Észak-atlanti Szerződés Szervezete (NATO), Varsói Szerződés, kétpólusú világ, a berlini fal.</p>
+<p><em>Személyek:</em> Kliment J. Vorosilov, Harry S. Truman, Nyikita Sz. Hruscsov, John F. Kennedy, Mahátma Gandhi, Mao Ce-tung.</p>
+<p><em>Kronológia:</em> 1945 az ENSZ létrejötte, 1947 a párizsi béke, a hidegháború kezdete, India függetlenné válása, 1948 Izrael Állam megalapítása, 1949 az NSZK és az NDK megalakulása, kommunista fordulat Kínában, 1955 a Varsói Szerződés létrehozása.</p>
+<p><em>Topográfia:</em> Berlin, Németországi Szövetségi Köztársaság (NSZK), Német Demokratikus Köztársaság (NDK), Közel-Kelet, Izrael Észak- és Dél-Korea, Vietnam, Kuba, Afganisztán.</p></td>
+<td><ul>
+<li><blockquote>
+<p>A második világháború után kialakult világrend áttekintése.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A gyarmati rendszer felbomlása főbb állomásainak felidézése.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A két német állam létrejötte folyamatának és következményeinek bemutatása.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Az arab-izraeli konfliktus főbb okainak és jellemzőinek feltárása.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A nyugati és a keleti blokk gazdasági, társadalmi és politikai rendszerének összehasonlítása.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A nyugati világ és a keleti blokk életkörülményeinek összehasonlítása.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A hidegháborús korszak alapvető jellemzőinek, történelmi szereplőinek azonosítása képek, szöveges források alapján.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A hidegháború korabeli és a mai világhatalmi viszonyok összehasonlítása.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Gyűjtött információk értelmezése a hidegháború korának néhány világpolitikai válságáról (pl. Korea, Kuba, Berlin).</p>
+</blockquote></li>
+</ul></td>
+</tr>
+<tr class="even">
+<td><em>A hidegháború</em></td>
+<td><ul>
+<li><blockquote>
+<p>A szuperhatalmak versengése: fegyverkezés, űrprogram, propaganda.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A szembenállás és enyhülés hullámai.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Hidegháborús konfliktusok (Korea, Szuez, Kuba, Vietnam, Afganisztán).</p>
+</blockquote></li>
+</ul></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><em>A gyarmatok felszabadulása</em></td>
+<td><ul>
+<li><blockquote>
+<p>India függetlenné válása.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Kommunista fordulat Kínában.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A gyarmatbirodalmak felbomlása.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Izrael megalapítása.</p>
+</blockquote></li>
+</ul></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+### Javasolt tevékenységek
+
+  - Beszélgetés a kollektív bűnösség elvéről.
+
+  - A kitelepítések irányainak és létszámának grafikus ábrázolása.
+
+  - Információk gyűjtése a főbb hidegháborús konfliktusokról (Korea, Szuez, Kuba, Vietnam).
+
+  - Beszámoló készítése a Mao Ce-tung-i diktatúra jellemzőiről (pl. „nagy ugrás”, kulturális forradalom).
+
+  - Képek, idézetek gyűjtése Mahátma Gandhi életútjáról.
+
+  - A jóléti állam jellemzőinek összegyűjtése és értékelése.
+
+  - Internetes és egyéb források alapján képes gyűjtemény összeállítása az új tömegkultúra jellemző tárgyairól, eseményeiről.
+
+## 6. Háborútól forradalomig
+
+**Javasolt óraszám:** 12 óra
+
+**Ismeretek és fejlesztési feladatok:**
+
+<table>
+<tbody>
+<tr class="odd">
+<td><strong>Részletes követelmények</strong></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>  <strong>Témák</strong></td>
+<td><strong>Altémák</strong></td>
+<td><strong>Fogalmak és adatok/Lexikák</strong></td>
+<td><strong>Fejlesztési feladatok</strong></td>
+</tr>
+<tr class="odd">
+<td><em>Az átmenet évei Magyarországon</em></td>
+<td><ul>
+<li><blockquote>
+<p>A háború utáni újrakezdés: a kommunisták térnyerése és az újjáépítés.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A történelmi berendezkedés felszámolása: földosztás, népbíróságok, köztársaság.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A korlátozott többpártrendszer: választások 1945, 1947.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Bűnbakká tett németek és magyarok: a németek kitelepítése, szlovák-magyar lakosságcsere</p>
+</blockquote></li>
+</ul></td>
+<td><p><em>Fogalmak:</em> népbíróság, háborús bűnös, földosztás, forint, Magyar Kommunista Párt, Független Kisgazdapárt, szalámitaktika, B-listázás, Magyar Dolgozók Pártja,  népköztársaság, pártállam, internálás, Államvédelmi Hatóság (ÁVH), tanácsrendszer, beszolgáltatás, aranycsapat.</p>
+<p><em>Személyek:</em> Tildy Zoltán, Kovács Béla, Mindszenty József, Rákosi Mátyás, Rajk László, Sulyok Dezső, Slachta Margit.</p>
+<p><em>Kronológia:</em> 1945 szovjet megszállás, választás Magyarországon, földosztás, 1947 kékcédulás választások, 1948 MDP megalakulása, 1948–1956 a Rákosi-diktatúra, 1949 kommunista alkotmány.</p>
+<p><em>Topográfia</em>: Sztálinváros (Dunaújváros), Recsk Hortobágy, Jarek, Duna-delta.</p></td>
+<td><ul>
+<li><blockquote>
+<p>Magyarország szovjetizálása főbb jellemzőinek bemutatása.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A korlátozott magyar parlamentarizmus és az egypárti diktatúra összehasonlítása.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A demokrácia felszámolása során alkalmazott eszközök azonosítása konkrét példákkal alátámasztva.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Annak felismerése, hogy Magyarország szovjet megszállása miként határozta meg az ország sorsát.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A kommunista diktatúra sajátosságainak bemutatása a Rákosi-rendszer példáján.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A diktatúra kulturális jellemzőinek felismerése képeken, művészeti alkotásokon.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A társadalom fölött gyakorolt totális kontroll eszközeinek azonosítása különböző források segítségével.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A határon túli magyarok megpróbáltatásainak bemutatása különböző források alapján.</p>
+</blockquote></li>
+</ul></td>
+</tr>
+<tr class="even">
+<td><em>A szovjetizálás Magyarországon</em></td>
+<td><ul>
+<li><blockquote>
+<p>Az egypárti diktatúra kiépítése.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Államosítás és kollektivizálás.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Koncepciós perek, egyházüldözés.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A keleti blokk.</p>
+</blockquote></li>
+</ul></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><em>A Rákosi-diktatúra</em></td>
+<td><ul>
+<li><blockquote>
+<p>Az erőltetett iparosítás.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A pártállam.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A terror - az ÁVH működése.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A diktatúra hatása a mindennapi életre.</p>
+</blockquote></li>
+</ul></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><em>Deportálások békeidőben</em></td>
+<td><ul>
+<li><blockquote>
+<p>A deportálások és üldözések okai.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Magyarországi kitelepítések és munkatáborok.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A határon túli magyarok megpróbáltatásai: deportálások Csehszlovákiában; szovjet, román és jugoszláv munkatáborok.</p>
+</blockquote></li>
+</ul></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+### Javasolt tevékenységek
+
+  - Választási plakátok gyűjtése és értelmezése.
+
+  - A kékcédulás választások feldolgozása adatsorok és a választási törvény értelmezésével.
+
+  - Beszélgetés az átmeneti időszak demokratikus jellegéről.
+
+  - Internetes gyűjtés a Rákosi-időszak vicceiből és karikatúráiból – a mögöttük kirajzolódó korkép értékelése.
+
+  - Családi történetek, fényképek, tárgyak gyűjtése feldolgozása, bemutatása a Rákosi időszakból.
+
+  - Egy kiemelkedő koncepciós per (pl. Mindszenty-per) feldolgozása.
+
+  - A Terror Háza Múzeum meglátogatása.
+
+  - Tanulmányi kirándulás a Recski Nemzeti Emlékparkba.
+
+  - Beszámoló készítése a diktatúra prominens szereplőiről, felelőseiről (pl. Rákosi Mátyás, Gerő Ernő, Péter Gábor, Rajk László).
+
+  - Kommunista propagandaplakátok gyűjtése és értelmezése.
+
+  - A korszakkal kapcsolatos filmek / filmrészletek megtekintése és értelmezése.
+
+  - Beszámoló készítése a korabeli magyar sporteredményekről.
+
+  - Saját vélemény megfogalmazása a Rákosi-diktatúráról.
+
+  - Kitelepítésekről, deportálásokról szóló visszaemlékezések részleteinek közös feldolgozása.
+
+## 7. Az 1956-os forradalom és szabadságharc
+
+**Javasolt óraszám:** 7 óra
+
+**Ismeretek és fejlesztési feladatok:**
+
+<table>
+<tbody>
+<tr class="odd">
+<td><strong>Részletes követelmények</strong></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>  <strong>Témák</strong></td>
+<td><strong>Altémák</strong></td>
+<td><strong>Fogalmak és adatok/Lexikák</strong></td>
+<td><strong>Fejlesztési feladatok</strong></td>
+</tr>
+<tr class="odd">
+<td><em>A forradalom</em></td>
+<td><ul>
+<li><blockquote>
+<p>A forradalom okai és közvetlen előzményei.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A forradalom céljai.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Békés tüntetésből fegyveres felkelés – október 23.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A nemzet forradalma (Forradalmi Bizottságok, Munkástanácsok, nemzeti összefogás).</p>
+</blockquote></li>
+</ul></td>
+<td><p><em>Fogalmak:</em> MEFESZ,   pesti srácok, Molotov-koktél, munkástanács, sortüzek.</p>
+<p><em>Személyek:</em> Gerő Ernő, Maléter Pál, Nagy Imre, Iván Kovács László, Pongrátz Gergely, Kádár János.</p>
+<p><em>Kronológia:</em> 1956. október 23. a forradalom kitörése, 1956. október 25. a Kossuth téri sortűz, 1956. november 4. a szovjet támadás.</p>
+<p><em>Topográfia:</em> Kossuth tér, Corvin köz (Budapest), Mosonmagyaróvár, Salgótarján.</p></td>
+<td><ul>
+<li><p>Az 1956-os magyar forradalom és szabadságharc okainak és főbb fordulópontjai-nak bemutatása.</p></li>
+<li><p>1956 szimbólumainak értelmezése.</p></li>
+<li><p>Az 1956-os magyar forradalom és szabadságharc nemzetközi összefüggéseinek bemutatása.</p></li>
+<li><p>A forradalom és szabadságharc értékelése.</p></li>
+</ul></td>
+</tr>
+<tr class="even">
+<td><em>A nemzet szabadságharca</em></td>
+<td><ul>
+<li><blockquote>
+<p>Szabadságharc a fővárosban és vidéken.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A fegyveres ellenállás hősei.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Út a győzelemig és a kormánypolitika változásai.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A szabadságharc nemzetközi háttere és visszhangja a nagyvilágban.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Szovjet intervenció: a szabadságharc utóvédharcai és leverése.</p>
+</blockquote></li>
+</ul></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+### Javasolt tevékenységek
+
+  - Korabeli dokumentumok elemzése.
+
+  - A forradalommal és szabadságharccal kapcsolatos archív- és játékfilmek/filmrészletek megtekintése és értelmezése.
+
+  - Az 1956-os forradalom külpolitikai hátterének vizsgálata.
+
+  - Információk gyűjtése a forradalom és szabadságharc kiemelkedő hőseiről és mártírjairól.
+
+  - A Terror Háza Múzeum meglátogatása.
+
+## 8. A kádári diktatúra
+
+**Javasolt óraszám:** 8 óra
+
+**Ismeretek és fejlesztési feladatok:**
+
+<table>
+<tbody>
+<tr class="odd">
+<td><strong>Részletes követelmények</strong></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>  <strong>Témák</strong></td>
+<td><strong>Altémák</strong></td>
+<td><strong>Fogalmak és adatok/Lexikák</strong></td>
+<td><strong>Javasolt tevékenységek</strong></td>
+</tr>
+<tr class="odd">
+<td><em>A pártállami diktatúra és működése</em></td>
+<td><ul>
+<li><blockquote>
+<p>A megtorlások időszaka, formái és áldozatai.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A pártállam és szervezetei.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Az erőszakos téeszesítés – a mezőgazdaság szocialista átszervezése.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Hamis társadalmi béke – a kádári alku.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Az elnyomás változó formái.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Ellenőrzött társadalom, tömegszervezetek.</p>
+</blockquote></li>
+</ul></td>
+<td><p><em>Fogalmak</em>: Magyar Szocialista Munkáspárt (MSZMP), munkásőrség, Kommunista Ifjúsági Szövetség (KISZ), úttörő, termelőszövetkezet, háztáji, III/III. ügyosztály, új gazdasági mechanizmus, hiánygazdaság, maszek, gulyáskommunizmus, „három T”.</p>
+<p><em>Kronológia</em>: 1956–1989 a Kádár-rendszer, 1958 Nagy Imre és társainak kivégzése, 1968 az új gazdasági mechanizmus bevezetése.</p></td>
+<td><ul>
+<li><blockquote>
+<p>A megtorlás mértékének és jellegének vizsgálata.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A „kádári alku” fogalmának értelmezése.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Az elnyomás formáinak bemutatása a Kádár-rendszer időszakában.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A téeszesítés eszközeinek összehasonlítása a Rákosi-diktatúra időszakával.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A gazdaság, társadalom és életmód főbb jellemzőinek bemutatása a Kádár-rendszer idején.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A kultúrpolitika jellemzőinek értelmezése, módszereinek bemutatása.</p>
+</blockquote></li>
+</ul></td>
+</tr>
+<tr class="even">
+<td><em>Gazdaság, társadalom, életmód</em></td>
+<td><ul>
+<li><blockquote>
+<p>A tervgazdaság és a KGST.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A gazdasági reform és a második gazdaság.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A „gulyáskommunizmus”  – az életszínvonal politika.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Népesedési folyamatok.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Kultúrpolitika, korlátozott nyilvánosság.</p>
+</blockquote></li>
+</ul></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+### Javasolt tevékenységek
+
+  - Információk gyűjtése a kultúrpolitika jellemzőiről, módszereiről.
+
+  - Internetes gyűjtés a kádári időszak vicceiből. A mögöttük kirajzolódó korkép értékelése.
+
+  - Családi történetek, fényképek, tárgyak gyűjtése, feldolgozása, bemutatása a kádári diktatúra időszakából.
+
+  - Interjú készítése egy családtaggal, ismerőssel a Kádár-korszakról.
+
+  - A Kádár-rendszer korszakával kapcsolatos játékfilm/ filmrészlet megtekintése és értelmezése.
+
+## 9. A kétpólusú világ és felbomlása
+
+**Javasolt óraszám:** 9 óra
+
+**Ismeretek és fejlesztési feladatok:**
+
+<table>
+<tbody>
+<tr class="odd">
+<td><strong>Részletes követelmények</strong></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>  <strong>Témák</strong></td>
+<td><strong>Altémák</strong></td>
+<td><strong>Fogalmak és adatok/Lexikák</strong></td>
+<td><strong>Fejlesztési feladatok</strong></td>
+</tr>
+<tr class="odd">
+<td><em>A Nyugat a 20. század második felében</em></td>
+<td><ul>
+<li><blockquote>
+<p>A nyugati demokráciák.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A Nyugat gazdasági eredményei és a jóléti állam – a szociális piacgazdaság.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Emancipáció, szekularizáció, individualizáció.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Az 1968-as mozgalmak és a popkultúra – az új tömegkultúra kialakulása.</p>
+</blockquote></li>
+</ul></td>
+<td><p><em>Fogalmak:</em> jóléti állam, prágai tavasz, Szolidaritás.</p>
+<p><em>Személyek:</em> Nicolae Ceauşescu, Mihail Sz. Gorbacsov, Lech Wałȩsa, VI. Pál, II. János Pál, Ronald Reagan, Helmuth Kohl.</p>
+<p><em>Kronológia:</em> 1975 a helsinki értekezlet, 1989 a berlini fal lebontása, rendszerváltoztatás Közép-Európában, 1991 a Szovjetunió felbomlása, 1991–95 a délszláv háború.</p>
+<p><em>Topográfia:</em> Szlovákia, Ukrajna.</p></td>
+<td><ul>
+<li><p>A fogyasztói társadalom és a jóléti állam jellemzőinek és problémáinak felidézése.</p></li>
+<li><p>A társadalom, a demográfia és az életmód jellegzetességeinek bemutatása a nyugati világban.</p></li>
+<li><p>A tömegkultúra jelenségeinek bemutatása konkrét példák alapján.</p></li>
+<li><p>A kétpólusú világ megszűnéséhez vezető okok felidézése.</p></li>
+<li><p>A közép-európai ellenzéki mozgalmak jelentőségének bemutatása.</p></li>
+<li><p>A délszláv háború okainak feltárása.</p></li>
+<li><p>A közép-európai régió államai változásának nyomon követése térképen.</p></li>
+</ul></td>
+</tr>
+<tr class="even">
+<td><em>A szocializmus válsága és megrendülése</em></td>
+<td><ul>
+<li><blockquote>
+<p>Az olajválság és hatásai a tőkés, illetve szocialista országokra.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A kis hidegháború.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A katonai egyensúly felborulása: a Szovjetunió gazdasági kimerülése.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Az ellenzék megszerveződése a szocialista országokban.</p>
+</blockquote></li>
+</ul></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><em>A kétpólusú világ megszűnése</em></td>
+<td><ul>
+<li><blockquote>
+<p>Németország újraegyesítése – a magyar szerepvállalás.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A Szovjetunió felbomlása.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A kommunista diktatúrák bukása Közép-Európában.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Jugoszlávia felbomlása, a délszláv háború.</p>
+</blockquote></li>
+</ul></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+### Javasolt tevékenységek
+
+  - Esszé készítése Mindennapi élet a vasfüggöny két oldalán címmel.
+
+  - Tények és képek gyűjtése 1968 eseményeiből a nyugati és keleti tömbből. Párhuzamosságok keresése.
+
+  - 1968-as gondolatokat megjelenítő könnyűzenei számok meghallgatása és a szöveg mondanivalójának értelmezése.
+
+  - A korszakot megjelenítő játékfilmek megtekintése és elemzése.
+
+## 10. A rendszerváltoztatás folyamata
+
+**Javasolt óraszám:** 9 óra
+
+**Ismeretek és fejlesztési feladatok:**
+
+<table>
+<tbody>
+<tr class="odd">
+<td><strong>Részletes követelmények</strong></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>  <strong>Témák</strong></td>
+<td><strong>Altémák</strong></td>
+<td><strong>Fogalmak és adatok/Lexikák</strong></td>
+<td><strong>Fejlesztési feladatok</strong></td>
+</tr>
+<tr class="odd">
+<td><em>A Kádár-rendszer végnapjai</em></td>
+<td><ul>
+<li><blockquote>
+<p>Az adósságválság kialakulása és következményei.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Az állampárt válsága: reformkommunisták és a keményvonalasok.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Az ellenzék megszerveződése</p>
+</blockquote></li>
+<li><blockquote>
+<p>Az 1989-es év főbb politikai eseményei, a tárgyalásos forradalom; alkotmánymódosítás.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A harmadik Magyar Köztársaság kikiáltása.</p>
+</blockquote></li>
+</ul></td>
+<td><p><em>Fogalmak:</em> adósságspirál, Magyar Demokrata Fórum (MDF), Szabad Demokraták Szövetsége (SZDSZ), Magyar Szocialista Párt (MSZP), Fiatal Demokraták Szövetsége (Fidesz), Kereszténydemokrata Néppárt (KDNP), Nemzeti Kerekasztal, rendszerváltoztatás, visegrádi együttműködés, privatizáció, kárpótlás, jogállam, Alkotmánybíróság, sarkalatos törvények, népszavazás.</p>
+<p><em>Személyek:</em> Pozsgay Imre, Németh Miklós, Horn Gyula, Antall József, Göncz Árpád, Orbán Viktor.</p>
+<p><em>Kronológia:</em> 1987 a lakiteleki találkozó, 1989–1990 a rendszerváltoztatás, 1990 az első szabad választások, 1991 a szovjet csapatok kivonulása Magyarországról.</p></td>
+<td><ul>
+<li><p>A szocializmus válságának elemzése (külső és belső tényezők feltárása) Magyarországon.</p></li>
+<li><p>A magyarországi rendszerváltoztatás főbb állomásainak felidézése.</p></li>
+<li><p>A gazdasági rendszerváltoztatás legfontosabb kérdéseinek áttekintése és értékelése.</p></li>
+<li><p>A gazdaság és a társadalom átalakulása főbb tendenciáinak megfigyelése grafikonok és adatsorok alapján.</p></li>
+<li><p>A kádári diktatúra és az új demokratikus rendszer összehasonlítása.</p></li>
+</ul></td>
+</tr>
+<tr class="even">
+<td><em>A rendszerváltoztatás</em></td>
+<td><ul>
+<li><blockquote>
+<p>Az új pártok – különböző ideológiák.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Az 1990. évi parlamenti és önkormányzati választás.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Az Antall-kormány megalakulása.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A rendszerváltoztatás ellentmondásai: alkuk és kompromisszumok (az elmaradt elszámoltatás).</p>
+</blockquote></li>
+</ul></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><em>A piacgazdaság kiépülése</em></td>
+<td><ul>
+<li><blockquote>
+<p>A privatizáció – vesztesek és nyertesek.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A piacgazdaság kiépítése – a külföldi tőke szerepe.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A külkereskedelem átalakulása.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Gazdasági szerkezetváltás.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A társadalom átalakulása.</p>
+</blockquote></li>
+</ul></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+### Javasolt tevékenységek
+
+  - A rendszerváltó pártok plakátjainak és jelszavainak elemzése.
+
+  - Kronológia készítése a rendszerváltoztatás legfontosabb történéseiről.
+
+  - Magyarország államberendezkedésének nyomon kísérése a 20. század folyamán.
+
+  - Interjú készítése egy családtaggal, ismerőssel a rendszerváltoztatás időszakáról.
+
+  - Gazdasági és társadalmi diagramok, grafikonok elemzése a szocializmus válságának időszakából.
+
+## 11. A világ a 21. században
+
+**Javasolt óraszám:** 9 óra
+
+**Ismeretek és fejlesztési feladatok:**
+
+<table>
+<tbody>
+<tr class="odd">
+<td><strong>Részletes követelmények</strong></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>  <strong>Témák</strong></td>
+<td><strong>Altémák</strong></td>
+<td><strong>Fogalmak és adatok/Lexikák</strong></td>
+<td><strong>Fejlesztési feladatok</strong></td>
+</tr>
+<tr class="odd">
+<td><em>Az átalakuló világ</em></td>
+<td><ul>
+<li><blockquote>
+<p>A világgazdaság hagyományos centrumai: az Amerikai Egyesült Államok és szövetségesei.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A világpolitika és világgazdaság új súlypontjai: Oroszország, Kína.</p>
+</blockquote></li>
+</ul></td>
+<td><em>Fogalmak:</em> modern kori migráció, multikulturalizmus, párhuzamos társadalom, népességrobbanás, iszlamizmus , terrorizmus, globalizáció.</td>
+<td><ul>
+<li><blockquote>
+<p>A világgazdaság résztvevőinek elhelyezése a globális térben.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A transznacionális vállalatok működésének bemutatása konkrét példák alapján.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A globalizáció előnyeinek és hátrányainak, valamint kockázatainak összevetése.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A többpólusú világ főbb jellemzőinek felidézése.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A népességrobbanás és népességfogyás problémáinak áttekintése.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A migráció okainak feltárása (a gazdasági bevándorlás és a menekültkérdés esetében).</p>
+</blockquote></li>
+<li><blockquote>
+<p>Válsággócok azonosítása térkép segítségével (pl. Közel-Kelet, Ukrajna).</p>
+</blockquote></li>
+</ul></td>
+</tr>
+<tr class="even">
+<td><em>Válsággócok, helyi konfliktusok</em></td>
+<td><ul>
+<li><blockquote>
+<p>Válsággócok, helyi konfliktusok és terrorizmus.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Etnikai, vallási és gazdasági törésvonalak a Közel-Keleten.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Az iszlamizmus térhódítása.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A kereszténység helyzete a globalizálódó világban.</p>
+</blockquote></li>
+</ul></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><em>A globális világ</em></td>
+<td><ul>
+<li><blockquote>
+<p>Demográfiai változások, népmozgások.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Globális járványok</p>
+</blockquote></li>
+<li><blockquote>
+<p>Óriásvállalatok a globális térben.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Globalizáció és kultúra.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A hagyományos és új identitások – értékek és értékválság.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Demokratikus közbeszéd és politikai korrektség.</p>
+</blockquote></li>
+</ul></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+### Javasolt tevékenységek
+
+  - Vita a globalizáció előnyeiről és hátrányairól.
+
+  - A globalizációval kapcsolatos napi hírek gyűjtése és elemzése.
+
+  - Az egyes válsággócok problémáinak áttekintése csoportmunka vagy tanulói kiselőadás segítségével.
+
+  - Aktuális hírek gyűjtése és elemzése a különböző helyi konfliktusokról (pl. Közel-Kelet, posztszovjet térség, Kelet-Ázsia).
+
+## 12. Magyarország a 21. században
+
+**Javasolt óraszám:** 10 óra
+
+**Ismeretek és fejlesztési feladatok:**
+
+<table>
+<tbody>
+<tr class="odd">
+<td><strong>Részletes követelmények</strong></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>  <strong>Témák</strong></td>
+<td><strong>Altémák</strong></td>
+<td><strong>Fogalmak és adatok/Lexikák</strong></td>
+<td><strong>Fejlesztési feladatok</strong></td>
+</tr>
+<tr class="odd">
+<td><em>A demokrácia működése Magyarországon</em></td>
+<td><ul>
+<li><blockquote>
+<p>Az Alaptörvény.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A hatalmi ágak és intézményeik, önkormányzati rendszer.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A választási rendszer.</p>
+</blockquote></li>
+</ul></td>
+<td><p><em>Fogalmak:</em> közvetett és közvetlen demokrácia, integráció, euró, Európai Unió, Európai Tanács, Európai Unió Tanácsa, Európai Parlament, Európai Bizottság, schengeni egyezmény.</p>
+<p><em>Személyek:</em> Magyarország miniszterelnökei a rendszerváltoztatás óta (a legalább négy évig hivatalban lévő kormányfők).</p>
+<p><em>Kronológia:</em> 1957 a római szerződés, 1992 a maastrichti szerződés, 1999 Magyarország belép a NATO-ba, 2004 Magyarország belép az Európai Unióba, 2012 az Alaptörvény bevezetése.</p>
+<p><em>Topográfia</em>: Brüsszel.</p></td>
+<td><ul>
+<li><p>Az Alaptörvény fontosabb pontjainak felidézése.</p></li>
+<li><p>A rendszerváltoztatás óta eltelt időszak főbb eseményeinek azonosítása különböző források alapján.</p></li>
+<li><p>A rendszerváltoztatás óta parlamentbe jutott fontosabb pártok politikai profiljának és céljainak áttekintése.</p></li>
+<li><p>Magyarország nyugati integrációjának bemutatása a NATO és az Európai Unió működésének ismeretében.</p></li>
+<li><p>Eltérő álláspontok bemutatása az Európai Unió működésének értékeléséről és jövőjéről.</p></li>
+<li><p>Érvelés a közép-európai együttműködés mellett.</p></li>
+</ul></td>
+</tr>
+<tr class="even">
+<td><em>A magyar bel- és külpolitika főbb jellemzői</em></td>
+<td><ul>
+<li><blockquote>
+<p>A rendszerváltoztatás óta eltelt időszak főbb fordulópontjai.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Magyarország a NATO-ban.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Közép-európai együttműködés: a visegrádi négyek.</p>
+</blockquote></li>
+</ul></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><em>Magyarország és az Európai Unió</em></td>
+<td><ul>
+<li><blockquote>
+<p>Az európai integráció főbb állomásai: mélyítés és bővítés.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Az Európai Unió főbb szervei és működésük.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Magyarország csatlakozásának folyamata.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Az együttműködés eredményei és nehézségei.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Nemzetek Európája vagy föderatív Európa?</p>
+</blockquote></li>
+</ul></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+### Javasolt tevékenységek
+
+  - A magyar alkotmányozás, alkotmányjellegű törvények (pl. Aranybulla, Tripartitum / Corpus Juris Hungarici, Pragmatica Sanctio, áprilisi törvények) nyomon követése különböző nyomtatott és internetes források segítségével.
+
+  - Szerkezeti ábra készítése a végrehajtó és bírói hatalmi ágról.
+
+  - Folyamatábra készítése az országgyűlési választásokról.
+
+  - Vita az Európai Unió szerepéről életünkben.
+
+## 13. A magyarság és a magyarországi nemzetiségek a 20-21. században
+
+**Javasolt óraszám:** 6 óra
+
+**Ismeretek és fejlesztési feladatok:**
+
+<table>
+<tbody>
+<tr class="odd">
+<td><strong>Részletes követelmények</strong></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>  <strong>Témák</strong></td>
+<td><strong>Altémák</strong></td>
+<td><strong>Fogalmak és adatok/Lexikák</strong></td>
+<td><strong>Fejlesztési feladatok</strong></td>
+</tr>
+<tr class="odd">
+<td><em>A határon túli magyarok</em></td>
+<td><ul>
+<li><blockquote>
+<p>A politikai rendszerek változásai és hatásaik a magyar kisebbség helyzetére.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Demográfiai jellemzők és folyamatok.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Az asszimilációs politika megnyilvánulásai – erőszakos és adminisztratív intézkedések.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Autonómia és kisebbségi jogok kérdése.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Anyanyelvű oktatás és kultúra.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A kisebbségi lét a mindennapokban.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Magyarok a nagyvilágban – a szórványmagyarság.</p>
+</blockquote></li>
+</ul></td>
+<td><p><em>Fogalmak:</em> kitelepítés, Beneš-dekrétum, lakosságcsere, falurombolás, kettős állampolgárság, diszkrimináció,.</p>
+<p><em>Személyek:</em> Esterházy János, Márton Áron, Tőkés László.</p>
+<p><em>Kronológia:</em> 1944–1945 magyarellenes atrocitások, 1990 fekete március.</p>
+<p><em>Topográfia</em>: Marosvásárhely, Székelyföld.</p></td>
+<td><ul>
+<li><p>A határon túli magyar nemzeti közösségek küzdelmeinek áttekintése Trianontól napjainkig.</p></li>
+<li><p>A kisebbségben élő magyarság egy kiemelkedő személyiségének bemutatása.</p></li>
+<li><p>A magyarországi németek kitelepítésének felidézése források alapján.</p></li>
+<li><p>A magyarországi romák helyzetének, problémáinak bemutatása napjainkban.</p></li>
+<li><p>Információk gyűjtése a magyar kisebbségek önszerveződésének, érdekvédelmének intézményeiről a 21. században.</p></li>
+<li><p>Példák gyűjtése a nemzeti összetartozás megnyilvánulásairól az anyaországi és a határon túli magyarság kapcsolatában.</p></li>
+<li><p>Példák gyűjtése a Kárpát-medence népeinek együttműködésére és konfliktusaira a történelem során.</p></li>
+<li><p>A magyarországi nemzetiségek 20. századi története főbb jellemzőinek, fordulópontjainak felidézése.</p></li>
+</ul></td>
+</tr>
+<tr class="even">
+<td><em>A magyarországi nemzetiségek, a magyarországi cigányság</em></td>
+<td><ul>
+<li><blockquote>
+<p>A politikai rendszerek változásai és hatásaik a nemzetiségek helyzetére.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A cigányok/romák 20–21. századi története.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Demográfiai jellemzők és folyamatok.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Kulturális autonómia és kisebbségi jogok a mai Magyarországon.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Anyanyelvű oktatás és kultúra.</p>
+</blockquote></li>
+</ul></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+### Javasolt tevékenységek
+
+  - Népszámlálási adatok, statisztikai adatsorok segítségével a határon túli magyarság létszámadatainak a nyomon követése 1920-tól a közelmúltig, következtetések levonása az adatokból.
+
+  - Az erdélyi, kárpátaljai, felvidéki és délvidéki magyarok életviszonyainak összehasonlítása egymással és a hazai viszonyokkal.
+
+  - A cigányság helyzetével kapcsolatos szociológiai elemzések, aktuális hírek elemzése, értékelése a tanultak fényében.
+
+## 14. Népesedés és társadalom
+
+**Javasolt óraszám:** 6 óra
+
+**Ismeretek és fejlesztési feladatok:**
+
+<table>
+<tbody>
+<tr class="odd">
+<td><strong>Részletes követelmények</strong></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><strong>Témák</strong></td>
+<td><strong>Altémák</strong></td>
+<td><strong>Fogalmak és adatok/Lexikák</strong></td>
+<td><strong>Fejlesztő feladatok</strong></td>
+</tr>
+<tr class="odd">
+<td><em>A hagyományos/ agrártársadalmak</em></td>
+<td><ul>
+<li><blockquote>
+<p>Letelepedés és élelemtermelés: növénytermesztés és állattenyésztés.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Önellátás, árutermelés, kereskedelem.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A népességnövekedés korlátai.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A hagyományos társadalom (hierarchia és család).</p>
+</blockquote></li>
+</ul></td>
+<td><em>Fogalmak</em>: háziasítás, nagy pestisjárvány</td>
+<td><ul>
+<li><blockquote>
+<p>A népesedés nagy korszakainak és azok jellemzőinek felidézése.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Információk gyűjtése az élelemtermelés fejlődéséről (például régészeti leletek alapján).</p>
+</blockquote></li>
+<li><blockquote>
+<p>A népességváltozás okainak és következményeinek bemutatása.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Hasonlóságok és különbségek megállapítása az egyes népesedési korszakok és folyamatok között.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Vita a modern kori demográfiai folyamatokról és azok várható hatásairól.</p>
+</blockquote></li>
+</ul></td>
+</tr>
+<tr class="even">
+<td><em>A modern/ipari társadalmak</em></td>
+<td><ul>
+<li><blockquote>
+<p>Az ipari forradalmak hatásai: népességrobbanás és városiasodás.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Népességnövekedés a fejlődő és népességfogyás a fejlett világban.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A migráció.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A modern/ipari társadalom (egyenjogúság és individualizmus).<del> </del></p>
+</blockquote></li>
+<li><blockquote>
+<p>A női szerepek változásának áttekintése a történelem során.</p>
+</blockquote></li>
+</ul></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+### Javasolt tevékenységek
+
+  - A népesedéstörténet statisztikai adatainak értelmezése, csoportosítása és felhasználása állítások alátámasztására vagy cáfolására.
+
+  - Fiktív napló készítése különböző korban és társadalmi helyzetben élő nők életéről, mindennapjairól.
+
+  - Beszélgetés a népességnövekedés és csökkenés okairól és hatásairól.
+
+  - A migráció okainak és hatásainak megvitatása.
+
+## 15. Mérlegen a magyar történelem
+
+**Javasolt óraszám:** 6 óra
+
+**Ismeretek és fejlesztési feladatok:**
+
+<table>
+<tbody>
+<tr class="odd">
+<td><strong>Részletes követelmények</strong></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><strong>Témák</strong></td>
+<td><strong>Altémák</strong></td>
+<td><p><strong>Fogalmak és adatok/</strong></p>
+<p><strong>Lexikák</strong></p></td>
+<td><strong>Fejlesztési feladatok</strong></td>
+</tr>
+<tr class="odd">
+<td><em>Régiónk Közép-Európa</em></td>
+<td><ul>
+<li><blockquote>
+<p>Kontinentális helyzet.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Civilizációs érintkezési zóna.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Nemzeti sokszínűség.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Birodalmi függés.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A második világháború hadszíntere.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Szovjet megszállás.</p>
+</blockquote></li>
+</ul></td>
+<td></td>
+<td><ul>
+<li><blockquote>
+<p>A közép-európai régió középkori, újkori és mai térképeinek összehasonlítása.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A közép-európai népek helyzetének összehasonlítása a középkortól napjainkig.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Példák gyűjtése a közép-európai régió jellemzőinek megnyilvánulásaira.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A közép-európai államok egymásra utaltságának felismerése.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A magyar állam szuverenitása változásainak felidézése a történelem során.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Levert szabadságharcaink értékelése az utóbb elért eredmények alapján.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A magyar népesedés áttekintése a középkortól napjainkig.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A kultúra szerepének azonosítása a nemzeti összetartozás fenntartásában (pl. török kor, határon túli magyarság).</p>
+</blockquote></li>
+<li><blockquote>
+<p>A kultúra szerepének felismerése a nemzeti identitás fenntartásában (reformkor, szovjet megszállás, a globális tömegkultúra).</p>
+</blockquote></li>
+</ul></td>
+</tr>
+<tr class="even">
+<td><em>A magyar megmaradás kérdései</em></td>
+<td><ul>
+<li><blockquote>
+<p>Szuverenitás: birodalmi függés és függetlenségi törekvések.</p>
+</blockquote></li>
+<li><blockquote>
+<p>Demográfia: természetes szaporodás és fogyás, várható élettartam, migráció, asszimiláció.</p>
+</blockquote></li>
+<li><blockquote>
+<p>A nemzeti kultúra mint megtartó erő.</p>
+</blockquote></li>
+</ul></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+### Javasolt tevékenységek
+
+  - Folyamatábra készítése a kontinentális helyzet / nemzeti sokszínűség / birodalmi függés következményeiről.
+
+  - Összehasonlító elemzés készítése, megadott szempontok alapján egyes közép-európai államok sorsáról, történelmének alakulásáról.
+
+  - A Magyar Királyság európai hatalom középkori sikeressége okainak megvitatása.
+
+  - Érvek gyűjtése a Habsburg Birodalomhoz tartozásunk előnyei és hátrányai mellett a 18. században és a 19. század első felében.
+
+  - A demográfiai helyzet következményeinek megvitatása Magyarország történetének egyes korszakaiban.
+
+  - Példák gyűjtése a magyar történelemből a kultúra nemzetet összetartó erejére (pl. három részre szakadt ország, határon túli magyarság).

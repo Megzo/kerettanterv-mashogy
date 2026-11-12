@@ -1,0 +1,1369 @@
+# Speciális matematika tagozat · 9–10. évfolyam
+
+> **Forrás:** [Speciális matematika tagozat](https://www.oktatas.hu/pub_bin/dload/kozoktatas/kerettanterv/gimn9_12/Specialis_Matematika_hat_evf_vegleges.docx) – Oktatási Hivatal, [NAT 2020 kerettantervek](https://www.oktatas.hu/kozneveles/kerettantervek/2020_nat) · letöltve: 2026-11-12  
+> **Iskolatípus:** gimnázium (6 évfolyamos) · **Eredeti fájl:** `sources/oktatas.hu_2020_nat/gimn6_7-12/Specialis_Matematika_hat_evf_vegleges.docx`  
+> Gépi konverzió: a szöveg a forrásé, csak a tagolás egységesített.
+
+## Témakörök áttekintése
+
+| # | Témakör | Javasolt óraszám |
+|---|---|---|
+| 1 | Halmazok | 15 óra |
+| 2 | Matematikai logika | 15 óra |
+| 3 | Kombinatorika, gráfok és algoritmusok | 70 óra |
+| 4 | Számhalmazok, műveletek | 40 óra |
+| 5 | Hatvány, gyök | 15 óra |
+| 6 | Betűs kifejezések alkalmazása egyenletmegoldás, függvényábrázolás során, komplex számok bevezetése | 15 óra |
+| 7 | Arányosság, százalékszámítás, számtani és mértani sorozat | 15 óra |
+| 8 | Elsőfokú egyenletek, egyenlőtlenségek, egyenletrendszerek, lineáris algebra | 30 óra |
+| 9 | Másodfokú egyenletek, egyenlőtlenségek, polinomok | 30 óra |
+| 10 | A függvény fogalma, függvénytulajdonságok, szemléletes analízis | 30 óra |
+| 11 | Geometriai alapismeretek | 8 óra |
+| 12 | Háromszögek, trigonometria | 35 óra |
+| 13 | Négyszögek, sokszögek | 15 óra |
+| 14 | A kör és részei | 15 óra |
+| 15 | Transzformációk, szerkesztések | 30 óra |
+| 16 | Leíró statisztika | 10 óra |
+| 17 | Valószínűségszámítás | 20 óra |
+| | **Összesen** | **408 óra** |
+
+## A sáv bevezetője (a forrásból)
+
+A 9–10. évfolyamon a korábbi képzési szakaszok során megszerzett ismeretekre és kialakított készségekre, képességekre alapozva – a spirális tananyagfelépítést szem előtt tartva – az egyes témakörök új ismeretei matematikai szempontból egyre pontosabb és elvontabb formában jelennek meg a tanulási-tanítási folyamat során. Egyre határozottabb a fogalmak pontos definiálásának, az állítások, tételek indoklásának, bizonyításának, valamint az általánosításnak az igénye. Erre a szakaszra fokozottan jellemző az ismeretek egységes rendszerbe foglalása, a rendszerezés.
+
+Ebben a szakaszban is fontos cél, hogy az ismeretszerzési folyamat során a tanuló lehetőleg a tanár által irányított módon, feladatok megoldása mentén maga fedezze fel az összefüggéseket, általánosítási lehetőségeket, megoldási módokat. A kooperatív munkaformák, a csoportmunkában vagy önállóan megoldandó projektfeladatok fejlesztik a matematikai kommunikációt. A digitális eszközök, dinamikus szoftverek, támogatják a szemléltetést, a megértést és a felfedeztetést.
+
+A 9–10. évfolyamon megjelenő témakörök tartalmának egy része folytatása és kiegészítése a korábbi szakaszokban is megjelenő tananyagtartalmaknak. Ezek az elsőfokú egyenlőtlenségek, egyenletrendszerek; másodfokú egyenletek, egyenlőtlenségek, algoritmusok, komplex számok, számtani és mértani sorozat, lineáris algebra, polinomok; a függvény fogalma, függvénytulajdonságok; a kör és részei, a trigonometria. Vannak olyan témakörök, amelyek megjelennek más területek tanítása során is, ezért a tananyag egyes részeihez javasolt óraszámok nem feltétlenül jelentenek időben összefüggő egységet. Az algebrai eszközök és a függvényekkel kapcsolatos ismeretek bővülése lehetővé teszi a hétköznapi vagy matematikai nyelven megfogalmazott problémák és a megoldás során alkalmazott matematikai modellek körének bővülését.
+
+**A 9–10. évfolyamon a matematika tantárgy javasolt óraszáma 408 óra. Az egyes témakörökhöz írt óraszámok javaslatok. Az új ismeretek a teljes óraszám négyötöd része alatt a legtöbb tanuló számára elsajátíthatók, így a fennmaradó órák felhasználhatók ismétlésre, gyakorlásra, felzárkóztatásra, tehetséggondozásra és számonkérésre.**
+
+**A témakörök áttekintő táblázata:**
+
+|                                                                                                                                   |                                    |
+| --------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
+| **Témakör neve**                                                                                                                  | **Javasolt óraszám**               |
+| Halmazok                                                                                                                          | 15  |
+| Matematikai logika                                                                                                                | 15  |
+| Kombinatorika, gráfok és algoritmusok                                                              | 70  |
+| Számhalmazok, műveletek                                                                                                           | 40  |
+| Hatvány, gyök                                                                                                                     | 15  |
+| Betűs kifejezések alkalmazása egyenletmegoldás, függvényábrázolás során, komplex számok bevezetése | 15  |
+| Arányosság, százalékszámítás, számtani és mértani sorozat                                          | 15  |
+| Elsőfokú egyenletek, egyenlőtlenségek, egyenletrendszerek, lineáris algebra                        | 30  |
+| Másodfokú egyenletek, egyenlőtlenségek, polinomok                                                  | 30  |
+| A függvény fogalma, függvénytulajdonságok, szemléletes analízis                                    | 30  |
+| Geometriai alapismeretek                                                                                                          | 8                                  |
+| Háromszögek, trigonometria                                                                         | 35  |
+| Négyszögek, sokszögek                                                                                                             | 15  |
+| A kör és részei                                                                                                                   | 15  |
+| Transzformációk, szerkesztések                                                                                                    | 30  |
+| Leíró statisztika                                                                                                                 | 10  |
+| Valószínűségszámítás                                                                                                              | 20  |
+| **Összes óraszám:**                                                                                                               | 408 |
+
+## 1. Halmazok
+
+**Javasolt óraszám:** 15 óra
+
+### Tanulási eredmények
+
+**A témakör tanulása hozzájárul ahhoz, hogy a tanuló a nevelési-oktatási szakasz végére:**
+
+  - látja a halmazműveletek és a logikai műveletek közötti kapcsolatokat;
+
+  - véges halmazok elemszámát meghatározza;
+
+  - alkalmazza a logikai szita elvét;
+
+  - megbízható ismeretekkel és tapasztalattal rendelkezzen arról, hogy a végtelen halmazok világa miben különbözik a véges halmazokétól (pl. egy valódi részhalmaz nem feltétlenül kisebb számosságú).
+
+**A témakör tanulása eredményeként a tanuló:**
+
+  - adott halmazt diszjunkt részhalmazaira bont, osztályoz;
+
+  - halmazokat különböző módokon megad;
+
+  - halmazokkal műveleteket végez, azokat ábrázolja és értelmezi;
+
+  - különbséget tud tenni a „tetszőlegesen sok” és a „végtelen sok” fogalma között;
+
+  - szemléletes képpel rendelkezik zárt és nyílt halmaz fogalmáról (síkon és térben).
+
+### Fejlesztési feladatok és ismeretek
+
+  - Halmaz közös elem nélküli részhalmazokra bontása, példák ennek alkalmazására a matematikán belül, más tantárgyaknál és a mindennapi életben
+
+  - Halmaz megadása utasítással, elemek felsorolásával
+
+  - Halmazok közötti viszonyok ábrázolása, értelmezése
+
+  - Halmazok metszetének, uniójának, különbségének, komplementerének képzése, ábrázolása és értelmezése
+
+  - Két-három halmaz elemszámával kapcsolatos feladatok megoldása logikai szita segítségével
+
+  - Szemléletes kép végtelen halmazokról
+
+  - Halmazműveletek algebrája (unió, metszet, különbség, szimmetrikus differencia), kommutativitás, asszociativitás és disztributivitás vizsgálata ezek világában
+
+  - Szita formula általánosan
+
+  - Megszámlálhatóan végtelen halmazok
+
+  - A sík és a tér érdekes véges, ill. végtelen részhalmazai
+
+### Fogalmak
+
+alaphalmaz, részhalmaz, üres halmaz, halmazok egyenlősége, Venn-diagram; halmazműveletek: unió, metszet, különbség, komplementer halmaz; diszjunkt halmazok, halmaz elemszáma, logikai szita
+
+szimmetrikus differencia, megszámlálhatóan végtelen halmaz
+
+### Javasolt tevékenységek
+
+  - Hétköznapi életből, más tantárgyakból vagy a matematikából vett, konkrétan vagy digitálisan megjelenített alaphalmazból megadott tulajdonságokkal rendelkező elemek válogatása
+
+  - Konkrét részhalmaz esetén a részhalmaz képzési szempontjainak megállapítása
+
+  - A történelem, a művészetek, a tudományok, a sport neves személyiségeinek kitalálása különböző tulajdonságok alapján
+
+  - Barkochba játék
+
+  - A „végtelen szálloda” mint modell
+
+  - Megszámlálhatóan végtelen számosságú halmazok elemei között egyértelmű hozzárendelés felfedeztetése, például a pozitív természetes számok halmazának számossága megegyezik a pozitív páros számok halmazának számosságával
+
+  - Kifejező halmazábrák készítése háromnál több halmazra
+
+  - Adott *n*-hez relatív prím, *n*-nél kisebb számok megszámolása logikai szitával (Euler-féle *fí*-függvény)
+
+## 2. Matematikai logika
+
+**Javasolt óraszám:** 15 óra
+
+### Tanulási eredmények
+
+**A témakör tanulása hozzájárul ahhoz, hogy a tanuló a nevelési-oktatási szakasz végére:**
+
+  - látja a halmazműveletek és a logikai műveletek közötti kapcsolatokat;
+
+  - megállapítja egyszerű „ha ... , akkor ...” és „akkor és csak akkor” típusú állítások logikai értékét;
+
+  - tud egyszerű állításokat indokolni és tételeket bizonyítani;
+
+  - az indirekt bizonyítás módszerét megbízhatóan alkalmazza;
+
+  - tételeket bizonyít a teljes indukció módszerével;
+
+  - önállóan sejtéseket fogalmaz meg;
+
+  - átlátja sejtés, tétel, bizonyítás, cáfolat, példa és ellenpélda logikai viszonyait.
+
+**A témakör tanulása eredményeként a tanuló:**
+
+  - adott állításról eldönti, hogy igaz vagy hamis;
+
+  - alkalmazza a tagadás műveletét egyszerű feladatokban;
+
+  - ismeri és alkalmazza az „és”, a (megengedő és kizáró) „vagy” logikai jelentését;
+
+  - megfogalmazza adott állítás megfordítását;
+
+  - helyesen használja a „minden” és „van olyan” kifejezéseket, és az ezeket jelölő kvantorokat;
+
+  - különbséget tud tenni „szükséges”, „elégséges”, illetve „szükséges és elégséges” feltétel fogalma között;
+
+  - fel tudja használni az ekvivalenciareláció fogalmát bizonyításokban.
+
+### Fejlesztési feladatok és ismeretek
+
+  - A matematikai bizonyítás fogalma
+
+  - Állítás logikai értékének megállapítása (igaz vagy hamis)
+
+  - Állítás tagadásának alkalmazása egyszerű feladatokban
+
+  - A „nem”, az „és”, a megengedő „vagy” és a kizáró „vagy” logikai jelentésének ismerete és alkalmazása matematikai és matematikán kívüli feladatokban
+
+  - A „minden” és a „van olyan” típusú állítások logikai értékének megállapítása és ennek indoklása egyszerű esetekben
+
+  - Adott állítás megfordításának megfogalmazása
+
+  - „Ha…, akkor…” és „akkor és csak akkor” típusú egyszerű állítások logikai értékének megállapítása
+
+  - Stratégiai és logikai játékok
+
+  - Reláció és ekvivalenciareláció fogalma, számos példával
+
+  - Kétváltozós logikai műveletek és tulajdonságaik (asszociativitás, kommutativitiás, disztributivitás, de Morgan-azonosságok)
+
+### Fogalmak
+
+tétel, bizonyítás, igaz-hamis; „nem”, „és”, „vagy”, „vagy…, vagy…”, „ha…, akkor…”, „akkor és csak akkor”
+
+„szükséges”, „elégséges”, „szükséges és elégséges” feltétel, sejtés, tétel, ellenpélda, teljes indukció, kezdő lépés, indukciós lépés, reláció, ekvivalenciareláció
+
+### Javasolt tevékenységek
+
+  - „Bírósági tárgyalás”, ahol az osztály tanulói a védők és a vádlók egy állítás indoklására, cáfolására
+
+  - „Mit állít a szigetlakó?”, „Ki volt a tettes, ha...?” típusú feladatok eljátszása, megoldása csoportmunkában
+
+  - Logikai készséget fejlesztő játékok, például „Einstein-fejtörő”
+
+  - Stratégiai játékok, például egyszerű NIM játékok, táblás játékok
+
+  - Tudatos pénzügyi tervezést segítő játékok
+
+## 3. Kombinatorika, gráfok és algoritmusok
+
+**Javasolt óraszám:** 70 óra
+
+### Tanulási eredmények
+
+**A témakör tanulása hozzájárul ahhoz, hogy a tanuló a nevelési-oktatási szakasz végére:**
+
+  - matematikai vagy hétköznapi nyelven megfogalmazott szövegből a matematikai tartalmú információkat kigyűjti, rendszerezi;
+
+  - a problémának megfelelő matematikai modellt választ, alkot;
+
+  - a kiválasztott modellben megoldja a problémát;
+
+  - megold sorba rendezési és kiválasztási feladatokat;
+
+  - konkrét szituációkat szemléltet és egyszerű feladatokat megold gráfok segítségével;
+
+  - véges halmazok elemszámát meghatározza;
+
+  - alkalmazza a logikai szita elvét;
+
+  - a teljes indukció módszerét és változatait kombinatorikai és gráfelméleti feladatokban alkalmazza;
+
+  - kombinatorikus interpretációval igazol azonosságokat;
+
+  - a binomiális együtthatókat megbízhatóan használja kombinatorikai és algebrai feladatokban;
+
+  - gráfokat használ gyakorlati problémák modellezéséhez;
+
+  - algoritmusokat konstruál egyszerű optimalizációs feladatok megoldásához;
+
+  - érti a mohó algoritmusok erejét és korlátait.
+
+### Fejlesztési feladatok és ismeretek
+
+  - Hétköznapi helyzetekhez kapcsolódó sorba rendezési és kiválasztási feladatok megoldása rendszerezéssel
+
+  - Sorba rendezési és kiválasztási feladatok megoldása matematikai problémákban
+
+  - Esetszétválasztás és szorzási elv alkalmazása feladatok megoldásában
+
+  - Összeszámlálási modellek alkalmazása feladatok megoldásában
+
+  - Gráfok alkalmazása konkrét hétköznapi és matematikai szituációk szemléltetésére, feladatok megoldására
+
+  - Pascal-háromszög tulajdonságai
+
+  - Binomiális és polinomiális tétel bizonyítása
+
+  - Permutációk különböző felírási módjai
+
+  - A kettős leszámlálás módszere
+
+  - Gráfok összefüggőségi komponensekre bontása és alkalmazása
+
+  - A fa definícióinak ekvivalenciája, fa élszámára, szerkezetére, mini-max-tulajdonságára vonatkozó tételek
+
+  - Gráfok színezései, maximális klikkméret és kromatikus szám kapcsolata
+
+  - Páros gráf fogalma
+
+  - Ramsey-típusú tételek, Erdős–Szekeres-tétel
+
+  - Szélességi és mélységi keresés alkalmazása bizonyításokban és feladatmegoldásban
+
+  - A mohó algoritmus szuboptimális független él- és pontrendszerek keresésére
+
+  - Algoritmus mérete, lépésszáma
+
+### Fogalmak
+
+gráf, gráf csúcsa, gráf éle
+
+izomorf gráfok, gráf összefüggőségi komponensei, szélességi keresés, síkbrajzolható gráf, kromatikus szám, független csúcs- és élhalmaz
+
+szélességi és mélységi keresés, mohó algoritmus, algoritmus lépésszáma
+
+### Javasolt tevékenységek
+
+  - Sorba rendezési és kiválasztási feladatok megoldása rendszerezett leszámlálással és a szorzási és/vagy esetszétválasztási elv alkalmazásával
+
+  - Geometriai eszközök használata kombinatorikai problémák megoldására
+
+  - Néhány feltételt tartalmazó tanulói órarend készítése kis elemszámmal
+
+  - Azonos modellen alapuló, de különböző megfogalmazású feladatok megoldása
+
+  - Szorzat vagy összeg alakban megadott eredményű kombinatorikafeladatokhoz saját szöveg írása
+
+  - Téves megoldású kombinatorikafeladatokban a hiba megtalálása és a tévedés kijavítása
+
+  - Sorba rendezési feladatok megoldásának szemléltetése gráffal
+
+  - Adott gráfhoz hozzáillő feladatszöveg alkotása és „feladatküldés” csoportmunkában
+
+  - Permutációk különböző felírási módjaival megoldható feladatok
+
+  - Catalan-számok segítségével megoldható feladatok
+
+  - Faváz keresése gráfokban
+
+  - Gráf vagy komplementere összefüggő
+
+  - Mese a négyszíntételről, hatszíntétel és ötszíntétel bizonyítása
+
+  - Gráfban adott pontok közti legrövidebb, leghosszabb utak megkeresése algoritmussal
+
+  - Hátizsákfeladat
+
+## 4. Számhalmazok, műveletek
+
+**Javasolt óraszám:** 40 óra
+
+### Tanulási eredmények
+
+**A témakör tanulása hozzájárul ahhoz, hogy a tanuló a nevelési-oktatási szakasz végére:**
+
+  - ismeri a számhalmazok épülésének matematikai vonatkozásait a természetes számoktól a valós számokig;
+
+  - ismer példákat irracionális számokra;
+
+  - ismeri a kongruenciákat és maradékosztályokat.
+
+**A témakör tanulása eredményeként a tanuló:**
+
+  - a kommutativitás, asszociativitás, disztributivitás műveleti azonosságokat helyesen alkalmazza különböző számolási helyzetekben;
+
+  - racionális számokat tizedes tört és közönséges tört alakban is felír;
+
+  - ismeri a valós számok és a számegyenes kapcsolatát;
+
+  - ismeri és alkalmazza az abszolút érték, az ellentett és a reciprok fogalmát;
+
+  - a számolással kapott eredményeket nagyságrendileg megbecsüli, és így ellenőrzi az eredményt;
+
+  - valós számok közelítő alakjaival számol, és megfelelően kerekít;
+
+  - a teljes indukciót alkalmazza oszthatósági feladatokban.
+
+### Fejlesztési feladatok és ismeretek
+
+  - Műveleti azonosságok (kommutativitás, asszociativitás, disztributivitás), zárójelek helyes használata
+
+  - Tizedes törtek átírása közönséges tört alakba és viszont
+
+  - Irracionális számok szemléltetése
+
+  - Racionális számok elhelyezkedése számegyenesen
+
+  - Nyílt és zárt intervallumok fogalmának ismerete és alkalmazása
+
+  - Számok abszolút értékének, ellentettjének és reciprokának meghatározása
+
+  - Számológéppel elvégzett számítások eredményének előzetes becslése és nagyságrendi ellenőrzése
+
+  - Valós számok adott jegyre kerekítése
+
+  - Valós számok gyakorlati helyzetekben történő észszerű kerekítése
+
+  - Prímekkel kapcsolatos tételek: pl. a szomszédos prímek között tetszőlegesen nagy hézag van, Wilson-tétel, végtelen sok 4*k *− 1 és 6*k *− 1 alakú prím van. \[Csebisev, Dirichlet\]. Mersenne- és Fermat-prímek. Sejtések: pl. Goldbach-sejtés
+
+  - Az euklideszi algoritmussal előállítható a legnagyobb közös osztó
+
+  - Lineáris kétismeretlenes diofantikus egyenlet megoldhatóságának szükséges és elégséges feltétele
+
+  - Lineáris egyismeretlenes kongruenciák megoldási algoritmusa
+
+  - Euler–Fermat-tétel
+
+  - A maradékosztályok gyűrűje. Konkrét modulusok esetén annak eldöntése, hogy melyik maradékosztálynak van multiplikatív inverze
+
+  - A páros tökéletes számok
+
+  - A pitagoraszi számhármasok előállítása
+
+  - Rácsegyenes, rácspont, rácsháromszög, üres rácsháromszög
+
+  - Számelméleti függvények, multiplikatív és additív tulajdonságok
+
+### Fogalmak
+
+racionális szám, irracionális szám, valós szám, nyílt intervallum, zárt intervallum, abszolút érték, ellentett, reciprok
+
+kongruencia, maradékosztályok, a maradékosztályok gyűrűje
+
+a rácsgeometria elemei, számelméleti függvények
+
+### Javasolt tevékenységek
+
+  - A számológép helyes használatának elsajátítása, például műveleti sorrend, zárójelek
+
+  - Írásban elvégzett műveletek ellenőrzése számológéppel
+
+  - Célszám megközelítése adott számjegyekkel, műveleti jelek és zárójelek használatával
+
+  - Tanulói kiselőadás a helyi értékes számírás kialakulásáról, a számjegyek kialakulásának történetéről
+
+  - A tanteremben vagy a tanterem környezetében végzett mérések esetén a megfelelő kerekítés alkalmazása
+
+  - Adott mérés elvégzése esetén a mérési hiba következményeinek vizsgálata
+
+  - Keressük egész együtthatós polinomok racionális gyökeit
+
+  - Igazoljuk, hogy nem prímmodulus esetén van nullosztó
+
+  - Igazoljuk a Pick–tételt
+
+## 5. Hatvány, gyök
+
+**Javasolt óraszám:** 15 óra
+
+### Tanulási eredmények
+
+**A témakör tanulása hozzájárul ahhoz, hogy a tanuló a nevelési-oktatási szakasz végére:**
+
+  - ismeri és alkalmazza az n-edik gyök fogalmát;
+
+  - ismeri és alkalmazza a racionális kitevőjű hatvány fogalmát és a hatványozás azonosságait;
+
+  - felismeri az ekvivalens és nem ekvivalens lépéseket az egyenletmegoldás során.
+
+**A témakör tanulása eredményeként a tanuló:**
+
+  - ismeri és alkalmazza a négyzetgyök fogalmát és azonosságait;
+
+  - ismeri és alkalmazza az egész kitevőjű hatvány fogalmát és a hatványozás azonosságait;
+
+  - ismeri és alkalmazza a normálalak fogalmát;
+
+  - ismeri és alkalmazza a hamis gyök és a gyökvesztés fogalmát.
+
+### Fejlesztési feladatok és ismeretek
+
+  - Valós számok hatványozása pozitív egész kitevőre
+
+  - Hatványozás 0 és negatív egész kitevőre
+
+  - A hatványozás azonosságainak megfigyelése, felfedezése
+
+  - A hatványozás azonosságainak bizonyítása konkrét alapszám és tetszőleges pozitív egész kitevő esetén
+
+  - Számok normálalakja
+
+  - Számolás normálalak segítségével
+
+  - A négyzetgyök definíciója
+
+  - Nemnegatív számok négyzetgyökének megadása számológép segítségével
+
+  - A négyzetgyökvonás azonosságai
+
+  - Másod- és harmadfokú, továbbá gyökös egyenletek, egyenlőtlenségek megoldása
+
+  - Komplex számok
+
+### Fogalmak
+
+hatványalap, hatványkitevő, normálalak, négyzetgyök
+
+nevezetes közepek, komplex számok
+
+### Javasolt tevékenységek
+
+  - Projektmunka: hányszor lehet félbehajtani egy nagyméretű papírt? Keresés az interneten, kísérlet végzése például egy teljes guriga vécépapírral
+
+  - Internetes forrásból származó, nagyon kicsi vagy nagyon nagy számokat tartalmazó cikkek valóságtartalmának megállapítása páros vagy csoportmunkában
+
+  - Hatványközepek és geometria kapcsolata
+
+  - Dinamikus geometriai szoftver használata függvényábrázolásra
+
+## 6. Betűs kifejezések alkalmazása egyenletmegoldás, függvényábrázolás során, komplex számok bevezetése
+
+**Javasolt óraszám:** 15 óra
+
+### Tanulási eredmények
+
+**A témakör tanulása eredményeként a tanuló:**
+
+  - műveleteket végez algebrai kifejezésekkel;
+
+  - ismer és alkalmaz egyszerű algebrai azonosságokat;
+
+  - átalakít algebrai kifejezéseket összevonás, szorzattá alakítás, nevezetes azonosságok alkalmazásával;
+
+  - teljes négyzetté alakít, megoldóképletet használ;
+
+  - paraméteres szöveges feladatokat és egyenleteket old meg.
+
+### Fejlesztési feladatok és ismeretek
+
+  - Műveletek egyszerű algebrai kifejezésekkel: összeadás, kivonás, szorzás, osztás, egytagú kifejezések hatványa
+
+  - Műveleti azonosságok ismerete és alkalmazása egyenletek megoldása során
+
+  - Az (*a* + *b*)<sup>2</sup>, az (*a* – *b*)<sup>2</sup> és az (*a* + *b*)(*a* – *b*) kifejezésekre vonatkozó nevezetes azonosságok ismerete és alkalmazása (például oszthatósági feladatokban, egyenletek megoldásában, függvények ábrázolásában)
+
+  - Egyszerű másodfokú polinom átalakítása teljes négyzetté kiegészítéssel
+
+  - Algebrai kifejezések átalakítása összevonás, szorzattá alakítás, nevezetes azonosságok alkalmazásával
+
+  - Az algebrai tört fogalmának ismerete, műveletek algebrai törtekkel
+
+  - A komplex számok testének alaptulajdonságai
+
+  - Moivre-tétel
+
+  - Gyökvonás komplex számokból; egységgyökök
+
+  - Számolás komplex számokkal
+
+### Fogalmak
+
+összeg, tag, szorzat, tényező, egynemű kifejezés, együttható, teljes négyzet, polinom
+
+algebrai tört, komplex szám, imaginárius egység, egységgyök
+
+### Javasolt tevékenységek
+
+  - „Gondolj egy számra, és én kitalálom” játék, matematikai bűvésztrükkök algebrai magyarázata
+
+  - Algebrai kifejezésekkel végzett műveletek geometriai modellezése
+
+  - A nevezetes azonosságok geometriai megjelenítése
+
+  - Számolási „trükkök” a nevezetes azonosságok segítségével, például kétjegyű számok négyzetének, 99 · 101 típusú szorzat eredményének kiszámolása fejben
+
+  - Harmadfokú egyenlet megoldása
+
+  - Matematikatörténeti vonatkozások: Tartaglia, Cardano
+
+## 7. Arányosság, százalékszámítás, számtani és mértani sorozat
+
+**Javasolt óraszám:** 15 óra
+
+### Tanulási eredmények
+
+**A témakör tanulása hozzájárul ahhoz, hogy a tanuló a nevelési-oktatási szakasz végére:**
+
+  - ismeri a hosszúság, terület, térfogat, űrtartalom, idő mértékegységeit és az átváltási szabályokat. Származtatott mértékegységeket átvált;
+
+  - ismeri és alkalmazza a százalékalap, -érték, -láb, -pont fogalmát;
+
+  - ismeri a számtani és a mértani sorozat explicit és rekurzív képletét.
+
+**A témakör tanulása eredményeként a tanuló:**
+
+  - ismeri és alkalmazza az egyenes és a fordított arányosságot,
+
+  - ismeri és használja a számtani és a mértani sorozat összegképletét.
+
+### Fejlesztési feladatok és ismeretek
+
+  - Az egyenes és a fordított arányosság fogalmának ismerete és alkalmazása gyakorlati problémák megoldása során
+
+  - Az egyenes és a fordított arányosság grafikonjának felismerése és elkészítése
+
+  - Példák az egyenes és a fordított arányosságtól különböző arányosságokra (négyzetes, gyökös)
+
+  - Példák egy irányban vagy ellentétes irányban változó mennyiségpárokra a mindennapi életből
+
+  - Százalékszámítással kapcsolatos hétköznapi helyzetekhez (például háztartási bevételekhez, kiadásokhoz, pénzügyi fogalmakhoz, gazdasági folyamatokhoz) és más tantárgyakhoz köthető feladatok megoldása
+
+  - Kamatos kamat számolása
+
+### Fogalmak
+
+egyenes arányosság, fordított arányosság, százalékalap, százalékérték, százalékláb, kamat, kamatos kamat
+
+### Javasolt tevékenységek
+
+  - Összetett, valódi élethelyzetekkel kapcsolatos feladatok megoldása csoportmunkában, szükség esetén grafikon segítségével
+
+  - Háztartási számlák elemzése az azokon megjelenő egységárak és fizetendő összegek figyelembevételével
+
+  - Hiteltörlesztési feladatok
+
+## 8. Elsőfokú egyenletek, egyenlőtlenségek, egyenletrendszerek, lineáris algebra
+
+**Javasolt óraszám:** 30 óra
+
+### Tanulási eredmények
+
+**A témakör tanulása hozzájárul ahhoz, hogy a tanuló a nevelési-oktatási szakasz végére:**
+
+  - matematikai vagy hétköznapi nyelven megfogalmazott szövegből a matematikai tartalmú információkat kigyűjti, rendszerezi;
+
+  - adott problémához megoldási stratégiát, algoritmust választ, készít;
+
+  - a problémának megfelelő matematikai modellt választ, alkot;
+
+  - a kiválasztott modellben megoldja a problémát;
+
+  - a modellben kapott megoldását az eredeti problémába visszahelyettesítve értelmezi, ellenőrzi, és az észszerűségi szempontokat figyelembe véve adja meg válaszát;
+
+  - felismeri a matematika különböző területei közötti kapcsolatot;
+
+  - egyenletek megoldását behelyettesítéssel, értékkészlet-vizsgálattal ellenőrzi;
+
+  - lineáris egyenletrendszert megold.
+
+**A témakör tanulása eredményeként a tanuló:**
+
+  - ismeri és alkalmazza a következő egyenletmegoldási módszereket: mérlegelv, grafikus megoldás, szorzattá alakítás;
+
+  - megold elsőfokú egyismeretlenes egyenleteket és egyenlőtlenségeket, elsőfokú kétismeretlenes egyenletrendszereket;
+
+  - ismeri a determináns fogalmát;
+
+  - Gauss-eliminációval lineáris egyenletrendszert megold.
+
+### Fejlesztési feladatok és ismeretek
+
+  - Elsőfokú egyenletre, egyenlőtlenségre, egyenletrendszerre vezető matematikai vagy hétköznapi nyelven megfogalmazott szövegből a matematikai tartalmú információk kigyűjtése, rendszerezése
+
+  - Adott problémához megoldási stratégia, algoritmus választása, készítése
+
+  - A problémának megfelelő matematikai modell választása, alkotása
+
+  - A kiválasztott modellben a probléma megoldása
+
+  - A modellben kapott megoldás értelmezése az eredeti problémába visszahelyettesítve, ellenőrzés és válaszadás az észszerűségi szempontokat figyelembe véve
+
+  - Alaphalmaz, megoldáshalmaz fogalmának ismerete
+
+  - Egyismeretlenes elsőfokú egyenlet és egyenlőtlenség megoldása mérlegelvvel és grafikusan
+
+  - Elsőfokú kétismeretlenes egyenletrendszer megoldása behelyettesítéssel, közös együtthatók módszerével, grafikusan
+
+  - Elsőfokú egyenlettel, egyenlőtlenséggel, egyenletrendszerrel megoldható szöveges feladatok megoldása (például út-idő-sebesség, közös munkavégzés, keveréses feladatok, pénzügyi és gazdasági tematikájú feladatok)
+
+  - Egyszerű abszolútértékes egyenlet megoldása algebrai és grafikus úton
+
+  - Lineárisan összefüggő, független egyenletek
+
+  - Gauss-elimináció
+
+  - Terület- és térfogatképletek felírása determinánssal
+
+### Fogalmak
+
+  - alaphalmaz, megoldáshalmaz, mérlegelv
+
+  - determináns
+
+  - Gauss-elimináció
+
+  - lineárisan összefüggő, lineárisan független
+
+### Javasolt tevékenységek
+
+  - Szöveges feladatok megoldása több különböző úton, a különböző megoldások összehasonlítása előnyök és hátrányok szempontjából
+
+  - Hiányos, túlhatározott, illetve ellentmondó adatokat tartalmazó problémák vizsgálata
+
+  - Nyílt végű problémák megoldása
+
+  - Adott egyenlethez szöveges feladat alkotása és „feladatküldés” csoportmunkában
+
+  - Digitális eszköz használata egyenletek, egyenlőtlenségek és egyenletrendszerek grafikus megoldása során; a digitális eszközzel történő ábrázolás előnyeinek és hátrányainak megbeszélése
+
+## 9. Másodfokú egyenletek, egyenlőtlenségek, polinomok
+
+**Javasolt óraszám:** 30 óra
+
+### Tanulási eredmények
+
+**A témakör tanulása hozzájárul ahhoz, hogy a tanuló a nevelési-oktatási szakasz végére:**
+
+  - matematikai vagy hétköznapi nyelven megfogalmazott szövegből a matematikai tartalmú információkat kigyűjti, rendszerezi;
+
+  - adott problémához megoldási stratégiát, algoritmust választ, készít;
+
+  - a problémának megfelelő matematikai modellt választ, alkot;
+
+  - a kiválasztott modellben megoldja a problémát;
+
+  - a modellben kapott megoldását az eredeti problémába visszahelyettesítve értelmezi, ellenőrzi, és az észszerűségi szempontokat figyelembe véve adja meg válaszát;
+
+  - felismeri a matematika különböző területei közötti kapcsolatot;
+
+  - egyenletek megoldását behelyettesítéssel, értékkészlet-vizsgálattal ellenőrzi;
+
+  - tud polinomot maradékosan osztani.
+
+**A témakör tanulása eredményeként a tanuló:**
+
+  - megold másodfokú egyismeretlenes egyenleteket és egyenlőtlenségeket; ismeri és alkalmazza a diszkriminánst, a megoldóképletet és a gyöktényezős alakot;
+
+  - ismeri az egészegyütthatós polinomok oszthatóságát.
+
+### Fejlesztési feladatok és ismeretek
+
+  - Másodfokú egyenletre, egyenlőtlenségre vezető matematikai vagy hétköznapi nyelven megfogalmazott szövegből a matematikai tartalmú információk kigyűjtése, rendszerezése
+
+  - Adott problémához megoldási stratégia, algoritmus választása, készítése
+
+  - A problémának megfelelő matematikai modell választása, alkotása
+
+  - A kiválasztott modellben a probléma megoldása
+
+  - A modellben kapott megoldás értelmezése az eredeti problémába visszahelyettesítve, ellenőrzés és válaszadás az észszerűségi szempontokat figyelembe véve
+
+  - Egyenletek megoldása ekvivalens átalakításokkal
+
+  - Másodfokú egyenlet megoldása szorzattá alakítással, teljes négyzetté kiegészítéssel, megoldóképlettel és grafikusan
+
+  - Egyszerű másodfokúra visszavezethető egyenletek megoldása
+
+  - Másodfokú egyenlőtlenség megoldása grafikusan
+
+  - Másodfokú egyenlettel megoldható szöveges feladatok megoldása
+
+  -
+  - A másodfokú egyenlet diszkriminánsának előjele és az egyenlet megoldásainak száma közötti összefüggés ismerete
+
+  - Egyszerű másodfokú egyenletrendszerek megoldása
+
+  - Egyszerű törtes egyenletek megoldása
+
+  - Két pozitív szám számtani és mértani közepe közötti összefüggés ismerete, alkalmazása
+
+  - Egyszerű másodfokú szélsőérték-feladatok megoldása
+
+  - Speciális másodfokú egyenletrendszerek megoldása (pl. a másodfokú tag együtthatója megegyezik)
+
+  - Polinomok gyöktényezői
+
+  - Gyökök és együtthatók összefüggése
+
+### Fogalmak
+
+másodfokú egyenlet megoldóképlete, diszkrimináns, gyöktényezős alak, ekvivalens átalakítás
+
+számtani közép, mértani közép, polinom, műveletek polinomokkal
+
+### Javasolt tevékenységek
+
+  - Másodfokú egyenlet megoldása konkrét együtthatókkal és paraméterekkel, a lépéseket párhuzamosan végezve
+
+  - Digitális eszköz használata egyenletek, egyenlőtlenségek grafikus megoldása során
+
+  - Tanulói kiselőadás tartása magasabb fokú egyenletek megoldásának történetéről, érdekességeiről
+
+  - Hétköznapi életből vett és matematikai szélsőérték-problémák megoldása több módszerrel (függvényábrázolással, algebrai átalakítással, számtani-mértani közép segítségével)
+
+## 10. A függvény fogalma, függvénytulajdonságok, szemléletes analízis
+
+**Javasolt óraszám:** 30 óra
+
+### Tanulási eredmények
+
+**A témakör tanulása hozzájárul ahhoz, hogy a tanuló a nevelési-oktatási szakasz végére:**
+
+  - képlettel adott függvényt hagyományosan és digitális eszközzel ábrázol;
+
+  - adott értékkészletbeli elemhez megtalálja az értelmezési tartomány azon elemeit, amelyekhez a függvény az adott értéket rendeli;
+
+  - szemléletesen megismerkedik a határérték fogalmával;
+
+  - előkészül az analízis tanulására.
+
+**A témakör tanulása eredményeként a tanuló:**
+
+  - megad hétköznapi életben előforduló hozzárendeléseket;
+
+  - adott képlet alapján helyettesítési értékeket számol, és azokat táblázatba rendezi;
+
+  - táblázattal megadott függvény összetartozó értékeit ábrázolja koordináta-rendszerben;
+
+  - a grafikonról megállapítja függvények alapvető tulajdonságait;
+
+  - használja a függvénytranszformációt;
+
+  - biztosan használja a hatványozás és a logaritmus azonosságait;
+
+  - ismeri a sorozat fogalmát.
+
+### Fejlesztési feladatok és ismeretek
+
+  - Hétköznapi hozzárendelések megfigyelése, tulajdonságainak megfogalmazása: egyértelmű, kölcsönösen egyértelmű
+
+  - Függvény megadása, alapvető függvénytani fogalmak ismerete
+
+  - Függvényértékek meghatározása és táblázatba rendezése
+
+  - Függvények ábrázolása táblázat alapján
+
+  - Függvények alkalmazása valós, hétköznapi helyzetek jellemzésére, gyakorlati problémák megoldására
+
+  - A grafikon alapján a függvény értelmezési tartományának, értékkészletének, minimumának, maximumának és zérushelyének megállapítása, a növekedés és fogyás leolvasása
+
+  - Lineáris függvény, másodfokú függvény, négyzetgyökfüggvény, fordított arányosságot leíró függvény (elemi függvények) grafikonja, tulajdonságai
+
+  - Elemi függvényekkel egyszerű függvénytranszformációs lépések végrehajtása: *f*(*x*) + *c*, *f*(*x* + *c*), *c*·*f*(*x*), |*f*(*x*)|
+
+  - Lineáris függvények hozzárendelési utasításának leolvasása grafikon alapján
+
+  - Egyszerű függvények esetén az *f*(*x*) = *c* alapján *x* meghatározása és ennek alkalmazása gyakorlati problémák megoldása során
+
+  - Kölcsönösen egyértelmű hozzárendelés megfordítása és a megfordított hozzárendelés ábrázolása
+
+  - Hatványfüggvények
+
+  - Exponenciális függvény
+
+  - Logaritmus
+
+  - Trigonometrikus függvények és inverzeik
+
+  - Sorozatok
+
+  - Sorozatok határértéke
+
+  - Műveletek és határérték felcserélhetősége
+
+### Fogalmak
+
+egyértelmű hozzárendelés, kölcsönösen egyértelmű hozzárendelés, értelmezési tartomány, képhalmaz, értékkészlet, helyettesítési érték, szélsőérték, zérushely, növekedés, fogyás
+
+konvexítás, sorozat, konvergens, logaritmus azonosságai
+
+### Javasolt tevékenységek
+
+  - Összetett, valódi helyzetekkel, például demográfiai kérdésekkel, pénzügyi feladatokkal kapcsolatos grafikonok elemzése csoportmunkában
+
+  - Hétköznapi helyzetekben időben változó folyamatokkal kapcsolatos mérések végzése és a mért adatok ábrázolása koordináta-rendszerben (például hőmérséklet)
+
+  - A tanulók mindennapi életéhez kapcsolódó grafikonok ábrázolása és elemzése (például út-idő grafikon az iskolába való eljutásról)
+
+  - Egyszerű, másodfokú függvénnyel jellemezhető, gyakorlati helyzethez köthető szélsőérték-feladatok megoldása csoportmunkában, például adott hosszúságú spárgával bekeríthető maximális területű téglalap adatainak mérése, megfigyelése
+
+  - Függvények ábrázolása digitális eszköz segítségével
+
+  - Barkochba játék a függvényekkel kapcsolatos fogalmak használatával
+
+  - Szöveges feladatok megoldása grafikus úton
+
+  - Algebrai úton nem vagy nehezen megoldható egyenletek közelítő megoldása grafikus úton digitális eszköz segítségével
+
+  - Első- és másodrendű rekurzióval megadott sorozatok explicit képlete
+
+  - A Fibonacci-sorozat és a természet kapcsolata
+
+  - A Fibonacci-sorozat explicit képlete
+
+## 11. Geometriai alapismeretek
+
+**Javasolt óraszám:** 8 óra
+
+### Tanulási eredmények
+
+**A témakör tanulása hozzájárul ahhoz, hogy a tanuló a nevelési-oktatási szakasz végére:**
+
+  - ismeri és feladatmegoldásban alkalmazza a térelemek kölcsönös helyzetét, távolságát és hajlásszögét;
+
+  - felismeri a matematika különböző területei közötti kapcsolatot.
+
+**A témakör tanulása eredményeként a tanuló:**
+
+  - ismeri és használja a pont, egyenes, sík (térelemek) és szög fogalmát;
+
+  - ismeri és alkalmazza a nevezetes szögpárok tulajdonságait;
+
+  - ismeri az alapszerkesztéseket, és ezeket végre tudja hajtani hagyományos vagy digitális eszközzel.
+
+### Fejlesztési feladatok és ismeretek
+
+  - Két pont, pont és egyenes, két egyenes távolságának alkalmazása a síkban
+
+  - Egyenesek kölcsönös helyzetének ismerete és alkalmazása
+
+  - Nevezetes szögpárok tulajdonságainak ismerete és alkalmazása: pótszögek, mellékszögek, kiegészítő szögek, csúcsszögek, egyállású szögek, váltószögek
+
+  - A szakaszfelező merőleges és a szögfelező mint ponthalmazok tulajdonságainak ismerete
+
+  - Dinamikus geometriai szoftver alkalmazásának előkészítése, használata
+
+  - Alapszerkesztések végrehajtása hagyományos vagy digitális eszközzel euklideszi módon: szakaszfelező merőleges, szögfelező, merőleges és párhuzamos egyenesek szerkesztése, szög másolása
+
+### Fogalmak
+
+pont, egyenes, sík, szögtartomány, hajlásszög, párhuzamos, merőleges, pótszögek, mellékszögek, kiegészítő szögek, csúcsszögek, egyállású szögek, váltószögek, szakaszfelező merőleges, szögfelező
+
+### Javasolt tevékenységek
+
+  - Az osztályteremben vagy a terem környezetében „egyenesek” kölcsönös helyzetének megadása, ezek távolságának megmérése
+
+  - Számszerű adatként csak a méretarányt tartalmazó térkép alapján valódi távolságok meghatározása, becslése
+
+  - Számszerű adatként csak méretarányt tartalmazó térképen adott helységektől (közelítőleg) egyenlő távolságra levő helységek megkeresése
+
+## 12. Háromszögek, trigonometria
+
+**Javasolt óraszám:** 35 óra
+
+### Tanulási eredmények
+
+**A témakör tanulása hozzájárul ahhoz, hogy a tanuló a nevelési-oktatási szakasz végére:**
+
+  - ismeri a mérés alapelvét, alkalmazza konkrét alap- és származtatott mennyiségek esetén;
+
+  - ismeri a hosszúság, terület, térfogat, űrtartalom, idő mértékegységeit és az átváltási szabályokat. Származtatott mértékegységeket átvált;
+
+  - sík- és térgeometriai feladatoknál a problémának megfelelő mértékegységben adja meg válaszát;
+
+  - változatos módszerekkel kiszámítja háromszögek területét;
+
+**A témakör tanulása eredményeként a tanuló:**
+
+  - ismeri és alkalmazza a háromszögek oldalai, szögei, oldalai és szögei közötti kapcsolatokat; a speciális háromszögek tulajdonságait;
+
+  - ismeri és alkalmazza a háromszög nevezetes vonalaira, pontjaira és köreire vonatkozó fogalmakat és tételeket;
+
+  - ismeri és alkalmazza a Pitagorasz-tételt és megfordítását;
+
+  - ismeri hegyesszögek szögfüggvényeinek definícióját a derékszögű háromszögben;
+
+  - ismeri tompaszögek szögfüggvényeinek származtatását a hegyesszögek szögfüggvényei alapján;
+
+  - ismeri a hegyes- és tompaszögek szögfüggvényeinek összefüggéseit;
+
+  - alkalmazza a szögfüggvényeket egyszerű geometriai számítási feladatokban;
+
+  - a szögfüggvény értékének ismeretében meghatározza a szöget;
+
+  - ismeri a háromszög nevezetes pontjait és vonalait;
+
+  - ki tudja számolni a háromszög területét az oldalak ismeretében (Hérón-képlettel);
+
+  - ismeri az összefüggéseket a háromszög oldalai és szögei között (szinusz- és koszinusz-tétel);
+
+  - ki tudja számolni a háromszög területét két oldal és a köztük lévő szög ismeretében (trigonometrikus területképlet).
+
+### Fejlesztési feladatok és ismeretek
+
+  - A háromszögek csoportosítása oldalak és szögek szerint
+
+  - Az alapvető összefüggések ismerete és alkalmazása háromszögek oldalai, szögei, oldalai és szögei között
+
+  - Speciális háromszögek tulajdonságainak ismerete és alkalmazása: szabályos, egyenlő szárú, derékszögű háromszög
+
+  - A háromszög nevezetes vonalaira, pontjaira és köreire vonatkozó fogalmak, tételek ismerete és alkalmazása: oldalfelező merőleges, szögfelező, magasságvonal, súlyvonal, középvonal, körülírt, illetve beírt kör
+
+  - Az oldalfelező merőlegesek és a belső szögfelezők metszéspontjára vonatkozó tétel bizonyítása
+
+  - A Pitagorasz-tétel és megfordításának ismerete és alkalmazása
+
+  - A Pitagorasz-tétel bizonyítása
+
+  - Háromszög területének kiszámítása
+
+  - A környezetben található tárgyak magasságának, pontok távolságának meghatározása mért adatokból számítva
+
+  - A magasságtétel és a befogótétel ismerete és alkalmazása
+
+  - Szinusz, koszinusz, tangens értelmezése tetszőleges forgásszög esetén
+
+  - Valós számok halmazán értelmezett szögfüggvények ábrázolása, egyszerű transzformációk végrehajtása, a függvények jellemzése
+
+  - A szögfelezőtétel bizonyítása
+
+  - Magasságtétel és befogótétel bizonyítása
+
+  - Meneláosz- és Ceva-tétel
+
+  - Hegyesszög szinusza, koszinusza, tangense
+
+  - Számítások derékszögű háromszögekben szögfüggvények segítségével gyakorlati helyzetekben
+
+  - Tompaszög szinusza, koszinusza, tangense
+
+  - Összefüggések ismerete egy adott szög különböző szögfüggvényei között: pitagoraszi összefüggés, pótszögek és mellékszögek szögfüggvényei
+
+  - Szögfüggvény értékének ismeretében a szög meghatározása számológép segítségével
+
+  - Háromszög területének kiszámítása két oldal és a közbezárt szög ismeretében
+
+  - Szinusz- és koszinusztétel ismerete és alkalmazása
+
+  - A szinusztétel bizonyítása
+
+  - A koszinusztétel bizonyítása
+
+### Fogalmak
+
+szabályos háromszög, egyenlő szárú háromszög, derékszögű háromszög, oldalfelező merőleges, szögfelező, magasságvonal, súlyvonal, középvonal, körülírt kör, beírt kör
+
+hozzáírt kör, súlypont, magasságpont, szögfüggvények
+
+szinusz, koszinusz, tangens, szinusztétel, koszinusztétel
+
+szögfelezőtétel, magasságtétel, befogótétel
+
+### Javasolt tevékenységek
+
+  - A háromszög nevezetes vonalaira, pontjaira és köreire vonatkozó tételek felfedeztetése szerkesztéssel vagy dinamikus geometriai szoftver alkalmazásával, páros vagy csoportmunkában
+
+  - Konkrét alakzatok átdarabolása más alakzattá páros vagy csoportmunkában
+
+  - A derékszögű háromszög oldalaira szerkesztett négyzetek átdarabolása a Pitagorasz-tételnek megfelelő módon, pitagoraszi tangramok vagy dinamikus geometriai szoftver alkalmazásával
+
+  - Tanulói kiselőadás a trigonometrikus ismeretek hétköznapi életben, munkában való felhasználhatóságáról, például: lakberendezés, ácsmunka, GPS működése
+
+  - Az iskolában vagy annak környezetében kijelölt, tetszőleges háromszög, illetve négyszög alakú részek területének meghatározása csoportmunkában, távolságok és szögek mérése alapján
+
+  - Épület magasságának meghatározása a látószög és a távolságok mérésének segítségével csoportmunkában
+
+  - Interaktív digitális eszközök használata a valós számok halmazán értelmezett szögfüggvények szemléltetéséhez
+
+  - A szögfüggvények szerepének bemutatása a harmonikus rezgőmozgást jellemző mennyiségekben
+
+  - A magasságtétel és a befogótétel alkalmazása a nevezetes közepek megszerkesztésére és a köztük fennálló egyenlőtlenségek bizonyítására
+
+  - Az Euler-egyenes és a Feuerbach-kör vizsgálata
+
+## 13. Négyszögek, sokszögek
+
+**Javasolt óraszám:** 15 óra
+
+### Tanulási eredmények
+
+**A témakör tanulása hozzájárul ahhoz, hogy a tanuló a nevelési-oktatási szakasz végére:**
+
+  - ismeri a mérés alapelvét, alkalmazza konkrét alap- és származtatott mennyiségek esetén;
+
+  - ismeri a hosszúság, terület, térfogat, űrtartalom, idő mértékegységeit és az átváltási szabályokat. Származtatott mértékegységeket átvált;
+
+  - sík- és térgeometriai feladatoknál a problémának megfelelő mértékegységben adja meg válaszát;
+
+  - ismeri és alkalmazza speciális négyszögek tulajdonságait, területüket kiszámítja;
+
+  - átdarabolással kiszámítja sokszögek területét;
+
+  - ismeri a húrnégyszögek tételét és feladatokban alkalmazza.
+
+**A témakör tanulása eredményeként a tanuló:**
+
+  - ismeri és alkalmazza a szabályos sokszög fogalmát; kiszámítja a konvex sokszög belső és külső szögeinek összegét;
+
+### Fejlesztési feladatok és ismeretek
+
+  - Speciális négyszögek (trapéz, húrtrapéz, paralelogramma, deltoid, rombusz, téglalap, négyzet) tulajdonságainak ismerete, területének kiszámítása
+
+  - Konvex sokszögeknél az átlók számára, a belső és külső szögösszegre vonatkozó tételek ismerete, bizonyítása és alkalmazása
+
+  - Szabályos sokszög fogalmának ismerete
+
+  - Szabályos sokszög területe átdarabolással
+
+  - Húrnégyszögek tulajdonságai
+
+  - Számítások négyszögekben, sokszögekben szögfüggvények segítségével
+
+### Fogalmak
+
+trapéz, húrtrapéz, paralelogramma, deltoid, rombusz, téglalap, négyzet, konvex sokszög, szabályos sokszög, húrnégyszög
+
+### Javasolt tevékenységek
+
+  - Különböző típusú speciális négyszögek területének meghatározására vonatkozó formula felfedeztetése átdarabolással
+
+  - A belső és a külső szögösszegre vonatkozó tételek felfedeztetése, illusztrálása átdarabolással, hajtogatással vagy dinamikus geometriai szoftver segítségével
+
+  - Projektmunka: lakás/iskola alaprajzának elkészítése méretarányosan
+
+  - Húrnégyszögek vizsgálata dinamikus geometriai szoftver segítségével
+
+  - Ptolemaiosz tétele húrnégyszögekre
+
+## 14. A kör és részei
+
+**Javasolt óraszám:** 15 óra
+
+### Tanulási eredmények
+
+**A témakör tanulása hozzájárul ahhoz, hogy a tanuló a nevelési-oktatási szakasz végére:**
+
+  - ismeri a mérés alapelvét, alkalmazza konkrét alap- és származtatott mennyiségek esetén;
+
+  - ismeri a hosszúság, terület, térfogat, űrtartalom, idő mértékegységeit és az átváltási szabályokat. Származtatott mértékegységeket átvált;
+
+  - sík- és térgeometriai feladatoknál a problémának megfelelő mértékegységben adja meg válaszát.
+
+**A témakör tanulása eredményeként a tanuló:**
+
+  - ki tudja számolni a kör és részeinek kerületét, területét;
+
+  - ismeri a kör érintőjének fogalmát, kapcsolatát az érintési pontba húzott sugárral;
+
+  - ismeri és alkalmazza a Thalész-tételt és megfordítását;
+
+  - ismeri és alkalmazza a kerületi és középponti szögek tételét;
+
+  - ismeri a pont körre vonatkozó hatványának fogalmát és feladatokban alkalmazza.
+
+### Fejlesztési feladatok és ismeretek
+
+  - Annak ismerete és alkalmazása, hogy a középponti szög egyenesen arányos a hozzá tartozó körív hosszával
+
+  - Annak ismerete és alkalmazása, hogy a középponti szög egyenesen arányos a hozzá tartozó körcikk területével
+
+  - Kör, körcikk, körgyűrű és körszelet területének és kerületének kiszámítása
+
+  - Annak ismerete és alkalmazása, hogy a kör érintője merőleges az érintési pontba húzott sugárra, és hogy külső pontból húzott érintőszakaszok egyenlő hosszúak
+
+  - A Thalész-tétel és megfordításának ismerete és alkalmazása
+
+  - A Thalész-tétel bizonyítása
+
+  - Szög mérése ívmértékkel; fok és ívmérték közti kapcsolat ismerete, alkalmazása
+
+  - A Thalész-tétel megfordításának bizonyítása
+
+  - Kerületi és középponti szögek tételének bizonyítása
+
+  - Pont körre vonatkozó hatványa
+
+  - Körre vonatkozó inverzió
+
+### Fogalmak
+
+középponti szög, körív, körcikk, körgyűrű, körszelet, érintőszakaszok
+
+ívmérték, radián
+
+kerületi szög, pont körre vonatkozó hatványa, inverzió
+
+### Javasolt tevékenységek
+
+  - Annak felfedeztetése méréssel, hogy a középponti szög egyenesen arányos a hozzá tartozó körív hosszával; különböző méretű körök esetén a kapott adatok táblázatba foglalása
+
+  - A Thalész-tétel felfedeztetése szerkesztéssel, szögméréssel vagy dinamikus geometriai szoftver alkalmazásával
+
+  - Trimino alkalmazása a fok és az ívmérték közötti kapcsolat játékos gyakorlására
+
+  - Annak felfedeztetése méréssel, hogy adott húrhoz tartozó kerületi szög mindig ugyanakkora
+
+  - Sztereografikus projekció tulajdonságainak vizsgálata
+
+  - Inverzió alkalmazása feladatokban
+
+## 15. Transzformációk, szerkesztések
+
+**Javasolt óraszám:** 30 óra
+
+### Tanulási eredmények
+
+**A témakör tanulása hozzájárul ahhoz, hogy a tanuló a nevelési-oktatási szakasz végére:**
+
+  - ismeri a vektorokkal kapcsolatos alapvető fogalmakat;
+
+  - ismer és alkalmaz egyszerű vektorműveleteket;
+
+  - alkalmazza a vektorokat feladatok megoldásában;
+
+  - ismeri és alkalmazza a hasonló síkidomok kerületének és területének arányára vonatkozó tételeket.
+
+**A témakör tanulása eredményeként a tanuló:**
+
+  - ismer példákat geometriai transzformációkra;
+
+  - ismeri és alkalmazza a síkbeli egybevágósági transzformációkat és tulajdonságaikat; alakzatok egybevágóságát;
+
+  - ismeri és alkalmazza a középpontos hasonlósági transzformációt, a hasonlósági transzformációt és az alakzatok hasonlóságát;
+
+  - megszerkeszti egy alakzat tengelyes, illetve középpontos tükörképét, pont körüli elforgatottját, párhuzamos eltoltját hagyományosan és digitális eszközzel;
+
+  - geometriai szerkesztési feladatoknál vizsgálja és megállapítja a szerkeszthetőség feltételeit;
+
+  - ismeri a geometriai transzformációk kompozíciójának fogalmát;
+
+  - ismeri és használja a forgatva nyújtást feladatokban.
+
+### Fejlesztési feladatok és ismeretek
+
+  - Példák ismerete geometriai hozzárendelésekre (merőleges vetítés, párhuzamos vetítés, merőleges affinitás, térkép, fényképezés)
+
+  - A tengelyes tükrözés, a középpontos tükrözés, a pont körüli forgatás és a párhuzamos eltolás ismerete, tulajdonságaik
+
+  - A vektor fogalmának kialakítása a párhuzamos eltolás segítségével
+
+  - Egybevágósági transzformációk egymás utáni végrehajtása
+
+  - Egybevágósági transzformációk végrehajtása szerkesztéssel vagy digitális eszközzel
+
+  - Egybevágó alakzatok, szimmetriák megfigyelése a környezetben, művészeti alkotásokban
+
+  - Az egybevágósági transzformációk alkalmazása feladatok megoldásában, tételek bizonyításában
+
+  - Háromszögek egybevágóságának alapesetei és ezek alkalmazása
+
+  - Négyszögek egybevágósága
+
+  - Egyszerű szerkesztési feladatok megoldása hagyományos vagy digitális eszközzel; diszkusszió
+
+  - Gyakorlati feladatok megoldása egybevágóságok segítségével (például a sík parkettázása különféle síkidomokkal; szabásminta készítése, használata)
+
+  - A középpontos hasonlósági transzformáció és a hasonlósági transzformáció ismerete, tulajdonságai
+
+  - A hasonlóság fogalmának ismerete és alkalmazása feladatok megoldásában, tételek bizonyításában
+
+  - Gyakorlati feladatok megoldása hasonlóság segítségével (például alaprajz-, térképkészítés, modellezés)
+
+  - Minden egybevágósági transzformáció előáll legfeljebb három tengelyes tükrözés egymásutánjaként
+
+  - Forgatva nyújtás ismerete és alkalmazása feladatokban
+
+### Fogalmak
+
+tengelyes tükrözés, középpontos tükrözés, pont körüli forgatás, párhuzamos eltolás, egybevágóság, forgásszög, vektor, vektorok összege, középpontos hasonlósági transzformáció, hasonlósági transzformáció, hasonlóság, a hasonlóság aránya
+
+forgatva nyújtás, geometriai transzformációk kompozíciója
+
+### Javasolt tevékenységek
+
+  - Gyakorlati példák keresése geometriai hozzárendelésekre, például fényképezés, filmvetítés
+
+  - A középpontos tükrözés, a pont körüli forgatás és a párhuzamos eltolás bemutatása mint két tengelyes tükrözés egymásutánja
+
+  - M. C. Escher és Victor Vasarely néhány interneten is elérhető alkotásának elemzése a szimmetriák szempontjából; hasonló módszerrel képek alkotása
+
+  - A sík parkettázása egybevágó háromszögekkel, négyszögekkel papírsablonok vagy dinamikus geometriai szoftver segítségével
+
+  - A tengelyes vagy középpontos szimmetriára alapozó stratégiai játékok (például pénzforgatós, színezős) páros munkában
+
+  - Az iskola közelében lévő magas épület (például templomtorony) magasságának meghatározása egy egyenes bot segítségével a bot és az épület árnyékának méréséből („Thalész-módszer”) csoportmunkában
+
+  - Valódi távolságok, valódi útvonalak hosszának meghatározása papíralapú térkép alapján
+
+  - Alakzatok transzformációcsoportja (pl. szabályos háromszög, négyzet, téglalap, szabályos tetraéder)
+
+  - Szöget, ill. egyenest nem tartó transzformációk (affinitás, inverzió)
+
+## 16. Leíró statisztika
+
+**Javasolt óraszám:** 10 óra
+
+### Tanulási eredmények
+
+**A témakör tanulása hozzájárul ahhoz, hogy a tanuló a nevelési-oktatási szakasz végére:**
+
+  - adott cél érdekében tudatos adatgyűjtést és rendszerezést végez;
+
+  - hagyományos és digitális forrásból származó adatsokaság alapvető statisztikai jellemzőit meghatározza, értelmezi és értékeli;
+
+  - felismer grafikus manipulációkat diagramok esetén.
+
+**A témakör tanulása eredményeként a tanuló:**
+
+  - adatsokaságból adott szempont szerint oszlop- és kördiagramot készít hagyományos és digitális eszközzel.
+
+### Fejlesztési feladatok és ismeretek
+
+  - Statisztikai adatok gyűjtésének tervezése
+
+  - Statisztikai adatok gyűjtése hagyományos és internetes forrásból
+
+  - Statisztikai adatok rendszerezése, jellemzése középértékekkel hagyományos és digitális eszközzel
+
+  - A kapott adatok értelmezése, értékelése, egyszerű statisztikai következtetések
+
+  - Oszlop- és kördiagram értelmezése, valamint készítése hagyományos és digitális eszközzel
+
+  - Konkrét adatsokaság ábrázolásához, statisztikai kérdés megválaszolásához a megfelelő diagramtípus kiválasztása
+
+  - Kördiagramból oszlopdiagram készítése és viszont
+
+  - Grafikus manipulációk felismerése és javítása diagramok esetén
+
+  - A középértékek tulajdonságainak és alkalmazhatóságának ismerete
+
+### Fogalmak
+
+oszlopdiagram, kördiagram, átlag, medián, módusz
+
+### Javasolt tevékenységek
+
+  - Adatgyűjtés megtervezése, például forgalomszámlálás vagy iskolai felmérés előkészítése
+
+  - A megtervezett statisztikai adatgyűjtés lebonyolítása, az eredmények szemléltetése grafikonok segítségével, a kapott eredmények értékelő bemutatása tanulói kiselőadás formájában
+
+  - Különböző adatsokaságok esetében annak vizsgálata, hogy ezek jellemezhetők-e az ismert középértékekkel
+
+  - Érvelés a tanuló saját érdemjegyei alapján különböző statisztikai jellemzők segítségével a kedvezőbb év végi jegyért
+
+  - Különböző sportágak értékelési rendszerének és statisztikáinak bemutatása tanulói kiselőadás keretében
+
+  - Osztályok/tantárgyak eredményeinek összehasonlítása érdemjegyek és ezek középértékei alapján
+
+  - Csoportmunka keretében adott céllal készülő, megtévesztő oszlop- és kördiagramok készítése, ezek szóbeli értékelése, javítása
+
+## 17. Valószínűségszámítás
+
+**Javasolt óraszám:** 20 óra
+
+### Tanulási eredmények
+
+**A témakör tanulása hozzájárul ahhoz, hogy a tanuló a nevelési-oktatási szakasz végére:**
+
+  - konkrét valószínűségi kísérletek esetében az esemény, eseménytér, elemi esemény, relatív gyakoriság, valószínűség, egymást kizáró események, független események fogalmát megkülönbözteti és alkalmazza;
+
+  - gyakorlati problémákra valószínűségszámítási modelleket tud felállítani;
+
+  - a függetlenség valószínűségelméleti megközelítését, a fogalomalkotás nehézségeit és érdekességeit megismeri;
+
+  - a valószínűség fogalmát „nem tudásunk mértéke”-ként is tudja értelmezni.
+
+**A témakör tanulása eredményeként a tanuló:**
+
+  - tapasztalatai alapján véletlen jelenségek jövőbeni kimenetelére észszerűen tippel;
+
+  - véletlen kísérletek adatait rendszerezi, relatív gyakoriságokat számol, nagy elemszám esetén számítógépet alkalmaz,
+
+  - valószínűségi változók várható értékét és legvalószínűbb értékét (móduszát) magabiztosan megkülönbözteti, a helyzetnek megfelelően alkalmazza;
+
+  - a várható érték additív tulajdonságát felhasználja feladatok megoldásában;
+
+  - fel tudja használni ismereteit egyszerű játékelméleti feladatok megoldásában.
+
+### Fejlesztési feladatok és ismeretek
+
+  - Valószínűségi kísérletek elvégzése, gyakorisági, relatív gyakorisági táblázatok készítése
+
+  - A valószínűség fogalmának bevezetése statisztikai alapon
+
+  - A klasszikus valószínűségi modell fogalma és alkalmazása
+
+  - Diszkrét valószínűség-eloszlások ábrázolása hagyományos és digitális eszközzel
+
+  - Feltételes valószínűség fogalma és alkalmazásai
+
+  - Események függetlenségének fogalma
+
+  - A várható érték additív tulajdonsága
+
+  - Binomiális és hipergeometrikus eloszlás, ezek várható értékének kiszámítása (egyszerűbb, majd általános paraméterek mellett)
+
+### Fogalmak
+
+valószínűségi kísérlet, esemény, elemi esemény, gyakoriság, relatív gyakoriság, valószínűség, diszkrét valószínűség-eloszlás
+
+feltételes valószínűség, független események, diszkrét valószínűségi változó, binomiális eloszlás, hipergeometrikus eloszlás
+
+### Javasolt tevékenységek
+
+  - Konkrét valószínűségi kísérletek végrehajtása vagy dinamikus szoftver segítségével történő szimulálása (például dobások szabályos dobókockákkal, pénzérmékkel); a kapott gyakoriságok és relatív gyakoriságok táblázatba foglalása; tippelés az egyes kimenetelekre és becslés a bekövetkezésük valószínűségére
+
+  - Játékokban a szerencsefaktor vizsgálata, például „Ki nevet a végén” játék esetében az első hatos dobás eloszlása
+
+  - Különböző társasjátékokban stratégia meghatározása, döntéshozatal esélylatolgatás alapján
+
+  - Különböző szerencsejátékok (lottó, totó, póker, black jack, internetes sportfogadások) esetében a nyerési esély összehasonlítása

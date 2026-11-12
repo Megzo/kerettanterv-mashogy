@@ -1,0 +1,980 @@
+# Speciális matematika tagozat · 11–12. évfolyam
+
+> **Forrás:** [Speciális matematika tagozat](https://www.oktatas.hu/pub_bin/dload/kozoktatas/kerettanterv/gimn9_12/Specialis_Matematika_hat_evf_vegleges.docx) – Oktatási Hivatal, [NAT 2020 kerettantervek](https://www.oktatas.hu/kozneveles/kerettantervek/2020_nat) · letöltve: 2026-11-12  
+> **Iskolatípus:** gimnázium (6 évfolyamos) · **Eredeti fájl:** `sources/oktatas.hu_2020_nat/gimn6_7-12/Specialis_Matematika_hat_evf_vegleges.docx`  
+> Gépi konverzió: a szöveg a forrásé, csak a tagolás egységesített.
+
+## Témakörök áttekintése
+
+| # | Témakör | Javasolt óraszám |
+|---|---|---|
+| 1 | Halmazok, matematikai logika | 40 óra |
+| 2 | Kombinatorika, gráfok és algoritmusok | 20 óra |
+| 3 | Számelméleti ismeretek, számhalmazok épülése | 30 óra |
+| 4 | Hatvány, gyök, exponenciális függvény, logaritmus | 18 óra |
+| 5 | Exponenciális folyamatok vizsgálata | 10 óra |
+| 6 | Sorozatok, függvények, analízis | 90 óra |
+| 7 | Trigonometria | 20 óra |
+| 8 | Térgeometria, axiomatikus és projektív geometria | 30 óra |
+| 9 | Koordinátageometria | 30 óra |
+| 10 | Leíró statisztika | 8 óra |
+| 11 | Valószínűségszámítás | 20 óra |
+| | **Összesen** | **316 óra** |
+
+## A sáv bevezetője (a forrásból)
+
+A 11–12. évfolyamon a tanulási-tanítási folyamatra jellemző, hogy az ismeretek jellege egyre absztraktabb és formálisabb, a matematika belső logikája egyre jobban érvényesül. Ebben a szakaszban az egyik nagyon fontos didaktikai cél a szimbolikus gondolkodás fejlesztése. A tanulóknak a korábban elsajátított készségekre, képességekre és ismeretanyagra támaszkodva kell eljutniuk az absztrakt összefüggések megértéséhez és tudatos alkalmazásához. Tudatosítani kell a matematikai fogalmak pontos definiálásának fontosságát és a matematikai bizonyítások szerepét. Amellett, hogy a lehetséges alkalmazásokat minden egyes témakör kapcsán szem előtt kell tartani, fontos, hogy a tanulók lássák az egyes matematikai területek kapcsolatát is.
+
+Fontos cél, hogy az ismeretszerzési folyamat során a tanuló a tanár által irányított módon, a feladatok megoldása mentén maga fedezze fel az összefüggéseket, általánosítási lehetőségeket, megoldási módokat. A kooperatív munkaformák, a projektfeladatok ebben a szakaszban is fejlesztik a kommunikációt. Az érettségi vizsgára készülés során egyre nagyobb hangsúlyt kap a tanulók önálló munkája mind a feladatmegoldásokban, mind a tanultak ismétlésében, rendszerezésében. A digitális eszközök támogatják a szemléltetést, a megértést, a felfedeztetést és a gyakorlást.
+
+Bizonyos témakörök ebben a szakaszban jelennek meg először. Ilyen a racionális kitevőjű hatvány, az exponenciális függvény, a logaritmus, az analízis elemei (deriválás, integrálás), a koordinátageometria és az axiomatikus és projektív geometria. Az algebrai eszközök és a függvényekkel kapcsolatos ismeretek bővülése, a koordinátageometria alapjainak megjelenése, valamint a statisztikai és valószínűségi szemlélet mélyülése további lehetőségeket nyújt változatos hétköznapi és matematikai problémák megoldására. A matematikai eszköztár bővülése ebben a szakaszban teszi leginkább lehetővé, hogy a tanulók más tantárgyakban, más tanulási területeken is alkalmazni tudják matematikai tudásukat.
+
+**A 11–12. évfolyamon a matematika tantárgy javasolt óraszáma 372 óra. Rendszerező összefoglalásra, az érettségi vizsgára történő felkészítésre a 12. évfolyam végén 60 óra áll rendelkezésre. Az egyes témakörökhöz írt óraszámok javaslatok. Az új ismeretek a teljes óraszám négyötöd része alatt a legtöbb tanuló számára elsajátíthatók, így a fennmaradó órák felhasználhatók ismétlésre, gyakorlásra, felzárkóztatásra, tehetséggondozásra és számonkérésre.**
+
+**A témakörök áttekintő táblázata:**
+
+|                                                                                 |                                    |
+| ------------------------------------------------------------------------------- | ---------------------------------- |
+| **Témakör neve**                                                                | **Javasolt óraszám**               |
+| Halmazok, matematikai logika                                                    | 40  |
+| Kombinatorika, gráfok és algoritmusok            | 36  |
+| Számelméleti ismeretek, számhalmazok épülése                                    | 30  |
+| Hatvány, gyök, exponenciális függvény, logaritmus                               | 18  |
+| Exponenciális folyamatok vizsgálata                                             | 10  |
+| Sorozatok, függvények, analízis                  | 70  |
+| Trigonometria                                                                   | 20  |
+| Térgeometria, axiomatikus és projektív geometria | 30  |
+| Koordinátageometria                                                             | 30  |
+| Leíró statisztika                                                               | 8                                  |
+| Valószínűségszámítás                                                            | 20  |
+| Rendszerező összefoglalás                                                       | 60  |
+| **Összes óraszám:**                                                             | 372 |
+
+## 1. Halmazok, matematikai logika
+
+**Javasolt óraszám:** 40 óra
+
+### Tanulási eredmények
+
+**A témakör tanulása eredményeként a tanuló:**
+
+  - látja a halmazműveletek és a logikai műveletek közötti kapcsolatokat;
+
+  - megállapítja egyszerű „ha ... , akkor ...” és „akkor és csak akkor” típusú állítások logikai értékét;
+
+  - tud egyszerű állításokat indokolni és tételeket bizonyítani;
+
+  - megkülönböztet megszámlálható és nem megszámlálható halmazokat;
+
+  - megfogalmaz számossági érveken alapuló egzisztencia-bizonyításokat;
+
+  - megalapozott képpel rendelkezik a valós számok halmazáról, ismeri a fogalomalkotás nehézségeit.
+
+### Fejlesztési feladatok és ismeretek
+
+  - A halmazműveletek és a logikai műveletek közötti kapcsolatok bemutatása példákon keresztül
+
+  - Logikai kifejezések megfelelő használata
+
+  - Egyszerű állítások indoklása, tételek bizonyítása
+
+  - Stratégiai és logikai játékok
+
+  - Megszámlálható végtelen és kontinuum számosság
+
+  - Megszámlálhatóan sok megszámlálható halmaz uniója is megszámlálható
+
+  - Cantor átlós módszere
+
+  - A racionális, az irracionális, az algebrai és a transzecdens számok halmazának számossága
+
+  - A számosságok körében értelmezett kisebb/nagyobb fogalom tulajdonságai,
+
+  - A kontinuum-hipotézis
+
+  - Valós számok axiómarendszere, az arkhimédészi és a Cantor-axióma szerepe
+
+### Fogalmak
+
+logikai műveletek
+
+halmazok számossága, algebrai számok, transzcendens számok, kontinuum számosság, arkhimédeszi axióma, Cantor-axióma
+
+### Javasolt tevékenységek
+
+  - A tanulók mindennapi tapasztalataihoz köthető, összetett állítások logikai értékének meghatározása igazságtáblázat segítségével
+
+  - Rejtvényújságokban szereplő feladványok megfejtése következtetések láncolatán keresztül
+
+  - Logikai készséget fejlesztő játékok, például „Einstein-fejtörő”
+
+  - Stratégiai játékok, például NIM játékok, táblás játékok
+
+  - Tudatos pénzügyi tervezést segítő játékok
+
+  - A naiv halmazelmélet korlátainak bemutatása a Russell-paradoxon segítségével
+
+  - Bijekciók létesítése a sík és tér érdekes részhalmazai között
+
+  - A Cantor-halmaz vizsgálata
+
+## 2. Kombinatorika, gráfok és algoritmusok
+
+**Javasolt óraszám:** 20 óra
+
+### Tanulási eredmények
+
+**A témakör tanulása hozzájárul ahhoz, hogy a tanuló a nevelési-oktatási szakasz végére:**
+
+  - matematikai vagy hétköznapi nyelven megfogalmazott szövegből a matematikai tartalmú információkat kigyűjti, rendszerezi;
+
+  - a problémának megfelelő matematikai modellt választ, alkot;
+
+  - a kiválasztott modellben megoldja a problémát.
+
+**A témakör tanulása eredményeként a tanuló:**
+
+  - megold sorba rendezési és kiválasztási feladatokat;
+
+  - konkrét szituációkat szemléltet és egyszerű feladatokat megold gráfok segítségével.
+
+### Fejlesztési feladatok és ismeretek
+
+  - Matematikai és hétköznapi helyzetekhez kötődő sorba rendezési és kiválasztási feladatok megoldása
+
+  - A binomiális együttható fogalmának ismerete, értékének kiszámítása
+
+  - Mintavétel visszatevéssel és visszatevés nélkül
+
+  - A gráf csúcsainak fokszámösszege és éleinek száma közötti összefüggés ismerete és alkalmazása gyakorlati feladatok megoldásában
+
+  - Kombinatorikai feladatok megoldása a komplementer esetek meghatározásának segítségével
+
+  - Turán-tétel és egyéb extremális gráfelméleti problémák
+
+  - Hamilton-kör létezésére vonatkozó elégséges feltételek
+
+  - Síkba rajzolható gráfok és az Euler-féle poliédertétel
+
+  - Végtelen gráf fogalma
+
+### Fogalmak
+
+faktoriális, binomiális együttható; csúcs fokszáma gráfban
+
+Hamilton-kör
+
+### Javasolt tevékenységek
+
+  - Anagramma készítése a tanulók neveiből
+
+  - A pókerben előforduló lehetséges nyerő lapkombinációk számának meghatározása
+
+  - A Pascal-háromszög és tulajdonságai felfedeztetése például kéttagú összeg hatványaiban szereplő együtthatók segítségével
+
+  - Különböző szituációk kétféle módon történő összeszámlálása és ebből következő egyszerű kombinatorikus összefüggések felfedezése
+    Visszatevéses és visszatevés nélküli mintavétel konkrét lejátszása, a tapasztalatok összegyűjtése
+
+  - Végtelen gráfok értelmezési lehetőségeinek vizsgálata (pl. mit jelent egy út vagy egy kör egy végtelen gráfban; lehetnek-e végtelen hosszúak)
+
+## 3. Számelméleti ismeretek, számhalmazok épülése
+
+**Javasolt óraszám:** 30 óra
+
+### Tanulási eredmények
+
+**A témakör tanulása eredményeként a tanuló:**
+
+  - ismeri és alkalmazza az oszthatóság alapvető fogalmait;
+
+  - összetett számokat felbont prímszámok szorzatára;
+
+  - meghatározza két természetes szám legnagyobb közös osztóját és legkisebb közös többszörösét, és alkalmazza ezeket egyszerű gyakorlati feladatokban;
+
+  - ismeri és alkalmazza az oszthatósági szabályokat;
+
+  - érti a helyi értékes írásmódot 10-es és más alapú számrendszerekben;
+
+  - ismeri a számhalmazok épülésének matematikai vonatkozásait a természetes számoktól a valós számokig;
+
+  - ismer példákat irracionális számokra;
+
+  - konkrét kis modulusok esetén meg tudja határozni a kvadratikus maradékokat;
+
+  - ismeri és alkalmazza a kínai maradéktételt.
+
+### Fejlesztési feladatok és ismeretek
+
+  - Legnagyobb közös osztó és legkisebb közös többszörös meghatározása a prímtényezős felbontásból
+
+  - Összetett oszthatósági szabályok alkalmazása
+
+  - Számolás osztási maradékokkal (például összeg, szorzat, hatvány maradéka)
+
+  - Számok felírása 10-estől különböző alapú számrendszerben
+
+  - Az egész számok, a véges tizedes törtek, a végtelen szakaszos tizedes törtek és a racionális számok kapcsolata
+
+  - A számhalmazok épülésének matematikai vonatkozásai a természetes számoktól a valós számokig
+
+  - Végtelen nem szakaszos tizedes törtek ismerete
+
+  - Példák irracionális számokra
+
+  - Számhalmazok műveleti zártsága
+
+  - A számelmélet alaptételének bizonyítása \[elemzés példák más gyűrűkre, ahol a bizonyítás valamelyik lépése nem megy. Euler-egészek. Prím azonos a felbonthatatlannal az egészek gyűrűjében.
+
+  - Elem rendje modulo m osztója ϕ(*m*)-nek.
+
+  - A 4*k* + 1 alakú prímekre az *x*<sup>2</sup> + 1 ≡ 0 (*p*) kongruencia megoldható, a 4*k* − 1 alakúakra nem.
+
+  - Az *n*-nél kisebb prímek szorzatának becslése
+
+  - Csebisev tétele
+
+  - A prímek reciprokösszege divergens
+
+  - Minkowski-tétel
+
+### Fogalmak
+
+természetes szám, egész szám, racionális szám, irracionális szám, valós szám, relatív prímek
+
+kvadratikus maradék, lánctört, Pell-egyenlet
+
+### Javasolt tevékenységek
+
+  - Oszthatósággal kapcsolatos „bűvésztrükkök” bemutatása
+
+  - Számrendszerek segítségével megoldható rejtvények
+
+  - Tanulói kiselőadás a 10-estől különböző alapú számrendszerek használatáról a múltban és ennek mai napig tartó hatásairól
+
+  - Tanulói kiselőadás számelméleti érdekességekről, például tökéletes számok és barátságos számpárok, prímszámok, jelenleg ismert legnagyobb prím, titkosítás
+
+  - Halmazábra elkészítése a számhalmazokról
+
+  - \(\sqrt{n}\) hosszú szakasz szerkesztési eljárásának bemutatása
+
+  - A tanult tételek felhasználása változatos feladatokban; pl. végtelen sok 4*k* + 1, 6*k* + 1, 8*k*±1, 8*k*±3 alakú prím van
+
+  - Titkosírás. Prímszámtesztek
+
+  - Pell-egyenletek kapcsolata a lánctörtekkel
+
+  - Számelmélet a Gauss egészek körében
+
+## 4. Hatvány, gyök, exponenciális függvény, logaritmus
+
+**Javasolt óraszám:** 18 óra
+
+### Tanulási eredmények
+
+**A témakör tanulása hozzájárul ahhoz, hogy a tanuló a nevelési-oktatási szakasz végére:**
+
+  - ismeri és alkalmazza a logaritmus fogalmát.
+
+**A témakör tanulása eredményeként a tanuló:**
+
+  - ismeri és alkalmazza az n-edik gyök fogalmát;
+
+  - ismeri és alkalmazza a racionális kitevőjű hatvány fogalmát és a hatványozás azonosságait;
+
+  - képlettel adott függvényt hagyományosan és digitális eszközzel ábrázol;
+
+  - adott értékkészletbeli elemhez megtalálja az értelmezési tartomány azon elemeit, amelyekhez a függvény az adott értéket rendeli.
+
+### Fejlesztési feladatok és ismeretek
+
+  - Az n-edik gyök fogalmának ismerete és alkalmazása
+
+  - Hatványozás pozitív alap és racionális kitevő esetén
+
+  - Hatványozás azonosságainak alkalmazása racionális kitevő esetén
+
+  - A hatványozás szemléletes értelmezése irracionális kitevő esetén
+
+  - Az exponenciális függvények ábrázolása hagyományosan és számítógéppel, a függvények tulajdonságai
+
+  - A logaritmus értelmezése
+
+  - Áttérés más alapú logaritmusra
+
+  - Számológép használata logaritmus értékének meghatározásához
+
+  - A logaritmus azonosságai
+
+  - A logaritmus függvény ábrázolása, tulajdonságai
+
+  - Egyszerű exponenciális és logaritmusos egyenletek, egyenlőtlenségek megoldása
+
+  - Összetett exponenciális és logaritmusos egyenletek, egyenlőtlenségek megoldása
+
+### Fogalmak
+
+n-edik gyök, exponenciális függvény, logaritmus
+
+### Javasolt tevékenységek
+
+  - A permanencia-elv gyakorlati „kipróbálása” a definíció megadása előtt
+
+  - Matematikatörténeti érdekességek (például déloszi probléma) feldolgozása projektmunkában
+
+  - Különböző alapú exponenciális függvények ábrázolása milliméterpapíron, és a kapott grafikonok összehasonlítása csoportmunkában
+
+  - Nagy számok számjegyei számának meghatározása logaritmus segítségével
+
+  - 10-estől eltérő alapú logaritmus kiszámolása csak 10-es alapú logaritmus kiszámolására alkalmas számológéppel
+
+  - Annak bemutatása, hogy a logaritmus segítségével hogyan lehet számok szorzását számok összeadására visszavezetni
+
+  - A logaritmus-táblázat és a logarléc mint matematikatörténeti érdekességek megismertetése
+
+  - A témakörhöz tartozó nehezebb feladatok, versenyfeladatok megoldása
+
+## 5. Exponenciális folyamatok vizsgálata
+
+**Javasolt óraszám:** 10 óra
+
+### Tanulási eredmények
+
+**A témakör tanulása hozzájárul ahhoz, hogy a tanuló a nevelési-oktatási szakasz végére:**
+
+  - matematikai vagy hétköznapi nyelven megfogalmazott szövegből a matematikai tartalmú információkat kigyűjti, rendszerezi;
+
+  - ismeri és alkalmazza a logaritmus fogalmát.
+
+**A témakör tanulása eredményeként a tanuló:**
+
+  - adott problémához megoldási stratégiát, algoritmust választ, készít;
+
+  - a problémának megfelelő matematikai modellt választ, alkot;
+
+  - a kiválasztott modellben megoldja a problémát;
+
+  - a modellben kapott megoldását az eredeti problémába visszahelyettesítve értelmezi, ellenőrzi, és az észszerűségi szempontokat figyelembe véve adja meg válaszát;
+
+  - egyenletek megoldását behelyettesítéssel, értékkészlet-vizsgálattal ellenőrzi;
+
+  - megold egyszerű, a megfelelő definíció alkalmazását igénylő exponenciális egyenleteket, egyenlőtlenségeket;
+
+  - megold összetettebb exponenciális egyenleteket, egyenlőtlenségeket.
+
+### Fejlesztési feladatok és ismeretek
+
+  - Exponenciális folyamatok vizsgálata a természetben és a társadalomban
+
+  - Exponenciális egyenletre, egyenlőtlenségre vezető matematikai vagy hétköznapi nyelven megfogalmazott szövegből a matematikai tartalmú információk kigyűjtése, rendszerezése
+
+  - Adott problémához megoldási stratégia, algoritmus választása, készítése
+
+  - A gyakorlati (például pénzügyi, biológiai, fizikai, demográfiai, ökológiai) problémának megfelelő matematikai modell választása, alkotása
+
+  - A kiválasztott modellben a probléma megoldása
+
+  - A modellben kapott megoldás értelmezése az eredeti probléma szövegébe visszahelyettesítve, ellenőrzés és válaszadás az észszerűségi szempontokat figyelembe véve
+
+### Fogalmak
+
+Nincsenek új fogalmak.
+
+### Javasolt tevékenységek
+
+  - Tanulói kiselőadás az exponenciálisan változó folyamatokról a természetben és a társadalomban
+
+  - Adatgyűjtés különböző forrásokból származó, exponenciális vagy közelítőleg annak tekinthető változókra csoportmunkában
+
+  - Gyakorlati, időben exponenciálisnak tekinthető változást mutató grafikonokra exponenciális függvény illesztése digitális eszköz segítségével, és az illesztett függvény paramétereinek értelmezése
+
+  - Összetett exponenciális és logaritmusos egyenletek, egyenlőtlenségek megoldása
+
+## 6. Sorozatok, függvények, analízis
+
+**Javasolt óraszám:** 90 óra
+
+### Tanulási eredmények
+
+**A témakör tanulása hozzájárul ahhoz, hogy a tanuló a nevelési-oktatási szakasz végére:**
+
+  - ismeri és alkalmazza a logaritmus fogalmát;
+
+  - ismeri végtelen sorozatok tulajdonságait;
+
+  - ismeri függvények határértékének és folytonosságának fogalmát;
+
+  - ismeri a határozatlan és határozott integrál fogalmát;
+
+  - teljes függvényvizsgálatot tud végezni a tanult függvények körében.
+
+**A témakör tanulása eredményeként a tanuló:**
+
+  - számtani és mértani sorozatokat adott szabály alapján felír, folytat;
+
+  - a számtani/mértani sorozat n-edik tagját felírja az első tag és a különbség (differencia)/hányados (kvóciens) ismeretében;
+
+  - a számtani/mértani sorozatok első n tagjának összegét kiszámolja;
+
+  - ismeri és alkalmazza a százalékalap, -érték, -láb, -pont fogalmát;
+
+  - mértani sorozatokra vonatkozó ismereteit használja gazdasági, pénzügyi, természettudományi és társadalomtudományi problémák megoldásában;
+
+  - megállapítja konvergens sorozatok véges és végtelen határértékét;
+
+  - a tanult függvények körében meghatározza a derivált függvényt;
+
+  - a tanult függvényeket tudja integrálni.
+
+### Fejlesztési feladatok és ismeretek
+
+  - A számsorozat fogalmának ismerete
+
+  - Számsorozat megadása képlettel, rekurzióval
+
+  - Számtani és mértani sorozatok felírása, folytatása adott szabály szerint
+
+  - Számtani sorozat, az n-edik tag, az első n tag összege
+
+  - Mértani sorozat, az n-edik tag, az első n tag összege
+
+  - A számtani és a mértani sorozat első n tagjának összegére vonatkozó képlet bizonyítása
+
+  - Számtani és mértani sorozatokra vonatkozó ismeretek alkalmazása gazdasági, természettudományi és társadalomtudományi problémák megoldásában
+
+  - Megtakarítási és kamatozási formák, ezek összehasonlítása
+
+  - Egyszerű kamat, kamatos kamat, gyűjtőjáradék és törlesztőrészlet számítása
+
+  - Megtakarítási, befektetési és hitelfelvételi lehetőségekkel és azok kockázati tényezőivel kapcsolatos feladatok megoldása
+
+  - Változatos példák sorozatokra, tulajdonságok, monotonitás, konvergencia meghatározása
+
+  - Sorozatok korlátossága, torlódási pont, határérték
+
+  - Függvény határértékének meghatározása
+
+  - Polinomfüggvények, trigonometrikus függvények, exponenciális és logaritmusfüggvények differenciálása
+
+  - Deriválási szabályok, összeg, szorzat, hányados, kompozíció
+
+  - Függvények konvexitása
+
+  - Határozatlan integrál ismerete
+
+  - Newton–Leibniz-formula ismerete és alkalmazása
+
+  - integrálási szabályok ismerete és alkalmazása
+
+  - Parciális törtekre bontás, helyettesítéses integrál
+
+### Fogalmak
+
+számsorozat, tőke, kamatláb, kamat, futamidő, gyűjtőjáradék, törlesztőrészlet
+
+határérték, folytonosság, derivált, primitív függvény, integrál
+
+### Javasolt tevékenységek
+
+  - Tanulói kiselőadás tartása nevezetes sorozatokról, például Fibonacci-sorozat
+
+  - Az első 100 pozitív természetes szám összegének meghatározása a „kis” Gauss módszerével
+
+  - A sakktáblára elhelyezett, mezőről mezőre kétszeres számú búzaszemek kérdésének bemutatása
+
+  - Valódi pénzügyi termékek kamatozási és egyéb feltételeinek összehasonlítása csoportmunkában internetes adatgyűjtés segítségével
+
+  - Szélsőérték-feladatok megoldása analitikus eszközökkel
+
+  - Teljes függvényvizsgálat
+
+  - Integrálszámítás alkalmazása terület, térfogat és felszínszámításra, súlypont helyének meghatározása, ívhossz és tehetetlenségi nyomaték meghatározása
+
+## 7. Trigonometria
+
+**Javasolt óraszám:** 20 óra
+
+### Tanulási eredmények
+
+**A témakör tanulása hozzájárul ahhoz, hogy a tanuló a nevelési-oktatási szakasz végére:**
+
+  - sík- és térgeometriai feladatoknál a problémának megfelelő mértékegységben adja meg válaszát;
+
+  - változatos módszerekkel kiszámítja háromszögek területét;
+
+  - átismételje és alkalmazza a 9-10. évfolyamokon tanultakat, új ismereteket szerezzen.
+
+**A témakör tanulása eredményeként a tanuló:**
+
+  - ismeri és alkalmazza a háromszögek oldalai, szögei, oldalai és szögei közötti kapcsolatokat; a speciális háromszögek tulajdonságait;
+
+  - ismeri és alkalmazza a háromszög nevezetes vonalaira, pontjaira és köreire vonatkozó fogalmakat és tételeket;
+
+  - ismeri hegyesszögek szögfüggvényeinek definícióját a derékszögű háromszögben;
+
+  - ismeri tompaszögek szögfüggvényeinek származtatását a hegyesszögek szögfüggvényei alapján;
+
+  - ismeri a hegyes- és tompaszögek szögfüggvényeinek összefüggéseit;
+
+  - alkalmazza a szögfüggvényeket összetett geometriai számítási feladatokban;
+
+  - a szögfüggvény értékének ismeretében meghatározza a szöget;
+
+  - ismeri a háromszög nevezetes pontjait és vonalait;
+
+  - ki tudja számolni a háromszög területét az oldalak ismeretében (Hérón-képlettel);
+
+  - ismeri az összefüggéseket a háromszög oldalai és szögei között (szinusz- és koszinusz-tétel);
+
+  - ki tudja számolni a háromszög területét két oldal és a köztük lévő szög ismeretében (trigonometrikus területképlet).
+
+### Fejlesztési feladatok és ismeretek
+
+  - A háromszögek csoportosítása oldalak és szögek szerint
+
+  - Az alapvető összefüggések ismerete és alkalmazása háromszögek oldalai, szögei, oldalai és szögei között
+
+  - Speciális háromszögek tulajdonságainak ismerete és alkalmazása: szabályos, egyenlő szárú, derékszögű háromszög
+
+  - A háromszög nevezetes vonalaira, pontjaira és köreire vonatkozó fogalmak, tételek ismerete és alkalmazása: oldalfelező merőleges, szögfelező, magasságvonal, súlyvonal, középvonal, körülírt, illetve beírt kör
+
+  - Az oldalfelező merőlegesek és a belső szögfelezők metszéspontjára vonatkozó tétel bizonyítása
+
+  - Háromszög területének kiszámítása
+
+  - Szinusz, koszinusz, tangens értelmezése tetszőleges forgásszög esetén
+
+  - Valós számok halmazán értelmezett szögfüggvények ábrázolása, összetett transzformációk végrehajtása, a függvények jellemzése
+
+  - Magasságtétel és befogótétel bizonyítása
+
+  - Meneláosz- és Ceva-tétel
+
+  - Hegyesszög szinusza, koszinusza, tangense
+
+  - Számítások derékszögű háromszögekben szögfüggvények segítségével gyakorlati helyzetekben
+
+  - Tompaszög szinusza, koszinusza, tangense
+
+  - Összefüggések ismerete egy adott szög különböző szögfüggvényei között: pitagoraszi összefüggés, pótszögek és mellékszögek szögfüggvényei
+
+  - Szögfüggvény értékének ismeretében a szög meghatározása számológép segítségével
+
+  - Háromszög területének kiszámítása két oldal és a közbezárt szög ismeretében
+
+  - Szinusz- és koszinusztétel ismerete és alkalmazása
+
+  - A szinusztétel bizonyítása
+
+  - A koszinusztétel bizonyítása
+
+  - A trigonometrikus Ceva-tétel bizonyítása
+
+### Fogalmak
+
+szabályos háromszög, egyenlő szárú háromszög, derékszögű háromszög, oldalfelező merőleges, szögfelező, magasságvonal, súlyvonal, középvonal, körülírt kör, beírt kör
+
+hozzáírt kör, súlypont, magasságpont, szögfüggvények
+
+szinusz, koszinusz, tangens, szinusztétel, koszinusztétel
+
+szögfelezőtétel, magasságtétel, befogótétel
+
+trigonometrikus Ceva-tétel
+
+### Javasolt tevékenységek
+
+  - Az eddigi ismeretek átismétlése csoportmunkában
+
+  - A Pitagorasz-tétel különböző bizonyításainak gyűjtése
+
+  - Tanulói kiselőadás a trigonometrikus ismeretek hétköznapi életben, munkában való felhasználhatóságáról, például: lakberendezés, ácsmunka, GPS működése, hátrametszés
+
+  - Interaktív digitális eszközök használata a valós számok halmazán értelmezett szögfüggvények szemléltetéséhez, tulajdonságainak bizonyításához
+
+  - A szögfüggvények szerepének bemutatása a harmonikus rezgőmozgást jellemző mennyiségekben
+
+  - Brocard-pont, Nagel-pont, izogonális pont
+
+  - Az Euler-egyenes és a Feuerbach-kör vizsgálata
+
+  - Gömbi háromszögek vizsgálata, összehasonlító geometria
+
+  - Trigonometrikus Ceva-tétel
+
+## 8. Térgeometria, axiomatikus és projektív geometria
+
+**Javasolt óraszám:** 30 óra
+
+### Tanulási eredmények
+
+**A témakör tanulása hozzájárul ahhoz, hogy a tanuló a nevelési-oktatási szakasz végére:**
+
+  - ismeri és alkalmazza a szinusz- és a koszinusztételt;
+
+  - ismeri térelemek kölcsönös helyzetét;
+
+  - térgeometriai számolásokat tud végezni;
+
+  - ismeri az Euklidesz- és Bolyai-féle geometria különbségét;
+
+  - ismeri a projektív sík elemeit, ideális pont és egyenes.
+
+**A témakör tanulása eredményeként a tanuló:**
+
+  - ismeri és feladatmegoldásban alkalmazza a térelemek kölcsönös helyzetét, távolságát és hajlásszögét;
+
+  - ismeri a mérés alapelvét, alkalmazza konkrét alap- és származtatott mennyiségek esetén;
+
+  - ismeri a hosszúság, terület, térfogat, űrtartalom, idő mértékegységeit és az átváltási szabályokat. Származtatott mértékegységeket átvált;
+
+  - sík- és térgeometriai feladatoknál a problémának megfelelő mértékegységben adja meg válaszát;
+
+  - ismeri és alkalmazza a hasáb, a henger, a gúla, a kúp, a gömb, a csonkagúla, a csonkakúp (speciális testek) tulajdonságait;
+
+  - lerajzolja a kocka, téglatest, egyenes hasáb, egyenes körhenger, egyenes gúla, forgáskúp hálóját;
+
+  - kiszámítja a speciális testek felszínét és térfogatát egyszerű esetekben;
+
+  - ismeri és alkalmazza a hasonló síkidomok kerületének és területének arányára vonatkozó tételeket;
+
+  - ismeri és alkalmazza a hasonló testek felszínének és térfogatának arányára vonatkozó tételeket;
+
+  - pontok és egyenesek kettősviszonyát ki tudja számolni;
+
+  - ismeri és alkalmazza a Pascal-, Brianchon- és Desargues-tételeket;
+
+  - tudja, hogy a vetítés kettősviszony-tartó transzformáció.
+
+### Fejlesztési feladatok és ismeretek
+
+  - Térelemek kölcsönös helyzetének, távolságának és hajlásszögének ismerete, alkalmazása feladatmegoldásban
+
+  - A terület, térfogat, űrtartalom mértékegységeinek és ezek átváltási szabályainak ismerete
+
+  - Sűrűség mértékegységei közötti átváltás ismerete
+
+  - Sík- és térgeometriai feladatoknál a válasz megadása a problémának megfelelő mértékegységben
+
+  - A hasáb, a henger, a gúla, a kúp, a gömb, a csonkagúla, a csonkakúp (speciális testek) tulajdonságainak ismerete és alkalmazása a hétköznapi életben előforduló testekkel kapcsolatban
+
+  - A kocka, a téglatest, az egyenes hasáb, az egyenes körhenger, az egyenes gúla és a forgáskúp hálójának lerajzolása konkrét esetekben
+
+  - A mindennapi életben előforduló hasáb, henger, gúla, kúp, gömb, csonkagúla, csonkakúp alakú tárgyak felszínének és térfogatának meghatározása méréssel és számítással
+
+  - Síkidomok forgatásával keletkező egyszerű, a mindennapi életben is előforduló testek felszínének és térfogatának kiszámítása
+
+  - A hasonló síkidomok kerületének és területének arányára vonatkozó tételek ismerete és alkalmazása
+
+  - A hasonló testek felszínének és térfogatának arányára vonatkozó tételek ismerete és alkalmazása
+
+  - Vetítés, kettősviszony alkalmazásával megold feladatokat
+
+  - Harmonikus pontnégyest felhasználja bizonyításoknál
+
+  - Kúpszeletekkel kapcsolatos szerkesztéseket, bizonyításokat végez
+
+  - Gömbi geometria elemei, Lénárt-féle gömb
+
+  - Egybevágóságok rendszerezése
+
+  - Hasonlóság és forgatvanyújtás alkalmazása
+
+### Fogalmak
+
+kocka, téglatest, hasáb, henger, gúla, kúp, gömb, csonkagúla, csonkakúp, egyenes test, forgástest, *n*-oldalú szabályos gúla, tetraéder, alaplap, oldallap, alapél, oldalél, alkotó, palást, testmagasság, test hálója
+
+axióma, kettősviszony, harmonikus elválasztás
+
+### Javasolt tevékenységek
+
+  - Hétköznapi tárgyak (üdítősdoboz, vizesflakon, tejfölösdoboz stb.) térfogatának megállapítása méréssel, a kapott eredmény összehasonlítása a tárgyon szereplő értékkel
+
+  - A Louvre bejárataként épített üvegpiramis földfelszín feletti térfogatának és az üvegfelület felszínének meghatározása (szükséges adatok gyűjtése az internetről)
+
+  - Annak becslése csoportmunkában, hogy a teret milyen arányban tudjuk kitölteni egybevágó érintkező gömbökkel különböző elrendezések esetén
+
+  - Különböző méretű, megközelítőleg gömb alakú gyümölcsök térfogatának és felszínének becslése, a becslés ellenőrzése méréssel
+
+  - A Föld felszínének és térfogatának közelítése földgömbmodellen méréssel és számolással, majd a kapott értékek összevetése a hivatalos adatokkal
+
+  - Projektmunka a gömbről: hogyan jelenik meg a gömb a mindennapi életben, a többi tantárgyban és a matematikában; a gömbi geometria alapjai
+
+  - A témakörhöz tartozó nehezebb feladatok, versenyfeladatok megoldása
+
+  - Vetítések egymásutánjával megoldható nehezebb feladatok megoldása
+
+  - Dandelin-gömb, kúpszeletek főköreire, vezérköreire és egyeneseire vonatkozó tételek
+
+## 9. Koordinátageometria
+
+**Javasolt óraszám:** 30 óra
+
+### Tanulási eredmények
+
+**A témakör tanulása eredményeként a tanuló:**
+
+  - ismeri a vektorokkal kapcsolatos alapvető fogalmakat;
+
+  - ismer és alkalmaz egyszerű vektorműveleteket;
+
+  - alkalmazza a vektorokat feladatok megoldásában;
+
+  - megad pontot és vektort koordinátáival a derékszögű koordináta-rendszerben;
+
+  - koordináta-rendszerben ábrázol adott feltételeknek megfelelő ponthalmazokat;
+
+  - koordináták alapján számításokat végez szakaszokkal, vektorokkal;
+
+  - ismeri és alkalmazza az egyenes egyenletét;
+
+  - egyenesek egyenletéből következtet az egyenesek kölcsönös helyzetére;
+
+  - kiszámítja egyenesek metszéspontjainak koordinátáit az egyenesek egyenletének ismeretében;
+
+  - megadja és alkalmazza a kör egyenletét a kör sugarának és a középpont koordinátáinak ismeretében;
+
+  - felismeri a matematika különböző területei közötti kapcsolatot;
+
+  - ismeri a vektorok skalárszorzását és feladatokban alkalmazza;
+
+  - ismeri a vektoriális szorzatot és a vegyes szorzatot, terület és térfogat meghatározására használja;
+
+  - ismeri az egyenes egyenletének többféle formáját (tengelymetszetes, iránytangenses, irányvektoros, normálvektoros);
+
+  - vektorok merőlegességét vizsgálja;
+
+  - ismeri és alkalmazza pont és egyenes távolságának képletét;
+
+  - meg tudja oldani a koordinátageometria egyenessel, körrel, síkkal, gömbbel kapcsolatos alapfeladatait.
+
+### Fejlesztési feladatok és ismeretek
+
+  - A vektor, vektor abszolút értéke, nullvektor, ellentett vektor, helyvektor fogalmak ismerete, alkalmazása
+
+  - A vektorok összeadása, kivonása, szorzása valós számmal, műveletek ismerete és alkalmazása
+
+  - Vektorok alkalmazása feladatok megoldásában
+
+  - Pont és vektor megadása koordinátákkal a derékszögű koordináta-rendszerben
+
+  - Adott feltételeknek megfelelő ponthalmazok ábrázolása koordináta-rendszerben
+
+  - Két pont távolságának, vektor abszolút értékének meghatározása koordináták alapján
+
+  - Vektorok összegének, különbségének, számszorosának koordinátái
+
+  - Szakaszfelezőpont koordinátáinak meghatározása a végpontok koordinátái alapján
+
+  - Egyenes egyenlete *y* = *mx* + *b* vagy *x* = *c* alakban
+
+  - Egyenes meredekségének fogalma; egyenesek merőlegességének és párhuzamosságának megállapítása a meredekségek alapján
+
+  - Az egyenesek egyenletének ismeretében egyenesek metszéspontjának koordinátái
+
+  - A kör egyenletének megadása és alkalmazása a kör sugarának és a középpont koordinátáinak ismeretében
+
+  - Vektorok skaláris szorzatának ismerete és alkalmazása
+
+  - Az egyenes egyenletének irányvektoros és normálvektoros alakja
+
+  - Kör és egyenes kölcsönös helyzetének meghatározása
+
+  - Kör adott pontjába húzható érintő egyenletének felírása
+
+  - Szakaszt adott arányban osztó pont koordinátáinak meghatározása
+
+  - Háromszög súlypontjának koordinátái
+
+  - Egyenlő oldalú és ortogonális tetraéder tulajdonságai
+
+  - Addíciós tételek és következmények, ezek igazolása
+
+  - Szögfüggvényeket tartalmazó azonosságok
+
+  - Egyenes egyenletrendszere a térben
+
+  - A kör érintőjének egyenlete
+
+  - A háromszög koordinátageometriai (előjeles) területe
+
+  - Skalárszorzat, vektoriális szorzat, vegyes szorzat alaptulajdonságai, kiszámolása koordinátarendszerben, alkalmazása feladatokban, bizonyításokban
+
+  - A konkrét fizikai tértől való elvonatkoztatás, a paramétertér, az alakzatok absztrakt terének megértése, kezelése
+
+  - Apollóniusz-kör tétele
+
+  - Kúpszeletek analitikus jellemzése
+
+  - Analitikus geometria alkalmazása mértani helyek keresésénél és bizonyítási feladatoknál
+
+  - Pontra és tengelyre való tükörképek egyenlete
+
+  - Szögfelező egyenlete
+
+  - A kúpszeletek tulajdonságainak analitikus bizonyítása
+
+  - Hatványvonal vizsgálata analitikus módszerekkel
+
+### Fogalmak
+
+vektor, vektor abszolút értéke, nullvektor, ellentett vektor, helyvektor, vektorok összege, vektorok különbsége, vektor számszorosa, vektor koordinátái, alakzat egyenlete, egyenes egyenlete, kör egyenlete
+
+irányvektor, normálvektor, skaláris szorzat, iránytangens, alakzatok egyenlete, egyenletrendszere
+
+vektoriális szorzat, vegyes szorzat, Apollóniusz-kör, hatványvonal
+
+### Javasolt tevékenységek
+
+  - „Torpedójáték” koordináta-rendszerben
+
+  - Helymeghatározás térképen a szélességi és hosszúsági adatok segítségével
+
+  - Ház/lakás alaprajzának elkészítése koordináta-rendszerben, az eredeti adatok alapján
+
+  - Játék helyvektorokkal dinamikus geometriai szoftver használatával
+
+  - Gondolattérkép készítése a koordinátageometria kapcsolatainak bemutatására csoportos vagy egyéni munkaformában
+
+  - „Oroszlánfogás”: lineáris egyenlőtlenségrendszer megoldása grafikusan, digitális eszköz segítségével
+
+  - „Célba lövés”: játék körökkel a koordináta-rendszerben
+
+  - Hétköznapi helyzetek, mozgások, tervrajzok modellezése koordináta-geometriai eszközökkel
+
+  - A skaláris szorzat előfordulásának megmutatása fizikai mennyiségeknél
+
+  - Ferdeszögű koordinátarendszer és affinitás
+
+  - Egyenes- és körsorok
+
+  - A projektív geometria analitikusan
+
+  - Kúpszeletek elforgatottjának egyenlete
+
+  - Szerkesztési feladatok megoldása analitikus geometriával
+
+  - Apollóniusz „Kóniká”-ja
+
+  - Aszümptomáktól a homogén koordinátákig – Apollóniusz, Descartes, Plücker
+
+  - Erővonalak és ekvipotenciális felületek
+
+  - Ortogonális trajektóriák
+
+  - Vegyes szorzat az elektromágneses térben
+
+  - 3-nál több dimenzió kezelése
+
+## 10. Leíró statisztika
+
+**Javasolt óraszám:** 8 óra
+
+### Tanulási eredmények
+
+**A témakör tanulása eredményeként a tanuló:**
+
+  - adott cél érdekében tudatos adatgyűjtést és rendszerezést végez;
+
+  - hagyományos és digitális forrásból származó adatsokaság alapvető statisztikai jellemzőit meghatározza, értelmezi és értékeli;
+
+  - ismeri és alkalmazza a sodrófa (box-plot) diagramot adathalmazok jellemzésére, összehasonlítására;
+
+  - felismer grafikus manipulációkat diagramok esetén;
+
+### Fejlesztési feladatok és ismeretek
+
+  - A reprezentatív minta fogalmának szemléletes ismerete
+
+  - Hétköznapi, társadalmi problémákhoz kapcsolódó statisztikai adatok tervszerű gyűjtése
+
+  - Statisztikai adatok rendszerezése, jellemzése kvartilisekkel, középértékekkel és szóródási mutatókkal
+
+  - Sodrófa (box-plot) diagram készítése, alkalmazása
+
+  - A kapott adatok értelmezése, értékelése, statisztikai következtetések
+
+  - Nagy adathalmazok kezelése táblázatkezelő programmal
+
+  - Grafikus és szöveges statisztikai manipulációk felismerése
+
+### Fogalmak
+
+reprezentatív minta, sodrófa (box-plot) diagram, minimum, maximum, kiugró adat, kvartilisek, terjedelem, szórás
+
+### Javasolt tevékenységek
+
+  - Példák reprezentatív és nem reprezentatív mintavételre
+
+  - Szavazások szimulálása és különböző szavazatértékelő rendszerek vizsgálata iskolai körülmények között
+
+  - A Simpson-paradoxon bemutatása példákon
+
+  - Az interneten található, megbízható forrásból (pl. KSH honlapja) származó statisztikák értelmezése, elemzése, lehetséges következtetések megfogalmazása
+
+  - Különböző forrásokból származó adathalmazok statisztikai elemzése, értékelése, ezekből valamilyen adott szempont alapján manipulatív és nem manipulatív diagram készítése
+
+## 11. Valószínűségszámítás
+
+**Javasolt óraszám:** 20 óra
+
+### Tanulási eredmények
+
+**A témakör tanulása eredményeként a tanuló:**
+
+  - konkrét valószínűségi kísérletek esetében az esemény, eseménytér, elemi esemény, relatív gyakoriság, valószínűség, egymást kizáró események, független események fogalmát megkülönbözteti és alkalmazza;
+
+  - ismeri és alkalmazza a klasszikus valószínűségi modellt és a Laplace-képletet;
+
+  - ismeri és egyszerű esetekben alkalmazza a valószínűség geometriai modelljét;
+
+  - meghatározza a valószínűséget visszatevéses, illetve visszatevés nélküli mintavétel esetén;
+
+  - ismeri és egyszerű esetekben alkalmazza a Bayes-tételt és a teljes valószínűség tételét;
+
+  - ismeri és feladatmegoldásokban alkalmazza a geometriai eloszlást;
+
+  - ismeri és alkalmazza a nagy számok törvényét, felismeri a helytelen statisztikai következtetéseket.
+
+### Fejlesztési feladatok és ismeretek
+
+  - Példák ismerete események összegére, szorzatára, komplementer eseményre, egymást kizáró eseményekre
+
+  - Elemi események fogalmának ismerete, alkalmazása események előállítására
+
+  - Példák ismerete független és nem független eseményekre
+
+  - A klasszikus valószínűségi modell és a Laplace-képlet ismerete, alkalmazása
+
+  - A geometriai valószínűség fogalmának ismerete és alkalmazása
+
+  - Valószínűségek meghatározása visszatevéses és visszatevés nélküli mintavétel esetén
+
+  - A várható érték ismerete és meghatározása konkrét feladatokban, játékokban
+
+  - Pénzügyi fogalmakkal kapcsolatos valószínűségi ismeretek (például biztosítás, befektetések kockázata, árfolyamkockázat)
+
+  - Egyszerű szimmetrikus bolyongás (tönkremenési játék, születésszabályozás)
+
+  - A várható érték fogalmával és értelmezésével kapcsolatos paradoxonok (pl. Pétervári paradoxon)
+
+  - A várható érték felhasználása pozitív értékű valószínűségi változónál a valószínűség becslésére
+
+### Fogalmak
+
+események összege, események szorzata, esemény komplementere, egymást kizáró események, független események, geometriai valószínűség, visszatevéses mintavétel, visszatevés nélküli mintavétel, várható érték
+
+diszkrét eloszlások (binomiális, hipergeometrikus, geometriai), valószínűségi változó várható értéke és szórása, Bayes-tétel és teljes valószínűség tétele
+
+### Javasolt tevékenységek
+
+  - Konkrét valószínűségi kísérletek végrehajtása vagy dinamikus szoftver segítségével történő szimulálása (pl. szabályos dobókockákkal, pénzérmékkel dobálás); a kapott gyakoriságok és relatív gyakoriságok táblázatba foglalása; becslés az egyes kimenetelek, illetve összetett események valószínűségére csoportmunkában
+
+  - Példák keresése független és nem független, illetve egymást kizáró eseményekre csoportmunkában
+
+  - Orvosi tesztek eredményének esélyelemzése fagráf segítségével
+
+  - Egyszerű valószínűségi játékokhoz kapcsolódóan a várható nyeremény és az igazságosság fogalmának kialakítása
+
+  - Konkrét bank konkrét befektetési portfóliójának értelmezése, elemzése
+
+  - Néhány konkrét biztosítási ajánlat értelmezése, elemzése

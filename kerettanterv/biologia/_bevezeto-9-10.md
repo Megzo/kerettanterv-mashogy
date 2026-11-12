@@ -1,0 +1,27 @@
+# Biológia – bevezető (9–10. évfolyam)
+
+> **Forrás:** [Biológia 9–10. évfolyam](https://www.oktatas.hu/pub_bin/dload/kozoktatas/kerettanterv/Biologia_K.docx) – Oktatási Hivatal, [NAT 2020 kerettantervek](https://www.oktatas.hu/kozneveles/kerettantervek/2020_nat) · letöltve: 2026-11-12  
+> **Iskolatípus:** gimnázium (4 évfolyamos) · **Eredeti fájl:** `sources/oktatas.hu_2020_nat/gimn_9-12/Biologia_K.docx`  
+> Gépi konverzió: a szöveg a forrásé, csak a tagolás egységesített.
+
+# Biológia
+
+*Általános célok*
+
+A 7–8. évfolyamokon tanult biológiai ismeretek minden tanuló számára képet adtak az élővilág kialakulásáról, fejlődéséről és szerveződéséről. Alapszinten elsajátították a biológiai vizsgálatok néhány laboratóriumi és terepen végezhető módszerét is. Tudatosabbá váltak az egészségükkel és a természeti környezet fenntarthatóságával kapcsolatos kérdésekben, fejlődtek az életviteli készségeik. A középiskolában a tanulók erre az alapra építve kezdik meg a biológia tanulását. Közöttük vannak, akik később a szaktárgyi tudás további bővítését választják, de olyanok is, akik inkább a természettudományos műveltségük gyarapítását várják ettől a tantárgytól. Ehhez a tanulói alaptudáshoz és célrendszerhez kell igazodni a biológia tantárgy témakörszerkezetének, tartalmi elemeinek és készségfejlesztési céljainak. A témakörök a mindenki által megszerezhető és a mindennapi életben alkalmazható tudás és képességek mellett előkészítik a 11–12. évfolyamokon választható biológia tanulmányokat is. A biológia tantárgy tanulási folyamatának tervezése többféleképpen történhet, figyelembe véve az évfolyamok óraszámát, a témakörök logikai kapcsolódását, a természettudományos társtantárgyak haladási ütemét, illetve a helyi sajátosságokat (pl. iskolán kívüli tanulás, tematikus napok szervezése). A párhuzamosan folyó műveltségépítés és szaktudásbővítés szükségessé teszi, hogy az alkalmazott tanulási módszerek igazodjanak a tanulók eltérő tanulási céljaihoz és képességeihez, felébresztve és fenntartva az élő természet gazdagságára és szépségére való rácsodálkozást, valamint a természet épsége iránt érzett felelősséget.
+
+A biológia tantárgy a Nemzeti alaptantervben rögzített kulcskompetenciákat az alábbi módon fejleszti:
+
+**A tanulás kompetenciái:** A biológiai megfigyelések és kísérletek alapján a tanuló átéli a tudásszerzés aktív folyamatát, míg a tudás alkalmazhatóságának tapasztalata az önirányító tanulás képességét erősíti. Tantárgyhoz kapcsolódó, napról napra frissülő információk keresése, az ezekre a forrásokra épített tanulás fejleszti az önálló tanulás képességét.
+
+**A kommunikációs kompetenciák:** A természet megfigyelése és a tapasztalatok megfogalmazása fejleszti a tanuló szókincsét, anyanyelvi kifejezőkészségét. Az élő rendszerek és életjelenségek ábrák, képek, mozgóképek formájában is vizsgálhatók, ez fejleszti a képzeletet, a képek és a nyelvi kifejezésmódok közötti átalakítás képességét. A csoportos, interaktív tanulási helyzetek a vélemények felszínre hozását, a tudás közös építését és megosztását segítik.
+
+**A digitális kompetenciák:** A közvetlen tapasztalatszerzés mellett a tanuló digitális forrásokból szerezhet információkat a természeti környezetéről. A könyvtári és egyéb adatbázisokban végzett célzott keresése kiegészül a tárolás, rendezés és átalakítás műveleteivel. Megfelelő tanári támogatással a tanuló maga is alkotóvá válhat, személyre szabott tananyagokat hozhat létre, eredményeit megoszthatja társaival.
+
+**A matematikai, gondolkodási kompetenciák:** A biológiai vizsgálatok során a tanuló alkalmazza az analitikus és a szintetizáló gondolkodás műveleteit, összehasonlítja a különféle állapotokat és következtet a változások, folyamatok és egyensúlyok kialakulására. Az elvégzett megfigyelések és kísérletek számos egyedi jelenséget tárnak fel, ezek tanulságainak levonásához az induktív gondolkodás képességét is fejleszteni kell. A megismert biológiai elméletek alkalmazása többféle kontextusban, pl. a fenntarthatóság, a biotechnológia vagy az egészség összefüggésében, deduktív gondolkodás útján történhet. A biológiai jelenségek leírása gyakran csak statisztikai szemlélettel lehetséges, a sokféleségben rejlő azonosságok és különbségek összehasonlítása az analógiás gondolkodást fejleszti. Az élet egymásra épülő szerveződési szintjeinek megértése rendszerszintű, komplex gondolkodást igényel.
+
+**A személyes és társas kapcsolati kompetenciák:** Az ember biológiai és társadalmi lény, a biológia tanulása hozzásegít e kettősség tudatos szemléletéhez. A tanuló felismeri az öröklött és a szerzett tulajdonságaiban rejlő lehetőségeit, a testi és szellemi képességek kibontakoztatásának személyes felelősségét. Az önismeret fejlesztését szolgálják az interaktív tanulási formák, a fejlesztő szemléletű ön- és társértékelés. A tanuláshoz nyújtott megfelelő tanári támogatás, az egymástól tanulás növeli a közösségi összetartozás érzését, a segítség adásának és elfogadásának képességét.
+
+**A kreativitás, a kreatív alkotás, önkifejezés és kulturális tudatosság kompetenciái:** Az élő természeti környezetből érkező érzelmi hatások befogadása, ezek kreatív alkotásokban történő kifejezése segíti a biológia nevelési céljainak elérését.
+
+**Munkavállalói, innovációs és vállalkozói kompetenciák:** A mezőgazdaság, az élelmiszeripar, az orvostudomány és a gyógyszeripar a folyamatos innovációra épül, az erre való felkészítés a biológia tanulásának is feladata.
