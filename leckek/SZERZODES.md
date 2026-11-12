@@ -93,7 +93,7 @@ Formátum: `leckek/README.md` „A .md formátuma”. Röviden: `# Cím`, metaad
   alatt van, és a kód onnan olvassa. Panelszövegben `{kulcs}`-csal hivatkozz rá.
 - Kulcs: olvasható magyar kifejezés (`jég sűrűsége`), nem változik. Felirat ≤ 32 karakter,
   kivéve, ha a spec mást ír.
-- Panel: lépésenként **≤ 55 szó**, rövid mondatok, tegező, kérdező hang. Legyen benne egy
+- Panel: lépésenként **≤ 55 szó** (a `> megjegyzés:` is beleszámít), rövid mondatok, tegező, kérdező hang. Legyen benne egy
   `==kiemelés==` a lényegre. `> megjegyzés:` = tanári tipp / feladat / érdekesség.
 - Magyar írásmód: tizedesvessző (3,14), valódi mínusz (−), „magyar idézőjel”, nagygondolatjel (–),
   szám és mértékegység között szóköz (10 g, 92 %), kivéve a szögfokot (15°).
