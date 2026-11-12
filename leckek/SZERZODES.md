@@ -96,7 +96,8 @@ Formátum: `leckek/README.md` „A .md formátuma”. Röviden: `# Cím`, metaad
 - Panel: lépésenként **≤ 55 szó**, rövid mondatok, tegező, kérdező hang. Legyen benne egy
   `==kiemelés==` a lényegre. `> megjegyzés:` = tanári tipp / feladat / érdekesség.
 - Magyar írásmód: tizedesvessző (3,14), valódi mínusz (−), „magyar idézőjel”, nagygondolatjel (–),
-  szám és mértékegység között szóköz (10 g, 92 %).
+  szám és mértékegység között szóköz (10 g, 92 %), kivéve a szögfokot (15°).
+- Alsó index a panelen: `F_fel` → F<sub>fel</sub> (a build alakítja át; ne írj saját megoldást).
 
 ## 6. Megjelenés – világos téma (kötelező)
 

@@ -65,7 +65,7 @@ def parse_number(raw, line, P):
 
 
 def inline(text, line, P, data_fmt):
-    """Tanárbarát jelölés → HTML. **félkövér**, *dőlt*, ==színnel kiemelt==, {adatkulcs} → az adat értéke."""
+    """Tanárbarát jelölés → HTML. **félkövér**, *dőlt*, ==színnel kiemelt==, F_fel → alsó index, {adatkulcs} → az adat értéke."""
     def sub_ph(m):
         k = m.group(1).strip()
         if k not in data_fmt:
@@ -77,6 +77,8 @@ def inline(text, line, P, data_fmt):
     s = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", s)
     s = re.sub(r"(?<![*\w])\*(?!\s)(.+?)(?<!\s)\*(?![*\w])", r"<em>\1</em>", s)
     s = re.sub(r"==(.+?)==", r'<span class="key">\1</span>', s)
+    # alsó index: F_fel → F<sub>fel</sub>, v_0 → v<sub>0</sub> (betű/ρ/Δ után, betűk-számok a végéig)
+    s = re.sub(r"([A-Za-zρΔ])_([0-9A-Za-zÁÉÍÓÖŐÚÜŰáéíóöőúüű]+)", r"\1<sub>\2</sub>", s)
     s = re.sub(r"\x00PH(\d+)\x00", lambda m: H.escape(data_fmt[list(data_fmt)[int(m.group(1))]]), s)
     if re.search(r"\*|==", s):
         P.warn(line, "lezáratlan * vagy == jelölés a szövegben.")

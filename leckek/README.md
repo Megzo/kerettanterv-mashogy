@@ -70,7 +70,7 @@ képlet: ρ = m / V                      ← kiemelt, nagy képlet
 
 Szabályok:
 
-- Jelölések a szövegben: `**félkövér**`, `*dőlt*`, `==színnel kiemelt==`, `{adat kulcsa}` →
+- Jelölések a szövegben: `**félkövér**`, `*dőlt*`, `==színnel kiemelt==`, `F_fel` (alsó index), `{adat kulcsa}` →
   az adat értéke egységgel (pl. `{csavar tömege}` → „10 g”).
 - `<!-- … -->` közé írt szöveg megjegyzés, nem jelenik meg.
 - Számok magyarosan: tizedes**vessző** (`0,92`), valódi mínuszjel (`−4 °C`), ezres tagolás
