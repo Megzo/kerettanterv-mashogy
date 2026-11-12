@@ -24,15 +24,25 @@ Szabály: egyszerre legfeljebb 3 al-ügynök fut.
 | M | 12-hullam-hang lecke | 5. hullám | 26 p 37 mp | 295 342 (kimenet 125 725; cache-írás 287 294; cache-olvasás 7 825 250) | kész: 9 lépés, QA hibátlan |
 | N | 13-szinek lecke | 5. hullám | 29 p 31 mp | 293 084 (kimenet 143 589; cache-írás 284 790; cache-olvasás 10 190 168) | kész: 9 lépés, QA hibátlan |
 | O | 14-uveghaz lecke | 5. hullám | 25 p 54 mp | 274 046 (kimenet 123 603; cache-írás 348 111; cache-olvasás 6 562 568) | kész: 9 lépés, QA hibátlan |
+| P | 16-holdfazisok lecke | 5. hullám | 38 p 47 mp | 339 042 (kimenet 161 962; cache-írás 552 223; cache-olvasás 16 447 526) | kész: 9 lépés, QA hibátlan |
 
 A token-oszlop az al-ügynök saját fogyasztása (a koordináló fő munkamenet nélkül).
 Az első szám a Claude Code által jelentett al-ügynök-tokenszám; zárójelben az API-hívások
 összesített bontása (a cache-olvasás többszörösen számolódik, de ~10%-os áron).
 
+## Összesítés (16 al-ügynök: 1 terv + 15 lecke)
+
+- Al-ügynök-tokenek (Claude Code által jelentett): **4 554 546** (a 15-ös lecke jelentett száma tömörítés miatt alacsony)
+- Kimeneti tokenek összesen: **2 174 626**; cache-írás: **6 921 117**
+- Al-ügynök-munkaidő összesen: **7.9 óra** (párhuzamosan max. 3 → kb. 3 óra falióra-idő)
+- Egy lecke átlagosan: **~31 perc**, **~315 ezer** jelentett token, **~141 ezer** kimeneti token
+- Felhasználó által talált tartalmi hiba: 2 (01: befagyás-magyarázat, hajó merülése); koordinátor által talált: 1 (01 hajó); al-ügynök által a briefben talált: 1 (Rayleigh-arány)
+
 ## Koordináló fő munkamenet
 
-A fő munkamenet (0. fázis + pilot-koordináció, ellenőrzés) az 1. hullám végéig:
-kimenet ~60 ezer, cache-írás ~169 ezer token (cache-olvasás ~6,8 millió).
+A fő munkamenet (0. fázis + pilot-koordináció, ellenőrzés):
+- az 1. hullám végéig: kimenet ~60 ezer, cache-írás ~169 ezer token (cache-olvasás ~6,8 millió);
+- a 16. lecke végéig összesen: kimenet ~131 ezer, cache-írás ~494 ezer token (cache-olvasás ~31,9 millió).
 
 ## Leckék
 
@@ -52,3 +62,4 @@ kimenet ~60 ezer, cache-írás ~169 ezer token (cache-olvasás ~6,8 millió).
 | 12-hullam-hang | 9 | 26,5 perc, ~295 ezer token | 0 JS-hiba, 0 túlcsordulás | hangsebesség (331 + 0,6·t), 1 km-es verseny, 20 Hz → 17,15 m, 12. bund → 220 Hz, zajexpozíció (88 dB → 4 óra) utánaszámolva | Web Audio hang (kattintásra); `L.probe` tesztkampó |
 | 13-szinek | 9 | 29,5 perc, ~293 ezer token | 0 JS-hiba, 0 túlcsordulás | prizma-eltérítés utánaszámolva (55°, flint: 47,5° / 51,4°) | az ügynök a koordinátor briefjében hibát talált: a Rayleigh-arány 400/700 nm-re 9,4× (nem 5,5×); 450/700 nm-re 5,9× – a lecke a helyes értéket használja |
 | 14-uveghaz | 9 | 26 perc, ~274 ezer token | 0 JS-hiba, 0 túlcsordulás | energiamérleg utánaszámolva (238 W/m² → −18,6 °C); igaz/hamis tévhit-tábla átolvasva | CO₂-, hőmérséklet-adatok évenkénti tanári frissítésre jelölve |
+| 16-holdfazisok | 9 | 39 perc, ~339 ezer token | 0 JS-hiba, 0 túlcsordulás | 2026 fogyatkozásai (febr., márc., aug. ×2) egyeznek a valósággal | a brief 10 lépése 9-be vonva; textúrázott Hold lokálisan |
