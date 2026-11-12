@@ -168,6 +168,9 @@ másolj belőle.
 ## Munkamód
 
 - Kommunikáció a felhasználóval magyarul.
+- **Világos téma** a leckékben (nem a sötét `iskola`-stílus): papírszerű világos háttér, sötét
+  szöveg, kivetítőn is jó kontraszt. A felhasználó szerint ez a természetesebb nem IT-s
+  közegben.
 - Közzététel (git push, GitHub Pages, bármi külső szolgáltatás) csak kifejezett jóváhagyás
   után.
 - **A repó nyilvános** (https://github.com/Megzo/kerettanterv-mashogy). Minden, ami commitba

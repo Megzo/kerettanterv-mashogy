@@ -1,0 +1,778 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Miért úszik a jég? — Fizika</title>
+<link rel="stylesheet" href="../../shared/lesson.css">
+<style>
+  .lp-text .big-fx { font-size: 46px; margin: 4px 0 14px; }
+  .lp-text b { color: var(--ink); }
+</style>
+<!-- A lecke által várt tartalomkulcsok. A tools/build_lesson.py ez alapján ellenőrzi a .md-t.
+     labels: felirat → max. karakterszám (null = alapértelmezett 32) · data: adat → mértékegység, tartomány -->
+<script type="application/json" id="lesson-spec">
+{
+  "steps": 9,
+  "labels": {
+    "fenyőfa": 14, "jég": 14, "víz": 14, "tengervíz": 14, "alumínium": 14, "acél": 14, "arany": 14, "levegő": 14,
+    "úszik": 14, "elmerül": 14,
+    "kérdés": 34, "jéghegy": 20, "jéghegy tömege": 24, "acélcsavar": 20,
+    "egyforma térfogat": 34, "él": 6, "különböző tömeg": 48,
+    "csupa alumínium": 30, "oszlop térfogat": 12, "oszlop tömeg": 12, "oszlop arány": 12,
+    "tengely térfogat": 24, "tengely tömeg": 24, "mindig ugyanannyi": 34,
+    "sűrűség jele": 30, "tömeg jele": 30, "térfogat jele": 30, "átváltás": 30, "meredekség": 34,
+    "terem kérdés": 40, "terem hossza felirat": 22, "terem szélessége felirat": 22, "terem magassága felirat": 22,
+    "1 m³ levegő": 30, "felnőttek": 24, "a terem levegője": 30,
+    "sűrűség-skála": 24, "víz alatt": 16, "rejtélyes kocka": 24, "rejtélyes kocka csúszka": 34,
+    "folyékony víz": 22, "jégrács": 22, "ugyanannyi molekula": 44, "nagyobb térfogat": 20, "jéghegy víz alatt": 22,
+    "acél tömege": 22, "rakomány": 22, "külső térfogat": 22, "átlagos sűrűség": 22,
+    "hajó úszik": 16, "hajó elsüllyed": 16, "tömör acélkocka": 28,
+    "hajótest csúszka": 34, "rakomány gomb": 22, "kirakodás gomb": 22,
+    "sűrűség-létra": 30, "vízben úszik": 26, "vízben elmerül": 26,
+    "képlet sűrűség": 20, "képlet tömeg": 20, "képlet térfogat": 20, "tanulság": 44
+  },
+  "data": {
+    "fenyőfa sűrűsége":   {"unit": "g/cm³", "min": 0.1, "max": 1.5},
+    "jég sűrűsége":       {"unit": "g/cm³", "min": 0.8, "max": 1.0},
+    "víz sűrűsége":       {"unit": "g/cm³", "min": 0.95, "max": 1.05},
+    "tengervíz sűrűsége": {"unit": "g/cm³", "min": 1.0, "max": 1.1},
+    "alumínium sűrűsége": {"unit": "g/cm³", "min": 1.5, "max": 4},
+    "acél sűrűsége":      {"unit": "g/cm³", "min": 6, "max": 9},
+    "arany sűrűsége":     {"unit": "g/cm³", "min": 15, "max": 25},
+    "levegő sűrűsége":    {"unit": "kg/m³", "min": 0.5, "max": 2},
+    "csavar tömege":      {"unit": "g", "min": 1, "max": 500},
+    "kocka térfogata":    {"unit": "cm³", "min": 100, "max": 10000},
+    "alumínium darab térfogata": {"unit": "cm³", "min": 1, "max": 1000},
+    "terem hossza":       {"unit": "m", "min": 4, "max": 15},
+    "terem szélessége":   {"unit": "m", "min": 4, "max": 12},
+    "terem magassága":    {"unit": "m", "min": 2.5, "max": 5},
+    "felnőtt tömege":     {"unit": "kg", "min": 40, "max": 120},
+    "rejtélyes kocka sűrűsége": {"unit": "g/cm³", "min": 0.1, "max": 3},
+    "acélkocka térfogata": {"unit": "cm³", "min": 200, "max": 3000},
+    "hajótest térfogata": {"unit": "cm³", "min": 1000, "max": 20000},
+    "láda tömege":        {"unit": "g", "min": 100, "max": 5000}
+  }
+}
+</script>
+</head>
+<body>
+<script src="01-suruseg.content.js"></script>
+<script src="../../shared/lesson.js"></script>
+<script>
+(function () {
+'use strict';
+const U = Lesson.U, { clamp, lerp, smooth, out, inOut, outBack, TAU } = U, fmt = U.fmt;
+const F = Lesson.FONTS;
+/* ── paletta (világos téma, lásd SZERZODES.md) ── */
+const INK = '#1c2440', MUT = '#565d72', RED = '#c8401c', TEAL = '#0a6f86', GOOD = '#1d7a45', BAD = '#b3261e',
+  WATER = '#2f7fc0', WATER_D = '#1b5a94', CARD = '#fffaf1', LINE = 'rgba(28,36,64,.16)';
+let L, c, GA = 1;
+const al = (a = 1) => { c.globalAlpha = GA * clamp(a); };
+const lab = (k) => L.lab(k), num = (k) => L.num(k);
+/* felirat a .md-ből (kulccsal, hogy a review mód és a QA lássa) */
+const T = (k, x, y, o = {}) => L.tx(lab(k), x, y, Object.assign({ k }, o));
+const tx = (s, x, y, o) => L.tx(s, x, y, o);
+const rr = (x, y, w, h, r) => { c.beginPath(); c.roundRect(x, y, w, h, r); };
+const P = (pts) => { c.beginPath(); pts.forEach((p, i) => i ? c.lineTo(p[0], p[1]) : c.moveTo(p[0], p[1])); c.closePath(); };
+const ln = (x1, y1, x2, y2, col, w = 2, dash) => { c.beginPath(); c.moveTo(x1, y1); c.lineTo(x2, y2); c.strokeStyle = col; c.lineWidth = w; c.setLineDash(dash || []); c.stroke(); c.setLineDash([]); };
+const dims = (o) => (o.unit ? ' ' + o.unit : '');
+
+/* ── anyagok ── */
+const MAT = {
+  fenyo: { k: 'fenyőfa', r: 'fenyőfa sűrűsége', base: '#d9a066', dark: '#7a4519', light: '#efc999' },
+  jeg:   { k: 'jég', r: 'jég sűrűsége', base: '#cde8f4', dark: '#1d6a93', light: '#f3fbff' },
+  viz:   { k: 'víz', r: 'víz sűrűsége', base: '#6aaee3', dark: '#1b5a94', light: '#a9d2f2' },
+  al:    { k: 'alumínium', r: 'alumínium sűrűsége', base: '#c6ccd4', dark: '#4a5566', light: '#f0f2f5' },
+  acel:  { k: 'acél', r: 'acél sűrűsége', base: '#8b96a3', dark: '#2c3644', light: '#c9d0d8' },
+  arany: { k: 'arany', r: 'arany sűrűsége', base: '#e7b23a', dark: '#74520a', light: '#f9df8f' },
+  rejt:  { k: 'rejtélyes kocka', r: null, base: '#a68ad6', dark: '#4b2d86', light: '#d6c7f0' },
+};
+const ORDER = ['fenyo', 'jeg', 'viz', 'al', 'acel', 'arany'];
+const rho = (m) => num(MAT[m].r);
+const rhoS = (m) => fmt(rho(m), L.content.data[MAT[m].r].d);
+
+/* ── háttér: meleg papír, halvány négyzetrács ── */
+function background() {
+  c.globalAlpha = 1;
+  const g = c.createRadialGradient(680, 480, 100, 680, 540, 1300); g.addColorStop(0, '#fbf6ec'); g.addColorStop(1, '#efe6d6');
+  c.fillStyle = g; c.fillRect(0, 0, 1920, 1080);
+  c.strokeStyle = 'rgba(28,36,64,.045)'; c.lineWidth = 1; c.beginPath();
+  for (let x = 0; x <= 1920; x += 40) { c.moveTo(x + .5, 0); c.lineTo(x + .5, 1080); }
+  for (let y = 0; y <= 1080; y += 40) { c.moveTo(0, y + .5); c.lineTo(1920, y + .5); }
+  c.stroke();
+}
+
+/* ── kocka ferde (kavalier) vetületben; (x, y) = az elülső lap bal alsó sarka ── */
+function cube(x, y, s, mk, o = {}) {
+  const M = MAT[mk] || mk, d = o.d == null ? s * .34 : o.d, dy = -d * .76, a = o.a == null ? 1 : o.a;
+  if (a <= .01) return;
+  al(a);
+  const front = [[x, y], [x + s, y], [x + s, y - s], [x, y - s]];
+  const top = [[x, y - s], [x + s, y - s], [x + s + d, y - s + dy], [x + d, y - s + dy]];
+  const side = [[x + s, y], [x + s + d, y + dy], [x + s + d, y - s + dy], [x + s, y - s]];
+  const glassy = mk === 'jeg' || mk === 'viz';
+  // oldal, tető, elülső lap
+  al(a * (glassy ? .86 : 1));
+  P(side); c.fillStyle = U.mix(M.base, M.dark, .38); c.fill();
+  P(top); c.fillStyle = M.light; c.fill();
+  let g = c.createLinearGradient(x, y - s, x + s, y);
+  g.addColorStop(0, U.mix(M.base, M.light, .35)); g.addColorStop(1, U.mix(M.base, M.dark, .12));
+  P(front); c.fillStyle = g; c.fill();
+  al(a);
+  c.save(); P(front); c.clip();
+  if (mk === 'fenyo') {            // évgyűrű-erezet
+    c.strokeStyle = U.rgba(M.dark, .32); c.lineWidth = 2;
+    for (let i = 0; i < 6; i++) { c.beginPath(); const yy = y - s * (.1 + i * .16); for (let k = 0; k <= 12; k++) { const xx = x + s * k / 12; c.lineTo(xx, yy + Math.sin(k * .9 + i * 1.7) * s * .025); } c.stroke(); }
+  } else if (mk === 'jeg') {       // csillogás + buborékok
+    c.strokeStyle = 'rgba(255,255,255,.95)'; c.lineWidth = s * .05; c.lineCap = 'round';
+    c.beginPath(); c.moveTo(x + s * .18, y - s * .32); c.lineTo(x + s * .38, y - s * .78); c.stroke();
+    c.lineWidth = s * .025; c.beginPath(); c.moveTo(x + s * .32, y - s * .24); c.lineTo(x + s * .45, y - s * .52); c.stroke();
+    c.fillStyle = 'rgba(255,255,255,.9)'; for (const [u, v, r] of [[.7, .3, .035], [.62, .62, .022], [.8, .74, .028]]) { c.beginPath(); c.arc(x + s * u, y - s * v, s * r, 0, TAU); c.fill(); }
+  } else if (mk === 'viz') {       // vízfelszín az üvegkockában + csillanás
+    c.strokeStyle = 'rgba(255,255,255,.85)'; c.lineWidth = s * .035; c.lineCap = 'round';
+    c.beginPath(); c.moveTo(x + s * .14, y - s * .2); c.lineTo(x + s * .14, y - s * .7); c.stroke();
+  } else if (mk !== 'rejt') {      // fémes csík
+    g = c.createLinearGradient(x, y - s, x + s, y);
+    g.addColorStop(.25, 'rgba(255,255,255,0)'); g.addColorStop(.42, 'rgba(255,255,255,.55)'); g.addColorStop(.52, 'rgba(255,255,255,0)');
+    c.fillStyle = g; c.fillRect(x, y - s, s, s);
+  }
+  c.restore();
+  c.lineJoin = 'round'; c.strokeStyle = M.dark; c.lineWidth = o.lw || 2.5;
+  P(side); c.stroke(); P(top); c.stroke(); P(front); c.stroke();
+  if (mk === 'rejt') tx('?', x + s / 2, y - s / 2 + 2, { f: F.D, s: s * .62, w: 650, a: 'center', b: 'middle', c: M.dark, qa: false });
+}
+
+/* ── digitális konyhai mérleg; (cx, y) = a tányér teteje középen ── */
+function scale(cx, y, w, grams, a = 1, unit = 'g') {
+  if (a <= .01) return;
+  al(a);
+  rr(cx - w / 2, y + 12, w, 58, 14); c.fillStyle = '#fbf8f1'; c.fill(); c.strokeStyle = 'rgba(28,36,64,.55)'; c.lineWidth = 2.5; c.stroke();
+  rr(cx - w * .46, y, w * .92, 13, 6); c.fillStyle = '#d9dde3'; c.fill(); c.stroke();
+  const dw = Math.min(w - 30, 176);
+  rr(cx - dw / 2, y + 22, dw, 40, 8); c.fillStyle = '#22302a'; c.fill();
+  tx(fmt(grams) + ' ' + unit, cx + dw / 2 - 12, y + 52, { f: F.M, s: 26, w: 700, a: 'right', c: '#8df0a6', max: dw - 20 });
+}
+
+/* ── tengelyek (grafikonokhoz) ── */
+function axes(g, a) {
+  const X = (v) => g.x0 + v / g.xmax * (g.x1 - g.x0), Y = (v) => g.y1 - v / g.ymax * (g.y1 - g.y0);
+  al(a);
+  rr(g.x0 - 30, g.y0 - 40, g.x1 - g.x0 + 60, g.y1 - g.y0 + 110, 18); c.fillStyle = 'rgba(255,250,241,.75)'; c.fill();
+  c.strokeStyle = LINE; c.lineWidth = 1.2; c.beginPath();
+  for (let v = 0; v <= g.xmax + 1e-9; v += g.xs) { c.moveTo(X(v), g.y0); c.lineTo(X(v), g.y1); }
+  for (let v = 0; v <= g.ymax + 1e-9; v += g.ys) { c.moveTo(g.x0, Y(v)); c.lineTo(g.x1, Y(v)); }
+  c.stroke();
+  ln(g.x0, g.y1, g.x1 + 16, g.y1, INK, 2.5); ln(g.x0, g.y1, g.x0, g.y0 - 16, INK, 2.5);
+  for (let v = 0; v <= g.xmax + 1e-9; v += g.xs) tx(fmt(v), X(v), g.y1 + 32, { f: F.M, s: 22, a: 'center', c: MUT });
+  for (let v = g.ys; v <= g.ymax + 1e-9; v += g.ys) tx(fmt(v), g.x0 - 12, Y(v) + 8, { f: F.M, s: 22, a: 'right', c: MUT });
+  T('tengely térfogat', g.x1, g.y1 + 66, { f: F.M, s: 22, w: 600, a: 'right', c: INK });
+  T('tengely tömeg', g.x0 + 12, g.y0 - 14, { f: F.M, s: 22, w: 600, c: INK });
+  return { X, Y };
+}
+
+/* ── vízfelszín hullámzással ── */
+const wave = (x, t, amp = 3) => Math.sin(x * .021 + t * 1.6) * amp + Math.sin(x * .053 - t * 2.3) * amp * .4;
+function waterBody(x0, x1, ys, yb, t, a, amp = 3) {
+  al(a);
+  const g = c.createLinearGradient(0, ys, 0, yb); g.addColorStop(0, 'rgba(70,150,215,.30)'); g.addColorStop(1, 'rgba(27,90,148,.50)');
+  c.beginPath(); c.moveTo(x0, yb); for (let x = x0; x <= x1; x += 8) c.lineTo(x, ys + wave(x, t, amp)); c.lineTo(x1, ys + wave(x1, t, amp)); c.lineTo(x1, yb); c.closePath();
+  c.fillStyle = g; c.fill();
+  c.beginPath(); for (let x = x0; x <= x1; x += 8) c.lineTo(x, ys + wave(x, t, amp)); c.strokeStyle = WATER_D; c.lineWidth = 3; c.stroke();
+}
+
+/* ── poligon terület / vágás (a jéghegy úszási egyensúlyához) ── */
+const area = (p) => { let s = 0; for (let i = 0; i < p.length; i++) { const a = p[i], b = p[(i + 1) % p.length]; s += a[0] * b[1] - b[0] * a[1]; } return Math.abs(s) / 2; };
+function clipAbove(p, yw) {
+  const o = [];
+  for (let i = 0; i < p.length; i++) {
+    const a = p[i], b = p[(i + 1) % p.length], ia = a[1] < yw, ib = b[1] < yw;
+    if (ia) o.push(a);
+    if (ia !== ib) { const t = (yw - a[1]) / (b[1] - a[1]); o.push([a[0] + t * (b[0] - a[0]), yw]); }
+  }
+  return o;
+}
+const BERG = [[-70, -150], [-20, -205], [30, -128], [80, -150], [140, -64], [205, -18], [262, 46], [284, 150], [252, 262], [182, 352], [60, 412], [-60, 402], [-172, 334], [-252, 224], [-274, 112], [-232, 20], [-152, -38], [-112, -104]];
+/* eltolás, amelynél a víz fölötti rész aránya = 1 − ρ_jég / ρ_közeg (2D metszetre pontos) */
+function bergOffset(fracAbove) {
+  const A = area(BERG); let lo = 205, hi = -412;   // oy: a poligon y + oy, vízvonal: 0
+  for (let i = 0; i < 40; i++) { const m = (lo + hi) / 2, f = area(clipAbove(BERG.map((p) => [p[0], p[1] + m]), 0)) / A; if (f > fracAbove) hi = m; else lo = m; }
+  return (lo + hi) / 2;
+}
+function iceberg(cx, wl, k, oy, a) {
+  const pts = BERG.map((p) => [cx + p[0] * k, wl + (p[1] + oy) * k]);
+  al(a); P(pts);
+  const g = c.createLinearGradient(cx - 200 * k, wl - 200 * k, cx + 200 * k, wl + 300 * k); g.addColorStop(0, '#ffffff'); g.addColorStop(1, '#cfe6f2');
+  c.fillStyle = g; c.fill(); c.strokeStyle = '#1d6a93'; c.lineWidth = 3; c.lineJoin = 'round'; c.stroke();
+  // fazetták
+  c.strokeStyle = 'rgba(29,106,147,.35)'; c.lineWidth = 2; c.beginPath();
+  for (const [i, j] of [[1, 9], [3, 7], [16, 11], [13, 10]]) { const p = pts[i], q = pts[j]; c.moveTo(p[0], p[1]); c.lineTo(lerp(p[0], q[0], .55), lerp(p[1], q[1], .55)); }
+  c.stroke();
+  return pts;
+}
+
+/* ════════ 1. A kérdés: nehéz = elsüllyed? ════════ */
+const S1 = { WL: 500, FLOOR: 1032 };
+function bolt(x, y, rot, a) {
+  al(a); c.save(); c.translate(x, y); c.rotate(rot); c.scale(1.5, 1.5);
+  const g = c.createLinearGradient(-24, 0, 24, 0); g.addColorStop(0, '#5d6876'); g.addColorStop(.4, '#c9d0d8'); g.addColorStop(1, '#4a5566');
+  rr(-10, -22, 20, 66, 3); c.fillStyle = g; c.fill(); c.strokeStyle = '#2c3644'; c.lineWidth = 2; c.stroke();
+  c.beginPath(); for (let k = -14; k < 42; k += 7) { c.moveTo(-10, k); c.lineTo(10, k + 4); } c.stroke();
+  rr(-24, -40, 48, 20, 4); c.fillStyle = g; c.fill(); c.stroke();
+  c.restore();
+}
+function scene1(st) {
+  const t = L.t, { WL, FLOOR } = S1, p0 = out(clamp(st / .8));
+  const fAbove = 1 - num('jég sűrűsége') / num('tengervíz sűrűsége');
+  if (S1.f !== fAbove) { S1.f = fAbove; S1.oy = bergOffset(fAbove); }
+  // tengerfenék
+  al(p0); c.fillStyle = '#e3d3ac'; c.fillRect(0, FLOOR, 1380, 60); ln(0, FLOOR, 1380, FLOOR, '#8c7444', 3);
+  // jéghegy: lebegve beáll az egyensúlyba
+  const tb = clamp(st - .2), bob = 70 * Math.exp(-2.2 * tb * 1.6) * Math.cos(tb * 6) * (st < .2 ? 1 : 1) + Math.sin(t * .9) * 2.5;
+  const bp = iceberg(470, WL, 1.08, S1.oy + bob / 1.08, p0), tip = bp.reduce((a, b) => (b[1] < a[1] ? b : a));
+  // csavar
+  const tDrop = 2.4, yHold = 345, g = 1800, vW = 290, floorY = FLOOR - 38;
+  let by = yHold, rot = 0, aB = clamp((st - 1.4) / .6);
+  const ta = st - tDrop, tFall = Math.sqrt(2 * (WL - yHold) / g);
+  if (ta > 0) {
+    if (ta < tFall) by = yHold + .5 * g * ta * ta;
+    else { const tw = ta - tFall; by = Math.min(floorY, WL + vW * tw); const tLand = (floorY - WL) / vW; if (tw > tLand) { const q = out(clamp((tw - tLand) / .45)); rot = q * Math.PI / 2; by = floorY + q * 10; } }
+  }
+  // buborékok a csavar mögött
+  if (ta > tFall) for (let i = 0; i < 10; i++) {
+    const born = tFall + i * .17, age = ta - born; if (age < 0 || age > 2.2) continue;
+    const y0 = Math.min(floorY, WL + vW * (born - tFall)), y = y0 - age * 120, x = 1080 + Math.sin(age * 5 + i) * 8;
+    if (y < WL + 6) continue; al(aB * (1 - age / 2.2) * .8); c.beginPath(); c.arc(x, y, 4 + (i % 3) * 2, 0, TAU); c.strokeStyle = '#ffffff'; c.lineWidth = 2; c.stroke();
+  }
+  bolt(1080, by, rot, aB);
+  waterBody(0, 1380, WL, FLOOR, t, p0, 4);
+  // csobbanás-gyűrűk
+  const ts = ta - tFall; if (ts > 0 && ts < 1.6) for (let k = 0; k < 2; k++) { const q = clamp((ts - k * .25) / 1.2); al((1 - q) * .8); c.beginPath(); c.ellipse(1080, WL + 2, 20 + q * 110, 5 + q * 16, 0, 0, TAU); c.strokeStyle = WATER_D; c.lineWidth = 2.5; c.stroke(); }
+  // feliratok
+  const pl = clamp((st - .9) / .6);
+  al(p0 * pl); T('jéghegy', 70, 250, { f: F.M, s: 26, w: 700, ls: '2px', c: '#1d6a93' });
+  L.pill(lab('jéghegy tömege'), 70, 292, { k: 'jéghegy tömege', s: 24, w: 600, bg: '#ffffff', bd: '#1d6a93', c: INK });
+  ln(160, 314, tip[0] - 8, tip[1] - 6, 'rgba(29,106,147,.6)', 2, [5, 6]);
+  al(aB); T('acélcsavar', 1080, 196, { f: F.M, s: 26, w: 700, ls: '2px', a: 'center', c: '#2c3644' });
+  L.pill(L.val('csavar tömege'), 1080, 238, { k: 'csavar tömege', s: 24, w: 600, a: 'center', bg: '#ffffff', bd: '#2c3644', c: INK });
+  const pu = clamp((st - 4.6) / .5);
+  al(pu); L.pill(lab('úszik'), 760, WL - 46, { k: 'úszik', s: 26, w: 700, bg: GOOD, c: '#ffffff' });
+  al(clamp((ta - tFall - (floorY - WL) / vW - .3) / .5)); L.pill(lab('elmerül'), 1150, FLOOR - 40, { k: 'elmerül', s: 26, w: 700, bg: BAD, c: '#ffffff' });
+  al(clamp((st - 5.6) / .8)); T('kérdés', 680, 112, { f: F.D, i: 1, s: 58, w: 500, a: 'center', c: INK, max: 1240 });
+}
+
+/* ════════ 2. Egyforma kockák, más tömeg ════════ */
+function scene2(st) {
+  const V = num('kocka térfogata'), edge = Math.cbrt(V), s = 140, y0 = 650, slot = 216, xs = 50;
+  al(out(clamp(st / .6)));
+  T('egyforma térfogat', 680, 150, { f: F.D, s: 44, w: 560, a: 'center', c: INK, max: 1200 });
+  L.pill(L.val('kocka térfogata') + '  =  ' + fmt(edge, 0) + ' cm × ' + fmt(edge, 0) + ' cm × ' + fmt(edge, 0) + ' cm', 680, 214, { k: 'kocka térfogata', a: 'center', s: 26, f: F.M, w: 600, bg: 'rgba(28,36,64,.07)', c: INK });
+  ORDER.forEach((mk, i) => {
+    const cx = xs + slot * i + slot / 2, t0 = .6 + .45 * i, q = clamp((st - t0) / .55), land = q >= 1;
+    const m = rho(mk) * V, press = land ? Math.min(14, m / 1400) * (1 + .3 * Math.exp(-6 * (st - t0 - .55)) * Math.cos((st - t0 - .55) * 18)) : 0;
+    const yb = lerp(y0 - 230, y0 - 2, q * q) + press;
+    const shown = land ? m * out(clamp((st - t0 - .55) / .7)) : 0;
+    scale(cx, y0 + press, 196, Math.round(shown), out(clamp(st / .6)));
+    if (q > 0) cube(cx - (s + s * .34) / 2, yb, s, mk, { a: clamp(q * 4) });
+    const pn = clamp((st - .3) / .5); al(pn);
+    T(MAT[mk].k, cx, y0 + 116, { s: 28, w: 700, a: 'center', c: MAT[mk].dark });
+  });
+  // élhossz-méretvonal az első kockán
+  const pe = clamp((st - 1.4) / .5); if (pe > 0) {
+    const x = xs + slot / 2 - (s + s * .34) / 2; al(pe);
+    ln(x, y0 - 2 - s - 26, x + s, y0 - 2 - s - 26, INK, 2); ln(x, y0 - s - 36, x, y0 - s - 16, INK, 2); ln(x + s, y0 - s - 36, x + s, y0 - s - 16, INK, 2);
+    L.tx(lab('él') + ' = ' + fmt(edge, 0) + ' cm', x + s / 2, y0 - s - 44, { k: ['él', 'kocka térfogata'], f: F.M, s: 22, w: 600, a: 'center', c: INK });
+  }
+  al(clamp((st - 4.2) / .8)); T('különböző tömeg', 680, 930, { f: F.D, i: 1, s: 44, w: 500, a: 'center', c: RED, max: 1240 });
+}
+
+/* ════════ 3. Ugyanaz az anyag: m ∝ V ════════ */
+const niceStep = (x) => { const e = Math.pow(10, Math.floor(Math.log10(x))); for (const k of [1, 2, 2.5, 5, 10]) if (k * e >= x) return k * e; return 10 * e; };
+function scene3(st) {
+  const v1 = num('alumínium darab térfogata'), r = rho('al'), m1 = r * v1, N = 5, cx = 300, y0 = 560, s = 92;
+  const land = (i) => .7 + 1.15 * i, k = [0, 1, 2, 3, 4].filter((i) => st >= land(i) + .35).length;
+  const p0 = out(clamp(st / .6));
+  al(p0); T('csupa alumínium', 70, 150, { f: F.D, s: 42, w: 560, c: INK, max: 540 });
+  L.pill(lab('alumínium') + ' · ' + L.val('alumínium darab térfogata') + ' / darab', 70, 200, { k: ['alumínium', 'alumínium darab térfogata'], s: 24, f: F.M, w: 600, bg: 'rgba(28,36,64,.07)', c: INK });
+  const mass = m1 * k;
+  scale(cx, y0, 380, Math.round(mass), p0);
+  const pos = (i) => i < 3 ? [cx - 170 + i * s, y0 - 1] : [cx - 170 + s / 2 + (i - 3) * s, y0 - 1 - s];
+  for (let i = 0; i < N; i++) { const q = clamp((st - land(i)) / .35); if (q <= 0) continue; const [x, y] = pos(i); cube(x, lerp(y - 260, y, q * q), s, 'al', { a: clamp(q * 3) }); }
+  // táblázat
+  const tx0 = 70, ty0 = 700, cw = [150, 150, 190], rh = 50;
+  al(p0); rr(tx0 - 14, ty0 - 40, cw[0] + cw[1] + cw[2] + 28, rh * (N + 1) + 34, 16); c.fillStyle = 'rgba(255,250,241,.85)'; c.fill(); c.strokeStyle = LINE; c.lineWidth = 1.5; c.stroke();
+  ['oszlop térfogat', 'oszlop tömeg', 'oszlop arány'].forEach((key, j) => T(key, tx0 + cw.slice(0, j + 1).reduce((a, b) => a + b) - 14, ty0, { f: F.M, s: 22, w: 700, a: 'right', c: MUT }));
+  ln(tx0, ty0 + 16, tx0 + cw[0] + cw[1] + cw[2], ty0 + 16, LINE, 2);
+  const hl = clamp((st - 7.0) / .6), dd = L.content.data['alumínium sűrűsége'].d;
+  for (let i = 0; i < N; i++) {
+    const q = clamp((st - land(i) - .35) / .4); if (q <= 0) continue; al(q); const y = ty0 + rh * (i + 1) + 6;
+    tx(fmt(v1 * (i + 1)), tx0 + cw[0] - 14, y, { f: F.M, s: 26, a: 'right', c: INK });
+    tx(fmt(m1 * (i + 1)), tx0 + cw[0] + cw[1] - 14, y, { f: F.M, s: 26, a: 'right', c: INK });
+    if (hl > 0) { al(q * hl); rr(tx0 + cw[0] + cw[1] + 20, y - 30, cw[2] - 26, 40, 10); c.fillStyle = U.rgba(RED, .12); c.fill(); al(q); }
+    tx(fmt(r, dd), tx0 + cw[0] + cw[1] + cw[2] - 14, y, { f: F.M, s: 26, w: hl > .5 ? 700 : 400, a: 'right', c: hl > .5 ? RED : INK });
+  }
+  // grafikon
+  const ys = niceStep(m1 * 6 / 5), ymax = Math.ceil(m1 * 6 / ys) * ys;
+  const G = { x0: 740, x1: 1300, y0: 170, y1: 880, xmax: v1 * 6, ymax, xs: v1, ys };
+  const { X, Y } = axes(G, p0 * clamp((st - .3) / .6));
+  const pl = clamp((st - 6.6) / 1.0);
+  if (pl > 0) { al(pl); c.beginPath(); c.moveTo(X(0), Y(0)); c.lineTo(X(v1 * 6 * pl), Y(m1 * 6 * pl)); c.strokeStyle = U.rgba(RED, .85); c.lineWidth = 4; c.setLineDash([12, 8]); c.stroke(); c.setLineDash([]); }
+  for (let i = 0; i < N; i++) {
+    const q = clamp((st - land(i) - .35) / .5); if (q <= 0) continue; al(1);
+    const x = X(v1 * (i + 1)), y = Y(m1 * (i + 1)), rad = 11 * outBack(q);
+    ln(x, Y(0), x, y, U.rgba(INK, .18 * q), 1.5, [4, 5]); ln(X(0), y, x, y, U.rgba(INK, .18 * q), 1.5, [4, 5]);
+    c.beginPath(); c.arc(x, y, rad, 0, TAU); c.fillStyle = MAT.al.base; c.fill(); c.strokeStyle = INK; c.lineWidth = 3; c.stroke();
+  }
+  const pp = clamp((st - 7.6) / .6);
+  al(pp); L.pill('m / V = ' + L.val('alumínium sűrűsége'), 800, 260, { k: 'alumínium sűrűsége', s: 30, f: F.M, w: 700, bg: RED, c: '#fff8ee' });
+  T('mindig ugyanannyi', 812, 324, { s: 26, w: 600, c: RED, max: 480 });
+}
+
+/* ════════ 4. A sűrűség: ρ = m / V ════════ */
+function scene4(st) {
+  const p0 = out(clamp(st / .6));
+  // képlet-kártya
+  al(p0); rr(60, 170, 420, 560, 22); c.fillStyle = CARD; c.fill(); c.strokeStyle = LINE; c.lineWidth = 2; c.stroke();
+  tx('ρ = m / V', 270, 300, { f: F.D, i: 1, s: 84, w: 500, a: 'center', c: RED, qa: false });
+  ln(100, 352, 440, 352, LINE, 2);
+  [['ρ', 'sűrűség jele'], ['m', 'tömeg jele'], ['V', 'térfogat jele']].forEach(([sym, k], i) => {
+    const y = 420 + i * 62, q = clamp((st - .6 - i * .3) / .5); al(p0 * q);
+    tx(sym, 120, y, { f: F.D, i: 1, s: 40, w: 560, a: 'center', c: RED, qa: false });
+    T(k, 160, y - 2, { s: 26, w: 500, c: INK, max: 300 });
+  });
+  al(p0 * clamp((st - 1.6) / .5)); ln(100, 600, 440, 600, LINE, 2);
+  T('átváltás', 270, 660, { f: F.M, s: 24, w: 700, a: 'center', c: TEAL, max: 380 });
+  // grafikon
+  const G = { x0: 600, x1: 1130, y0: 190, y1: 880, xmax: 500, ymax: 2000, xs: 100, ys: 500 };
+  const { X, Y } = axes(G, p0);
+  const labs = [];
+  ORDER.forEach((mk, i) => {
+    const r = rho(mk), q = inOut(clamp((st - .8 - i * .45) / .9)); if (q <= 0) return;
+    const vEnd = Math.min(500, 2000 / r), M = MAT[mk];
+    al(1); c.beginPath(); c.moveTo(X(0), Y(0)); c.lineTo(X(vEnd * q), Y(r * vEnd * q)); c.strokeStyle = M.dark; c.lineWidth = mk === 'al' ? 5 : 4; c.lineCap = 'round'; c.stroke();
+    if (q > .98) labs.push({ mk, top: vEnd < 500, x: X(vEnd), y: Y(r * vEnd) });
+  });
+  // végfeliratok: jobb szélen egymástól eltolva, a kilógók fölül
+  const right = labs.filter((l) => !l.top).sort((a, b) => a.y - b.y);
+  for (let i = 1; i < right.length; i++) if (right[i].y - right[i - 1].y < 34) right[i].y = right[i - 1].y + 34;
+  for (const l of labs) {
+    const M = MAT[l.mk], s = lab(M.k) + ' ' + rhoS(l.mk);
+    if (l.top) { al(1); L.tx(s, l.x - 6, G.y0 - 52, { k: [M.k, M.r], s: 24, w: 700, a: 'center', c: M.dark }); }
+    else { al(1); L.tx(s, G.x1 + 14, l.y + 8, { k: [M.k, M.r], s: 24, w: 700, c: M.dark, max: 1350 - G.x1 - 14 }); }
+  }
+  // meredekségi háromszög az alumínium egyenesén
+  const pt = clamp((st - 4.2) / .7);
+  if (pt > 0) {
+    const r = rho('al'), va = 300, vb = 400; al(pt);
+    c.beginPath(); c.moveTo(X(va), Y(r * va)); c.lineTo(X(vb), Y(r * va)); c.lineTo(X(vb), Y(r * vb)); c.strokeStyle = RED; c.lineWidth = 3; c.stroke();
+    tx('+' + fmt(vb - va) + ' cm³', (X(va) + X(vb)) / 2, Y(r * va) + 32, { f: F.M, s: 22, w: 700, a: 'center', c: RED });
+    tx('+' + fmt(r * (vb - va)) + ' g', X(vb) + 12, (Y(r * va) + Y(r * vb)) / 2 + 8, { f: F.M, s: 22, w: 700, c: RED });
+    T('meredekség', X(vb) + 12, (Y(r * va) + Y(r * vb)) / 2 + 48, { s: 24, w: 600, c: RED, max: 1350 - X(vb) - 12 });
+  }
+}
+
+/* ════════ 5. Számoljunk: a terem levegője ════════ */
+const S5 = { Lm: 8, Wm: 7, Hm: 3.2 };
+function person(x, y, h, a) {
+  al(a); c.fillStyle = U.rgba(INK, .82);
+  c.beginPath(); c.arc(x, y - h * .87, h * .11, 0, TAU); c.fill();
+  rr(x - h * .16, y - h * .73, h * .32, h * .42, h * .1); c.fill();
+  rr(x - h * .14, y - h * .36, h * .12, h * .36, h * .05); c.fill(); rr(x + h * .02, y - h * .36, h * .12, h * .36, h * .05); c.fill();
+}
+function scene5(st) {
+  const p0 = out(clamp(st / .6)), { Lm, Wm, Hm } = S5, t = L.t;
+  const V = Lm * Wm * Hm, rA = num('levegő sűrűsége'), m = rA * V;
+  al(p0); T('terem kérdés', 70, 140, { f: F.D, i: 1, s: 44, w: 500, c: INK, max: 1260 });
+  // szoba ferde vetületben
+  const k = Math.min(64, 820 / (Lm + Wm * .55), 400 / (Hm + Wm * .42)), ox = 110, oy = 760;
+  const dx = Wm * k * .55, dy = -Wm * k * .42, w = Lm * k, h = Hm * k;
+  const A = [ox, oy], B = [ox + w, oy], C = [ox + w + dx, oy + dy], D = [ox + dx, oy + dy];
+  const up = (p, z) => [p[0], p[1] - z];
+  // padló rácsa (1 m-es)
+  al(p0); P([A, B, C, D]); c.fillStyle = '#efe3cc'; c.fill();
+  c.strokeStyle = 'rgba(122,90,40,.28)'; c.lineWidth = 1.2; c.beginPath();
+  for (let i = 0; i <= Lm; i++) { const x = ox + i * k; c.moveTo(x, oy); c.lineTo(x + dx, oy + dy); }
+  for (let j = 0; j <= Wm; j++) { const f = j / Wm; c.moveTo(ox + dx * f, oy + dy * f); c.lineTo(ox + w + dx * f, oy + dy * f); }
+  c.stroke();
+  // hátsó falak
+  al(p0); P([D, C, up(C, h), up(D, h)]); c.fillStyle = 'rgba(28,36,64,.05)'; c.fill(); P([A, D, up(D, h), up(A, h)]); c.fill();
+  // levegő „feltöltése” (alulról felfelé)
+  const fill = inOut(clamp((st - 1.0) / 2.0)), hf = h * fill;
+  if (fill > 0) {
+    al(.9); const g = c.createLinearGradient(0, oy - hf, 0, oy); g.addColorStop(0, 'rgba(10,111,134,.10)'); g.addColorStop(1, 'rgba(10,111,134,.22)');
+    c.beginPath(); c.moveTo(A[0], A[1]); c.lineTo(B[0], B[1]); c.lineTo(C[0], C[1]); c.lineTo(C[0], C[1] - hf); c.lineTo(D[0], D[1] - hf); c.lineTo(A[0], A[1] - hf); c.closePath(); c.fillStyle = g; c.fill();
+    // „molekulák”
+    const r = U.rng(7); c.fillStyle = 'rgba(10,111,134,.55)';
+    for (let i = 0; i < 160; i++) { const u = r(), v = r(), z = r(); if (z > fill) continue; const x = ox + u * w + v * dx + Math.sin(t * 2 + i) * 3, y = oy + v * dy - z * h + Math.cos(t * 1.7 + i) * 3; c.beginPath(); c.arc(x, y, 2.6, 0, TAU); c.fill(); }
+  }
+  // egy 1 m³-es kocka a sarokban
+  const pc = clamp((st - 3.2) / .6);
+  if (pc > 0) {
+    al(pc); const a = A, b = [ox + k, oy], cc = [ox + k + k * .55 * 1, oy - k * .42], d = [ox + k * .55, oy - k * .42];
+    c.strokeStyle = TEAL; c.lineWidth = 3; P([a, b, up(b, k), up(a, k)]); c.fillStyle = 'rgba(10,111,134,.18)'; c.fill(); c.stroke();
+    P([up(a, k), up(b, k), up(cc, k), up(d, k)]); c.fill(); c.stroke(); P([b, cc, up(cc, k), up(b, k)]); c.fill(); c.stroke();
+    L.pill(lab('1 m³ levegő') + ' ≈ ' + L.val('levegő sűrűsége').replace('/m³', '').replace('kg', 'kg'), ox + k * 1.7, oy - k * .5 - 6, { k: ['1 m³ levegő', 'levegő sűrűsége'], s: 22, w: 700, bg: TEAL, c: '#ffffff', f: F.M });
+  }
+  // élek
+  al(p0); c.strokeStyle = INK; c.lineWidth = 2.5; c.lineJoin = 'round';
+  c.beginPath(); for (const [p, q] of [[A, B], [B, C], [A, up(A, h)], [B, up(B, h)], [C, up(C, h)], [up(A, h), up(B, h)], [up(B, h), up(C, h)], [up(C, h), up(D, h)], [up(D, h), up(A, h)]]) { c.moveTo(p[0], p[1]); c.lineTo(q[0], q[1]); } c.stroke();
+  c.setLineDash([6, 6]); c.lineWidth = 2; c.beginPath(); c.moveTo(A[0], A[1]); c.lineTo(D[0], D[1]); c.lineTo(C[0], C[1]); c.moveTo(D[0], D[1]); c.lineTo(D[0], D[1] - h); c.stroke(); c.setLineDash([]);
+  // méretek
+  const pd = clamp((st - .5) / .6); al(pd);
+  L.pill(fmt(Lm, 1).replace(/,0$/, '') + ' m', ox + w / 2, oy + 34, { k: 'terem hossza', a: 'center', s: 24, f: F.M, w: 700, bg: '#ffffff', bd: INK });
+  L.pill(fmt(Wm, 1).replace(/,0$/, '') + ' m', B[0] + dx / 2 + 18, oy + dy / 2 + 12, { k: 'terem szélessége', s: 24, f: F.M, w: 700, bg: '#ffffff', bd: INK });
+  L.pill(fmt(Hm, 1).replace(/,0$/, '') + ' m', ox - 14, oy - h / 2, { k: 'terem magassága', a: 'right', s: 24, f: F.M, w: 700, bg: '#ffffff', bd: INK });
+  // számolás
+  const f1 = clamp((st - 3.8) / .6), f2 = clamp((st - 4.8) / .6), f3 = clamp((st - 5.8) / .6);
+  const dS = (v) => fmt(v, v % 1 ? 1 : 0);
+  al(f1); tx('V = ' + dS(Lm) + ' m · ' + dS(Wm) + ' m · ' + dS(Hm) + ' m = ' + fmt(V, 1) + ' m³', 110, 900, { f: F.M, s: 28, w: 600, c: INK, max: 860, k: ['terem hossza', 'terem szélessége', 'terem magassága'] });
+  al(f2); tx('m = ρ · V = ' + L.val('levegő sűrűsége') + ' · ' + fmt(V, 1) + ' m³ ≈ ' + fmt(Math.round(m)) + ' kg', 110, 956, { f: F.M, s: 28, w: 700, c: TEAL, max: 860, k: 'levegő sűrűsége' });
+  // jobb oldal: mérleg emberekkel
+  const n = Math.max(1, Math.round(m / num('felnőtt tömege'))), cols = Math.min(n, 5), rows = Math.ceil(n / 5), ph = rows > 1 ? 120 : 170;
+  al(f3); T('a terem levegője', 1160, 300, { s: 26, w: 600, a: 'center', c: MUT, max: 380 });
+  tx('≈ ' + fmt(Math.round(m)) + ' kg', 1160, 360, { f: F.D, s: 54, w: 600, a: 'center', c: TEAL, k: 'levegő sűrűsége' });
+  for (let i = 0; i < n; i++) { const r = Math.floor(i / 5), col = i % 5, nc = r < rows - 1 ? 5 : n - r * 5 || 5; const x = 1160 + (col - (Math.min(nc, cols) - 1) / 2) * ph * .48, y = 720 - (rows - 1 - r) * ph * 1.02; person(x, y, ph, f3 * clamp((st - 6 - i * .12) / .3)); }
+  scale(1160, 722, 360, Math.round(n * num('felnőtt tömege')), f3, 'kg');
+  al(f3); L.tx(lab('felnőttek').replace('#', fmt(n)), 1160, 860, { k: ['felnőttek', 'felnőtt tömege'], s: 26, w: 700, a: 'center', c: INK, max: 380 });
+}
+
+/* ════════ 6. Úszik vagy elmerül? ════════ */
+const TK = { x0: 70, x1: 930, top: 330, ws: 440, bot: 950, s: 100 };
+const S6 = { r: .6, from: 0, to: 0, t0: 0, slider: null };
+/* csillapított beállás y0 → y1, τ idő alatt (kezdősebesség 0) */
+const settleTo = (y0, y1, tau, k = 3, w = 6) => y1 + (y0 - y1) * Math.exp(-k * tau) * (Math.cos(w * tau) + k / w * Math.sin(w * tau));
+function floatY(r) {   // a kocka alsó élének helye a sűrűségből
+  const rw = num('víz sűrűsége'), s = TK.s;
+  if (r < rw) return TK.ws + s * r / rw;
+  if (r === rw) return TK.ws + s + 40;
+  return TK.bot - 2;
+}
+function dropPath(st, t0, r) {   // tartva → szabadesés → vízben beállás / süllyedés
+  const yHold = 250, tf = .34, yEq = floatY(r);
+  if (st < t0) return yHold;
+  const ta = st - t0; if (ta < tf) return lerp(yHold, TK.ws, (ta / tf) * (ta / tf));
+  const tw = ta - tf;
+  if (r < num('víz sűrűsége')) return settleTo(TK.ws, yEq, tw, 2.4, 6.5) + (yEq - TK.ws) * 0 + 22 * Math.exp(-2.4 * tw) * Math.sin(6.5 * tw);
+  return Math.min(yEq, TK.ws + 260 * tw + 40 * (1 - Math.exp(-4 * tw)));
+}
+function tank(t, a, draw, after) {
+  const { x0, x1, top, ws, bot } = TK;
+  al(a); rr(x0, top, x1 - x0, bot - top + 14, 10); c.fillStyle = 'rgba(255,255,255,.55)'; c.fill();
+  draw();
+  waterBody(x0 + 4, x1 - 4, ws, bot + 10, t, a, 2.2);
+  if (after) after();
+  al(a); c.strokeStyle = 'rgba(28,36,64,.7)'; c.lineWidth = 4; c.lineJoin = 'round';
+  c.beginPath(); c.moveTo(x0, top); c.lineTo(x0, bot + 14); c.lineTo(x1, bot + 14); c.lineTo(x1, top); c.stroke();
+}
+function ruler(st, a) {
+  const x = 1110, y0 = 300, y1 = 950, rmax = 3, Y = (r) => y0 + r / rmax * (y1 - y0), rw = num('víz sűrűsége');
+  al(a); T('sűrűség-skála', x, y0 - 40, { f: F.M, s: 22, w: 700, a: 'center', c: INK });
+  rr(x - 14, y0, 28, Y(rw) - y0, 8); c.fillStyle = U.rgba(GOOD, .2); c.fill();
+  rr(x - 14, Y(rw), 28, y1 - Y(rw), 8); c.fillStyle = U.rgba(BAD, .16); c.fill();
+  for (let r = 0; r <= rmax + 1e-9; r += .5) { ln(x - 22, Y(r), x - 14, Y(r), INK, 2); }
+  for (let r = 0; r <= rmax; r += 1) if (Math.abs(r - rw) > .2) tx(fmt(r), x - 28, Y(r) + 8, { f: F.M, s: 22, a: 'right', c: MUT, qa: false });
+  ln(x - 40, Y(rw), x + 40, Y(rw), WATER_D, 4);
+  L.tx(lab('víz') + ' ' + fmt(rw, 2), x - 46, Y(rw) - 14, { k: ['víz', 'víz sűrűsége'], s: 24, w: 700, a: 'right', c: WATER_D });
+  T('úszik', x - 60, (y0 + Y(rw)) / 2 + 30, { s: 24, w: 700, a: 'right', c: GOOD });
+  T('elmerül', x - 60, (Y(rw) + y1) / 2 + 8, { s: 24, w: 700, a: 'right', c: BAD });
+  const marks = [['fenyo', 1.0], ['jeg', 1.8], ['al', 2.6]];
+  for (const [mk, tm] of marks) {
+    const q = clamp((st - tm) / .5); if (q <= 0) continue; const r = rho(mk), y = Y(r); al(a * q);
+    c.beginPath(); c.arc(x, y, 9, 0, TAU); c.fillStyle = MAT[mk].base; c.fill(); c.strokeStyle = MAT[mk].dark; c.lineWidth = 2.5; c.stroke();
+    L.tx(lab(MAT[mk].k) + ' ' + rhoS(mk), x + 24, y + (mk === 'jeg' ? 14 : 8), { k: [MAT[mk].k, MAT[mk].r], s: 24, w: 600, c: MAT[mk].dark, max: 1352 - x - 24 });
+  }
+  const qa = clamp((st - 3.4) / .5);
+  if (qa > 0) { al(a * qa); L.tx(lab('acél') + ' ' + rhoS('acel') + ' ↓', x + 24, y1 + 4, { k: ['acél', 'acél sűrűsége'], s: 24, w: 600, c: MAT.acel.dark, max: 1352 - x - 24 }); }
+  // rejtélyes kocka jelzője
+  const qr = clamp((st - 4.2) / .5);
+  if (qr > 0) { const y = Y(Math.min(S6.r, rmax)); al(a * qr); c.beginPath(); c.moveTo(x - 16, y); c.lineTo(x - 34, y - 11); c.lineTo(x - 34, y + 11); c.closePath(); c.fillStyle = MAT.rejt.dark; c.fill(); }
+}
+function scene6(st, live) {
+  const p0 = out(clamp(st / .6)), t = L.t, rw = num('víz sűrűsége');
+  const objs = [['fenyo', 180, .8], ['jeg', 340, 1.6], ['al', 500, 2.4], ['acel', 660, 3.2]];
+  const sx = (cx) => cx - TK.s * .67;
+  tank(t, p0, () => {
+    for (const [mk, cx, t0] of objs) { const a = clamp((st - t0 + .8) / .4); if (a <= 0) continue; cube(sx(cx), dropPath(st, t0, rho(mk)), TK.s, mk, { a, d: 30 }); }
+    // rejtélyes kocka: a csúszkával állítható
+    const a = clamp((st - 3.6) / .4);
+    if (a > 0) {
+      let y; if (st < 4.4) y = dropPath(st, 4.0, S6.r); else { if (!S6.t0) { S6.from = dropPath(4.4, 4.0, S6.r); S6.to = floatY(S6.r); S6.t0 = 4.4; } y = Math.min(TK.bot - 2, settleTo(S6.from, S6.to, st - S6.t0, 2.4, 6)); }
+      S6.y = y; cube(sx(830), y, TK.s, 'rejt', { a, d: 30 });
+    }
+  });
+  // nevek a tartály alatt, % a víz alatt
+  for (const [mk, cx, t0] of [...objs, ['rejt', 830, 4.0]]) {
+    const q = clamp((st - t0 - .7) / .5); if (q <= 0) continue; const r = mk === 'rejt' ? S6.r : rho(mk); al(p0 * q);
+    L.tx(lab(MAT[mk].k), cx - 16, 1008, { k: mk === 'rejt' ? 'rejtélyes kocka' : MAT[mk].k, s: 26, w: 700, a: 'center', c: MAT[mk].dark, max: 160 });
+    L.tx(fmt(r, 2), cx - 16, 1044, { k: mk === 'rejt' ? null : MAT[mk].r, f: F.M, s: 22, a: 'center', c: MUT });
+    if (r < rw) { const yb = mk === 'rejt' ? S6.y : dropPath(st, t0, r); L.pill(fmt(Math.round(r / rw * 100)) + ' %', cx - 16, yb + 30, { k: 'víz alatt', a: 'center', s: 22, f: F.M, w: 700, bg: '#ffffff', bd: WATER_D, c: WATER_D, pad: 9 }); }
+  }
+  al(p0 * clamp((st - 4.4) / .5)); L.pill(lab('víz alatt'), TK.x0 + 16, TK.top - 34, { k: 'víz alatt', s: 22, w: 600, bg: '#ffffff', bd: WATER_D, c: WATER_D });
+  ruler(st, p0);
+}
+
+/* ════════ 7. Miért úszik a jég? ════════ */
+const S7 = { ice: [], liq: [] };
+function buildS7() {
+  const bw = 300, bh = 470, b = 36, hh = bh * (1 / .917);   // a molekulák helyét csak egyszer számoljuk; a dobozmagasság rajzoláskor az adatból jön
+  S7.ice = honeycomb(bw, hh, b);
+  const N = S7.ice.length, r = U.rng(99), liq = [];
+  let tries = 0, md = 30;
+  while (liq.length < N && tries < 60000) { tries++; if (tries % 15000 === 0) md -= 2; const p = [16 + r() * (bw - 32), 16 + r() * (bh - 32)]; if (liq.every((q) => Math.hypot(q[0] - p[0], q[1] - p[1]) > md)) liq.push(p); }
+  if (liq.length < N) console.error("S7: kevés folyadékmolekula", liq.length, N);
+  S7.liq = liq.map((p) => ({ x: p[0], y: p[1], a: r() * TAU, ph: r() * TAU, sp: .6 + r() }));
+  S7.bw = bw; S7.bh = bh;
+}
+function honeycomb(bw, bh, b) {   // csúcsok + kötések, a molekula a kötések felé „néz”
+  const v = [], dx = b * Math.sqrt(3), ys = 1.5 * b;
+  for (let j = 0; ; j++) {
+    const yA = 22 + j * ys * 2; if (yA > bh - 18) break;
+    for (let i = 0; ; i++) {
+      const x = 22 + i * dx; if (x > bw - 16) break;
+      for (const [xx, yy] of [[x, yA], [x, yA + b], [x + dx / 2, yA + b * 1.5], [x + dx / 2, yA + b * 2.5]]) if (xx < bw - 16 && yy < bh - 16) v.push({ x: xx, y: yy });
+    }
+  }
+  for (const p of v) p.nb = v.filter((q) => q !== p && Math.abs(Math.hypot(q.x - p.x, q.y - p.y) - b) < 1);
+  for (const p of v) p.a = p.nb.length ? Math.atan2(p.nb[0].y - p.y, p.nb[0].x - p.x) : 0;
+  return v;
+}
+function h2o(x, y, ang, a) {
+  al(a);
+  for (const da of [-.92, .92]) { const hx = x + Math.cos(ang + da) * 11, hy = y + Math.sin(ang + da) * 11; c.beginPath(); c.arc(hx, hy, 4.8, 0, TAU); c.fillStyle = '#ffffff'; c.fill(); c.strokeStyle = '#4a5566'; c.lineWidth = 1.5; c.stroke(); }
+  c.beginPath(); c.arc(x, y, 8.5, 0, TAU); c.fillStyle = '#d2412a'; c.fill(); c.strokeStyle = '#7a1c0e'; c.lineWidth = 1.5; c.stroke();
+}
+function scene7(st) {
+  const t = L.t, p0 = out(clamp(st / .6)), ri = num('jég sűrűsége'), rw = num('víz sűrűsége');
+  const bw = S7.bw, bh = S7.bh, hi = bh * rw / ri, xA = 60, xB = 400, yb = 900;
+  // dobozok
+  const grow = inOut(clamp((st - 1.6) / 1.4)), hB = lerp(bh, hi, grow), freeze = grow;
+  al(p0);
+  rr(xA, yb - bh, bw, bh, 12); c.fillStyle = 'rgba(106,174,227,.18)'; c.fill(); c.strokeStyle = WATER_D; c.lineWidth = 3; c.stroke();
+  rr(xB, yb - hB, bw, hB, 12); c.fillStyle = U.mix('#dbeef8', '#e9f5fb', freeze); c.fill(); c.strokeStyle = '#1d6a93'; c.lineWidth = 3; c.stroke();
+  // folyadék: rendezetlen, mozgó molekulák
+  c.save(); rr(xA, yb - bh, bw, bh, 12); c.clip();
+  for (const m of S7.liq) { const x = xA + m.x + Math.sin(t * 1.3 * m.sp + m.ph) * 5, y = yb - bh + m.y + Math.cos(t * 1.1 * m.sp + m.ph * 1.3) * 5; h2o(x, y, m.a + t * .8 * (m.sp - 1.1), p0); }
+  c.restore();
+  // jég: a molekulák a folyadékállapotból a rácshelyekre rendeződnek
+  c.save(); rr(xB, yb - hB, bw, hB, 12); c.clip();
+  const sc = hB / hi;
+  if (freeze > .5) { al(p0 * (freeze - .5) * 2 * .75); c.strokeStyle = '#1d6a93'; c.lineWidth = 3; c.setLineDash([]); c.beginPath(); for (const p of S7.ice) for (const q of p.nb) if (q.x > p.x || (q.x === p.x && q.y > p.y)) { c.moveTo(xB + p.x, yb - hB + p.y * sc); c.lineTo(xB + q.x, yb - hB + q.y * sc); } c.stroke(); c.setLineDash([]); }
+  S7.ice.forEach((p, i) => {
+    const m = S7.liq[i % S7.liq.length];
+    const lx = xB + m.x + Math.sin(t * 1.3 * m.sp + m.ph) * 5 * (1 - freeze), ly = yb - bh + m.y;
+    const ix = xB + p.x + Math.sin(t * 7 + i) * 1.2, iy = yb - hB + p.y * sc + Math.cos(t * 6 + i) * 1.2;
+    h2o(lerp(lx, ix, freeze), lerp(ly, iy, freeze), lerp(m.a + t * .8 * (m.sp - 1.1), p.a, freeze), p0);
+  });
+  c.restore();
+  // feliratok
+  al(p0); T('folyékony víz', xA + bw / 2, yb - bh - 64, { s: 28, w: 700, a: 'center', c: WATER_D });
+  al(p0 * clamp((st - 1) / .5)); T('jégrács', xB + bw / 2, yb - hi - 64, { s: 28, w: 700, a: 'center', c: '#1d6a93' });
+  al(p0); L.tx('ρ = ' + L.val('víz sűrűsége'), xA + bw / 2, yb + 44, { k: 'víz sűrűsége', f: F.M, s: 24, w: 600, a: 'center', c: INK });
+  al(p0 * clamp((st - 3) / .5)); L.tx('ρ = ' + L.val('jég sűrűsége'), xB + bw / 2, yb + 44, { k: 'jég sűrűsége', f: F.M, s: 24, w: 600, a: 'center', c: INK });
+  al(p0 * clamp((st - .8) / .5)); T('ugyanannyi molekula', (xA + xB + bw) / 2, yb + 96, { s: 26, w: 600, a: 'center', c: MUT, max: 740 });
+  // +9 % jelölés
+  const pg = clamp((st - 3.1) / .6);
+  if (pg > 0) {
+    al(pg); ln(xA, yb - bh, xB + bw + 16, yb - bh, U.rgba(INK, .55), 2, [6, 6]);
+    const xr = xB + bw + 16; ln(xr, yb - bh, xr, yb - hi, RED, 3); ln(xr - 8, yb - hi, xr + 8, yb - hi, RED, 3); ln(xr - 8, yb - bh, xr + 8, yb - bh, RED, 3);
+    L.pill('+' + fmt(Math.round((rw / ri - 1) * 100)) + ' %', xr + 14, yb - (bh + hi) / 2, { k: ['nagyobb térfogat', 'jég sűrűsége'], s: 26, f: F.M, w: 700, bg: RED, c: '#fff8ee' });
+    T('nagyobb térfogat', xr + 14, yb - (bh + hi) / 2 - 40, { s: 22, w: 600, c: RED, max: 1340 - xr });
+  }
+  // jobb oldal: jéghegy a tengerben, a víz alatti rész aránya
+  const pb = clamp((st - 4.2) / .8);
+  if (pb > 0) {
+    const fAbove = 1 - ri / num('tengervíz sűrűsége'), oy = bergOffset(fAbove), wl = 560, k = .5, cx = 1100;
+    al(pb); c.save(); rr(950, 330, 300, 560, 18); c.clip();
+    c.fillStyle = 'rgba(255,255,255,.4)'; c.fillRect(950, 330, 300, wl - 330);
+    const pts = iceberg(cx, wl, k, oy + Math.sin(t) * 3, pb);
+    waterBody(950, 1250, wl, 900, t, pb, 2);
+    c.restore(); al(pb); rr(950, 330, 300, 560, 18); c.strokeStyle = LINE; c.lineWidth = 2; c.stroke();
+    const top = Math.min(...pts.map((p) => p[1])), bot = Math.max(...pts.map((p) => p[1])), xr = 1266;
+    ln(xr, top, xr, wl, GOOD, 3); ln(xr, wl, xr, bot, WATER_D, 3); for (const y of [top, wl, bot]) ln(xr - 7, y, xr + 7, y, INK, 2.5);
+    L.tx(fmt(Math.round(fAbove * 100)) + ' %', xr + 12, (top + wl) / 2 + 8, { k: ['jég sűrűsége', 'tengervíz sűrűsége'], f: F.M, s: 22, w: 700, c: GOOD });
+    L.tx(fmt(Math.round((1 - fAbove) * 100)) + ' %', xr + 12, (wl + bot) / 2 + 8, { k: ['jég sűrűsége', 'tengervíz sűrűsége'], f: F.M, s: 22, w: 700, c: WATER_D });
+    T('jéghegy víz alatt', 1100, 940, { s: 24, w: 600, a: 'center', c: INK, max: 400 });
+    L.tx(lab('tengervíz') + ': ' + L.val('tengervíz sűrűsége'), 1100, 976, { k: ['tengervíz', 'tengervíz sűrűsége'], f: F.M, s: 22, a: 'center', c: MUT, max: 400 });
+  }
+}
+
+/* ════════ 8. Az acélhajó: átlagos sűrűség ════════ */
+const SK = { x0: 70, x1: 1000, top: 360, ws: 470, bot: 960, px: 9 };
+const S8 = { V: 12000, cargo: 0, user: false, y: 0, from: 0, to: 0, t0: 0, sunk: false, lift: 0 };
+function hullDims(V) {
+  const V0 = num('acélkocka térfogata'), e = Math.cbrt(V0), f = clamp((V - V0) / (9 * V0));
+  const Hh = e * (1 + .4 * f), D = e * (1 + f), Lh = V / (Hh * D);
+  // falvastagság: (L−2t)(D−2t)(H−t) = V − V0  (felezéses keresés)
+  let lo = 0, hi = Math.min(Lh, D) / 2;
+  for (let i = 0; i < 40; i++) { const t = (lo + hi) / 2, vin = Math.max(0, Lh - 2 * t) * Math.max(0, D - 2 * t) * Math.max(0, Hh - t); if (vin > V - V0) lo = t; else hi = t; }
+  return { L: Lh, H: Hh, D, t: Math.max(lo, .12), solid: V <= V0 * 1.03 };
+}
+function shipState() {
+  const ms = num('acél sűrűsége') * num('acélkocka térfogata'), M = ms + S8.cargo * num('láda tömege'), V = S8.V, rw = num('víz sűrűsége');
+  const avg = M / V, d = hullDims(V), floats = avg < rw;
+  const draft = floats ? M / (rw * d.L * d.D) : d.H;     // cm
+  return { ms, M, V, avg, d, floats, yEq: floats ? SK.ws + draft * SK.px : SK.bot - 2 };
+}
+function retarget(st) {
+  const s = shipState(); const yNow = S8.y || s.yEq;
+  S8.from = yNow; S8.to = s.yEq; S8.t0 = st; S8.via = !S8.floatsNow && s.floats && yNow > SK.ws + 20;   // elsüllyedt hajót előbb kiemeljük
+  S8.floatsNow = s.floats;
+}
+function shipY(st) {
+  const tau = st - S8.t0;
+  if (S8.via) { const up = 1.1; if (tau < up) return lerp(S8.from, SK.top - 80, inOut(tau / up)); return settleTo(SK.top - 80, S8.to, tau - up, 2.6, 5); }
+  if (S8.to >= SK.bot - 3) return Math.min(SK.bot - 2, S8.from + Math.max(0, tau) * 230 * (1 - Math.exp(-tau * 3)) + 0.0001);
+  return settleTo(S8.from, S8.to, tau, 2.6, 5);
+}
+function drawHull(cx, yb, d, a, flooded, morph) {
+  const px = SK.px, w = d.L * px, h = d.H * px, t = d.solid ? h : Math.max(d.t * px, 8), x = cx - w / 2, y = yb - h;
+  al(a);
+  const g = c.createLinearGradient(x, y, x + w, yb); g.addColorStop(0, '#a3adb9'); g.addColorStop(.5, '#7d8896'); g.addColorStop(1, '#5c6775');
+  // belső tér
+  if (t < h - 1) { rr(x + t, y, w - 2 * t, h - t, Math.min(6, t)); c.fillStyle = flooded ? '#8dbbe0' : '#fdfaf3'; c.fill(); }
+  // rakomány
+  const n = S8.cargo, cs = Math.min(46, (w - 2 * t - 8) / Math.max(1, Math.min(n, 6)) - 4);
+  for (let i = 0; i < n; i++) {
+    const row = Math.floor(i / 6), col = i % 6, nInRow = Math.min(6, n - row * 6), x0 = cx - (nInRow * (cs + 4)) / 2 + col * (cs + 4) + 2, y0 = yb - t - (row + 1) * (cs + 3);
+    rr(x0, y0, cs, cs, 4); c.fillStyle = '#d9a066'; c.fill(); c.strokeStyle = '#7a4519'; c.lineWidth = 2; c.stroke(); ln(x0 + 4, y0 + 4, x0 + cs - 4, y0 + cs - 4, '#7a4519', 1.5); ln(x0 + cs - 4, y0 + 4, x0 + 4, y0 + cs - 4, '#7a4519', 1.5);
+  }
+  if (!d.solid && !flooded && n === 0 && h - t > 40 && w - 2 * t > 120) { al(a * .9); L.tx(lab('levegő'), cx, yb - t - (h - t) / 2 + 9, { k: 'levegő', s: 26, w: 600, i: 0, a: 'center', c: TEAL }); al(a); }
+  // falak (U alak)
+  c.beginPath(); c.moveTo(x, y); c.lineTo(x + w, y); c.lineTo(x + w, yb - 8); c.quadraticCurveTo(x + w, yb, x + w - 8, yb); c.lineTo(x + 8, yb); c.quadraticCurveTo(x, yb, x, yb - 8); c.closePath();
+  if (t < h - 1) { c.moveTo(x + t, y); c.lineTo(x + t, yb - t); c.lineTo(x + w - t, yb - t); c.lineTo(x + w - t, y); c.closePath(); }
+  c.fillStyle = g; c.fill('evenodd'); c.strokeStyle = '#2c3644'; c.lineWidth = 2.5; c.lineJoin = 'round'; c.stroke();
+  if (t < h - 1) { c.fillStyle = '#2c3644'; for (const xx of [x - 4, x + w - t - 4]) { rr(xx, y - 5, t + 8, 9, 3); c.fill(); } for (let xx = x + 24; xx < x + w - 20; xx += 34) { c.beginPath(); c.arc(xx, yb - t / 2, 2.2, 0, TAU); c.fillStyle = 'rgba(28,36,64,.45)'; c.fill(); } }
+  if (morph > 0 && morph < 1) { al(a * Math.sin(morph * Math.PI)); for (let i = 0; i < 6; i++) { const ang = i / 6 * TAU + L.t * 3; ln(cx + Math.cos(ang) * (w / 2 + 14), y + h / 2 + Math.sin(ang) * (h / 2 + 14), cx + Math.cos(ang) * (w / 2 + 34), y + h / 2 + Math.sin(ang) * (h / 2 + 34), '#e7b23a', 4); } }
+}
+function scene8(st, live) {
+  const p0 = out(clamp(st / .6)), t = L.t, cx = (SK.x0 + SK.x1) / 2, V0 = num('acélkocka térfogata');
+  // automatikus bevezető: süllyedő kocka → kiemelés → hajótest → vízre tétel
+  let V, y, morph = 1, flooded = false;
+  if (!S8.user && st < 6.2) {
+    const s0 = shipState.call(null);
+    morph = inOut(clamp((st - 3.0) / 1.5)); V = lerp(V0, S8.V, morph);
+    const ve = num('acélkocka térfogata'), hb = Math.cbrt(ve) * SK.px;
+    if (st < 2.2) y = Math.min(SK.bot - 2, st < .3 ? SK.ws - 140 : SK.ws - 140 + Math.min(1, (st - .3) / .25) * 140 + Math.max(0, st - .55) * 650);
+    else if (st < 2.9) y = lerp(SK.bot - 2, SK.top - 80, inOut((st - 2.2) / .7));
+    else if (st < 4.6) y = SK.top - 80;
+    else { const save = S8.V; y = settleTo(SK.top - 80, s0.yEq, st - 4.6, 2.6, 5); }
+    flooded = false;
+    S8.y = y; S8.from = y; S8.to = s0.yEq; S8.t0 = st; S8.via = false; S8.floatsNow = s0.floats;
+  } else {
+    if (!S8.user && !S8.started) { S8.started = true; retarget(st); }
+    V = S8.V; y = shipY(st); S8.y = y; const s = shipState(); flooded = !s.floats && y > SK.ws + 10;
+  }
+  const s = shipState(), d = hullDims(V);
+  tank(t, p0, () => { }, () => drawHull(cx, y, d, p0, flooded, morph));
+  // bevezető felirat
+  const pi = clamp(st / .4) * (1 - clamp((st - 2.8) / .4));
+  if (pi > 0 && !S8.user) { al(pi); L.pill(lab('tömör acélkocka') + ': ' + L.val('acélkocka térfogata') + ' = ' + fmt(s.ms) + ' g', cx, SK.top - 40, { k: ['tömör acélkocka', 'acélkocka térfogata', 'acél sűrűsége'], a: 'center', s: 24, w: 600, bg: '#ffffff', bd: '#2c3644', c: INK }); }
+  // adatkártya
+  const x = 1040, y0 = 330, w = 300;
+  al(p0); rr(x, y0, w, 600, 20); c.fillStyle = CARD; c.fill(); c.strokeStyle = LINE; c.lineWidth = 2; c.stroke();
+  const Vshow = S8.user || st >= 6.2 ? s.V : V, avg = s.M / Vshow;
+  const rows = [['acél tömege', fmt(s.ms) + ' g', ['acél sűrűsége', 'acélkocka térfogata']], ['rakomány', fmt(S8.cargo * num('láda tömege')) + ' g', 'láda tömege'], ['külső térfogat', fmt(Math.round(Vshow / 100) * 100) + ' cm³', 'hajótest térfogata']];
+  rows.forEach(([k, v, kk], i) => { const yy = y0 + 54 + i * 92; T(k, x + 24, yy, { s: 23, w: 500, c: MUT, max: w - 48 }); tx(v, x + 24, yy + 40, { f: F.M, s: 30, w: 700, c: INK, k: kk, max: w - 48 }); });
+  ln(x + 24, y0 + 318, x + w - 24, y0 + 318, LINE, 2);
+  const fl = avg < num('víz sűrűsége'), col = fl ? GOOD : BAD;
+  T('átlagos sűrűség', x + 24, y0 + 362, { s: 23, w: 700, c: INK, max: w - 48 });
+  tx(fmt(avg, 2) + ' g/cm³', x + 24, y0 + 410, { f: F.M, s: 32, w: 700, c: col, max: w - 48 });
+  L.pill(lab(fl ? 'hajó úszik' : 'hajó elsüllyed'), x + 24, y0 + 476, { k: fl ? 'hajó úszik' : 'hajó elsüllyed', s: 26, w: 700, bg: col, c: '#ffffff' });
+  L.tx((fl ? '< ' : '≥ ') + L.val('víz sűrűsége') + ' (' + lab('víz') + ')', x + 24, y0 + 554, { f: F.M, s: 22, w: 600, c: col, k: ['víz sűrűsége', 'víz'], max: w - 48 });
+}
+
+/* ════════ 9. Összefoglalás: a sűrűség-létra ════════ */
+function scene9(st) {
+  const p0 = out(clamp(st / .6));
+  const lo = -3.2, hi = 1.5, y0 = 170, y1 = 980, Y = (r) => y0 + (Math.log10(r) - lo) / (hi - lo) * (y1 - y0), x = 250, rw = num('víz sűrűsége');
+  al(p0); T('sűrűség-létra', 70, 120, { f: F.D, s: 40, w: 560, c: INK, max: 560 });
+  // sávok: úszik / elmerül
+  rr(x - 16, y0, 32, Y(rw) - y0, 10); c.fillStyle = U.rgba(GOOD, .2); c.fill();
+  rr(x - 16, Y(rw), 32, y1 - Y(rw), 10); c.fillStyle = U.rgba(BAD, .16); c.fill();
+  ln(x - 190, Y(rw), x + 30, Y(rw), WATER_D, 3, [10, 6]);
+  T('vízben úszik', x - 30, Y(rw) - 18, { s: 24, w: 700, a: 'right', c: GOOD, max: 190 });
+  T('vízben elmerül', x - 30, Y(rw) + 36, { s: 24, w: 700, a: 'right', c: BAD, max: 190 });
+  const items = [['levegő', 'levegő sűrűsége', .001, '#0a6f86'], ['fenyőfa', 'fenyőfa sűrűsége', 1, MAT.fenyo.dark], ['jég', 'jég sűrűsége', 1, MAT.jeg.dark], ['víz', 'víz sűrűsége', 1, WATER_D],
+    ['tengervíz', 'tengervíz sűrűsége', 1, WATER_D], ['alumínium', 'alumínium sűrűsége', 1, MAT.al.dark], ['acél', 'acél sűrűsége', 1, MAT.acel.dark], ['arany', 'arany sűrűsége', 1, MAT.arany.dark]];
+  const ls = items.map(([k, rk, conv, col], i) => ({ k, rk, col, r: num(rk) * conv, y: Y(num(rk) * conv), i }));
+  const ly = ls.map((l) => l.y);   // feliratok szétválogatása (≥ 36 px)
+  for (let it = 0; it < 30; it++) for (let i = 1; i < ly.length; i++) { const d = ly[i] - ly[i - 1]; if (d < 36) { ly[i] += (36 - d) / 2; ly[i - 1] -= (36 - d) / 2; } }
+  ls.forEach((l, i) => {
+    const q = clamp((st - .5 - i * .25) / .4); if (q <= 0) return; al(p0 * q);
+    c.beginPath(); c.arc(x, l.y, 9, 0, TAU); c.fillStyle = l.col; c.fill();
+    c.beginPath(); c.moveTo(x + 12, l.y); c.lineTo(x + 40, l.y); c.lineTo(x + 58, ly[i]); c.strokeStyle = U.rgba(l.col, .6); c.lineWidth = 2; c.stroke();
+    const w = L.tx(lab(l.k), x + 66, ly[i] + 8, { k: l.k, s: 26, w: 700, c: l.col }).w;
+    L.tx(L.val(l.rk), x + 66 + w + 12, ly[i] + 8, { k: l.rk, f: F.M, s: 22, c: MUT });
+  });
+  // képlet-háromszög
+  const pt = clamp((st - 2.6) / .7), tx0 = 980, ty0 = 200;
+  if (pt > 0) {
+    al(p0 * pt); c.beginPath(); c.moveTo(tx0, ty0); c.lineTo(tx0 + 170, ty0 + 290); c.lineTo(tx0 - 170, ty0 + 290); c.closePath(); c.fillStyle = CARD; c.fill(); c.strokeStyle = INK; c.lineWidth = 3; c.lineJoin = 'round'; c.stroke();
+    ln(tx0 - 98, ty0 + 168, tx0 + 98, ty0 + 168, INK, 3); ln(tx0, ty0 + 168, tx0, ty0 + 290, INK, 3);
+    tx('m', tx0, ty0 + 140, { f: F.D, i: 1, s: 64, w: 560, a: 'center', c: RED, qa: false });
+    tx('ρ', tx0 - 58, ty0 + 260, { f: F.D, i: 1, s: 60, w: 560, a: 'center', c: RED, qa: false });
+    tx('V', tx0 + 58, ty0 + 260, { f: F.D, i: 1, s: 60, w: 560, a: 'center', c: RED, qa: false });
+    [['ρ = m / V', 'képlet sűrűség'], ['m = ρ · V', 'képlet tömeg'], ['V = m / ρ', 'képlet térfogat']].forEach(([fx, k], i) => {
+      const q = clamp((st - 3.2 - i * .35) / .4), y = ty0 + 380 + i * 70; al(p0 * q);
+      tx(fx, tx0 - 170, y, { f: F.D, i: 1, s: 40, w: 500, c: INK, qa: false });
+      T(k, tx0 + 40, y - 2, { s: 26, w: 500, c: MUT, max: 330 });
+    });
+  }
+  const pm = clamp((st - 4.6) / .6);
+  al(p0 * pm); rr(720, 870, 620, 110, 18); c.fillStyle = U.rgba(RED, .1); c.fill(); c.strokeStyle = U.rgba(RED, .5); c.lineWidth = 2; c.stroke();
+  T('tanulság', 1030, 938, { f: F.D, i: 1, s: 36, w: 500, a: 'center', c: RED, max: 580 });
+}
+
+/* ════════════════════════════════════════════════════════════════ */
+const sT = new Array(9).fill(0);
+const SCENES = [scene1, scene2, scene3, scene4, scene5, scene6, scene7, scene8, scene9];
+L = Lesson.create({
+  content: window.LESSON_CONTENT,
+  home: false,
+  steps: [
+    { settle: 7.5 },
+    { settle: 5.5 },
+    { settle: 8.6 },
+    { settle: 5.5 },
+    { settle: 7.5,
+      enter() { S5.Lm = num('terem hossza'); S5.Wm = num('terem szélessége'); S5.Hm = num('terem magassága'); },
+      controls(L) {
+        const f = (v) => fmt(v, 1) + ' m';
+        L.slider({ label: lab('terem hossza felirat'), k: 'terem hossza felirat', min: 4, max: 15, step: .5, value: num('terem hossza'), format: f, onInput: (v) => { S5.Lm = v; } });
+        L.slider({ label: lab('terem szélessége felirat'), k: 'terem szélessége felirat', min: 4, max: 12, step: .5, value: num('terem szélessége'), format: f, onInput: (v) => { S5.Wm = v; } });
+        L.slider({ label: lab('terem magassága felirat'), k: 'terem magassága felirat', min: 2.5, max: 5, step: .1, value: num('terem magassága'), format: f, onInput: (v) => { S5.Hm = v; } });
+      } },
+    { settle: 6,
+      enter() { S6.r = num('rejtélyes kocka sűrűsége'); S6.t0 = 0; },
+      controls(L) {
+        L.slider({ label: lab('rejtélyes kocka csúszka'), k: 'rejtélyes kocka csúszka', min: .1, max: 3, step: .05, value: num('rejtélyes kocka sűrűsége'), format: (v) => fmt(v, 2) + ' g/cm³',
+          onInput: (v) => { S6.r = v; if (L.st < 4.4) L.st = 4.4; S6.from = S6.y; S6.to = floatY(v); S6.t0 = L.st; } });
+      } },
+    { settle: 6 },
+    { settle: 7,
+      enter() { Object.assign(S8, { V: num('hajótest térfogata'), cargo: 0, user: false, started: false, y: 0 }); },
+      controls(L) {
+        const take = () => { if (!S8.user) { S8.user = true; S8.V = Math.max(S8.V, 1000); } };
+        L.slider({ label: lab('hajótest csúszka'), k: 'hajótest csúszka', min: num('acélkocka térfogata'), max: 20000, step: 250, value: num('hajótest térfogata'), format: (v) => fmt(v) + ' cm³',
+          onInput: (v) => { take(); S8.V = v; retarget(L.st); } });
+        L.button(lab('rakomány gomb'), () => { take(); if (S8.cargo < 12) S8.cargo++; retarget(L.st); }, 'rakomány gomb');
+        L.button(lab('kirakodás gomb'), () => { take(); S8.cargo = 0; retarget(L.st); }, 'kirakodás gomb');
+      } },
+    { settle: 6 },
+  ],
+  init(Lx) { L = Lx; c = L.ctx; buildS7(); },
+  draw(Lx) {
+    L = Lx; c = L.ctx; GA = 1; background();
+    const sp = L.sp;
+    if (L.step >= 0) sT[L.step] = L.st;
+    for (let i = 0; i < SCENES.length; i++) {
+      const w = clamp(1 - Math.abs(sp - i) * 2); if (w <= .005) continue;
+      GA = w; SCENES[i](sT[i], L.step === i);
+    }
+    c.globalAlpha = 1;
+  },
+});
+})();
+</script>
+</body>
+</html>

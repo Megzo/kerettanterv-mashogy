@@ -1,0 +1,202 @@
+/* ───────────────────────────────────────────────────────────────
+   Kerettanterv – másképp · közös lecke-keret (az iskola/ motorból) (1920×1080 logikai színpad, skálázva)
+   A leckék a :root változókat írják felül a saját <style>-jukban.
+   ─────────────────────────────────────────────────────────────── */
+@font-face { font-family: "Fraunces"; font-style: normal; font-weight: 100 900; font-display: block;
+  src: url("fonts/fraunces-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: "Fraunces"; font-style: normal; font-weight: 100 900; font-display: block;
+  src: url("fonts/fraunces-latin-ext.woff2") format("woff2");
+  unicode-range: U+0100-02AF, U+0304, U+0308, U+0329, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: "Fraunces"; font-style: italic; font-weight: 100 900; font-display: block;
+  src: url("fonts/fraunces-latin-italic.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: "Fraunces"; font-style: italic; font-weight: 100 900; font-display: block;
+  src: url("fonts/fraunces-latin-ext-italic.woff2") format("woff2");
+  unicode-range: U+0100-02AF, U+0304, U+0308, U+0329, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: "Bricolage Grotesque"; font-style: normal; font-weight: 200 800; font-display: block;
+  src: url("fonts/bricolage-grotesque-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: "Bricolage Grotesque"; font-style: normal; font-weight: 200 800; font-display: block;
+  src: url("fonts/bricolage-grotesque-latin-ext.woff2") format("woff2");
+  unicode-range: U+0100-02AF, U+0304, U+0308, U+0329, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: "JetBrains Mono"; font-style: normal; font-weight: 100 800; font-display: block;
+  src: url("fonts/jetbrains-mono-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: "JetBrains Mono"; font-style: normal; font-weight: 100 800; font-display: block;
+  src: url("fonts/jetbrains-mono-latin-ext.woff2") format("woff2");
+  unicode-range: U+0100-02AF, U+0304, U+0308, U+0329, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+
+/* ── Téma: VILÁGOS (alapértelmezett) ─────────────────────────────
+   Meleg „rajzlap” háttér, sötét tinta. Kivetítőn, világos teremben is olvasható:
+   a kulcselemek színei telítettek és sötétek (≥ 4,5 : 1 kontraszt a papíron),
+   nincs halvány pasztell és nincs tiszta fehér (vakít).                       */
+:root {
+  --bg: #f3ecdf;            /* papír: az oldal (letterbox) és a színpad alapszíne */
+  --paper: #f7f1e6;         /* a vászon közepe (világosabb papír) */
+  --card: #fffaf1;          /* kártyák, dobozok */
+  --ink: #1c2440;           /* fő szövegszín (sötét tinta) */
+  --muted: #565d72;         /* másodlagos szöveg (még mindig ≥ 5 : 1) */
+  --accent: #c8401c;        /* fő kiemelő: cinóbervörös */
+  --accent-ink: #fff8ee;    /* szöveg az accent háttéren */
+  --accent2: #0a6f86;       /* második kiemelő: mély kékeszöld */
+  --panel-bg: rgba(255, 251, 244, .92);
+  --panel-border: rgba(28, 36, 64, .16);
+  --panel-shadow: 0 24px 60px rgba(70, 50, 20, .16), 0 2px 0 rgba(255, 255, 255, .7) inset;
+  --rule: rgba(28, 36, 64, .14);
+  --font-display: "Fraunces", Georgia, serif;
+  --font-body: "Bricolage Grotesque", "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", Consolas, monospace;
+}
+/* Opcionális sötét változat: <body class="theme-dark"> */
+body.theme-dark {
+  --bg: #0b1020; --paper: #111a30; --card: #141d36; --ink: #eef2ff; --muted: #9aa3bd;
+  --accent: #ffb454; --accent-ink: #1a1206; --accent2: #6ad1ff;
+  --panel-bg: rgba(14, 20, 38, .78); --panel-border: rgba(255, 255, 255, .12);
+  --panel-shadow: 0 30px 80px rgba(0, 0, 0, .45); --rule: rgba(255, 255, 255, .14);
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: var(--bg); overflow: hidden; }
+body { font-family: var(--font-body); color: var(--ink); -webkit-font-smoothing: antialiased; }
+
+#lesson-viewport { position: fixed; inset: 0; overflow: hidden; background: var(--bg); }
+#lesson-stage {
+  position: absolute; left: 50%; top: 50%; width: 1920px; height: 1080px;
+  transform-origin: 0 0; overflow: hidden; background: var(--bg);
+  opacity: 0; transition: opacity .6s ease;
+}
+#lesson-stage.ready { opacity: 1; }
+#lesson-canvas { position: absolute; inset: 0; width: 1920px; height: 1080px; display: block; }
+#lesson-layer { position: absolute; inset: 0; pointer-events: none; }
+#lesson-layer > * { pointer-events: auto; }
+
+/* ── Jobb oldali magyarázó panel ─────────────────────────────── */
+#lesson-panel {
+  position: absolute; left: 1380px; top: 24px; width: 516px; height: 1032px;
+  display: flex; flex-direction: column;
+  padding: 34px 38px 26px;
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: 28px;
+  box-shadow: var(--panel-shadow);
+  backdrop-filter: blur(18px) saturate(1.2);
+  -webkit-backdrop-filter: blur(18px) saturate(1.2);
+}
+.lp-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.lp-subject {
+  font-family: var(--font-mono); font-size: 17px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--accent-ink); background: var(--accent); padding: 7px 14px 6px; border-radius: 999px;
+}
+.lp-home {
+  font-family: var(--font-mono); font-size: 16px; color: var(--muted); text-decoration: none; letter-spacing: .04em;
+  padding: 6px 10px; border-radius: 10px; transition: color .2s, background .2s;
+}
+.lp-home:hover { color: var(--ink); background: var(--rule); }
+.lp-lesson { margin-top: 20px; font-size: 21px; line-height: 1.25; color: var(--muted); font-weight: 500; }
+.lp-rule { height: 1px; background: var(--rule); margin: 22px 0 24px; flex: none; }
+.lp-count { font-family: var(--font-mono); font-size: 18px; color: var(--accent); letter-spacing: .1em; }
+.lp-count b { font-weight: 700; font-size: 22px; }
+.lp-count span { color: var(--muted); }
+.lp-title {
+  font-family: var(--font-display); font-weight: 560; font-size: 47px; line-height: 1.06; letter-spacing: -.015em;
+  margin: 12px 0 20px; text-wrap: balance; font-variation-settings: "opsz" 96;
+}
+.lp-text { font-size: 24.5px; line-height: 1.44; font-weight: 400; flex: 1 1 auto; min-height: 0; overflow: hidden; }
+.lp-text p { margin: 0 0 15px; }
+.lp-text b, .lp-text strong { font-weight: 680; }
+.lp-text em { font-family: var(--font-display); font-style: italic; font-size: 1.04em; }
+.lp-text .key { color: var(--accent); font-weight: 680; }
+.lp-text .key2 { color: var(--accent2); font-weight: 680; }
+.lp-text .note {
+  font-size: 21px; line-height: 1.4; color: var(--ink);
+  background: color-mix(in srgb, var(--accent2) 9%, transparent); border-left: 4px solid var(--accent2);
+  padding: 10px 14px 11px; border-radius: 0 12px 12px 0;
+}
+.lp-text .fx {
+  font-family: var(--font-mono); font-size: .88em; padding: 2px 9px 3px; border-radius: 8px;
+  background: var(--rule); white-space: nowrap;
+}
+.lp-text .big-fx {
+  display: block; font-family: var(--font-display); font-style: italic; font-size: 44px; text-align: center;
+  margin: 12px 0 14px; color: var(--accent); letter-spacing: .01em;
+}
+.lp-text ul { margin: 0 0 14px; padding-left: 24px; }
+.lp-text li { margin-bottom: 7px; }
+.lp-text li::marker { color: var(--accent); }
+
+/* lépésváltáskor belépő animáció */
+.lp-anim > * { animation: lp-in .6s cubic-bezier(.2, .8, .2, 1) both; }
+.lp-anim > *:nth-child(2) { animation-delay: .07s; }
+.lp-anim > *:nth-child(3) { animation-delay: .14s; }
+.lp-anim > *:nth-child(4) { animation-delay: .21s; }
+.lp-anim > *:nth-child(5) { animation-delay: .28s; }
+@keyframes lp-in { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+
+/* ── Interaktív vezérlők (csúszka, gomb) ──────────────────────── */
+.lp-controls { flex: none; display: flex; flex-direction: column; gap: 14px; margin-top: 6px; }
+.lp-controls:empty { display: none; }
+.lp-slider { display: grid; grid-template-columns: 1fr auto; gap: 6px 12px; align-items: baseline; }
+.lp-slider label { font-size: 19px; color: var(--muted); }
+.lp-slider output { font-family: var(--font-mono); font-size: 21px; font-weight: 700; color: var(--accent); }
+.lp-slider input[type=range] {
+  grid-column: 1 / -1; -webkit-appearance: none; appearance: none; width: 100%; height: 30px; background: transparent; margin: 0; cursor: pointer;
+}
+.lp-slider input[type=range]::-webkit-slider-runnable-track { height: 6px; border-radius: 3px; background: var(--rule); }
+.lp-slider input[type=range]::-moz-range-track { height: 6px; border-radius: 3px; background: var(--rule); }
+.lp-slider input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 26px; height: 26px; border-radius: 50%; margin-top: -10px;
+  background: var(--accent); border: 4px solid var(--bg); box-shadow: 0 0 0 2px var(--accent);
+}
+.lp-slider input[type=range]::-moz-range-thumb {
+  width: 20px; height: 20px; border-radius: 50%; background: var(--accent); border: 4px solid var(--bg); box-shadow: 0 0 0 2px var(--accent);
+}
+.lp-btnrow { display: flex; flex-wrap: wrap; gap: 10px; }
+.lp-btn {
+  font-family: var(--font-body); font-size: 20px; font-weight: 620; color: var(--ink);
+  background: transparent; border: 1.5px solid var(--accent); border-radius: 14px; padding: 11px 18px; cursor: pointer;
+  transition: background .2s, color .2s, transform .12s;
+}
+.lp-btn:hover { background: var(--accent); color: var(--accent-ink); }
+.lp-btn:active { transform: scale(.96); }
+.lp-btn.on { background: var(--accent); color: var(--accent-ink); }
+
+/* ── Alsó navigáció ───────────────────────────────────────────── */
+.lp-nav { flex: none; margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--rule); display: flex; align-items: center; gap: 14px; }
+.lp-arrow {
+  width: 58px; height: 58px; flex: none; border-radius: 50%; border: 1.5px solid var(--rule); background: transparent; color: var(--ink);
+  font-size: 26px; line-height: 1; cursor: pointer; display: grid; place-items: center; transition: all .2s; font-family: var(--font-body);
+}
+.lp-arrow:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+.lp-arrow:disabled { opacity: .28; cursor: default; }
+.lp-arrow.next { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.lp-arrow.next:hover:not(:disabled) { color: var(--accent-ink); transform: translateX(3px); }
+.lp-arrow.replay { width: 46px; height: 46px; font-size: 21px; }
+.lp-dots { flex: 1; display: flex; gap: 7px; align-items: center; justify-content: center; }
+.lp-dot { height: 8px; flex: 1 1 0; max-width: 34px; border-radius: 4px; background: var(--rule); cursor: pointer; border: 0; padding: 0; transition: background .3s, flex-grow .3s; }
+.lp-dot.done { background: color-mix(in srgb, var(--accent) 45%, transparent); }
+.lp-dot.cur { background: var(--accent); flex-grow: 2.2; max-width: 60px; }
+.lp-hint { flex: none; margin-top: 12px; text-align: center; font-family: var(--font-mono); font-size: 14px; letter-spacing: .06em; color: var(--muted); opacity: .75; }
+.lp-hint kbd { font-family: inherit; border: 1px solid var(--rule); border-radius: 5px; padding: 1px 6px; }
+
+.lp-home[hidden] { display: none; }
+
+/* ── Hibasáv (hiányzó / elavult tartalomfájl) ─────────────────── */
+#lesson-error {
+  position: absolute; left: 24px; top: 24px; width: 1332px; z-index: 20; padding: 18px 24px;
+  font: 600 22px/1.4 var(--font-mono); color: #fff; background: #b3261e; border-radius: 14px; white-space: pre-wrap;
+}
+
+/* ── Review mód (?review vagy K): a szövegek Markdown-kulcsa ──── */
+.lp-review-badge {
+  font-family: var(--font-mono); font-size: 15px; font-weight: 700; letter-spacing: .1em; color: #fff;
+  background: #7a3cc2; padding: 5px 10px 4px; border-radius: 8px;
+}
+.review [data-src] { outline: 2px dashed rgba(122, 60, 194, .45); outline-offset: 3px; border-radius: 4px; position: relative; }
+.review [data-src]:hover { outline-color: #7a3cc2; background: rgba(122, 60, 194, .07); }
+#lesson-revtip {
+  position: absolute; z-index: 30; pointer-events: none; white-space: nowrap;
+  font: 600 16px/1.2 var(--font-mono); color: #fff; background: #7a3cc2; padding: 6px 10px; border-radius: 7px;
+}
+
+@media print { .lp-nav, .lp-hint { display: none; } }
