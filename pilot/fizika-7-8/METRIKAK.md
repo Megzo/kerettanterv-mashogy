@@ -14,6 +14,7 @@ Szabály: egyszerre legfeljebb 3 al-ügynök fut.
 | C | 05-inga lecke | 2. hullám | 20 p 12 mp | 259 895 (kimenet 100 478; cache-írás 339 735; cache-olvasás 5 650 608) | kész: 8 lépés, QA hibátlan |
 | D | 07-felhajtoero lecke (Arkhimédész) | 2. hullám | 28 p 34 mp | 298 313 (kimenet 124 720; cache-írás 290 054; cache-olvasás 10 430 756) | kész: 8 lépés, QA hibátlan |
 | E | 10-arnyek-tukor lecke | 2. hullám | 34 p 10 mp | 348 181 (kimenet 139 022; cache-írás 451 644; cache-olvasás 12 425 969) | kész: 9 lépés, QA hibátlan |
+| F | 08-aramkor lecke | 3. hullám | 28 p 27 mp | 322 243 (kimenet 131 304; cache-írás 592 903; cache-olvasás 8 523 458) | kész: 9 lépés, QA hibátlan |
 
 A token-oszlop az al-ügynök saját fogyasztása (a koordináló fő munkamenet nélkül).
 Az első szám a Claude Code által jelentett al-ügynök-tokenszám; zárójelben az API-hívások
@@ -32,3 +33,4 @@ kimenet ~60 ezer, cache-írás ~169 ezer token (cache-olvasás ~6,8 millió).
 | 05-inga | 8 | 20 perc, ~260 ezer token | 0 JS-hiba, 0 túlcsordulás | – | build: „15°” nem volt elfogadva → javítva a build-szkriptben (fő munkamenet) |
 | 07-felhajtoero | 8 | 28,5 perc, ~298 ezer token | 0 JS-hiba, 0 túlcsordulás | 4. lépés számai ellenőrizve (p = ρgh, 9,81 N) | alsó index a panelen lokálisan megoldva (a szerződésből hiányzott) |
 | 10-arnyek-tukor | 9 | 34 perc, ~348 ezer token | 0 JS-hiba, 0 túlcsordulás | 7. lépés geometriája ellenőrizve (tükör 70–130 cm, szem ~150 cm → 0–112 cm látszik) | húzás (drag) lokálisan; szélső húzásnál felirat–sugár átfedés |
+| 08-aramkor | 9 | 28,5 perc, ~322 ezer token | 0 JS-hiba, 0 túlcsordulás | 6. lépés: Ohm/Kirchhoff számok és elektron- vs. technikai áramirány ellenőrizve | `L.pill` nem veszi figyelembe a `max`-ot (motor-hiány); árammérő-húzás lokálisan |

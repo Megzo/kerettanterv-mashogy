@@ -1,0 +1,807 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mi folyik a drótban? — Fizika</title>
+<link rel="stylesheet" href="../../shared/lesson.css">
+<style>
+  .lp-text b { color: var(--ink); }
+  .lp-text sub { font-size: .6em; vertical-align: -.25em; line-height: 0; font-style: italic; }
+</style>
+<!-- A lecke által várt tartalomkulcsok. A tools/build_lesson.py ez alapján ellenőrzi a .md-t.
+     labels: felirat → max. karakterszám (null = alapértelmezett 32) · data: adat → mértékegység, tartomány -->
+<script type="application/json" id="lesson-spec">
+{
+  "steps": 9,
+  "labels": {
+    "atommag": 20, "elektron": 20, "elektronok mozgása": 26, "áram iránya": 40, "felgyorsítva": 40,
+    "izzó": 12, "telep": 12, "ampermérő": 18, "feszültségmérő": 18, "áramerősség": 18, "feszültség": 18, "ellenállás": 18,
+    "grafitbél": 26,
+    "atommag marad": 34, "elektron vándorol": 34, "gyapjú": 16, "lufi": 16, "semleges": 26,
+    "elektronhiány": 26, "elektrontöbblet": 26, "dörzsölés gomb": 22,
+    "fém": 24, "műanyag": 24, "szabad elektron": 20, "kötött elektron": 20, "atomtörzs": 20, "cikázás": 30,
+    "van áram": 20, "nincs áram": 20, "telep gomb": 22,
+    "kapcsoló": 14, "kapcsoló gomb": 22, "egy vezeték gomb": 24, "már ott vannak": 40, "egyszerre": 40,
+    "nyitott kör": 28, "zárt kör": 28, "hiányzó vezeték": 34,
+    "izzó előtt": 18, "izzó után": 18, "húzz": 14, "másodpercenként": 40, "tévhit": 40, "mindenhol ugyanannyi": 26,
+    "ceruzaelem gomb": 16, "laposelem gomb": 16, "9 V gomb": 16, "a telepen": 16, "az izzón": 16, "kiégne": 30, "halvány": 22,
+    "csipesz csúszka": 34, "csipesz": 20, "itt nem folyik": 24, "a grafiton": 16, "hossz": 16, "feszültségek összege": 26,
+    "1 elem gomb": 10, "2 elem gomb": 10, "3 elem gomb": 10, "tengely U": 34, "tengely I": 22, "hányados": 10,
+    "pot csúszka": 30, "fordít gomb": 24, "előtét gomb": 28, "új LED gomb": 14, "LED": 8, "előtét": 20, "nincs előtét": 26,
+    "potméter": 20, "kiégett": 22, "záróirány": 24, "összesen": 16, "gyorsítás": 40,
+    "jelentés I": 30, "jelentés U": 30, "jelentés R": 30, "ugyanannyi": 16, "tanulság": 76
+  },
+  "data": {
+    "ceruzaelem feszültsége":    {"unit": "V", "min": 1.2, "max": 1.6},
+    "laposelem feszültsége":     {"unit": "V", "min": 4.0, "max": 4.8},
+    "9 voltos elem feszültsége": {"unit": "V", "min": 8.0, "max": 9.6},
+    "izzó névleges feszültsége": {"unit": "V", "min": 2.5, "max": 6.5},
+    "izzó névleges árama":       {"unit": "A", "min": 0.1, "max": 0.5},
+    "grafitbél ellenállása centiméterenként": {"unit": "Ω", "min": 0.1, "max": 2},
+    "grafitbél hossza":          {"unit": "cm", "min": 12, "max": 12},
+    "sodródási sebesség":        {"unit": "mm/s", "min": 0.01, "max": 1},
+    "elektronok száma 1 C töltésben": {"unit": "db", "min": 6.2e18, "max": 6.3e18},
+    "csipesz helye":             {"unit": "cm", "min": 2, "max": 12},
+    "LED nyitófeszültsége":      {"unit": "V", "min": 1.6, "max": 3.4},
+    "LED üzemi árama":           {"unit": "mA", "min": 5, "max": 30},
+    "LED legnagyobb árama":      {"unit": "mA", "min": 20, "max": 50},
+    "előtét-ellenállás":         {"unit": "Ω", "min": 220, "max": 1000},
+    "potenciométer legnagyobb értéke": {"unit": "Ω", "min": 1000, "max": 10000}
+  }
+}
+</script>
+</head>
+<body>
+<script src="08-aramkor.content.js"></script>
+<script src="../../shared/lesson.js"></script>
+<script>
+(function () {
+'use strict';
+const U = Lesson.U, { clamp, lerp, smooth, out, inOut, TAU } = U, fmt = U.fmt;
+const F = Lesson.FONTS;
+/* ── paletta (világos téma, lásd SZERZODES.md) ── */
+const INK = '#1c2440', MUT = '#565d72', RED = '#c8401c', TEAL = '#0a6f86', GOOD = '#1d7a45', BAD = '#b3261e',
+  CARD = '#fffaf1', LINE = 'rgba(28,36,64,.16)', WIRE = '#2a3350';
+let L, c, GA = 1;
+const al = (a = 1) => { c.globalAlpha = GA * clamp(a); };
+const lab = (k) => L.lab(k), num = (k) => L.num(k);
+const T = (k, x, y, o = {}) => L.tx(lab(k), x, y, Object.assign({ k }, o));
+const tx = (s, x, y, o) => L.tx(s, x, y, o);
+const rr = (x, y, w, h, r) => { c.beginPath(); c.roundRect(x, y, w, h, r); };
+const ln = (x1, y1, x2, y2, col, w = 2, dash) => { c.beginPath(); c.moveTo(x1, y1); c.lineTo(x2, y2); c.strokeStyle = col; c.lineWidth = w; c.setLineDash(dash || []); c.stroke(); c.setLineDash([]); };
+const mod = (a, n) => ((a % n) + n) % n;
+
+/* ════════ fizika: egyetlen forrás minden jelenetnek ════════
+   Soros kör, ideális telep és vezetékek: a körben MINDENHOL ugyanaz az I (Kirchhoff I.),
+   a feszültségek összege a telep feszültsége (Kirchhoff II.), elemenként U = I · R.
+   A pöttyök (elektronok) sebessége: KA px/s amperenként (8. lépés: K8 px/s mA-enként). */
+const KA = 200, K8 = 4;                       // K8 / (KA/1000) = 20 → „20× gyorsabbak”
+const BATT = { aa: 'ceruzaelem feszültsége', lap: 'laposelem feszültsége', v9: '9 voltos elem feszültsége' };
+const Ubat = (t) => num(BATT[t]);
+const Rb = () => num('izzó névleges feszültsége') / num('izzó névleges árama');     // izzó (állandó) ellenállása
+const Pn = () => num('izzó névleges feszültsége') * num('izzó névleges árama');     // névleges teljesítmény
+const glowOf = (I) => I * I * Rb() / Pn();                                          // P / P_névleges (fényesség)
+const rG = () => num('grafitbél ellenállása centiméterenként'), LG = () => num('grafitbél hossza');
+const KB = ['izzó névleges feszültsége', 'izzó névleges árama'];
+const fA = (I, d = 2) => fmt(I, d) + ' A', fV = (u, d = 2) => fmt(u, d) + ' V';
+const fR = (r, d = 1) => fmt(r, d) + ' Ω';
+/* nagy egész szám (pl. 1,875·10¹⁸) pontosan, ezres tagolással, 4 értékes jeggyel */
+function bigInt(x) {
+  if (!(x > 0)) return '0';
+  const e = Math.floor(Math.log10(x)), k = Math.max(0, e - 3), m = Math.round(x / Math.pow(10, k));
+  return (String(m) + '0'.repeat(k)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+}
+
+/* ── állapot-eseménylista: [{t, s}] – az állapot L.st-ből zárt alakban számolható ── */
+function evNow(E, st) { let s = E[0].s; for (const e of E) { if (e.t <= st) s = e.s; else break; } return s; }
+function evSet(E, st, ch) {
+  const cur = Object.assign({}, evNow(E, st), { auto: 0 }, ch);
+  while (E.length > 1 && E[E.length - 1].t > st) E.pop();
+  E.push({ t: st, s: cur }); return cur;
+}
+/* a pöttyök fázisa (px): ∫ v dt az eseményeken át. Automatikus (folytonos) szakasznál numerikusan,
+   s.auto = az automatikus mozgás vége (utána v állandó). */
+function phase(E, st, v) {
+  let p = 0;
+  for (let i = 0; i < E.length; i++) {
+    const a = E[i].t; if (st <= a) break;
+    const b = Math.min(st, i + 1 < E.length ? E[i + 1].t : Infinity), s = E[i].s;
+    if (s.auto) {
+      const e = Math.min(b, s.auto); let t0 = a;
+      if (e > a) { const n = Math.max(1, Math.ceil((e - a) / .02)), h = (e - a) / n; for (let j = 0; j < n; j++) p += v(s, a + (j + .5) * h) * h; t0 = e; }
+      if (b > t0) p += v(s, t0) * (b - t0);
+    } else p += v(s, a) * (b - a);
+  }
+  return p;
+}
+
+/* ── zárt vezetékpálya (polyline); s nő az ELEKTRONOK haladási irányában ── */
+function mkPath(pts) {
+  const seg = []; let tot = 0;
+  for (let i = 0; i < pts.length; i++) { const a = pts[i], b = pts[(i + 1) % pts.length], l = Math.hypot(b[0] - a[0], b[1] - a[1]); seg.push({ a, b, l, s0: tot }); tot += l; }
+  return { pts, seg, tot };
+}
+function pAt(P, s) {
+  s = mod(s, P.tot);
+  for (const g of P.seg) if (g.l > 0 && s <= g.s0 + g.l + 1e-9) { const t = (s - g.s0) / g.l; return { x: lerp(g.a[0], g.b[0], t), y: lerp(g.a[1], g.b[1], t), dx: (g.b[0] - g.a[0]) / g.l, dy: (g.b[1] - g.a[1]) / g.l }; }
+  const g = P.seg[0]; return { x: g.a[0], y: g.a[1], dx: 1, dy: 0 };
+}
+function sNear(P, x, y) {
+  let best = { s: 0, d: 1e9 };
+  for (const g of P.seg) {
+    if (g.l <= 0) continue;
+    const ux = (g.b[0] - g.a[0]) / g.l, uy = (g.b[1] - g.a[1]) / g.l, t = clamp((x - g.a[0]) * ux + (y - g.a[1]) * uy, 0, g.l);
+    const d = Math.hypot(g.a[0] + ux * t - x, g.a[1] + uy * t - y); if (d < best.d) best = { s: g.s0 + t, d };
+  }
+  return best;
+}
+const inR = (s, R) => R.some(([a, b]) => s >= a && s <= b);
+/* vezeték rajza, a gaps tartományok kihagyásával */
+function wire(P, gaps = [], col = WIRE, w = 5) {
+  const G = gaps.slice().sort((a, b) => a[0] - b[0]), ranges = []; let s = 0;
+  for (const [a, b] of G) { if (a > s) ranges.push([s, a]); s = Math.max(s, b); }
+  if (s < P.tot) ranges.push([s, P.tot]);
+  c.strokeStyle = col; c.lineWidth = w; c.lineJoin = 'round'; c.lineCap = 'round';
+  for (const [a, b] of ranges) {
+    c.beginPath(); const p0 = pAt(P, a); c.moveTo(p0.x, p0.y);
+    for (const g of P.seg) if (g.s0 > a && g.s0 < b) c.lineTo(g.a[0], g.a[1]);
+    const p1 = b >= P.tot ? { x: P.seg[0].a[0], y: P.seg[0].a[1] } : pAt(P, b); c.lineTo(p1.x, p1.y); c.stroke();
+  }
+  c.lineCap = 'butt';
+}
+/* elektron (−) és atommag (+) */
+function electron(x, y, r = 8) {
+  c.beginPath(); c.arc(x, y, r, 0, TAU); c.fillStyle = TEAL; c.fill(); c.strokeStyle = '#063f4d'; c.lineWidth = 1.5; c.stroke();
+  ln(x - r * .5, y, x + r * .5, y, '#fffaf1', 2.2);
+}
+function nucleus(x, y, r = 13) {
+  c.beginPath(); c.arc(x, y, r, 0, TAU); c.fillStyle = RED; c.fill(); c.strokeStyle = '#7a2410'; c.lineWidth = 2; c.stroke();
+  ln(x - r * .5, y, x + r * .5, y, '#fffaf1', 2.6); ln(x, y - r * .5, x, y + r * .5, '#fffaf1', 2.6);
+}
+/* elektronpöttyök a pályán: egyenletes köz, fázis = megtett út */
+function edots(P, ph, hide = [], r = 8) {
+  const N = Math.max(1, Math.round(P.tot / 38)), sp = P.tot / N;
+  for (let i = 0; i < N; i++) { const s = mod(i * sp + ph, P.tot); if (inR(s, hide)) continue; const p = pAt(P, s); electron(p.x, p.y, r); }
+}
+/* nyílhegy (ang irányba) */
+function chev(x, y, ang, col, sz = 12) {
+  c.save(); c.translate(x, y); c.rotate(ang);
+  for (const o of [-9, 9]) { c.beginPath(); c.moveTo(o + sz, 0); c.lineTo(o - sz * .6, -sz * .8); c.lineTo(o - sz * .15, 0); c.lineTo(o - sz * .6, sz * .8); c.closePath(); c.fillStyle = col; c.fill(); }
+  c.restore();
+}
+/* kívül piros: a megállapodás szerinti áramirány (+ → −); belül kékeszöld: az elektronok iránya */
+function flowArrows(P, list, a, on = 1) {
+  for (const s of list) {
+    const p = pAt(P, s), ang = Math.atan2(p.dy, p.dx), nx = -p.dy, ny = p.dx;
+    al(a * (.25 + .75 * on)); chev(p.x + nx * 30, p.y + ny * 30, ang + Math.PI, RED); chev(p.x - nx * 30, p.y - ny * 30, ang, TEAL);
+  }
+}
+function legendFlow(x, y, a) {
+  al(a); electron(x + 10, y - 8, 9); chev(x + 46, y - 8, 0, TEAL); T('elektronok mozgása', x + 76, y, { s: 24, w: 600, c: TEAL });
+  chev(x + 470, y - 8, Math.PI, RED); T('áram iránya', x + 506, y, { s: 24, w: 600, c: RED, max: 800 - 506 + x });
+  T('felgyorsítva', x, y + 44, { s: 22, w: 500, c: MUT });
+}
+
+/* ── alkatrészek ── */
+const BTS = { aa: { w: 84, h: 170, body: '#27406b', band: '#c9a44a' }, lap: { w: 130, h: 200, body: '#b5381a', band: '#f0c75a' }, v9: { w: 104, h: 186, body: '#1d5f45', band: '#d8dde4' } };
+/* telep: (x, y) közép, a + pólus „felül” (rot: elforgatás), a felirat mindig vízszintes */
+function battery(x, y, type, a, o = {}) {
+  const B = BTS[type], w = o.w || B.w, h = o.h || B.h, rot = o.rot || 0;
+  al(a); c.save(); c.translate(x, y); c.rotate(rot);
+  rr(-w / 2 + 4, -h / 2 + 6, w, h, 12); c.fillStyle = 'rgba(28,36,64,.18)'; c.fill();
+  rr(-w / 2, -h / 2, w, h, 12); c.fillStyle = B.body; c.fill();
+  c.save(); rr(-w / 2, -h / 2, w, h, 12); c.clip(); c.fillStyle = B.band; c.fillRect(-w / 2, -h / 2, w, h * .2);
+  const g = c.createLinearGradient(-w / 2, 0, w / 2, 0); g.addColorStop(0, 'rgba(255,255,255,0)'); g.addColorStop(.3, 'rgba(255,255,255,.28)'); g.addColorStop(.5, 'rgba(255,255,255,0)');
+  c.fillStyle = g; c.fillRect(-w / 2, -h / 2, w, h); c.restore();
+  rr(-w / 2, -h / 2, w, h, 12); c.strokeStyle = '#141a2e'; c.lineWidth = 3; c.stroke();
+  rr(-14, -h / 2 - 11, 28, 12, 4); c.fillStyle = '#9aa3ae'; c.fill(); c.strokeStyle = '#141a2e'; c.lineWidth = 2.5; c.stroke();
+  c.restore();
+  const vx = x, vy = y + (rot ? 0 : h * .1);
+  if (!o.nolabel) L.tx(fmt(Ubat(type), 1) + ' V', vx, vy + 9, { k: BATT[type], f: F.M, s: 26, w: 700, a: 'center', c: '#fffaf1', max: (rot ? h : w) - 12 });
+  // pólusjelek (képletjel, kódban rögzített)
+  const ux = Math.sin(rot), uy = -Math.cos(rot), px = -uy, py = ux, d = h / 2 - 22, side = w / 2 + 20;
+  if (!o.nosign) {
+    tx('+', x + ux * d + px * side, y + uy * d + py * side + 11, { f: F.M, s: 34, w: 700, a: 'center', c: RED, qa: false });
+    tx('−', x - ux * d + px * side, y - uy * d + py * side + 11, { f: F.M, s: 34, w: 700, a: 'center', c: TEAL, qa: false });
+  }
+}
+/* izzó: a vezeték függőlegesen fut át rajta; b = P / P_névleges */
+function bulb(x, y, b, a, R = 46) {
+  const v = clamp(Math.pow(Math.max(0, b), .6), 0, 1.7);
+  al(a);
+  if (v > .01) {
+    const g = c.createRadialGradient(x, y, R * .3, x, y, R + 140 * Math.min(v, 1.4));
+    g.addColorStop(0, `rgba(255,210,80,${.8 * Math.min(1, v)})`); g.addColorStop(.45, `rgba(255,200,70,${.35 * Math.min(1, v)})`); g.addColorStop(1, 'rgba(255,200,70,0)');
+    c.fillStyle = g; c.beginPath(); c.arc(x, y, R + 140 * Math.min(v, 1.4), 0, TAU); c.fill();
+  }
+  rr(x - 15, y + R - 8, 30, 18, 4); c.fillStyle = '#9aa3ae'; c.fill(); c.strokeStyle = '#141a2e'; c.lineWidth = 2.5; c.stroke();
+  rr(x - 15, y - R - 10, 30, 18, 4); c.fillStyle = '#9aa3ae'; c.fill(); c.stroke();
+  c.beginPath(); c.arc(x, y, R, 0, TAU); c.fillStyle = U.mix('#f4efe4', '#ffe27a', clamp(v)); c.fill();
+  c.strokeStyle = INK; c.lineWidth = 3; c.stroke();
+  const fc = U.mix('#3a3f4a', '#ff8a14', clamp(v * 1.4));
+  ln(x - 14, y + R - 8, x - 14, y + 4, '#6b7380', 2.5); ln(x + 14, y + R - 8, x + 14, y + 4, '#6b7380', 2.5);
+  ln(x - 14, y - R + 8, x - 14, y - 6, '#6b7380', 2.5);
+  c.beginPath(); for (let i = 0; i <= 8; i++) c.lineTo(x - 14 + i * 3.5, y + 4 + (i % 2 ? -8 : 0)); c.strokeStyle = fc; c.lineWidth = 3; c.stroke();
+  ln(x + 14, y + 4, x + 14, y - 6, '#6b7380', 2.5);
+  c.beginPath(); c.moveTo(x + 14, y - 6); c.lineTo(x + 14, y - R + 8); c.strokeStyle = '#6b7380'; c.lineWidth = 2.5; c.stroke();
+  c.beginPath(); c.ellipse(x - R * .42, y - R * .42, R * .16, R * .26, -.7, 0, TAU); c.fillStyle = 'rgba(255,255,255,.55)'; c.fill();
+}
+/* mérőműszer körben; sym: 'A' / 'V' (képletjel) */
+function meterC(x, y, sym, a, col = INK) {
+  al(a); c.beginPath(); c.arc(x, y, 30, 0, TAU); c.fillStyle = CARD; c.fill(); c.strokeStyle = col; c.lineWidth = 3.5; c.stroke();
+  tx(sym, x, y + 1, { f: F.B, s: 32, w: 700, a: 'center', b: 'middle', c: col, qa: false });
+}
+function readout(s, x, y, k, a = 'left', sz = 26) { return L.pill(s, x, y, { k, a, s: sz, f: F.M, w: 700, bg: '#22302a', c: '#8df0a6', pad: 10, r: 8 }); }
+/* feszültségmérő vezetékei: pts = [[x,y] a pályán, …], via = töréspont-lista */
+function vlead(path, a) {
+  al(a); c.beginPath(); path.forEach((p, i) => i ? c.lineTo(p[0], p[1]) : c.moveTo(p[0], p[1]));
+  c.strokeStyle = U.rgba('#565d72', .9); c.lineWidth = 2.5; c.lineJoin = 'round'; c.stroke();
+  const e = path[0]; c.beginPath(); c.arc(e[0], e[1], 6, 0, TAU); c.fillStyle = INK; c.fill();
+}
+function switchG(x, y, closed, a) {
+  al(a);
+  const ang = closed ? 0 : -.5;
+  c.lineCap = 'round'; c.beginPath(); c.moveTo(x - 60, y); c.lineTo(x - 60 + Math.cos(ang) * 124, y + Math.sin(ang) * 124);
+  c.strokeStyle = INK; c.lineWidth = 7; c.stroke(); c.lineCap = 'butt';
+  for (const xx of [x - 60, x + 60]) { c.beginPath(); c.arc(xx, y, 9, 0, TAU); c.fillStyle = CARD; c.fill(); c.strokeStyle = INK; c.lineWidth = 3; c.stroke(); }
+}
+function graphite(x0, x1, y, a) {
+  al(a); rr(x0 - 4, y - 9, x1 - x0 + 8, 18, 8); c.fillStyle = '#3b3f47'; c.fill(); c.strokeStyle = '#141a2e'; c.lineWidth = 2; c.stroke();
+  ln(x0 + 4, y - 4, x1 - 4, y - 4, 'rgba(200,205,215,.55)', 2);
+}
+function clipG(x, y, a, hot) {
+  al(a); rr(x - 14, y - 4, 28, 34, 6); c.fillStyle = hot ? '#d0442a' : BAD; c.fill(); c.strokeStyle = '#5a120c'; c.lineWidth = 2.5; c.stroke();
+  for (let i = -1; i <= 1; i++) ln(x + i * 7, y - 4, x + i * 7, y + 4, '#5a120c', 2);
+}
+function resistor(x, y, a) {
+  al(a); rr(x - 60, y - 20, 120, 40, 10); c.fillStyle = '#e9d7ae'; c.fill(); c.strokeStyle = '#6b4a1c'; c.lineWidth = 2.5; c.stroke();
+  [['#e07b1a', -34], ['#e07b1a', -16], ['#7a4a1c', 2], ['#c9a44a', 34]].forEach(([col, dx]) => { c.fillStyle = col; c.fillRect(x + dx - 5, y - 19, 10, 38); });
+}
+function potG(x, y, a) {
+  al(a); rr(x - 66, y - 22, 132, 44, 10); c.fillStyle = '#d9dee6'; c.fill(); c.strokeStyle = INK; c.lineWidth = 2.5; c.stroke();
+  for (let i = 0; i < 7; i++) ln(x - 50 + i * 16, y - 12, x - 42 + i * 16, y + 12, '#6b7380', 2);
+  ln(x - 54, y + 36, x + 46, y - 30, RED, 4);
+  c.beginPath(); c.moveTo(x + 56, y - 37); c.lineTo(x + 34, y - 32); c.lineTo(x + 47, y - 16); c.closePath(); c.fillStyle = RED; c.fill();
+}
+/* LED: nyitóirányban (rev = false) a megállapodás szerinti áram felülről lefelé folyik át rajta */
+function ledG(x, y, br, rev, burnt, flash, a) {
+  const v = clamp(br, 0, 1.6);
+  al(a);
+  if (v > .01 && !burnt) {
+    const g = c.createRadialGradient(x, y, 20, x, y, 44 + 130 * Math.min(v, 1.3));
+    g.addColorStop(0, `rgba(255,70,40,${.7 * Math.min(1, v)})`); g.addColorStop(.5, `rgba(255,80,50,${.25 * Math.min(1, v)})`); g.addColorStop(1, 'rgba(255,80,50,0)');
+    c.fillStyle = g; c.beginPath(); c.arc(x, y, 44 + 130 * Math.min(v, 1.3), 0, TAU); c.fill();
+  }
+  rr(x - 15, y + 34, 30, 16, 4); c.fillStyle = '#9aa3ae'; c.fill(); c.strokeStyle = '#141a2e'; c.lineWidth = 2.5; c.stroke();
+  rr(x - 15, y - 50, 30, 16, 4); c.fillStyle = '#9aa3ae'; c.fill(); c.stroke();
+  c.beginPath(); c.arc(x, y, 42, 0, TAU);
+  c.fillStyle = burnt ? '#4a3a3a' : U.mix('#e9b9ad', '#ff3b1c', clamp(v)); c.fill(); c.strokeStyle = '#6e150c'; c.lineWidth = 3; c.stroke();
+  const s = rev ? -1 : 1, col = burnt ? '#c9b8b0' : INK;
+  c.beginPath(); c.moveTo(x - 20, y - 14 * s); c.lineTo(x + 20, y - 14 * s); c.lineTo(x, y + 14 * s); c.closePath(); c.fillStyle = col; c.fill();
+  ln(x - 20, y + 15 * s, x + 20, y + 15 * s, col, 4);
+  if (burnt) { ln(x - 24, y - 26, x - 4, y - 2, '#c9b8b0', 2.5); ln(x - 4, y - 2, x + 6, y + 22, '#c9b8b0', 2.5); }
+  if (flash > .01) { al(a * flash); c.beginPath(); c.arc(x, y, 50 + 90 * (1 - flash), 0, TAU); c.fillStyle = '#fff6c8'; c.fill(); }
+}
+function card(x, y, w, h, a) { al(a); rr(x, y, w, h, 18); c.fillStyle = CARD; c.fill(); c.strokeStyle = LINE; c.lineWidth = 2; c.stroke(); }
+/* képletjel (kódban rögzített, mint a mintaleckében) */
+function sym(s, x, y, o) { return L.tx(s, x, y, Object.assign({ f: F.D, i: 1, w: 500, qa: false }, o)).w; }
+/* sor a kártyán: felirat + érték egymás alatt */
+function row2(k, v, x, y, col, kv, w, big) {
+  T(k, x, y, { s: 24, w: 500, c: MUT, max: w });
+  L.tx(v, x, y + 40, { k: kv, f: F.M, s: big ? 34 : 28, w: 700, c: col, max: w });
+}
+
+/* ── háttér ── */
+function background() {
+  c.globalAlpha = 1;
+  const g = c.createRadialGradient(680, 480, 100, 680, 540, 1300); g.addColorStop(0, '#f7f1e6'); g.addColorStop(1, '#efe6d6');
+  c.fillStyle = g; c.fillRect(0, 0, 1920, 1080);
+  c.strokeStyle = 'rgba(28,36,64,.045)'; c.lineWidth = 1; c.beginPath();
+  for (let x = 0; x <= 1920; x += 40) { c.moveTo(x + .5, 0); c.lineTo(x + .5, 1080); }
+  for (let y = 0; y <= 1080; y += 40) { c.moveTo(0, y + .5); c.lineTo(1920, y + .5); }
+  c.stroke();
+}
+
+/* ── húzás a vásznon (a motor L.pointer-ét használja) ── */
+const DR = { on: null, h: null };
+/* a jelenet minden képkockán regisztrálja a húzható elemét; az események (le/mozgás/fel) közvetlenül kezelik,
+   így gyors egérmozgásnál (két képkocka között) sem vész el a húzás */
+function drag(id, near, apply) { DR.h = { id, near, apply }; }
+function dragInit() {
+  const st = L.stage, P = (e) => L.toStage(e);
+  st.addEventListener('pointerdown', (e) => { const p = P(e); if (DR.h && DR.h.near(p.x, p.y)) { DR.on = DR.h.id; DR.h.apply(p.x, p.y); } });
+  st.addEventListener('pointermove', (e) => {
+    const p = P(e);
+    if (DR.on && DR.h && DR.h.id === DR.on) DR.h.apply(p.x, p.y);
+    L.canvas.style.cursor = DR.on ? 'grabbing' : DR.h && DR.h.near(p.x, p.y) ? 'grab' : '';
+  });
+  window.addEventListener('pointerup', () => { DR.on = null; });
+}
+
+/* ════════ 1. Dörzsöléskor elektronok vándorolnak ════════ */
+const S1 = { ses: [], tr: [] }, B1 = { home: 930, touch: 652, y: 520, rx: 150, ry: 190 };
+function s1Add(a, k) {
+  const n0 = S1.tr.length; k = Math.min(k, 10 - n0); if (k <= 0) return;
+  for (let j = 0; j < k; j++) S1.tr.push({ t: a + .9 + j * .5, i: n0 + j });
+  S1.ses.push({ a, b: a + .9 + (k - 1) * .5 + .7 });
+}
+function balloonAt(st) {
+  let x = B1.home, dy = 0;
+  for (const s of S1.ses) {
+    if (st < s.a) break;
+    const u = inOut(clamp((st - s.a) / .7)), v = inOut(clamp((st - s.b) / .8));
+    x = lerp(B1.home, B1.touch, u * (1 - v));
+    const env = smooth((st - s.a - .6) / .25) * (1 - smooth((st - s.b + .15) / .25));
+    dy = Math.sin((st - s.a) * 11) * 34 * env;
+  }
+  return { x, y: B1.y + dy };
+}
+const WOOL = { x0: 110, x1: 500, y0: 280, y1: 760 };
+const woolAtoms = []; for (let r = 0; r < 4; r++) for (let q = 0; q < 3; q++) woolAtoms.push([175 + q * 125, 340 + r * 120]);
+/* az átvándorló elektronok sorrendje: a lufihoz legközelebbi oszloptól */
+const WOOL_ORDER = [2, 5, 8, 11, 1, 4, 7, 10, 0, 3, 6, 9];
+const balAtoms = []; for (let r = 0; r < 4; r++) for (let q = 0; q < 3; q++) balAtoms.push([-45 + q * 60, -100 + r * 66]);
+const balSlot = (i) => { const th = Math.PI * (.64 + .72 * (i + .5) / 10); return [Math.cos(th) * B1.rx * .8, Math.sin(th) * B1.ry * .82]; };
+function scene1(st, cur) {
+  const p0 = out(clamp(st / .6)), B = balloonAt(st);
+  // jelmagyarázat
+  al(p0); nucleus(132, 112); T('atommag marad', 160, 121, { s: 26, w: 600, c: INK });
+  electron(672, 112, 10); T('elektron vándorol', 698, 121, { s: 26, w: 600, c: INK });
+  // gyapjú
+  al(p0); rr(WOOL.x0, WOOL.y0, WOOL.x1 - WOOL.x0, WOOL.y1 - WOOL.y0, 26); c.fillStyle = '#ddb48a'; c.fill();
+  c.save(); rr(WOOL.x0, WOOL.y0, WOOL.x1 - WOOL.x0, WOOL.y1 - WOOL.y0, 26); c.clip();
+  c.strokeStyle = 'rgba(122,74,40,.35)'; c.lineWidth = 2.5;
+  for (let y = WOOL.y0 + 14; y < WOOL.y1; y += 26) for (let x = WOOL.x0 + 8; x < WOOL.x1; x += 24) { c.beginPath(); c.moveTo(x, y - 7); c.lineTo(x + 6, y + 7); c.lineTo(x + 12, y - 7); c.stroke(); }
+  c.restore();
+  rr(WOOL.x0, WOOL.y0, WOOL.x1 - WOOL.x0, WOOL.y1 - WOOL.y0, 26); c.strokeStyle = '#6e4220'; c.lineWidth = 3; c.stroke();
+  T('gyapjú', (WOOL.x0 + WOOL.x1) / 2, WOOL.y0 - 22, { s: 30, w: 700, a: 'center', c: INK });
+  // lufi
+  const bx = B.x, by = B.y;
+  al(p0); c.beginPath(); c.moveTo(bx, by + B1.ry + 14); c.bezierCurveTo(bx + 24, by + B1.ry + 40, bx - 24, by + B1.ry + 60, bx + 6, by + B1.ry + 92);
+  c.strokeStyle = MUT; c.lineWidth = 2.5; c.stroke();
+  c.beginPath(); c.moveTo(bx, by + B1.ry - 4); c.lineTo(bx - 12, by + B1.ry + 16); c.lineTo(bx + 12, by + B1.ry + 16); c.closePath(); c.fillStyle = '#d9a21b'; c.fill(); c.strokeStyle = '#7a5a08'; c.lineWidth = 2.5; c.stroke();
+  const g = c.createRadialGradient(bx - 50, by - 70, 20, bx, by, 220); g.addColorStop(0, '#fbe08a'); g.addColorStop(1, '#efb92e');
+  c.beginPath(); c.ellipse(bx, by, B1.rx, B1.ry, 0, 0, TAU); c.fillStyle = g; c.fill(); c.strokeStyle = '#7a5a08'; c.lineWidth = 3; c.stroke();
+  c.beginPath(); c.ellipse(bx + 70, by - 110, 18, 36, .5, 0, TAU); c.fillStyle = 'rgba(255,255,255,.6)'; c.fill();
+  T('lufi', bx, by - B1.ry - 20, { s: 30, w: 700, a: 'center', c: INK });
+  // töltések
+  for (const [x, y] of woolAtoms) nucleus(x, y);
+  for (const [dx, dy] of balAtoms) { nucleus(bx + dx, by + dy); electron(bx + dx + 22, by + dy + 18, 9); }
+  const moving = new Set(S1.tr.map((t) => WOOL_ORDER[t.i]));
+  woolAtoms.forEach(([x, y], i) => { if (!moving.has(i)) electron(x + 30, y + 22, 9); });
+  let n = 0;
+  for (const t of S1.tr) {
+    const [wx, wy] = woolAtoms[WOOL_ORDER[t.i]], [sx, sy] = balSlot(t.i), q = smooth((st - t.t) / .45);
+    const x = lerp(wx + 30, bx + sx, q), y = lerp(wy + 22, by + sy, q) - Math.sin(q * Math.PI) * 40;
+    if (st >= t.t + .25) n++;
+    electron(x, y, 9);
+  }
+  // számlálók
+  const counter = (cx, pr, el, kState) => {
+    al(p0); nucleus(cx - 92, 838, 14); tx(fmt(pr), cx - 68, 849, { k: 'atommag', f: F.M, s: 32, w: 700, c: RED });
+    electron(cx + 30, 838, 11); tx(fmt(el), cx + 54, 849, { k: 'elektron', f: F.M, s: 32, w: 700, c: TEAL });
+    const col = kState === 'semleges' ? MUT : kState === 'elektronhiány' ? RED : TEAL;
+    L.pill(lab(kState), cx, 912, { k: kState, a: 'center', s: 26, w: 700, bg: kState === 'semleges' ? CARD : col, bd: col, c: kState === 'semleges' ? INK : '#fffaf1', pad: 14 });
+  };
+  counter(305, 12, 12 - n, n ? 'elektronhiány' : 'semleges');
+  counter(B1.home, 12, 12 + n, n ? 'elektrontöbblet' : 'semleges');
+}
+
+/* ════════ 2. Vezető és szigetelő ════════ */
+const E2 = [];
+const VD = 46;   // sodródás az animációban (px/s), felgyorsítva
+const ROWS2 = [{ y: 330, metal: true }, { y: 760, metal: false }];
+function row2Path(y) { return mkPath([[200, y], [1000, y], [1050, y], [1050, y + 170], [150, y + 170], [150, y]]); }
+const RNG2 = (() => { const r = U.rng(11), a = []; for (let i = 0; i < 36; i++) a.push([r(), r(), r(), r(), r(), r()]); return a; })();
+function scene2(st, cur) {
+  const p0 = out(clamp(st / .6)), S = evNow(E2, st), d = phase(E2, st, (s) => s.on ? VD : 0), t = L.t;
+  for (const R of ROWS2) {
+    const y = R.y, P = row2Path(y), on = S.on && R.metal;
+    const sb = sNear(P, 300, y + 170).s, sl = sNear(P, 850, y + 170).s;
+    al(p0); wire(P, [[0, 800]]);
+    // a rézdrótban is vannak elektronok; zárt körben mindenhol egyszerre mozognak
+    edots(P, R.metal ? d : 0, [[-1, 806], [sb - 100, sb + 100], [sl - 50, sl + 50]]);
+    // sáv
+    al(p0); rr(200, y - 80, 800, 160, 14); c.fillStyle = R.metal ? '#e6d2bf' : '#e4e9ee'; c.fill();
+    c.strokeStyle = R.metal ? '#8a4f24' : '#56657a'; c.lineWidth = 3; c.stroke();
+    c.save(); rr(200, y - 80, 800, 160, 14); c.clip();
+    for (let r = 0; r < 3; r++) for (let q = 0; q < 12; q++) {
+      const x = 200 + 33 + q * 66, yy = y - 50 + r * 50;
+      if (R.metal) nucleus(x, yy, 12);
+      else {
+        nucleus(x, yy, 12);
+        const ang = t * (2.2 + (q * 7 + r * 3) % 5 * .4) + q * 1.7 + r * 2.3, sh = S.on ? 7 : 0;
+        electron(x + sh + Math.cos(ang) * 22, yy + Math.sin(ang) * 18, 7.5);
+      }
+    }
+    if (R.metal) RNG2.forEach((g, i) => {
+      const q = i % 12, r = Math.floor(i / 12), bx = 200 + q * 66 + (r % 2 ? 50 : 16), by = y - 25 + (r - 1) * 48;
+      const ax = Math.sin(t * (2 + g[0] * 3) + g[1] * 9) * 24 + Math.sin(t * (4 + g[2] * 3) + g[3] * 9) * 12;
+      const ay = Math.sin(t * (2.5 + g[4] * 3) + g[5] * 9) * 16;
+      const x = 200 + mod(bx - 200 + ax + d, 800), yy = clamp(by + 25 + ay, y - 70, y + 70);
+      electron(x, yy, 7.5);
+    });
+    c.restore();
+    al(p0); battery(300, y + 170, 'lap', p0, { rot: Math.PI / 2, w: 100, h: 170 });
+    bulb(850, y + 170, on ? 1 : 0, p0, 40);
+    flowArrows(P, [P.tot - 120], p0 * (R.metal ? 1 : .5), on ? 1 : 0);
+    // feliratok
+    al(p0); T(R.metal ? 'fém' : 'műanyag', 200, y - 106, { s: 32, w: 700, c: INK });
+    al(p0); electron(R.metal ? 560 : 640, y - 114, 8);
+    T(R.metal ? 'szabad elektron' : 'kötött elektron', R.metal ? 578 : 658, y - 106, { s: 24, w: 600, c: TEAL });
+    if (R.metal) { nucleus(800, y - 114, 11); T('atomtörzs', 820, y - 106, { s: 24, w: 600, c: RED, max: 180 }); }
+    else { nucleus(860, y - 114, 11); T('atommag', 880, y - 106, { s: 24, w: 600, c: RED, max: 170 }); }
+    if (R.metal) { al(p0 * (S.on ? 1 : .35)); T('cikázás', 620, y + 124, { s: 24, w: 600, a: 'center', c: MUT }); }
+    al(p0 * (R.metal ? (S.on ? 1 : 0) : (S.on ? 1 : .4)));
+    L.pill(lab(R.metal ? 'van áram' : 'nincs áram'), 1100, y + 170, { k: R.metal ? 'van áram' : 'nincs áram', s: 24, w: 700, bg: R.metal ? GOOD : CARD, bd: R.metal ? GOOD : MUT, c: R.metal ? '#ffffff' : INK, pad: 12 });
+  }
+}
+
+/* ════════ közös áramkör-geometria (3–5. lépés) ════════ */
+const G0 = { XL: 200, XR: 900, Yt: 230, Yb: 790 };
+const rectPath = (G) => mkPath([[G.XL, G.Yb], [G.XR, G.Yb], [G.XR, G.Yt], [G.XL, G.Yt]]);
+const P0 = rectPath(G0);
+const S_ = (x, y, P = P0) => sNear(P, x, y).s;
+const I0 = () => Ubat('lap') / Rb();   // 3–4. lépés: laposelem + izzó
+const KI0 = ['laposelem feszültsége'].concat(KB);
+
+/* ════════ 3. Zárt áramkör ════════ */
+const E3 = [];
+const I3 = (s) => s.cl && !s.one ? I0() : 0;
+function scene3(st, cur) {
+  const p0 = out(clamp(st / .6)), S = evNow(E3, st), I = I3(S), ph = phase(E3, st, (s) => KA * I3(s));
+  const sSw = S_(550, G0.Yt), sBat = S_(G0.XL, 510), sBulb = S_(G0.XR, 510);
+  const gaps = [], hide = [[sBat - 100, sBat + 100], [sBulb - 46, sBulb + 46]];
+  if (!S.cl) { gaps.push([sSw - 60, sSw + 60]); hide.push([sSw - 64, sSw + 64]); }
+  if (S.one) { gaps.push([80, 620]); hide.push([70, 630]); }
+  al(p0); wire(P0, gaps);
+  if (S.one) { al(p0 * .4); ln(G0.XL + 80, G0.Yb, G0.XL + 620, G0.Yb, MUT, 3, [10, 10]); }
+  al(p0); edots(P0, ph, hide);
+  battery(G0.XL, 510, 'lap', p0); bulb(G0.XR, 510, glowOf(I), p0); switchG(550, G0.Yt, S.cl, p0);
+  flowArrows(P0, [350, S_(720, G0.Yt)], p0, I > 0 ? 1 : 0);
+  al(p0); T('kapcsoló', 550, G0.Yt + 52, { s: 24, w: 600, a: 'center', c: MUT });
+  T('telep', G0.XL - 82, 518, { s: 26, w: 700, a: 'right', c: INK });
+  T('izzó', G0.XR + 64, 518, { s: 26, w: 700, c: INK });
+  // „már ott vannak”
+  const tOn = lastOn(E3, st, I3);
+  al(p0 * clamp((st - .4) / .5) * (I > 0 ? .45 : 1)); T('már ott vannak', 550, 660, { s: 26, w: 600, a: 'center', c: TEAL, max: 600 });
+  ln(450, 672, 400, G0.Yb - 16, U.rgba(TEAL, .7), 2, [6, 6]);
+  al(p0 * (I > 0 ? clamp((st - tOn - .15) / .5) : 0)); T('egyszerre', 560, 400, { f: F.D, i: 1, s: 40, w: 500, a: 'center', c: RED, max: 540 });
+  // állapot
+  const k = S.one ? 'hiányzó vezeték' : S.cl ? 'zárt kör' : 'nyitott kör', col = S.one ? BAD : S.cl ? GOOD : MUT;
+  al(p0); L.pill(lab(k), 550, 116, { k, a: 'center', s: 28, w: 700, bg: col, c: '#ffffff', pad: 16 });
+  legendFlow(220, 940, p0);
+}
+/* mikor indult utoljára az áram (a „mind egyszerre” felirathoz) */
+function lastOn(E, st, If) { let t = 0, prev = 0; for (const e of E) { if (e.t > st) break; const I = If(e.s); if (I > 0 && !(prev > 0)) t = e.t; prev = I; } return t; }
+
+/* ════════ 4. Az áram nem fogy el ════════ */
+const S4 = { s3: 0, dragged: false };
+function scene4(st, cur) {
+  const p0 = out(clamp(st / .6)), I = I0(), ph = KA * I * st;
+  const sBat = S_(G0.XL, 510), sBulb = S_(G0.XR, 510), sA1 = S_(G0.XR, 690), sA2 = S_(G0.XR, 330);
+  const forbid = [[sBat - 150, sBat + 150], [sBulb - 100, sBulb + 100], [sA1 - 90, sA1 + 90], [sA2 - 90, sA2 + 90], [S_(550, G0.Yt) - 100, S_(550, G0.Yt) + 100]];
+  if (cur) drag('A3', (x, y) => { const p = pAt(P0, S4.s3); return Math.hypot(x - p.x, y - p.y) < 44; }, (x, y) => {
+    const n = sNear(P0, x, y); if (n.d < 160 && !inR(n.s, forbid)) { S4.s3 = n.s; S4.dragged = true; }
+  });
+  al(p0); wire(P0); edots(P0, ph, [[sBat - 100, sBat + 100], [sBulb - 46, sBulb + 46]]);
+  battery(G0.XL, 510, 'lap', p0); bulb(G0.XR, 510, glowOf(I), p0); switchG(550, G0.Yt, true, p0);
+  flowArrows(P0, [350], p0);
+  al(p0); T('izzó', G0.XR + 64, 518, { s: 26, w: 700, c: INK });
+  // ampermérők
+  const q1 = clamp((st - .6) / .5), q3 = clamp((st - 1.6) / .5);
+  for (const [s, k, ly] of [[sA1, 'izzó előtt', 52], [sA2, 'izzó után', -50]]) {
+    const p = pAt(P0, s); meterC(p.x, p.y, 'A', p0 * q1);
+    al(p0 * q1); readout(fA(I), p.x + 46, p.y, KI0); T(k, p.x + 48, p.y + ly + (ly > 0 ? 8 : 0), { s: 24, w: 600, c: MUT });
+  }
+  const p3 = pAt(P0, S4.s3), nx = -p3.dy, ny = p3.dx;
+  meterC(p3.x, p3.y, 'A', p0 * q3, RED);
+  al(p0 * q3); readout(fA(I), p3.x + nx * 66, p3.y + ny * 66, KI0, 'center');
+  al(p0 * q3 * (S4.dragged ? 0 : 1)); T('húzz', p3.x - nx * 62, p3.y - ny * 62 + 8, { s: 24, w: 700, a: 'center', c: RED });
+  // elektronok másodpercenként
+  const q2 = clamp((st - 2.2) / .6);
+  al(p0 * q2); tx(bigInt(I * num('elektronok száma 1 C töltésben')), 580, 600, { k: KI0.concat('elektronok száma 1 C töltésben'), f: F.M, s: 32, w: 700, a: 'center', c: TEAL, max: 480 });
+  T('másodpercenként', 580, 646, { s: 24, w: 600, a: 'center', c: MUT, max: 480 });
+  // tévhit
+  const qt = clamp((st - 2.8) / .6);
+  al(p0 * qt); const tb = T('tévhit', 560, 380, { f: F.D, i: 1, s: 30, w: 500, a: 'center', c: MUT, max: 520 });
+  ln(tb.x - 6, 371, tb.x + tb.w + 6, 371, BAD, 4);
+  al(p0 * clamp((st - 3.2) / .5)); L.pill(lab('mindenhol ugyanannyi'), 560, 448, { k: 'mindenhol ugyanannyi', a: 'center', s: 28, w: 700, bg: RED, c: '#fffaf1', pad: 14 });
+  legendFlow(220, 940, p0);
+}
+
+/* ════════ 5. Feszültség ════════ */
+const E5 = [];
+const I5 = (s) => Ubat(s.bt) / Rb();
+function scene5(st, cur) {
+  const p0 = out(clamp(st / .6)), S = evNow(E5, st), I = I5(S), Ub = Ubat(S.bt), ph = phase(E5, st, (s) => KA * I5(s));
+  const h = BTS[S.bt].h, sBat = S_(G0.XL, 510), sBulb = S_(G0.XR, 510), sA = S_(550, G0.Yb), kk = [BATT[S.bt]].concat(KB);
+  al(p0); wire(P0); edots(P0, ph, [[sBat - h / 2, sBat + h / 2], [sBulb - 46, sBulb + 46]]);
+  const b = glowOf(I), over = b > 1.6, flick = over ? .85 + .15 * Math.sin(L.t * 37) * Math.sin(L.t * 11) : 1;
+  battery(G0.XL, 510, S.bt, p0); bulb(G0.XR, 510, b * flick, p0);
+  flowArrows(P0, [200, S_(720, G0.Yt)], p0);
+  // műszerek
+  vlead([[G0.XL, 380], [330, 380], [330, 480]], p0); vlead([[G0.XL, 640], [330, 640], [330, 540]], p0); meterC(330, 510, 'V', p0);
+  vlead([[G0.XR, 420], [770, 420], [770, 480]], p0); vlead([[G0.XR, 600], [770, 600], [770, 540]], p0); meterC(770, 510, 'V', p0);
+  const pa = pAt(P0, sA); meterC(pa.x, pa.y, 'A', p0);
+  al(p0); readout(fV(Ub), 376, 510, BATT[S.bt]); readout(fV(I * Rb()), 724, 510, kk, 'right');
+  readout(fA(I), 550, 730, kk, 'center');
+  T('a telepen', 376, 466, { s: 24, w: 600, c: MUT }); T('az izzón', 724, 466, { s: 24, w: 600, a: 'right', c: MUT });
+  T('feszültségmérő', 550, 300, { s: 24, w: 600, a: 'center', c: MUT });
+  ln(450, 310, 360, 470, U.rgba(MUT, .6), 2, [5, 6]); ln(650, 310, 740, 470, U.rgba(MUT, .6), 2, [5, 6]);
+  T('ampermérő', 550, 862, { s: 24, w: 600, a: 'center', c: MUT });
+  // kártya
+  const vx = 990, vy = 250, w = 340;
+  card(vx, vy, w, 360, p0); al(p0);
+  row2('feszültség', fV(Ub, 1), vx + 24, vy + 50, INK, BATT[S.bt], w - 48, true);
+  row2('áramerősség', fA(I), vx + 24, vy + 160, TEAL, kk, w - 48, true);
+  if (over) { al(p0); L.pill(lab('kiégne'), vx + w / 2, vy + 300, { k: 'kiégne', a: 'center', s: 22, w: 700, bg: BAD, c: '#fff', pad: 9 }); }
+  else if (b < .3) { al(p0); L.pill(lab('halvány'), vx + w / 2, vy + 300, { k: 'halvány', a: 'center', s: 24, w: 700, bg: CARD, bd: MUT, c: INK, pad: 12 }); }
+}
+
+/* ════════ 6. Ellenállás: a grafitbél ════════ */
+const E6 = [];
+const G6 = { XL: 200, XR: 920, Yt: 230, Yb: 700, Yb2: 800, xA: 330, PX: 44 };
+let SL6 = null;
+const lAuto6 = (t) => lerp(0, num('csipesz helye'), inOut(clamp((t - 1) / 3)));
+const l6 = (s, t) => s.auto ? lAuto6(t) : s.l;
+const I6 = (s, t) => Ubat('lap') / (Rb() + rG() * l6(s, t));
+const gPath = (G, xc) => mkPath([[G.XL, G.Yb], [xc, G.Yb], [xc, G.Yb2], [G.XR, G.Yb2], [G.XR, G.Yt], [G.XL, G.Yt]]);
+/* grafitbeles kör rajza: közös a 6. és 7. lépésben */
+function graphCircuit(G, l, I, ph, p0, drawBat, sBatHalf, yBat, yBulb, yA, arrX) {
+  const xc = G.xA + l * G.PX, xE = G.xA + LG() * G.PX, P = gPath(G, xc);
+  const sBat = sNear(P, G.XL, yBat).s, sBulb = sNear(P, G.XR, yBulb).s;
+  al(p0); wire(P); graphite(G.xA, xE, G.Yb, p0);
+  // a csipesz utáni grafitban is vannak elektronok, de nem mozognak
+  al(p0 * .55); for (let x = xc + 30; x < xE - 4; x += 38) electron(x, G.Yb, 6.5);
+  al(p0); edots(P, ph, [[sBat - sBatHalf, sBat + sBatHalf], [sBulb - 46, sBulb + 46]], 7.5);
+  drawBat(); bulb(G.XR, yBulb, glowOf(I), p0);
+  clipG(xc, G.Yb, p0, DR.on === 'clip');
+  const pa = sNear(P, G.XR, yA); meterC(G.XR, yA, 'A', p0);
+  flowArrows(P, arrX.map(([x, y]) => sNear(P, x, y).s), p0);
+  return { xc, xE, P };
+}
+function scene6(st, cur) {
+  const p0 = out(clamp(st / .6)), S = evNow(E6, st), l = l6(S, st), I = I6(S, st), G = G6;
+  if (cur && S.auto && SL6) SL6.set(Math.round(l * 10) / 10);
+  if (cur) drag('clip', (x, y) => Math.abs(x - (G.xA + l * G.PX)) < 40 && y > G.Yb - 30 && y < G.Yb2 + 24, (x) => {
+    const v = Math.round(clamp((x - G.xA) / G.PX, 0, LG()) * 10) / 10; if (v !== l) { evSet(E6, L.st, { l: v }); SL6 && SL6.set(v); }
+  });
+  const ph = phase(E6, st, (s, t) => KA * I6(s, t));
+  const kk = ['laposelem feszültsége', 'grafitbél ellenállása centiméterenként'].concat(KB);
+  const C = graphCircuit(G, l, I, ph, p0, () => battery(G.XL, 465, 'lap', p0), 100, 465, 430, 650, [[(G.XL + G.xA) / 2 + 10, G.Yb], [(G.XL + G.XR) / 2 + 120, G.Yt]]);
+  const Rg = rG() * l, Ug = I * Rg;
+  // feszültségmérő a grafiton
+  const xm = (G.xA + C.xc) / 2, ym = 590;
+  vlead([[G.xA, G.Yb - 9], [G.xA, ym], [xm - 30, ym]], p0); vlead([[C.xc, G.Yb - 9], [C.xc, ym], [xm + 30, ym]], p0); meterC(xm, ym, 'V', p0);
+  al(p0); readout(fV(Ug), Math.max(xm, 420), ym - 58, kk, 'center');
+  readout(fA(I, 3), G.XR - 46, 650, kk, 'right');
+  L.pill(lab('grafitbél'), G.xA + 4, G.Yb - 34, { k: 'grafitbél', s: 24, w: 600, c: INK, bg: 'rgba(255,250,241,.92)', pad: 6, r: 6 });
+  al(p0 * clamp((C.xE - C.xc - 250) / 60)); T('itt nem folyik', (C.xc + 28 + C.xE) / 2, G.Yb + 52, { s: 24, w: 600, a: 'center', c: MUT, max: C.xE - C.xc - 60 });
+  al(p0); T('csipesz', C.xc, G.Yb2 + 50, { s: 24, w: 700, a: 'center', c: BAD });
+  // kártya
+  const vx = 990, vy = 200, w = 340, Ub = Ubat('lap');
+  card(vx, vy, w, 600, p0); al(p0);
+  row2('hossz', fmt(l, 1) + ' cm', vx + 24, vy + 50, INK, 'csipesz helye', w - 48);
+  row2('ellenállás', fR(Rg), vx + 24, vy + 150, INK, ['grafitbél ellenállása centiméterenként', 'csipesz helye'], w - 48);
+  row2('áramerősség', fA(I, 3), vx + 24, vy + 250, TEAL, kk, w - 48, true);
+  row2('a grafiton', fV(Ug), vx + 24, vy + 350, INK, kk, w - 48);
+  al(p0); ln(vx + 24, vy + 440, vx + w - 24, vy + 440, LINE, 2);
+  const ug = Math.round(Ug * 100) / 100, ub = Math.round(Ub * 100) / 100 - ug;
+  row2('feszültségek összege', fmt(Ub, 2) + ' = ' + fmt(ub, 2) + ' + ' + fmt(ug, 2) + ' V', vx + 24, vy + 490, RED, kk, w - 48);
+}
+
+/* ════════ 7. Ohm törvénye ════════ */
+const E7 = [];
+const G7 = { XL: 110, XR: 640, Yt: 190, Yb: 600, Yb2: 690, xA: 200, PX: 30 };
+const L7MIN = 2;
+const I7 = (s) => s.n * Ubat('aa') / (Rb() + rG() * s.l);
+function cells(x, y, n, a) {
+  const h = 120, top = y - n * h / 2;
+  for (let i = 0; i < n; i++) battery(x, top + h * (i + .5), 'aa', a, { h: h - 6, nolabel: true, nosign: true });
+  al(a); tx('+', x + 62, top + 32, { f: F.M, s: 30, w: 700, a: 'center', c: RED, qa: false });
+  tx('−', x + 62, top + n * h - 12, { f: F.M, s: 30, w: 700, a: 'center', c: TEAL, qa: false });
+}
+function scene7(st, cur) {
+  const p0 = out(clamp(st / .6)), S = evNow(E7, st), I = I7(S), G = G7, l = S.l, Rg = rG() * l, Ug = I * Rg;
+  if (cur) drag('clip', (x, y) => Math.abs(x - (G.xA + l * G.PX)) < 36 && y > G.Yb - 30 && y < G.Yb2 + 24, (x) => {
+    const v = Math.round(clamp((x - G.xA) / G.PX, L7MIN, LG()) * 10) / 10; if (v !== l) { evSet(E7, L.st, { l: v, meas: false }); SL7 && SL7.set(v); }
+  });
+  const ph = phase(E7, st, (s) => KA * I7(s));
+  const kk = ['ceruzaelem feszültsége', 'grafitbél ellenállása centiméterenként', 'csipesz helye'].concat(KB);
+  const C = graphCircuit(G, l, I, ph, p0, () => cells(G.XL, 395, S.n, p0), S.n * 60, 395, 360, 560, [[(G.XL + G.XR) / 2 + 80, G.Yt], [G.XR, 250]]);
+  al(p0); L.pill(fV(S.n * Ubat('aa'), 1), G.XL + 92, 300, { k: 'ceruzaelem feszültsége', s: 24, f: F.M, w: 700, bg: '#ffffff', bd: INK, c: INK, pad: 8 });
+  const xm = (G.xA + C.xc) / 2, ym = 500;
+  vlead([[G.xA, G.Yb - 9], [G.xA, ym], [xm - 30, ym]], p0); vlead([[C.xc, G.Yb - 9], [C.xc, ym], [xm + 30, ym]], p0); meterC(xm, ym, 'V', p0);
+  al(p0); readout(fV(Ug), xm, ym - 58, kk, 'center');
+  readout(fA(I, 3), G.XR - 46, 560, kk, 'right');
+  T('csipesz', C.xc, G.Yb2 + 50, { s: 24, w: 700, a: 'center', c: BAD });
+  // grafikon
+  const g = { x0: 800, x1: 1290, y0: 190, y1: 640, um: 2, im: .3 }, X = (u) => g.x0 + u / g.um * (g.x1 - g.x0), Y = (i) => g.y1 - i / g.im * (g.y1 - g.y0);
+  card(700, 120, 630, 640, p0); al(p0);
+  c.strokeStyle = LINE; c.lineWidth = 1.2; c.beginPath();
+  for (let u = .5; u <= g.um + 1e-9; u += .5) { c.moveTo(X(u), g.y0); c.lineTo(X(u), g.y1); }
+  for (let i = .05; i <= g.im + 1e-9; i += .05) { c.moveTo(g.x0, Y(i)); c.lineTo(g.x1, Y(i)); }
+  c.stroke();
+  ln(g.x0, g.y1, g.x1 + 14, g.y1, INK, 2.5); ln(g.x0, g.y1, g.x0, g.y0 - 14, INK, 2.5);
+  for (let u = 0; u <= g.um + 1e-9; u += .5) tx(fmt(u, 1), X(u), g.y1 + 30, { f: F.M, s: 22, a: 'center', c: MUT });
+  for (let i = .1; i <= g.im + 1e-9; i += .1) tx(fmt(i, 1), g.x0 - 12, Y(i) + 8, { f: F.M, s: 22, a: 'right', c: MUT });
+  T('tengely U', g.x1, g.y1 + 66, { s: 22, w: 600, a: 'right', c: INK, max: 470 });
+  T('tengely I', g.x0 - 60, g.y0 - 28, { s: 22, w: 600, c: INK });
+  // mért pontok (gombnyomásra / automatikusan), az aktuális hosszra pirosan
+  const pts = [], seen = new Set();
+  for (const e of E7) { if (e.t > st || !e.s.meas) continue; const key = e.s.n + '|' + e.s.l; if (seen.has(key)) continue; seen.add(key); pts.push({ n: e.s.n, l: e.s.l, t: e.t }); }
+  const lines = [...new Set(pts.map((p) => p.l))];
+  c.save(); c.beginPath(); c.rect(g.x0, g.y0 - 10, g.x1 - g.x0 + 10, g.y1 - g.y0 + 10); c.clip();
+  for (const ll of lines) if (ll !== l) { const R = rG() * ll; al(p0 * .45); ln(X(0), Y(0), X(g.um), Y(g.um / R), MUT, 2.5, [8, 7]); }
+  const nCur = pts.filter((p) => p.l === l).length;
+  al(p0 * (nCur >= 2 ? 1 : .3)); ln(X(0), Y(0), X(g.um), Y(g.um / Rg), RED, 3.5, nCur >= 2 ? null : [8, 7]);
+  c.restore();
+  for (const p of pts) {
+    const R = rG() * p.l, Ip = p.n * Ubat('aa') / (Rb() + R), q = U.outBack(clamp((st - p.t - .25) / .4)); if (q <= 0) continue;
+    al(p0 * (p.l === l ? 1 : .5)); c.beginPath(); c.arc(X(Ip * R), Y(Ip), 10 * q, 0, TAU);
+    c.fillStyle = p.l === l ? RED : MUT; c.fill(); c.strokeStyle = '#fffaf1'; c.lineWidth = 2; c.stroke();
+  }
+  al(p0); c.beginPath(); c.arc(X(Ug), Y(I), 15, 0, TAU); c.strokeStyle = TEAL; c.lineWidth = 3; c.stroke();
+  // egyenes felirata (az egyenes végénél)
+  const ue = Math.min(g.um, g.im * Rg), ie = ue / Rg;
+  al(p0 * (nCur >= 2 ? 1 : .4)); L.pill('ℓ = ' + fmt(l, 1) + ' cm', X(ue) - 8, Y(ie) + 34, { k: 'csipesz helye', a: 'right', s: 22, f: F.M, w: 700, bg: '#ffffff', bd: RED, c: RED, pad: 8 });
+  // alsó kártya
+  card(60, 800, 1270, 230, p0); al(p0);
+  T('a grafiton', 96, 860, { s: 24, w: 500, c: MUT }); L.tx('U = ' + fV(Ug), 96, 906, { k: kk, f: F.M, s: 32, w: 700, c: INK });
+  T('áramerősség', 410, 860, { s: 24, w: 500, c: MUT }); L.tx('I = ' + fA(I, 3), 410, 906, { k: kk, f: F.M, s: 32, w: 700, c: TEAL });
+  T('ellenállás', 96, 970, { s: 24, w: 500, c: MUT });
+  const hw = T('hányados', 260, 972, { f: F.M, s: 28, w: 700, c: RED }).w;
+  L.tx(fR(Rg), 270 + hw, 972, { k: ['grafitbél ellenállása centiméterenként', 'csipesz helye'], f: F.M, s: 28, w: 700, c: RED });
+  let xx = 820; const fy = 940, fs = 72;
+  xx += sym('I', xx, fy, { s: fs, c: RED }) + 22; xx += sym('=', xx, fy, { s: fs, c: RED, i: 0 }) + 22;
+  xx += sym('U', xx, fy, { s: fs, c: RED }) + 14; xx += sym('/', xx, fy, { s: fs, c: RED, i: 0 }) + 14; sym('R', xx, fy, { s: fs, c: RED });
+}
+let SL7 = null;
+
+/* ════════ 8. LED és potenciométer ════════ */
+const E8 = [];
+let SL8 = null;
+const potAuto = (t) => lerp(num('potenciométer legnagyobb értéke'), 0, inOut(clamp((t - .8) / 3.5)));
+const pot8 = (s, t) => s.auto ? potAuto(t) : s.pot;
+/* áram mA-ben; ideális dióda: nyitóirányban állandó U_LED, záróirányban (vagy kiégve) 0 */
+function I8(s, t) {
+  if (s.burnt || s.rev) return 0;
+  const Uf = num('LED nyitófeszültsége'), Ub = Ubat('v9'); if (Ub <= Uf) return 0;
+  const R = pot8(s, t) + (s.prot ? num('előtét-ellenállás') : 0);
+  return R < 1e-6 ? Infinity : (Ub - Uf) / R * 1000;
+}
+function set8(ch) {
+  const s = evSet(E8, L.st, ch);
+  if (!s.burnt && I8(s, L.st) > num('LED legnagyobb árama')) { s.burnt = true; s.tb = L.st; }
+}
+function scene8(st, cur) {
+  const p0 = out(clamp(st / .6)), S = evNow(E8, st), Im = I8(S, st), pot = pot8(S, st), G = G0;
+  if (cur && S.auto && SL8) SL8.set(Math.round(pot / 10) * 10);
+  const ph = phase(E8, st, (s, t) => K8 * Math.min(I8(s, t), 1e3));
+  const Rf = num('előtét-ellenállás'), Uf = num('LED nyitófeszültsége'), Ub = Ubat('v9');
+  const on = Im > 0, ULED = on ? Uf : Ub, UR = S.prot ? Im / 1000 * Rf : 0;
+  const sBat = S_(G.XL, 510), sLed = S_(G.XR, 510), sR = S_(550, G.Yt), sP = S_(430, G.Yb), sA = S_(720, G.Yb);
+  al(p0); wire(P0); edots(P0, ph, [[sBat - 93, sBat + 93], [sLed - 46, sLed + 46], [sP - 66, sP + 66]].concat(S.prot ? [[sR - 60, sR + 60]] : []));
+  battery(G.XL, 510, 'v9', p0);
+  resistor(550, G.Yt, p0 * (S.prot ? 1 : .18));
+  potG(430, G.Yb, p0);
+  const fl = S.burnt ? clamp(1 - (st - S.tb) / .6) : 0;
+  ledG(G.XR, 510, Im / num('LED üzemi árama'), S.rev, S.burnt && st >= S.tb, fl, p0);
+  const pa = pAt(P0, sA); meterC(pa.x, pa.y, 'A', p0);
+  flowArrows(P0, [S_(600, G.Yb), S_(720, G.Yt) + 0], p0, on ? 1 : 0);
+  vlead([[G.XR, 420], [770, 420], [770, 480]], p0); vlead([[G.XR, 600], [770, 600], [770, 540]], p0); meterC(770, 510, 'V', p0);
+  const kk = ['9 voltos elem feszültsége', 'LED nyitófeszültsége', 'előtét-ellenállás', 'potenciométer legnagyobb értéke'];
+  al(p0); readout(fV(ULED), 724, 510, kk, 'right');
+  readout(fmt(Im, 1) + ' mA', 720, 730, kk, 'center');
+  T('LED', G.XR + 56, 518, { s: 26, w: 700, c: INK, max: 60 });
+  al(p0); S.prot ? L.tx(lab('előtét') + ' · ' + L.val('előtét-ellenállás'), 550, G.Yt - 44, { k: ['előtét', 'előtét-ellenállás'], s: 24, w: 600, a: 'center', c: INK })
+    : T('nincs előtét', 550, G.Yt - 44, { s: 24, w: 600, a: 'center', c: BAD });
+  L.tx(lab('potméter') + ' · ' + fmt(Math.round(pot / 10) * 10) + ' Ω', 430, G.Yb + 66, { k: ['potméter', 'potenciométer legnagyobb értéke'], s: 24, w: 600, a: 'center', c: INK });
+  T('gyorsítás', 200, 1010, { s: 22, w: 500, c: MUT });
+  // kártya: feszültségek összege
+  const vx = 1020, vy = 170, w = 310;
+  card(vx, vy, w, 720, p0); al(p0);
+  const uR = Math.round(UR * 100) / 100, uL = Math.round(ULED * 100) / 100, uP = Math.round(Ub * 100) / 100 - uL - uR;
+  row2('LED', fV(uL), vx + 24, vy + 50, INK, kk, w - 48);
+  row2(S.prot ? 'előtét' : 'nincs előtét', fV(uR), vx + 24, vy + 145, INK, kk, w - 48);
+  row2('potméter', fV(Math.max(0, uP)), vx + 24, vy + 240, INK, kk, w - 48);
+  al(p0); ln(vx + 24, vy + 320, vx + w - 24, vy + 320, LINE, 2);
+  row2('összesen', fV(Ub), vx + 24, vy + 370, RED, '9 voltos elem feszültsége', w - 48, true);
+  al(p0); ln(vx + 24, vy + 450, vx + w - 24, vy + 450, LINE, 2);
+  row2('áramerősség', fmt(Im, 1) + ' mA', vx + 24, vy + 500, TEAL, kk, w - 48, true);
+  const st8 = S.burnt && st >= S.tb ? 'kiégett' : S.rev ? 'záróirány' : null;
+  if (st8) { al(p0); L.pill(lab(st8), vx + w / 2, vy + 640, { k: st8, a: 'center', s: 26, w: 700, bg: st8 === 'kiégett' ? BAD : CARD, bd: st8 === 'kiégett' ? BAD : MUT, c: st8 === 'kiégett' ? '#fff' : INK, pad: 12 }); }
+}
+
+/* ════════ 9. Összefoglalás ════════ */
+const G9 = { XL: 820, XR: 1220, Yt: 250, Yb: 620 }, P9 = rectPath(G9);
+function scene9(st) {
+  const p0 = out(clamp(st / .6)), I = I0();
+  card(60, 140, 680, 560, p0); al(p0);
+  let xx = 140; const y0 = 290, fs = 84;
+  xx += sym('I', xx, y0, { s: fs, c: RED }) + 26; xx += sym('=', xx, y0, { s: fs, c: RED, i: 0 }) + 26;
+  xx += sym('U', xx, y0, { s: fs, c: RED }) + 16; xx += sym('/', xx, y0, { s: fs, c: RED, i: 0 }) + 16; sym('R', xx, y0, { s: fs, c: RED });
+  ln(100, 350, 700, 350, LINE, 2);
+  [['I', 'jelentés I'], ['U', 'jelentés U'], ['R', 'jelentés R']].forEach(([b, k], i) => {
+    const y = 430 + i * 80; al(p0 * clamp((st - .5 - i * .3) / .5));
+    sym(b, 150, y, { s: 44, c: RED, a: 'center' }); T(k, 220, y - 4, { s: 28, w: 600, c: INK, max: 490 });
+  });
+  // mini áramkör
+  const q = clamp((st - 1.4) / .6), sBat = sNear(P9, G9.XL, 435).s, sBulb = sNear(P9, G9.XR, 435).s;
+  al(p0 * q); wire(P9); edots(P9, KA * I * st, [[sBat - 100, sBat + 100], [sBulb - 46, sBulb + 46]]);
+  battery(G9.XL, 435, 'lap', p0 * q); bulb(G9.XR, 435, glowOf(I), p0 * q);
+  flowArrows(P9, [sNear(P9, 960, G9.Yb).s], p0 * q);
+  for (const y of [G9.Yt, G9.Yb]) { meterC(1040, y, 'A', p0 * q); al(p0 * q); readout(fA(I), 1040, y + (y === G9.Yt ? -62 : 62), KI0, 'center'); }
+  al(p0 * q * clamp((st - 2.2) / .5)); L.pill(lab('ugyanannyi'), 1010, 435, { k: 'ugyanannyi', a: 'center', s: 28, w: 700, bg: RED, c: '#fffaf1', pad: 14 });
+  const pm = clamp((st - 3) / .6);
+  al(p0 * pm); rr(60, 780, 1270, 120, 18); c.fillStyle = U.rgba(RED, .09); c.fill(); c.strokeStyle = U.rgba(RED, .5); c.lineWidth = 2; c.stroke();
+  T('tanulság', 695, 852, { f: F.D, i: 1, s: 36, w: 500, a: 'center', c: RED, max: 1220 });
+}
+
+/* ════════════════════════════════════════════════════════════════ */
+const sT = new Array(9).fill(0);
+const SCENES = [scene1, scene2, scene3, scene4, scene5, scene6, scene7, scene8, scene9];
+const btnOn = (bs, i) => bs.forEach((b, j) => b.classList.toggle('on', j === i));
+L = Lesson.create({
+  content: window.LESSON_CONTENT,
+  home: false,
+  steps: [
+    { settle: 5.5, enter() { S1.ses = []; S1.tr = []; s1Add(.4, 5); },
+      controls(L) {
+        L.button(lab('dörzsölés gomb'), () => { const s = S1.ses[S1.ses.length - 1]; if (s && L.st < s.b + .8) return; s1Add(L.st, 3); }, 'dörzsölés gomb');
+      } },
+    { settle: 5, enter() { E2.length = 0; E2.push({ t: 0, s: { on: false } }, { t: 2, s: { on: true } }); },
+      controls(L) { L.button(lab('telep gomb'), () => evSet(E2, L.st, { on: !evNow(E2, L.st).on }), 'telep gomb'); } },
+    { settle: 4.5, enter() { E3.length = 0; E3.push({ t: 0, s: { cl: false, one: false } }, { t: 2, s: { cl: true, one: false } }); },
+      controls(L) {
+        L.button(lab('kapcsoló gomb'), () => evSet(E3, L.st, { cl: !evNow(E3, L.st).cl }), 'kapcsoló gomb');
+        L.button(lab('egy vezeték gomb'), (b) => { const one = !evNow(E3, L.st).one; evSet(E3, L.st, { one }); b.classList.toggle('on', one); }, 'egy vezeték gomb');
+      } },
+    { settle: 4, enter() { S4.s3 = S_(340, G0.Yt); S4.dragged = false; } },
+    { settle: 4.5, enter() { E5.length = 0; E5.push({ t: 0, s: { bt: 'aa' } }, { t: 2.4, s: { bt: 'lap' } }); },
+      controls(L) {
+        const bs = [];
+        [['aa', 'ceruzaelem gomb'], ['lap', 'laposelem gomb'], ['v9', '9 V gomb']].forEach(([bt, k], i) => bs.push(L.button(lab(k), () => { evSet(E5, L.st, { bt }); btnOn(bs, i); }, k)));
+      } },
+    { settle: 5, enter() { E6.length = 0; E6.push({ t: 0, s: { auto: 4, l: num('csipesz helye') } }); },
+      controls(L) {
+        SL6 = L.slider({ label: lab('csipesz csúszka'), k: 'csipesz csúszka', min: 0, max: LG(), step: .1, value: num('csipesz helye'), format: (v) => fmt(v, 1) + ' cm',
+          onInput: (v) => evSet(E6, L.st, { l: v }) });
+      } },
+    { settle: 4.5, enter() {
+        const l = num('csipesz helye'); E7.length = 0;
+        E7.push({ t: 0, s: { n: 1, l, meas: true } }, { t: 1.4, s: { n: 2, l, meas: true } }, { t: 2.8, s: { n: 3, l, meas: true } });
+      },
+      controls(L) {
+        [1, 2, 3].forEach((n) => L.button(lab(n + ' elem gomb'), () => evSet(E7, L.st, { n, meas: true }), n + ' elem gomb'));
+        SL7 = L.slider({ label: lab('csipesz csúszka'), k: 'csipesz csúszka', min: L7MIN, max: LG(), step: .5, value: num('csipesz helye'), format: (v) => fmt(v, 1) + ' cm',
+          onInput: (v) => evSet(E7, L.st, { l: v, meas: false }) });
+      } },
+    { settle: 5, enter() { E8.length = 0; E8.push({ t: 0, s: { auto: 4.3, pot: 0, rev: false, prot: true, burnt: false, tb: 0 } }); },
+      controls(L) {
+        SL8 = L.slider({ label: lab('pot csúszka'), k: 'pot csúszka', min: 0, max: num('potenciométer legnagyobb értéke'), step: 10, value: num('potenciométer legnagyobb értéke'),
+          format: (v) => fmt(v) + ' Ω', onInput: (v) => set8({ pot: v }) });
+        L.button(lab('fordít gomb'), () => set8({ pot: pot8(evNow(E8, L.st), L.st), rev: !evNow(E8, L.st).rev }), 'fordít gomb');
+        L.button(lab('előtét gomb'), () => set8({ pot: pot8(evNow(E8, L.st), L.st), prot: !evNow(E8, L.st).prot }), 'előtét gomb');
+        L.button(lab('új LED gomb'), () => set8({ pot: pot8(evNow(E8, L.st), L.st), burnt: false }), 'új LED gomb');
+      } },
+    { settle: 4 },
+  ],
+  init(Lx) { L = Lx; c = L.ctx; dragInit(); },
+  draw(Lx) {
+    L = Lx; c = L.ctx; GA = 1; background(); DR.h = null;
+    const sp = L.sp;
+    if (L.step >= 0) sT[L.step] = L.st;
+    for (let i = 0; i < SCENES.length; i++) {
+      const w = clamp(1 - Math.abs(sp - i) * 2); if (w <= .005) continue;
+      GA = w; SCENES[i](sT[i], L.step === i && w > .5);
+    }
+    c.globalAlpha = 1;
+  },
+});
+})();
+</script>
+</body>
+</html>
