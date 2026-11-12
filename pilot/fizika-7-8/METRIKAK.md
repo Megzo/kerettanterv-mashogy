@@ -25,4 +25,4 @@ kimenet ~60 ezer, cache-írás ~169 ezer token (cache-olvasás ~6,8 millió).
 
 | Lecke | Lépések | Gyártás (al-ügynök) | QA | Kézi ellenőrzés | Javítások |
 |---|---|---|---|---|---|
-| 01-suruseg | 9 | az A feladat része (motor + eszközök is) | 0 JS-hiba, 0 túlcsordulás | 8. lépés: a hajó merülése gyanús | – |
+| 01-suruseg | 9 | az A feladat része (motor + eszközök is) | 0 JS-hiba, 0 túlcsordulás | 2 hiba: 7. lépés ok-okozati ugrás (befagyás); 8. lépés a hajó 30 px-szel mélyebben látszik (két eltérő tartálygeometria) | mindkettő javítva a fő munkamenetben, kis költséggel |

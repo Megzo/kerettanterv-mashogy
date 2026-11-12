@@ -151,7 +151,11 @@ python3 tools/qa_lesson.py leckek/<…>/NN-slug.html --at 1.5,settle --back --re
   alakzat–szöveg ütközést, a csúnya arányokat, az olvashatatlan színt csak te látod.
   A korai (`1.5`) képeken az animáció közbenső állapota, a `-vissza` képeken a visszalépés látszik.
 - Próbáld ki az interakciókat is (szélső értékek!), pl. Playwrighttal: csúszka `fill`, gomb `click`,
-  utána `__lesson.st += 5`, képernyőkép.
+  utána `__lesson.st += 5`, képernyőkép. **Minden interaktív lépésnél legalább két szélső
+  állapotot fotózz, és vesd össze a kiírt számot a rajzzal** (pl. 0,99 g/cm³-es hajó pereme a
+  vízszintnél legyen, ne alatta). Egy fizikai mennyiség rajza és számítása **ugyanabból a
+  geometriai konstansból** dolgozzon – két, hasonló, de eltérő tartály-/skálaobjektum
+  tipikus hibaforrás.
 - Ellenőrizd a review módot (`review-*.png`): minden felirat lila keretes (van kulcsa).
 
 ## 10. Kész, ha
