@@ -26,7 +26,7 @@ DEFAULT_LABEL_MAX = 32
 MAX_WORDS = 55
 UNIT_ALIASES = {"cm3": "cm³", "m3": "m³", "dm3": "dm³", "mm3": "mm³", "g/cm3": "g/cm³", "kg/m3": "kg/m³",
                 "kg/dm3": "kg/dm³", "fok": "°", "°c": "°C", "C°": "°C"}
-NUM_RE = re.compile(r"^([−\-+]?)(\d{1,3}(?:[   ]\d{3})+|\d+)(?:,(\d+))?(?=\s|$|%)\s*(.*)$")
+NUM_RE = re.compile(r"^([−\-+]?)(\d{1,3}(?:[   ]\d{3})+|\d+)(?:,(\d+))?(?=\s|$|%|°)\s*(.*)$")
 
 
 class Problems:
@@ -93,7 +93,7 @@ def fmt_value(v, d, u):
     if len(i) > 4:
         i = re.sub(r"\B(?=(\d{3})+(?!\d))", " ", i)
     out = ("−" if v < 0 else "") + i + ("," + s[1] if len(s) > 1 else "")
-    return out + (" " + u if u else "")
+    return out + ((u if u == "°" else " " + u) if u else "")   # szögfok: 15° (szóköz nélkül); 20 °C
 
 
 def read_spec(html_path, P):

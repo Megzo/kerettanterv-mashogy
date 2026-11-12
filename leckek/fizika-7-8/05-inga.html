@@ -1,0 +1,548 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mitől függ a hinta lengésideje? — Fizika</title>
+<link rel="stylesheet" href="../../shared/lesson.css">
+<style>
+  .lp-text .big-fx { font-size: 42px; margin: 4px 0 14px; }
+  .lp-text b { color: var(--ink); }
+</style>
+<!-- A lecke által várt tartalomkulcsok. A tools/build_lesson.py ez alapján ellenőrzi a .md-t.
+     labels: felirat → max. karakterszám (null = alapértelmezett 32) · data: adat → mértékegység, tartomány -->
+<script type="application/json" id="lesson-spec">
+{
+  "steps": 8,
+  "labels": {
+    "méterskála": 8, "idő tengely": 10, "kitérés tengely": 10, "lengésszámláló": 16,
+    "hinta": 14, "ingaóra": 14, "fonálinga": 14, "kérdés": 40,
+    "amplitúdó": 18, "amplitúdó magyarázat": 40, "periódusidő": 18, "periódusidő magyarázat": 42,
+    "rezgésszám": 18, "rezgésszám magyarázat": 40,
+    "stopper": 14, "gyorsítva": 18, "mérések cím": 36, "1 lengésből": 16, "10 lengésből": 16, "mérésszám": 12,
+    "átlag": 10, "számolt érték": 18, "utolsó mérés": 18, "eltérés": 24, "mérj tipp": 34,
+    "mérj 1 gomb": 22, "mérj 10 gomb": 22, "törlés gomb": 14,
+    "könnyű golyó": 16, "nehéz golyó": 16, "tömeg csúszka": 34, "együtt": 30,
+    "kis kitérés": 16, "nagy kitérés": 16, "kitérés csúszka": 34,
+    "rövid inga": 16, "hosszú inga": 16, "hossz csúszka": 34,
+    "a Földön": 14, "a Holdon": 14, "Holdra gomb": 24, "Földre gomb": 24, "közös hossz csúszka": 34,
+    "föld ikon": 8, "hold ikon": 8,
+    "mitől függ": 30, "tömegtől": 28, "kitéréstől": 28, "hossztól": 28, "g-től": 28,
+    "nem": 22, "alig": 22, "igen": 22, "összefoglaló lengésidők": 30, "tanulság": 46
+  },
+  "data": {
+    "nehézségi gyorsulás a Földön": {"unit": "m/s²", "min": 9.7, "max": 9.9},
+    "nehézségi gyorsulás a Holdon": {"unit": "m/s²", "min": 1.5, "max": 1.7},
+    "inga hossza":       {"unit": "m", "min": 0.25, "max": 2.5},
+    "hinta hossza":      {"unit": "m", "min": 1.5, "max": 2.6},
+    "ingaóra hossza":    {"unit": "m", "min": 0.5, "max": 1.1},
+    "fonálinga hossza":  {"unit": "m", "min": 0.15, "max": 0.6},
+    "kitérés":           {"unit": "°", "min": 5, "max": 20},
+    "kis kitérés szöge": {"unit": "°", "min": 3, "max": 10},
+    "nagy kitérés szöge": {"unit": "°", "min": 20, "max": 90},
+    "kézi mérés hibája": {"unit": "s", "min": 0.02, "max": 0.3},
+    "könnyű golyó tömege": {"unit": "kg", "min": 0.1, "max": 1},
+    "nehéz golyó tömege": {"unit": "kg", "min": 0.5, "max": 5}
+  }
+}
+</script>
+</head>
+<body>
+<script src="05-inga.content.js"></script>
+<script src="../../shared/lesson.js"></script>
+<script>
+(function () {
+'use strict';
+const U = Lesson.U, { clamp, lerp, out, inOut, TAU } = U, fmt = U.fmt;
+const F = Lesson.FONTS;
+/* ── paletta (világos téma, lásd SZERZODES.md) ── */
+const INK = '#1c2440', MUT = '#565d72', RED = '#c8401c', TEAL = '#0a6f86', GOOD = '#1d7a45', BAD = '#b3261e',
+  CARD = '#fffaf1', LINE = 'rgba(28,36,64,.16)';
+let L, c, GA = 1;
+const al = (a = 1) => { c.globalAlpha = GA * clamp(a); };
+const lab = (k) => L.lab(k), num = (k) => L.num(k);
+const T = (k, x, y, o = {}) => L.tx(lab(k), x, y, Object.assign({ k }, o));
+const tx = (s, x, y, o) => L.tx(s, x, y, o);
+const rr = (x, y, w, h, r) => { c.beginPath(); c.roundRect(x, y, w, h, r); };
+const ln = (x1, y1, x2, y2, col, w = 2, dash) => { c.beginPath(); c.moveTo(x1, y1); c.lineTo(x2, y2); c.strokeStyle = col; c.lineWidth = w; c.setLineDash(dash || []); c.stroke(); c.setLineDash([]); };
+const deg = (v) => fmt(v, 0) + '°';
+const sgn = (v, d) => (v >= 0 ? '+' : '') + fmt(v, d);
+const D2R = Math.PI / 180;
+const gE = () => num('nehézségi gyorsulás a Földön'), gM = () => num('nehézségi gyorsulás a Holdon');
+
+/* ════════ Fizika: a matematikai inga PONTOS mozgása (nem csak kis kitérésre) ════════
+   θ(t) = 2·arcsin( k · sn(ω₀t + K, k²) ),  k = sin(θ₀/2),  ω₀ = √(g/l),  T = 4K/ω₀
+   (sn: Jacobi-féle elliptikus függvény, K: teljes elliptikus integrál; AGM-módszer, Abramowitz–Stegun 16.4, 17.6).
+   Kis kitérésnél T → 2π·√(l/g). t = 0-ban a test a jobb szélső helyzetből indul, nyugalomból.
+   Zárt képlet → bármely időpont közvetlenül számolható (QA, visszaléptetés). */
+function agm(a, b) { for (let i = 0; i < 40 && Math.abs(a - b) > 1e-15; i++) { const an = (a + b) / 2; b = Math.sqrt(a * b); a = an; } return a; }
+const ellK = (m) => Math.PI / (2 * agm(1, Math.sqrt(1 - m)));
+function sn(u, m, K) {
+  if (m < 1e-12) return Math.sin(u);
+  const K4 = 4 * K; u = ((u % K4) + K4) % K4;
+  const a = [1], cc = [Math.sqrt(m)]; let b = Math.sqrt(1 - m), n = 0;
+  while (Math.abs(cc[n]) > 1e-12 && n < 16) { const an = a[n]; a.push((an + b) / 2); cc.push((an - b) / 2); b = Math.sqrt(an * b); n++; }
+  let phi = Math.pow(2, n) * a[n] * u;
+  for (let i = n; i > 0; i--) phi = (phi + Math.asin(cc[i] / a[i] * Math.sin(phi))) / 2;
+  return Math.sin(phi);
+}
+const PC = new Map();
+function pend(l, g, th0deg) {
+  const key = l + '|' + g + '|' + th0deg; let p = PC.get(key); if (p) return p;
+  const th0 = th0deg * D2R, k = Math.sin(th0 / 2), m = k * k, w0 = Math.sqrt(g / l), K = ellK(m);
+  p = { l, g, th0, w0, T: 4 * K / w0, T0: 2 * Math.PI / w0,
+    th: (t) => (t <= 0 ? th0 : 2 * Math.asin(clamp(k * sn(w0 * t + K, m, K), -1, 1))) };
+  if (PC.size > 400) PC.clear(); PC.set(key, p); return p;
+}
+
+/* ── háttér: meleg papír, halvány négyzetrács ── */
+function background() {
+  c.globalAlpha = 1;
+  const g = c.createRadialGradient(680, 480, 100, 680, 540, 1300); g.addColorStop(0, '#f7f1e6'); g.addColorStop(1, '#efe6d6');
+  c.fillStyle = g; c.fillRect(0, 0, 1920, 1080);
+  c.strokeStyle = 'rgba(28,36,64,.045)'; c.lineWidth = 1; c.beginPath();
+  for (let x = 0; x <= 1920; x += 40) { c.moveTo(x + .5, 0); c.lineTo(x + .5, 1080); }
+  for (let y = 0; y <= 1080; y += 40) { c.moveTo(0, y + .5); c.lineTo(1920, y + .5); }
+  c.stroke();
+}
+
+/* ════════ közös építőelemek: mennyezet, inga, papírcsík ════════ */
+const PY = 80, VP = 50, BOT = 1000, HW = 250, XA = 330, XB = 1000, XG = 665;   // felfüggesztés y, papírsebesség (px/s), papír alja, csík félszélessége, A/B inga x, rés közepe
+const COL = {
+  A: { c: TEAL, d: '#08485a', f0: '#d6eff4', f1: '#3d9db3' },
+  B: { c: RED, d: '#7f2810', f0: '#fbdccd', f1: '#d4643d' },
+};
+function beam(x0, x1, a) {
+  al(a);
+  c.strokeStyle = 'rgba(28,36,64,.35)'; c.lineWidth = 2; c.beginPath();
+  for (let x = x0 + 8; x < x1; x += 18) { c.moveTo(x, PY - 22); c.lineTo(x + 12, PY - 38); }
+  c.stroke();
+  rr(x0, PY - 22, x1 - x0, 18, 5); c.fillStyle = '#ddd0b5'; c.fill(); c.strokeStyle = INK; c.lineWidth = 2.5; c.stroke();
+}
+function bob(x, y, r, K, a) {
+  al(a);
+  const g = c.createRadialGradient(x - r * .35, y - r * .4, r * .1, x, y, r);
+  g.addColorStop(0, K.f0); g.addColorStop(1, K.f1);
+  c.beginPath(); c.arc(x, y, r, 0, TAU); c.fillStyle = g; c.fill(); c.strokeStyle = K.d; c.lineWidth = 3; c.stroke();
+}
+/* inga: (x, PY) felfüggesztés, S px/m lépték, l m hossz, th rad kitérés */
+function pendulum(x, S, l, th, r, K, a, py = PY) {
+  const bx = x + l * S * Math.sin(th), by = py + l * S * Math.cos(th);
+  al(a); ln(x, py, bx - r * Math.sin(th), by - r * Math.cos(th), INK, 2.5);
+  bob(bx, by, r, K, a);
+  al(a); c.beginPath(); c.arc(x, py, 6, 0, TAU); c.fillStyle = INK; c.fill();
+  return { x: bx, y: by };
+}
+function ghost(x, S, l, th, r, K, a) {
+  const bx = x + l * S * Math.sin(th), by = PY + l * S * Math.cos(th);
+  al(a * .28); ln(x, PY, bx, by, INK, 2, [6, 7]);
+  c.beginPath(); c.arc(bx, by, r, 0, TAU); c.strokeStyle = K.d; c.lineWidth = 2.5; c.setLineDash([5, 5]); c.stroke(); c.setLineDash([]);
+}
+function scaleBar(S, a) {
+  al(a * .9); const x = 46;
+  ln(x, PY, x, PY + S, INK, 2.5); ln(x - 8, PY, x + 8, PY, INK, 2.5); ln(x - 8, PY + S, x + 8, PY + S, INK, 2.5);
+  T('méterskála', x + 12, PY + S / 2 + 8, { f: F.M, s: 22, w: 600, c: INK });
+}
+/* papírcsík: lefelé halad, tetején a „toll” a kitérést (szöget) rajzolja.  pens: [{P, h0, t0, K}] */
+const radOf = (m) => Math.max(10, 9 * Math.cbrt(m / 0.1));     // azonos anyag: r ∝ ∛m (csak rajz)
+function strip(cx, top, view, ticks, pens, ts, a, t0) {
+  const x0 = cx - HW, X = (th) => cx + th / (view * D2R) * HW;
+  al(a); rr(x0, top, 2 * HW, BOT - top, 10); c.fillStyle = CARD; c.fill(); c.strokeStyle = LINE; c.lineWidth = 2; c.stroke();
+  c.save(); rr(x0, top, 2 * HW, BOT - top, 10); c.clip();
+  for (const d of ticks) ln(X(d * D2R), top, X(d * D2R), BOT, d === 0 ? 'rgba(28,36,64,.3)' : 'rgba(28,36,64,.12)', 1.5, d === 0 ? [6, 6] : null);
+  if (ts > t0) for (let k = 0; ; k++) { const y = top + (ts - t0 - k) * VP; if (y < top) break; if (y <= BOT) ln(x0, y, x0 + 2 * HW, y, 'rgba(28,36,64,.13)', 1.2); }
+  for (const p of pens) {
+    c.beginPath(); let n = 0;
+    for (let y = top; y <= BOT + 2; y += 2) { const tau = ts - (y - top) / VP; if (tau < p.h0) break; const x = X(p.P.th(tau - p.t0)); n++ ? c.lineTo(x, y) : c.moveTo(x, y); }
+    c.strokeStyle = p.K.c; c.lineWidth = 3.5; c.lineJoin = 'round'; c.stroke();
+  }
+  c.restore();
+  for (const p of pens) {
+    const x = X(p.P.th(ts - p.t0)); al(a);
+    c.beginPath(); c.moveTo(x - 9, top - 14); c.lineTo(x + 9, top - 14); c.lineTo(x, top + 2); c.closePath(); c.fillStyle = p.K.c; c.fill(); c.strokeStyle = p.K.d; c.lineWidth = 2; c.stroke();
+  }
+  al(a); for (const d of ticks) tx(deg(d).replace('-', '−'), X(d * D2R), BOT + 30, { f: F.M, s: 22, a: 'center', c: MUT });
+}
+/* idővonalak felirata (mp az elengedés óta) – a papírral együtt halad */
+function timeLabels(x, top, ts, t0, a, align = 'center') {
+  if (ts <= t0) return;
+  for (let k = 0; ; k++) {
+    const y = top + (ts - t0 - k) * VP; if (y < top) break; if (y > BOT - 8) continue;
+    al(a * clamp((y - top - 6) / 18) * clamp((BOT - 8 - y) / 18)); tx(k + ' s', x, y + 8, { f: F.M, s: 22, a: align, c: MUT });
+  }
+}
+function readout(cx, top, K, s1, k1, s2, k2, a) {
+  al(a);
+  L.pill(s1, cx, top - 84, { k: k1, a: 'center', s: 24, w: 600, bg: CARD, bd: K.c, c: K.d });
+  L.pill(s2, cx, top - 36, { k: k2, a: 'center', s: 24, f: F.M, w: 700, bg: K.c, c: '#ffffff' });
+}
+/* két inga egymás mellett, közös elengedéssel (R.h0: megfogás, R.t0: elengedés) */
+const mkR = () => ({ h0: 0, t0: .8 });
+function hold(R) { const st = L.st; if (st < R.t0) R.t0 = st + .6; else { R.h0 = st; R.t0 = st + .6; } }
+function duo(st, D) {
+  const p0 = out(clamp(st / .6)), R = D.R;
+  beam(150, 1150, p0); scaleBar(D.S, p0);
+  for (const [x, Q] of [[XA, D.A], [XB, D.B]]) pendulum(x, D.S, Q.P.l, Q.P.th(st - R.t0), Q.r, Q.K, p0);
+  strip(XA, D.top, D.view, D.ticks, [{ P: D.A.P, h0: R.h0, t0: R.t0, K: D.A.K }], st, p0, R.t0);
+  strip(XB, D.top, D.view, D.ticks, [{ P: D.B.P, h0: R.h0, t0: R.t0, K: D.B.K }], st, p0, R.t0);
+  timeLabels(XG, D.top, st, R.t0, p0);
+  al(p0); T('idő tengely', XG, D.top - 28, { f: F.M, s: 22, w: 600, a: 'center', c: INK });
+  T('kitérés tengely', XG, BOT + 60, { s: 22, w: 600, a: 'center', c: INK });
+  readout(XA, D.top, D.A.K, D.A.s1, D.A.k1, D.A.s2, D.A.k2, p0);
+  readout(XB, D.top, D.B.K, D.B.s1, D.B.k1, D.B.s2, D.B.k2, p0);
+}
+const Ts = (P) => 'T = ' + fmt(P.T, 2) + ' s';
+
+/* ════════ 1. Ismétlődő mozgások ════════ */
+const S1 = { S: 300, GR: 935, t0: .6 };
+function child(Ls, a) {    // helyi koordináták: a lánc lefelé (+y) mutat; a gyerek ül, jobbra néz
+  al(a); c.lineJoin = 'round'; c.lineCap = 'round';
+  const y = Ls;
+  // lábak (comb + lábszár)
+  c.strokeStyle = '#3b4556'; c.lineWidth = 16; c.beginPath(); c.moveTo(0, y + 14); c.lineTo(44, y + 16); c.lineTo(52, y + 66); c.stroke();
+  c.strokeStyle = '#1c2440'; c.lineWidth = 10; c.beginPath(); c.moveTo(48, y + 70); c.lineTo(64, y + 70); c.stroke();
+  // törzs
+  rr(-20, y - 66, 38, 84, 14); c.fillStyle = '#7cc2d2'; c.fill(); c.strokeStyle = '#08485a'; c.lineWidth = 3; c.stroke();
+  // fej + haj
+  c.beginPath(); c.arc(-1, y - 92, 22, 0, TAU); c.fillStyle = '#f2cfa8'; c.fill(); c.strokeStyle = '#7a4f2a'; c.lineWidth = 2.5; c.stroke();
+  c.beginPath(); c.arc(-3, y - 96, 22, Math.PI * 1.05, Math.PI * 1.9); c.strokeStyle = '#5a3414'; c.lineWidth = 9; c.stroke();
+  // kar a láncon
+  c.strokeStyle = '#7cc2d2'; c.lineWidth = 11; c.beginPath(); c.moveTo(4, y - 52); c.lineTo(14, y - 30); c.lineTo(2, y - 14); c.stroke();
+  c.lineCap = 'butt';
+}
+function scene1(st) {
+  const { S, GR, t0 } = S1, p0 = out(clamp(st / .7)), g = gE();
+  const items = [
+    { k: 'hinta', x: 400, py: 110, P: pend(num('hinta hossza'), g, 18), col: TEAL },
+    { k: 'ingaóra', x: 900, py: 330, P: pend(num('ingaóra hossza'), g, 8), col: '#8a5a00' },
+    { k: 'fonálinga', x: 1190, py: 600, P: pend(num('fonálinga hossza'), g, 25), col: RED },
+  ];
+  // talaj
+  al(p0); c.fillStyle = '#e6d9bd'; c.fillRect(0, GR, 1360, 14); ln(0, GR, 1360, GR, '#8c7444', 3);
+  // ── hinta ──
+  const h = items[0], thh = h.P.th(st - t0), Ls = h.P.l * S;
+  al(p0); c.lineCap = 'round';
+  for (const dx of [-380, 380]) ln(h.x, h.py, h.x + dx, GR, '#4a5566', 12);
+  ln(h.x - 236, h.py + 512, h.x + 236, h.py + 512, '#4a5566', 6);
+  c.lineCap = 'butt';
+  c.save(); c.translate(h.x, h.py); c.rotate(-thh);
+  al(p0); c.strokeStyle = '#6b7380'; c.lineWidth = 3; c.setLineDash([9, 4]); c.beginPath(); c.moveTo(0, 0); c.lineTo(0, Ls + 24); c.stroke(); c.setLineDash([]);
+  child(Ls, p0);
+  al(p0); rr(-36, Ls + 22, 76, 11, 4); c.fillStyle = '#b07a43'; c.fill(); c.strokeStyle = '#5a3414'; c.lineWidth = 2.5; c.stroke();
+  c.restore();
+  al(p0); c.beginPath(); c.arc(h.x, h.py, 16, 0, TAU); c.fillStyle = '#4a5566'; c.fill(); c.strokeStyle = INK; c.lineWidth = 2.5; c.stroke();
+  // ── ingaóra ──
+  const o = items[1], tho = o.P.th(st - t0);
+  al(p0); rr(780, 140, 240, 28, 8); c.fillStyle = '#9a6331'; c.fill(); c.strokeStyle = '#5a3414'; c.lineWidth = 3; c.stroke();
+  const wg = c.createLinearGradient(790, 0, 1010, 0); wg.addColorStop(0, '#c58b52'); wg.addColorStop(1, '#a36a36');
+  rr(790, 166, 220, GR - 166, 8); c.fillStyle = wg; c.fill(); c.strokeStyle = '#5a3414'; c.lineWidth = 3; c.stroke();
+  rr(818, 318, 164, 480, 12); c.fillStyle = '#f3e7d0'; c.fill(); c.strokeStyle = '#5a3414'; c.lineWidth = 2.5; c.stroke();
+  c.beginPath(); c.arc(900, 240, 62, 0, TAU); c.fillStyle = '#fbf6ec'; c.fill(); c.strokeStyle = '#5a3414'; c.lineWidth = 3; c.stroke();
+  for (let i = 0; i < 12; i++) { const an = i / 12 * TAU; ln(900 + Math.sin(an) * 50, 240 - Math.cos(an) * 50, 900 + Math.sin(an) * 58, 240 - Math.cos(an) * 58, INK, i % 3 ? 2 : 4); }
+  const hand = (an, len, w, col) => ln(900, 240, 900 + Math.sin(an) * len, 240 - Math.cos(an) * len, col, w);
+  hand(TAU * 10 / 12, 30, 5, INK); hand(TAU * 2 / 12, 44, 3.5, INK);
+  const ticks = Math.max(0, Math.floor((st - t0) / (o.P.T / 2)));     // minden kilengés = 1 „tikk”
+  hand(TAU * (ticks % 60) / 60, 52, 2, RED); c.beginPath(); c.arc(900, 240, 5, 0, TAU); c.fillStyle = INK; c.fill();
+  const ox = o.x + o.P.l * S * Math.sin(tho), oy = o.py + o.P.l * S * Math.cos(tho);
+  al(p0); ln(o.x, o.py, ox, oy, '#8a6a1f', 5);
+  const bg = c.createRadialGradient(ox - 10, oy - 10, 4, ox, oy, 30); bg.addColorStop(0, '#f7e3a0'); bg.addColorStop(1, '#b08a2a');
+  c.beginPath(); c.arc(ox, oy, 30, 0, TAU); c.fillStyle = bg; c.fill(); c.strokeStyle = '#6b4f0f'; c.lineWidth = 3; c.stroke();
+  c.beginPath(); c.arc(o.x, o.py, 6, 0, TAU); c.fillStyle = INK; c.fill();
+  // ── fonálinga az asztalon ──
+  const f = items[2], thf = f.P.th(st - t0);
+  al(p0); for (const lx of [1084, 1312]) ln(lx, 786, lx, GR, '#7a4519', 10);
+  rr(1056, 768, 284, 20, 5); c.fillStyle = '#c58b52'; c.fill(); c.strokeStyle = '#5a3414'; c.lineWidth = 2.5; c.stroke();
+  rr(1258, 752, 74, 16, 4); c.fillStyle = '#4a5566'; c.fill(); c.strokeStyle = INK; c.lineWidth = 2; c.stroke();
+  ln(1295, 752, 1295, 592, '#4a5566', 7); ln(1295, 600, 1180, 600, '#4a5566', 6);
+  pendulum(f.x, S, f.P.l, thf, 13, COL.B, p0, f.py);
+  // feliratok + lengésszámláló
+  items.forEach((it, i) => {
+    const q = clamp((st - .5 - i * .25) / .5), n = Math.max(0, Math.floor((st - t0) / it.P.T)), pulse = st > t0 ? Math.exp(-((st - t0) - n * it.P.T) * 3) * (n > 0) : 0;
+    const lx = i === 2 ? 1198 : it.x;
+    al(p0 * q); T(it.k, lx, 988, { s: 30, w: 700, a: 'center', c: INK });
+    L.pill(lab('lengésszámláló').replace('#', n), lx, 1032, { k: ['lengésszámláló', it.k + ' hossza'], a: 'center', s: 22, f: F.M, w: 700, bg: U.mix('#fffaf1', it.col, .12 + .5 * pulse), bd: it.col, c: INK });
+  });
+  al(p0 * clamp((st - 3) / .8)); T('kérdés', 680, 70, { f: F.D, i: 1, s: 48, w: 500, a: 'center', c: RED, max: 1240 });
+}
+
+/* ════════ 2. Periódusidő, rezgésszám, amplitúdó ════════ */
+function scene2(st) {
+  const S = 380, top = 600, x = 380, t0 = .8, p0 = out(clamp(st / .6));
+  const P = pend(num('inga hossza'), gE(), num('kitérés')), th0 = P.th0, view = 20;
+  beam(150, 610, p0); scaleBar(S, p0);
+  const pw = clamp((st - 1.2) / .6);
+  if (pw > 0) {
+    ghost(x, S, P.l, th0, 24, COL.A, p0 * pw); ghost(x, S, P.l, -th0, 24, COL.A, p0 * pw);
+    al(p0 * pw); c.beginPath(); c.moveTo(x, PY); c.arc(x, PY, 150, Math.PI / 2 - th0, Math.PI / 2); c.closePath(); c.fillStyle = U.rgba(TEAL, .16); c.fill();
+    c.beginPath(); c.arc(x, PY, 150, Math.PI / 2 - th0, Math.PI / 2); c.strokeStyle = TEAL; c.lineWidth = 3; c.stroke();
+    ln(x, PY, x, PY + S + 30, 'rgba(28,36,64,.35)', 1.5, [5, 6]);
+    const mx = x + 150 * Math.sin(th0 / 2), my = PY + 150 * Math.cos(th0 / 2);
+    ln(mx + 4, my - 4, 440, 196, U.rgba(TEAL, .7), 2, [5, 5]);
+    L.pill(lab('amplitúdó') + ' · ' + deg(num('kitérés')), 440, 190, { k: ['amplitúdó', 'kitérés'], s: 24, w: 700, bg: CARD, bd: TEAL, c: '#08485a' });
+  }
+  pendulum(x, S, P.l, P.th(st - t0), 24, COL.A, p0);
+  strip(x, top, view, [-15, 0, 15], [{ P, h0: 0, t0, K: COL.A }], st, p0, t0);
+  timeLabels(118, top, st, t0, p0, 'right');
+  al(p0); T('idő tengely', 118, top - 22, { f: F.M, s: 22, w: 600, a: 'right', c: INK });
+  T('kitérés tengely', 118, BOT + 30, { s: 22, w: 600, a: 'right', c: INK });
+  // T-zárójel két egymást követő jobb szélső helyzet között
+  const pb = clamp((st - 3.4) / .6);
+  if (pb > 0 && st > t0) {
+    const j = Math.floor((st - t0 - 30 / VP) / P.T);
+    if (j >= 1) {
+      const yj = top + (st - t0 - j * P.T) * VP, yi = yj + P.T * VP, u = (yj - top - 30) / (P.T * VP);
+      if (yi < BOT) {
+        al(p0 * pb * clamp(u * 7) * clamp((1 - u) * 7));
+        const xr = x + th0 / (view * D2R) * HW, bx = x + HW + 14;
+        ln(xr, yj, bx, yj, U.rgba(RED, .7), 2, [5, 5]); ln(xr, yi, bx, yi, U.rgba(RED, .7), 2, [5, 5]);
+        ln(bx, yj, bx, yi, RED, 3.5); ln(bx - 7, yj, bx + 7, yj, RED, 3.5); ln(bx - 7, yi, bx + 7, yi, RED, 3.5);
+        tx('T', bx + 14, (yj + yi) / 2 + 10, { f: F.D, i: 1, s: 32, w: 600, c: RED, qa: false });
+      }
+    }
+  }
+  // fogalomkártyák
+  const f = 1 / P.T;
+  const rows = [
+    ['amplitúdó', 'amplitúdó magyarázat', deg(num('kitérés')), TEAL, 1.2, 'kitérés'],
+    ['periódusidő', 'periódusidő magyarázat', Ts(P), RED, 3.4, ['inga hossza', 'nehézségi gyorsulás a Földön']],
+    ['rezgésszám', 'rezgésszám magyarázat', 'f = 1 / T ≈ ' + fmt(f, 2) + ' Hz', INK, 5.4, ['inga hossza', 'nehézségi gyorsulás a Földön']],
+  ];
+  rows.forEach(([k, km, v, col, t, kv], i) => {
+    const q = clamp((st - t) / .6), y0 = 110 + i * 290; if (q <= 0) return;
+    al(p0 * q); rr(720 + (1 - out(q)) * 30, y0, 610, 260, 20); c.fillStyle = CARD; c.fill(); c.strokeStyle = LINE; c.lineWidth = 2; c.stroke();
+    rr(720 + (1 - out(q)) * 30, y0 + 24, 8, 212, 4); c.fillStyle = col; c.fill();
+    const xx = 760 + (1 - out(q)) * 30;
+    T(k, xx, y0 + 70, { f: F.D, s: 44, w: 560, c: col, max: 540 });
+    T(km, xx, y0 + 122, { s: 26, w: 500, c: MUT, max: 540 });
+    tx(v, xx, y0 + 200, { f: F.M, s: 40, w: 700, c: INK, k: kv, max: 540 });
+  });
+}
+
+/* ════════ 3. Mérjünk 10 lengést! ════════ */
+const SPEED = 5, S3 = { list: [], clr: 0, seed: 0, t0: .6 };
+const P3 = () => pend(num('inga hossza'), gE(), num('kitérés'));
+/* szimulációs óra: mérés közben (10 lengés) SPEED-szeres gyorsítás; zárt képlet a mérések listájából */
+function simT(st) { let s = st; for (const m of S3.list) s += (m.sp - 1) * clamp(st - m.a, 0, m.b - m.a); return s; }
+function addMeas(n, a) {
+  const P = P3(), sa = simT(a), Tp = P.T;
+  const k = Math.max(0, Math.ceil((sa + .4 - S3.t0) / Tp)), tS = S3.t0 + k * Tp, tE = tS + n * Tp;   // a következő jobb szélső helyzettől
+  const r = U.rng(9173 + 7919 * S3.seed++), nrm = () => Math.sqrt(-2 * Math.log(1 - r())) * Math.cos(TAU * r());
+  const sd = num('kézi mérés hibája'), e1 = clamp(sd * nrm(), -.35, .35), e2 = clamp(sd * nrm(), -.35, .35);
+  const sp = n >= 10 ? SPEED : 1, simEnd = tE + Math.max(e2, 0) + .4;
+  S3.list.push({ n, a, b: a + (simEnd - sa) / sp, sp, tS, tE, e1, e2, tot: (tE + e2) - (tS + e1) });
+}
+function scene3(st) {
+  const S = 380, x = 300, p0 = out(clamp(st / .6)), P = P3(), ss = simT(st);
+  beam(150, 450, p0); scaleBar(S, p0);
+  pendulum(x, S, P.l, P.th(ss - S3.t0), 24, COL.A, p0);
+  // aktuális (utolsó elkezdett) mérés
+  let cur = null; for (const m of S3.list) if (m.a <= st) cur = m;
+  const done = S3.list.filter((m, i) => i >= S3.clr && st >= m.b);
+  // stopper
+  const run = cur && ss >= cur.tS + cur.e1 && ss < cur.tE + cur.e2, disp = cur ? clamp(ss - (cur.tS + cur.e1), 0, cur.tot) : 0;
+  al(p0); T('stopper', 150, 548, { f: F.M, s: 22, w: 700, c: MUT });
+  rr(285, 544, 30, 22, 5); c.fillStyle = '#4a5566'; c.fill(); c.strokeStyle = INK; c.lineWidth = 2; c.stroke();
+  rr(140, 562, 320, 150, 26); c.fillStyle = '#f1ebdf'; c.fill(); c.strokeStyle = INK; c.lineWidth = 3; c.stroke();
+  rr(162, 588, 276, 96, 14); c.fillStyle = '#22302a'; c.fill();
+  tx(fmt(disp, 2) + ' s', 422, 655, { f: F.M, s: 52, w: 700, a: 'right', c: '#8df0a6', max: 230, k: 'kézi mérés hibája' });
+  if (run) { c.beginPath(); c.arc(180, 606, 7, 0, TAU); c.fillStyle = '#ff6b5a'; c.fill(); }
+  if (cur) {
+    const nn = clamp(Math.floor((ss - cur.tS) / P.T + 1e-9), 0, cur.n);
+    al(p0 * clamp((st - cur.a) / .3));
+    tx(lab('lengésszámláló').replace('#', nn + ' / ' + cur.n), x, 766, { k: 'lengésszámláló', f: F.M, s: 26, w: 700, a: 'center', c: INK });
+  }
+  // gyorsítás jelző
+  const fast = cur && cur.sp > 1 && st < cur.b;
+  if (fast) { al(p0 * clamp((st - cur.a) / .3) * clamp((cur.b - st) / .3)); L.pill(lab('gyorsítva').replace('#', SPEED), x, 822, { k: 'gyorsítva', a: 'center', s: 24, w: 700, bg: RED, c: '#ffffff' }); }
+  // ── eredmények: pontdiagram ──
+  const X = (v) => 700 + clamp((v - 1.5) / 1.0) * 580;
+  al(p0); rr(620, 90, 710, 450, 20); c.fillStyle = CARD; c.fill(); c.strokeStyle = LINE; c.lineWidth = 2; c.stroke();
+  T('mérések cím', 650, 142, { f: F.D, s: 32, w: 560, c: INK, max: 650 });
+  ln(X(P.T), 220, X(P.T), 470, U.rgba(RED, .8), 2.5, [7, 6]);
+  tx(lab('számolt érték') + ': ' + fmt(P.T, 2) + ' s', X(P.T), 207, { k: ['számolt érték', 'inga hossza', 'kitérés'], s: 22, w: 600, a: 'center', c: RED });
+  [[1, 300, MUT, '1 lengésből'], [10, 420, TEAL, '10 lengésből']].forEach(([n, y, col, k]) => {
+    const ms = done.filter((m) => m.n === n);
+    al(p0); ln(700, y, 1280, y, LINE, 2);
+    tx(lab(k) + ' · ' + lab('mérésszám').replace('#', ms.length), 650, y - 36, { k: [k, 'mérésszám'], s: 24, w: 700, c: col === MUT ? INK : col });
+    ms.forEach((m, i) => {
+      const age = st - m.b, q = clamp(age / .35);
+      al(p0 * q); c.beginPath(); c.arc(X(m.tot / n), y - (1 - out(q)) * 30, 10, 0, TAU); c.fillStyle = U.rgba(col, .35); c.fill(); c.strokeStyle = col; c.lineWidth = 2.5; c.stroke();
+    });
+    if (ms.length) {
+      const mean = ms.reduce((s, m) => s + m.tot / n, 0) / ms.length;
+      al(p0); ln(X(mean), y - 24, X(mean), y + 24, INK, 4);
+      tx(lab('átlag') + ': ' + fmt(mean, 2) + ' s', 1300, y - 36, { k: 'átlag', f: F.M, s: 22, w: 700, a: 'right', c: INK });
+    }
+  });
+  al(p0); ln(700, 470, 1280, 470, INK, 2.5);
+  for (let v = 1.5; v <= 2.501; v += .1) { const xx = X(v); ln(xx, 464, xx, 476, INK, 2); }
+  for (const v of [1.6, 1.8, 2.0, 2.2, 2.4]) tx(fmt(v, 1) + ' s', X(v), 504, { f: F.M, s: 22, a: 'center', c: MUT });
+  // ── utolsó befejezett mérés ──
+  al(p0); rr(620, 580, 710, 290, 20); c.fillStyle = CARD; c.fill(); c.strokeStyle = LINE; c.lineWidth = 2; c.stroke();
+  const last = done[done.length - 1];
+  if (last) {
+    const v = last.tot / last.n, dev = v - P.T, q = clamp((st - last.b) / .4);
+    al(p0 * q);
+    tx(lab('utolsó mérés') + ': ' + lab('lengésszámláló').replace('#', last.n), 650, 636, { k: ['utolsó mérés', 'lengésszámláló'], f: F.D, s: 32, w: 560, c: INK, max: 650 });
+    tx(fmt(last.tot, 2) + ' s : ' + last.n + ' = ' + fmt(v, 2) + ' s', 650, 730, { f: F.M, s: 44, w: 700, c: last.n === 10 ? TEAL : INK, max: 650, k: 'kézi mérés hibája' });
+    tx(lab('eltérés') + ': ' + sgn(dev, 2) + ' s', 650, 810, { k: 'eltérés', s: 28, w: 600, c: Math.abs(dev) < .05 ? GOOD : BAD, max: 650 });
+  } else {
+    al(p0 * clamp((st - .3) / .5)); T('mérj tipp', 650, 740, { f: F.D, i: 1, s: 34, w: 500, c: MUT, max: 650 });
+  }
+}
+
+/* ════════ 4. Nehezebb test? ════════ */
+const S4 = { m: 2, R: mkR() };
+function scene4(st) {
+  const P = pend(num('inga hossza'), gE(), num('kitérés')), mA = num('könnyű golyó tömege'), mB = S4.m;
+  duo(st, { S: 380, top: 625, view: 20, ticks: [-15, 0, 15], R: S4.R,
+    A: { P, r: radOf(mA), K: COL.A, s1: lab('könnyű golyó') + ' · ' + fmt(mA, 1) + ' kg', k1: ['könnyű golyó', 'könnyű golyó tömege'], s2: Ts(P), k2: ['inga hossza', 'kitérés'] },
+    B: { P, r: radOf(mB), K: COL.B, s1: lab('nehéz golyó') + ' · ' + fmt(mB, 1) + ' kg', k1: ['nehéz golyó', 'nehéz golyó tömege'], s2: Ts(P), k2: ['inga hossza', 'kitérés'] } });
+  const pe = clamp((st - S4.R.t0 - 3.2) / .6);
+  al(out(clamp(st / .6)) * pe); L.pill(lab('együtt'), XG, 300, { k: 'együtt', a: 'center', s: 28, w: 700, bg: GOOD, c: '#ffffff' });
+}
+
+/* ════════ 5. Nagyobb kitérés? ════════ */
+const S5 = { th: 60, R: mkR() };
+function scene5(st) {
+  const thA = num('kis kitérés szöge'), PA = pend(num('inga hossza'), gE(), thA), PB = pend(num('inga hossza'), gE(), S5.th);
+  duo(st, { S: 300, top: 530, view: 90, ticks: [-90, -45, 0, 45, 90], R: S5.R,
+    A: { P: PA, r: 22, K: COL.A, s1: lab('kis kitérés') + ' · ' + deg(thA), k1: ['kis kitérés', 'kis kitérés szöge'], s2: Ts(PA), k2: ['inga hossza', 'kis kitérés szöge'] },
+    B: { P: PB, r: 22, K: COL.B, s1: lab('nagy kitérés') + ' · ' + deg(S5.th), k1: ['nagy kitérés', 'nagy kitérés szöge'], s2: Ts(PB) + ' · ' + sgn((PB.T / PA.T - 1) * 100, 1) + ' %', k2: ['inga hossza', 'nagy kitérés szöge'] } });
+}
+
+/* ════════ 6. Hosszabb kötél ════════ */
+const S6 = { l: 1, R: mkR() };
+function scene6(st) {
+  const th = num('kis kitérés szöge'), lA = num('fonálinga hossza'), PA = pend(lA, gE(), th), PB = pend(S6.l, gE(), th);
+  duo(st, { S: 200, top: 720, view: 8, ticks: [-7, 0, 7], R: S6.R,
+    A: { P: PA, r: 18, K: COL.A, s1: lab('rövid inga') + ' · ' + fmt(lA, 2) + ' m', k1: ['rövid inga', 'fonálinga hossza'], s2: Ts(PA), k2: ['fonálinga hossza', 'kis kitérés szöge'] },
+    B: { P: PB, r: 18, K: COL.B, s1: lab('hosszú inga') + ' · ' + fmt(S6.l, 2) + ' m (' + fmt(S6.l / lA, 1) + '×)', k1: ['hosszú inga', 'inga hossza'], s2: Ts(PB) + ' (' + fmt(PB.T / PA.T, 2) + '×)', k2: ['inga hossza', 'kis kitérés szöge'] } });
+}
+
+/* ════════ 7. A hinta a Holdon ════════ */
+const S7 = { l: 1, moon: true, R: mkR() };
+function planet(x, y, moon, a) {
+  al(a);
+  if (moon) {
+    c.beginPath(); c.arc(x, y, 34, 0, TAU); c.fillStyle = '#d5d3cc'; c.fill(); c.strokeStyle = '#55524a'; c.lineWidth = 3; c.stroke();
+    for (const [dx, dy, r] of [[-12, -8, 8], [10, 10, 6], [12, -14, 4], [-6, 16, 4]]) { c.beginPath(); c.arc(x + dx, y + dy, r, 0, TAU); c.fillStyle = '#b4b1a8'; c.fill(); c.strokeStyle = '#7d7a70'; c.lineWidth = 1.5; c.stroke(); }
+  } else {
+    c.beginPath(); c.arc(x, y, 34, 0, TAU); c.fillStyle = '#6fb0e0'; c.fill();
+    c.save(); c.beginPath(); c.arc(x, y, 34, 0, TAU); c.clip(); c.fillStyle = '#5ba36a';
+    c.beginPath(); c.ellipse(x - 10, y - 8, 14, 18, .5, 0, TAU); c.fill(); c.beginPath(); c.ellipse(x + 16, y + 14, 12, 9, -.3, 0, TAU); c.fill(); c.restore();
+    c.beginPath(); c.arc(x, y, 34, 0, TAU); c.strokeStyle = '#1b5a94'; c.lineWidth = 3; c.stroke();
+  }
+  T(moon ? 'hold ikon' : 'föld ikon', x, y + 66, { s: 24, w: 700, a: 'center', c: moon ? '#55524a' : '#1b5a94' });
+}
+function scene7(st) {
+  const th = num('kis kitérés szöge'), gB = S7.moon ? gM() : gE(), PA = pend(S7.l, gE(), th), PB = pend(S7.l, gB, th);
+  const gk = S7.moon ? 'nehézségi gyorsulás a Holdon' : 'nehézségi gyorsulás a Földön';
+  duo(st, { S: 200, top: 720, view: 8, ticks: [-7, 0, 7], R: S7.R,
+    A: { P: PA, r: 18, K: COL.A, s1: lab('a Földön') + ' · g = ' + L.val('nehézségi gyorsulás a Földön'), k1: ['a Földön', 'nehézségi gyorsulás a Földön'], s2: Ts(PA), k2: ['inga hossza', 'kis kitérés szöge'] },
+    B: { P: PB, r: 18, K: COL.B, s1: lab(S7.moon ? 'a Holdon' : 'a Földön') + ' · g = ' + L.val(gk), k1: [S7.moon ? 'a Holdon' : 'a Földön', gk], s2: Ts(PB) + ' (' + fmt(PB.T / PA.T, 2) + '×)', k2: ['inga hossza', gk] } });
+  const p0 = out(clamp(st / .6));
+  planet(560, 160, false, p0); planet(1240, 160, S7.moon, p0);
+}
+
+/* ════════ 8. Összefoglalás ════════ */
+function icon(x, y, kind, col, a) {
+  al(a); c.beginPath(); c.arc(x, y, 24, 0, TAU); c.fillStyle = U.rgba(col, .14); c.fill(); c.strokeStyle = col; c.lineWidth = 3; c.stroke();
+  c.strokeStyle = col; c.lineWidth = 5; c.lineCap = 'round'; c.beginPath();
+  if (kind === 'x') { c.moveTo(x - 9, y - 9); c.lineTo(x + 9, y + 9); c.moveTo(x + 9, y - 9); c.lineTo(x - 9, y + 9); }
+  else if (kind === 'v') { c.moveTo(x - 11, y + 1); c.lineTo(x - 3, y + 9); c.lineTo(x + 12, y - 9); }
+  else { for (const dy of [-5, 5]) { c.moveTo(x - 12, y + dy); c.bezierCurveTo(x - 5, y + dy - 7, x + 5, y + dy + 7, x + 12, y + dy); } }
+  c.stroke(); c.lineCap = 'butt';
+}
+function scene8(st) {
+  const p0 = out(clamp(st / .6)), th = num('kis kitérés szöge'), g = gE();
+  al(p0); rr(50, 90, 680, 720, 22); c.fillStyle = CARD; c.fill(); c.strokeStyle = LINE; c.lineWidth = 2; c.stroke();
+  T('mitől függ', 90, 160, { f: F.D, s: 42, w: 560, c: INK, max: 600 });
+  const rows = [['tömegtől', 'nem', 'x', BAD], ['kitéréstől', 'alig', '~', TEAL], ['hossztól', 'igen', 'v', GOOD], ['g-től', 'igen', 'v', GOOD]];
+  rows.forEach(([k, v, kind, col], i) => {
+    const q = clamp((st - .5 - i * .6) / .5), y = 270 + i * 140; if (q <= 0) return;
+    icon(110, y - 10, kind, col, p0 * q);
+    al(p0 * q); T(k, 158, y - 2, { s: 32, w: 700, c: INK, max: 540 });
+    T(v, 158, y + 40, { s: 26, w: 600, c: col, max: 540, k: v });
+  });
+  // jobb oldal: három inga, valódi arányban
+  const S = 220, items = [[830, num('fonálinga hossza'), 'fonálinga hossza', 14], [1010, num('inga hossza'), 'inga hossza', 18], [1210, num('hinta hossza'), 'hinta hossza', 20]];
+  beam(770, 1300, p0);
+  const pp = clamp((st - 1) / .6);
+  items.forEach(([x, l, k, r]) => {
+    const P = pend(l, g, th), b = pendulum(x, S, l, P.th(st - .6), r, COL.B, p0);
+    al(p0 * pp); ln(x, PY + l * S + r + 8, x, 735, 'rgba(28,36,64,.3)', 1.5, [5, 6]);
+    tx(fmt(l, 2) + ' m', x, 772, { k, f: F.M, s: 24, w: 600, a: 'center', c: INK });
+    L.pill(Ts(P), x, 818, { k: [k, 'kis kitérés szöge'], a: 'center', s: 22, f: F.M, w: 700, bg: RED, c: '#ffffff' });
+  });
+  al(p0 * pp); tx(lab('összefoglaló lengésidők').replace('#', deg(th)), 1035, 870, { k: ['összefoglaló lengésidők', 'kis kitérés szöge'], s: 22, w: 600, a: 'center', c: MUT });
+  const pm = clamp((st - 3.2) / .6);
+  al(p0 * pm); rr(50, 900, 1280, 100, 20); c.fillStyle = U.rgba(RED, .1); c.fill(); c.strokeStyle = U.rgba(RED, .5); c.lineWidth = 2; c.stroke();
+  T('tanulság', 690, 964, { f: F.D, i: 1, s: 40, w: 500, a: 'center', c: RED, max: 1220 });
+}
+
+/* ════════════════════════════════════════════════════════════════ */
+const sT = new Array(8).fill(0);
+const SCENES = [scene1, scene2, scene3, scene4, scene5, scene6, scene7, scene8];
+const srcOf = (k) => (L.content && L.content.src && L.content.src[k]) || 0;
+L = Lesson.create({
+  content: window.LESSON_CONTENT,
+  home: false,
+  steps: [
+    { settle: 8 },
+    { settle: 8 },
+    { settle: 7,
+      enter() { S3.list = []; S3.clr = 0; S3.seed = 0; addMeas(10, 1.0); },
+      controls(L) {
+        const busy = () => { const m = S3.list[S3.list.length - 1]; return m && L.st < m.b; };
+        L.button(lab('mérj 1 gomb'), () => { if (!busy()) addMeas(1, L.st); }, 'mérj 1 gomb');
+        L.button(lab('mérj 10 gomb'), () => { if (!busy()) addMeas(10, L.st); }, 'mérj 10 gomb');
+        L.button(lab('törlés gomb'), () => { S3.clr = S3.list.length; }, 'törlés gomb');
+      } },
+    { settle: 7,
+      enter() { S4.m = num('nehéz golyó tömege'); S4.R = mkR(); },
+      controls(L) {
+        L.slider({ label: lab('tömeg csúszka'), k: 'tömeg csúszka', min: .1, max: 5, step: .1, value: num('nehéz golyó tömege'), format: (v) => fmt(v, 1) + ' kg',
+          onInput: (v) => { S4.m = v; hold(S4.R); } });
+      } },
+    { settle: 8,
+      enter() { S5.th = num('nagy kitérés szöge'); S5.R = mkR(); },
+      controls(L) {
+        L.slider({ label: lab('kitérés csúszka'), k: 'kitérés csúszka', min: 5, max: 90, step: 1, value: num('nagy kitérés szöge'), format: deg,
+          onInput: (v) => { S5.th = v; hold(S5.R); } });
+      } },
+    { settle: 7,
+      enter() { S6.l = num('inga hossza'); S6.R = mkR(); },
+      controls(L) {
+        L.slider({ label: lab('hossz csúszka'), k: 'hossz csúszka', min: .25, max: 2.5, step: .05, value: num('inga hossza'), format: (v) => fmt(v, 2) + ' m',
+          onInput: (v) => { S6.l = v; hold(S6.R); } });
+      } },
+    { settle: 8,
+      enter() { S7.l = num('inga hossza'); S7.moon = true; S7.R = mkR(); },
+      controls(L) {
+        L.slider({ label: lab('közös hossz csúszka'), k: 'közös hossz csúszka', min: .25, max: 2.5, step: .05, value: num('inga hossza'), format: (v) => fmt(v, 2) + ' m',
+          onInput: (v) => { S7.l = v; hold(S7.R); } });
+        const b = L.button(lab('Földre gomb'), () => {
+          S7.moon = !S7.moon; hold(S7.R);
+          const k = S7.moon ? 'Földre gomb' : 'Holdra gomb'; b.innerHTML = lab(k); b.dataset.key = k; b.dataset.src = srcOf(k);
+          if (L.review) L.setReview(true);
+        }, 'Földre gomb');
+      } },
+    { settle: 5 },
+  ],
+  init(Lx) { L = Lx; c = L.ctx; },
+  draw(Lx) {
+    L = Lx; c = L.ctx; GA = 1; background();
+    const sp = L.sp;
+    if (L.step >= 0) sT[L.step] = L.st;
+    for (let i = 0; i < SCENES.length; i++) {
+      const w = clamp(1 - Math.abs(sp - i) * 2); if (w <= .005) continue;
+      GA = w; SCENES[i](sT[i]);
+    }
+    c.globalAlpha = 1;
+  },
+});
+})();
+</script>
+</body>
+</html>

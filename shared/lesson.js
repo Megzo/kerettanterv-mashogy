@@ -107,7 +107,7 @@
     const dat = (k) => { const v = C && C.data[k]; if (!v) { miss(k); return { v: NaN, u: '', d: 0 }; } return v; };
     L.num = (k) => dat(k).v;
     L.unit = (k) => dat(k).u;
-    L.val = (k, d) => { const v = dat(k); return U.fmt(v.v, d == null ? v.d : d) + (v.u ? ' ' + v.u : ''); };
+    L.val = (k, d) => { const v = dat(k); return U.fmt(v.v, d == null ? v.d : d) + (v.u ? (v.u === '°' ? '' : ' ') + v.u : ''); };
     const srcOf = (k) => (C && C.src && C.src[k]) || 0;
 
     // ── DOM váz ──
