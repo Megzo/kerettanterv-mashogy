@@ -1,0 +1,942 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Miért kell bekötni az övet? — Fizika</title>
+<link rel="stylesheet" href="../../shared/lesson.css">
+<style>
+  .lp-text .big-fx { font-size: 36px; margin: 4px 0 12px; }
+  .lp-text > :last-child { margin-bottom: 0; }
+  .lp-text b { color: var(--ink); }
+  .lp-text sub { font-size: .6em; vertical-align: -.25em; line-height: 0; font-style: italic; }
+</style>
+<!-- A lecke által várt tartalomkulcsok. A tools/build_lesson.py ez alapján ellenőrzi a .md-t.
+     labels: felirat → max. karakterszám (null = alapértelmezett 32) · data: adat → mértékegység, tartomány -->
+<script type="application/json" id="lesson-spec">
+{
+  "steps": 9,
+  "labels": {
+    "száraz gomb": 16, "vizes gomb": 16, "jeges gomb": 16, "sebesség csúszka": 34, "reakcióidő csúszka": 34,
+    "gyorsítva": 14, "lassítva": 14, "valós idő": 14, "reakcióút": 16, "fékút": 16, "megállási út": 16,
+    "idő tengely": 14, "út tengely": 14, "sebesség tengely": 20, "zebra": 12, "megállt": 14, "lassulás": 14,
+    "mozgási energia": 20, "belső energia": 20, "zebránál még": 20, "megáll előtte": 26,
+    "otthon": 14, "iskola": 14, "megtett út": 16, "elmozdulás": 16, "az utcákon": 20, "légvonalban": 20,
+    "vissza gomb": 20, "elmozdulás nulla": 20, "park": 10,
+    "lámpa csúszka": 34, "piros lámpa": 16, "áll": 10, "út tengely km": 14, "sebességek átlaga": 28,
+    "átlagsebesség": 20, "összes út per idő": 28, "eltelt idő": 16, "eddig": 12, "nem átlagsebesség": 20, "átváltás": 24,
+    "tévhit erő": 30, "igazság erő": 44, "szőnyeg gomb": 14, "parketta gomb": 14, "jég gomb": 14,
+    "súrlódásmentes gomb": 18, "kezed tolja": 20, "súrlódási erő": 20, "nincs erő": 34, "csúszás": 14, "sebesség tengely ms": 20,
+    "fékerő": 26, "fékidő": 14, "fék melegszik": 34, "tömeg": 12, "erő": 16,
+    "terület": 26,
+    "lassabb csúszka": 34, "itt még": 12, "fékút tengely": 14, "négyszer": 48, "lassabb": 18, "gyorsabb": 22,
+    "fékezés kezdete": 24,
+    "telefonozó": 22, "figyelő": 22, "önvezető": 22, "érzékelők": 20, "zebránál": 16, "reakcióidő oszlop": 16, "ugyanannyi": 44,
+    "ütközés csúszka": 34, "újra gomb": 20, "bekötve": 24, "bekötetlen": 24, "tovább halad": 26,
+    "sebesség": 14, "autó": 10, "test": 10, "átlagos erő": 24, "súlya": 26, "arány": 40, "képlet erő": 40, "zuhanás": 44,
+    "légzsák": 12, "öv": 8,
+    "összefoglaló cím": 54, "tanulság": 48, "városban": 14, "országúton": 14, "autópályán": 14
+  },
+  "data": {
+    "városi sebesség":        {"unit": "km/h", "min": 30, "max": 60},
+    "reakcióidő":             {"unit": "s", "min": 0.5, "max": 2},
+    "lassulás száraz úton":   {"unit": "m/s²", "min": 5, "max": 9},
+    "lassulás vizes úton":    {"unit": "m/s²", "min": 3, "max": 7},
+    "lassulás jeges úton":    {"unit": "m/s²", "min": 0.5, "max": 2},
+    "autó tömege":            {"unit": "kg", "min": 800, "max": 2500},
+    "nehézségi gyorsulás":    {"unit": "m/s²", "min": 9.7, "max": 9.9},
+    "zebra távolsága":        {"unit": "m", "min": 15, "max": 60},
+    "első szakasz hossza":    {"unit": "km", "min": 0.5, "max": 1.5},
+    "második szakasz hossza": {"unit": "km", "min": 0.4, "max": 1.2},
+    "első szakasz sebessége": {"unit": "km/h", "min": 20, "max": 50},
+    "második szakasz sebessége": {"unit": "km/h", "min": 30, "max": 70},
+    "várakozás a lámpánál":   {"unit": "s", "min": 0, "max": 120},
+    "időgyorsítás":           {"unit": "", "min": 20, "max": 80},
+    "hasáb kezdősebessége":   {"unit": "m/s", "min": 1.5, "max": 4},
+    "súrlódás szőnyegen":     {"unit": "", "min": 0.2, "max": 0.8},
+    "súrlódás parkettán":     {"unit": "", "min": 0.1, "max": 0.5},
+    "súrlódás jégen":         {"unit": "", "min": 0.01, "max": 0.1},
+    "lassabb autó sebessége": {"unit": "km/h", "min": 20, "max": 65},
+    "telefonozó reakcióideje": {"unit": "s", "min": 1.5, "max": 4},
+    "önvezető reakcióideje":  {"unit": "s", "min": 0.1, "max": 0.6},
+    "utas tömege":            {"unit": "kg", "min": 40, "max": 100},
+    "gyűrődési zóna":         {"unit": "m", "min": 0.3, "max": 0.6},
+    "test megállási útja övvel": {"unit": "m", "min": 0.6, "max": 1},
+    "távolság a kormányig":   {"unit": "m", "min": 0.6, "max": 0.7},
+    "test megállási útja öv nélkül": {"unit": "m", "min": 0.02, "max": 0.1},
+    "ütközési lassítás":      {"unit": "", "min": 10, "max": 40},
+    "országúti sebesség":     {"unit": "km/h", "min": 70, "max": 100},
+    "autópálya sebesség":     {"unit": "km/h", "min": 110, "max": 130}
+  }
+}
+</script>
+</head>
+<body>
+<script src="03-mozgas-fekezes.content.js"></script>
+<script src="../../shared/lesson.js"></script>
+<script>
+(function () {
+'use strict';
+const U = Lesson.U, { clamp, lerp, smooth, out, inOut, TAU } = U, fmt = U.fmt;
+const F = Lesson.FONTS;
+/* ── paletta (világos téma, lásd SZERZODES.md) ── */
+const INK = '#1c2440', MUT = '#565d72', RED = '#c8401c', TEAL = '#0a6f86', GOOD = '#1d7a45', BAD = '#b3261e',
+  CARD = '#fffaf1', LINE = 'rgba(28,36,64,.16)';
+const REA = TEAL, BRK = RED;                         // reakcióút / fékút – minden jelenetben ugyanaz
+const EM = '#6b3fb0', EB = '#c8401c';                // mozgási / belső energia (mint a 02-energia leckében)
+let L, c, GA = 1;
+const al = (a = 1) => { c.globalAlpha = GA * clamp(a); };
+const lab = (k) => L.lab(k), num = (k) => L.num(k);
+const T = (k, x, y, o = {}) => L.tx(lab(k), x, y, Object.assign({ k }, o));
+const tx = (s, x, y, o) => L.tx(s, x, y, o);
+const rr = (x, y, w, h, r) => { c.beginPath(); c.roundRect(x, y, w, h, r); };
+const ln = (x1, y1, x2, y2, col, w = 2, dash) => { c.beginPath(); c.moveTo(x1, y1); c.lineTo(x2, y2); c.strokeStyle = col; c.lineWidth = w; c.setLineDash(dash || []); c.stroke(); c.setLineDash([]); };
+const gA = () => num('nehézségi gyorsulás');
+const kmh = (v) => v / 3.6;                          // km/h → m/s
+const M1 = (v) => fmt(v, 1) + ' m';
+
+/* ── háttér: meleg papír, halvány négyzetrács ── */
+function background() {
+  c.globalAlpha = 1;
+  const g = c.createRadialGradient(680, 480, 100, 680, 540, 1300); g.addColorStop(0, '#f7f1e6'); g.addColorStop(1, '#efe6d6');
+  c.fillStyle = g; c.fillRect(0, 0, 1920, 1080);
+  c.strokeStyle = 'rgba(28,36,64,.045)'; c.lineWidth = 1; c.beginPath();
+  for (let x = 0; x <= 1920; x += 40) { c.moveTo(x + .5, 0); c.lineTo(x + .5, 1080); }
+  for (let y = 0; y <= 1080; y += 40) { c.moveTo(0, y + .5); c.lineTo(1920, y + .5); }
+  c.stroke();
+}
+function card(x, y, w, h, a) { al(a); rr(x, y, w, h, 18); c.fillStyle = CARD; c.fill(); c.strokeStyle = LINE; c.lineWidth = 2; c.stroke(); }
+function arrowTo(x1, y1, x2, y2, col, w = 4, hs = 16) {
+  const an = Math.atan2(y2 - y1, x2 - x1), bx = x2 - Math.cos(an) * hs * .8, by = y2 - Math.sin(an) * hs * .8;
+  ln(x1, y1, bx, by, col, w);
+  c.beginPath(); c.moveTo(x2, y2); c.lineTo(x2 - hs * Math.cos(an - .45), y2 - hs * Math.sin(an - .45)); c.lineTo(x2 - hs * Math.cos(an + .45), y2 - hs * Math.sin(an + .45)); c.closePath();
+  c.fillStyle = col; c.fill();
+}
+/* képletjel alsó indexszel (kódban rögzített jelölés) */
+function sym(base, sub, x, y, o) {
+  const s = o.s || 40, ss = Math.max(22, s * .58), oo = Object.assign({ f: F.D, i: 1, w: 500, qa: false }, o);
+  const w1 = L.measure(base, oo).w, w2 = sub ? L.measure(sub, Object.assign({}, oo, { s: ss })).w : 0, W = w1 + w2 + (sub ? 2 : 0);
+  const x0 = o.a === 'center' ? x - W / 2 : o.a === 'right' ? x - W : x;
+  L.tx(base, x0, y, Object.assign({}, oo, { a: 'left' }));
+  if (sub) L.tx(sub, x0 + w1 + 2, y + s * .2, Object.assign({}, oo, { a: 'left', s: ss }));
+  return W;
+}
+function formula(parts, x, y, o) { let xx = x; for (const [b, sb] of parts) xx += sym(b, sb, xx, y, o) + (o.gap || 10); return xx - x; }
+/* a részek kerekített összege = a kerekített összeg (legnagyobb maradék) */
+function roundParts(vals, total, d = 1) {
+  const k = Math.pow(10, d), want = Math.round(total * k), fl = vals.map((v) => Math.floor(v * k + 1e-9));
+  let rest = want - fl.reduce((p, q) => p + q, 0);
+  const ord = vals.map((v, i) => [v * k - fl[i], i]).sort((p, q) => q[0] - p[0]);
+  for (let j = 0; j < ord.length && rest > 0; j++) { fl[ord[j][1]]++; rest--; }
+  for (let j = ord.length - 1; j >= 0 && rest < 0; j--) { if (fl[ord[j][1]] > 0) { fl[ord[j][1]]--; rest++; } }
+  return fl.map((v) => v / k);
+}
+/* „szép” tengelylépték */
+function niceStep(mx, n = 5) { const raw = mx / n, mag = Math.pow(10, Math.floor(Math.log10(raw))), m = raw / mag; return (m <= 1 ? 1 : m <= 2 ? 2 : m <= 5 ? 5 : 10) * mag; }
+const niceCeil = (x, n = 5) => { const s = niceStep(x, n); return Math.ceil(x / s - 1e-9) * s; };
+/* grafikon-tengelyek: g = {x, y, w, h, xm, ym, xk, yk, xn, yn, yd} → {X, Y} */
+function axes(g, a) {
+  const X = (t) => g.x + t / g.xm * g.w, Y = (v) => g.y + g.h - v / g.ym * g.h;
+  const xs = niceStep(g.xm, g.xn || 5), ys = niceStep(g.ym, g.yn || 4);
+  al(a);
+  for (let v = ys; v <= g.ym + 1e-9; v += ys) ln(g.x, Y(v), g.x + g.w, Y(v), 'rgba(28,36,64,.08)', 1.5);
+  ln(g.x, g.y + g.h, g.x + g.w + 10, g.y + g.h, INK, 2.5); ln(g.x, g.y + g.h, g.x, g.y - 10, INK, 2.5);
+  for (let t = 0; t <= g.xm + 1e-9; t += xs) { ln(X(t), g.y + g.h, X(t), g.y + g.h + 8, INK, 2); tx(fmt(t, xs < 1 ? 1 : 0), X(t), g.y + g.h + 32, { f: F.M, s: 22, a: 'center', c: MUT }); }
+  for (let v = 0; v <= g.ym + 1e-9; v += ys) { ln(g.x - 8, Y(v), g.x, Y(v), INK, 2); tx(fmt(v, g.yd != null ? g.yd : ys < 1 ? 1 : 0), g.x - 14, Y(v) + 8, { f: F.M, s: 22, a: 'right', c: MUT }); }
+  T(g.yk, g.x - 20, g.y - 26, { f: F.M, s: 22, w: 600, c: INK });
+  T(g.xk, g.x + g.w + 10, g.y + g.h + 66, { f: F.M, s: 22, w: 600, a: 'right', c: INK });
+  return { X, Y };
+}
+const pillW = (s, o) => L.measure(s, o).w + 2 * (o.pad == null ? 12 : o.pad);
+/* pill, amely nem lóg be a panel alá */
+function pillIn(s, x, y, o) { const w = pillW(s, o), a = o.a || 'left'; let x0 = a === 'center' ? x - w / 2 : a === 'right' ? x - w : x; x0 = clamp(x0, 40, 1330 - w); return L.pill(s, x0, y, Object.assign({}, o, { a: 'left' })); }
+function timePill(k, kind, a, x = 1320, y = 60) {   // kind: 'gyorsítva' | 'lassítva'
+  al(a);
+  const s = k > 1.04 ? lab(kind) + ' ' + fmt(k, k < 9.95 ? 1 : 0) + '×' : lab('valós idő');
+  L.pill(s, x, y, { k: k > 1.04 ? kind : 'valós idő', a: 'right', s: 22, w: 700, bg: '#ffffff', bd: MUT, c: MUT, pad: 10 });
+}
+
+/* ════════ járművek ════════ */
+/* felülnézet: xf = az első lökhárító (ez számít a távolságoknál), menetirány +x */
+function carTop(xf, yc, len, wid, col, brake, a) {
+  if (a <= .01) return;
+  al(a); const x = xf - len, y = yc - wid / 2, dk = U.mix(col, '#000000', .45);
+  rr(x + 3, y + 5, len, wid, wid * .3); c.fillStyle = 'rgba(28,36,64,.18)'; c.fill();
+  c.fillStyle = '#1f2733';
+  for (const f of [.2, .78]) { rr(x + len * f - len * .08, y - 3, len * .16, 7, 2); c.fill(); rr(x + len * f - len * .08, y + wid - 4, len * .16, 7, 2); c.fill(); }
+  rr(x, y, len, wid, wid * .32); c.fillStyle = col; c.fill(); c.strokeStyle = dk; c.lineWidth = 2.5; c.stroke();
+  c.fillStyle = 'rgba(31,39,51,.78)';
+  c.beginPath(); c.moveTo(x + len * .6, y + wid * .16); c.lineTo(x + len * .72, y + wid * .08); c.lineTo(x + len * .72, y + wid * .92); c.lineTo(x + len * .6, y + wid * .84); c.closePath(); c.fill();
+  c.beginPath(); c.moveTo(x + len * .2, y + wid * .14); c.lineTo(x + len * .27, y + wid * .2); c.lineTo(x + len * .27, y + wid * .8); c.lineTo(x + len * .2, y + wid * .86); c.closePath(); c.fill();
+  rr(x + len * .28, y + wid * .2, len * .31, wid * .6, 4); c.fillStyle = U.mix(col, '#ffffff', .25); c.fill();
+  c.fillStyle = '#fff3b0'; rr(xf - 5, y + 3, 4, wid * .22, 2); c.fill(); rr(xf - 5, y + wid * .78 - 3, 4, wid * .22, 2); c.fill();
+  c.fillStyle = brake ? '#ff2a12' : '#8a1c12';
+  rr(x + 1, y + 3, 4, wid * .22, 2); c.fill(); rr(x + 1, y + wid * .78 - 3, 4, wid * .22, 2); c.fill();
+  if (brake) { const g = c.createRadialGradient(x, yc, 2, x, yc, 36); g.addColorStop(0, 'rgba(255,60,20,.55)'); g.addColorStop(1, 'rgba(255,60,20,0)'); c.fillStyle = g; c.fillRect(x - 40, yc - 40, 44, 80); }
+}
+/* oldalnézet (méterben, hátsó lökhárító = 0, menetirány +x, felfelé y); cr: gyűrődés (m) */
+const CAR = { len: 4.5, hood: 3.4, rW: .32, w1: .8, w2: 3.7 };
+function carSide(xr, yg, PX, col, o = {}) {
+  const a = o.a == null ? 1 : o.a; if (a <= .01) return;
+  const cr = o.cr || 0, hl = CAR.len - CAR.hood, kx = (xm) => xm <= CAR.hood ? xm : CAR.hood + (xm - CAR.hood) * (hl - cr) / hl;
+  const P = (xm, ym) => [xr + kx(xm) * PX, yg - ym * PX], dk = U.mix(col, '#000000', .45);
+  al(a);
+  c.beginPath(); c.ellipse(xr + kx(CAR.len / 2) * PX, yg + 4, kx(CAR.len) * PX * .5, 7, 0, 0, TAU); c.fillStyle = 'rgba(28,36,64,.18)'; c.fill();
+  const body = [[.05, .3], [0, .55], [.08, .88], [1.0, .95], [1.55, 1.42], [2.75, 1.42], [3.35, .98], [4.32, .86], [4.5, .66], [4.46, .3]];
+  c.beginPath(); body.forEach(([xm, ym], i) => { const [px, py] = P(xm, ym); i ? c.lineTo(px, py) : c.moveTo(px, py); });
+  if (cr > .01) {   // gyűrött motorháztető: cikcakk az elején
+    const n = 5; for (let i = 0; i <= n; i++) { const [px, py] = P(CAR.len - .02, .3 + (.56 * i / n)); c.lineTo(px - (i % 2 ? cr * PX * .25 : 0), py); }
+  }
+  c.closePath(); c.fillStyle = col; c.fill(); c.strokeStyle = dk; c.lineWidth = 3; c.lineJoin = 'round'; c.stroke();
+  // ablak (átlátszó: az utas látszik)
+  const win = [[1.12, .98], [1.62, 1.36], [2.72, 1.36], [3.24, .98]];
+  c.beginPath(); win.forEach(([xm, ym], i) => { const [px, py] = P(xm, ym); i ? c.lineTo(px, py) : c.moveTo(px, py); }); c.closePath();
+  c.fillStyle = '#e4eef2'; c.fill(); c.strokeStyle = dk; c.lineWidth = 2.5; c.stroke();
+  if (o.inside) o.inside(P);
+  // kerekek
+  for (const wx of [CAR.w1, CAR.w2]) {
+    const [cx, cy] = P(wx, CAR.rW), r = CAR.rW * PX;
+    c.beginPath(); c.arc(cx, cy, r, 0, TAU); c.fillStyle = '#2a2f38'; c.fill(); c.strokeStyle = '#11151b'; c.lineWidth = 2.5; c.stroke();
+    c.beginPath(); c.arc(cx, cy, r * .5, 0, TAU); c.fillStyle = '#aab2bc'; c.fill();
+    const an = o.rot || 0; c.strokeStyle = '#4b5462'; c.lineWidth = 3;
+    for (let i = 0; i < 3; i++) { const q = an + i * TAU / 3; ln(cx, cy, cx + Math.cos(q) * r * .48, cy + Math.sin(q) * r * .48, '#4b5462', 3); }
+  }
+  // lámpák
+  const [hx, hy] = P(4.44, .74); c.fillStyle = '#fff3b0'; rr(hx - 8, hy - 6, 10, 12, 3); c.fill();
+  const [bx, by] = P(.02, .74); c.fillStyle = o.brake ? '#ff2a12' : '#8a1c12'; rr(bx - 2, by - 7, 9, 14, 3); c.fill();
+  if (o.brake) { const g = c.createRadialGradient(bx, by, 2, bx, by, 40); g.addColorStop(0, 'rgba(255,60,20,.5)'); g.addColorStop(1, 'rgba(255,60,20,0)'); c.fillStyle = g; c.fillRect(bx - 44, by - 40, 48, 80); }
+}
+/* töréstesztbábu (autó-koordinátákban); r: előrecsúszás (m), th: előredőlés (rad), belt: öv */
+const DUM = { hip: [2.0, .62], tor: .52, head: .1, chest: .12 };
+const chestFront = () => DUM.hip[0] + DUM.chest + .1;     // nyugalomban a mellkas eleje (m)
+function dummy(P, PX, r, th, belt, o = {}) {
+  const hx = DUM.hip[0] + (belt ? r * .2 : r), hy = DUM.hip[1];
+  const base = .22 + th;                                      // a törzs dőlése a függőlegestől
+  const sx = hx + Math.sin(base) * DUM.tor, sy = hy + Math.cos(base) * DUM.tor;
+  const hdx = sx + Math.sin(base) * .16, hdy = sy + Math.cos(base) * .16;
+  const Y = '#e3b23c', D = '#1f2733';
+  // ülés
+  c.lineCap = 'round';
+  let [a1, b1] = P(1.72, .56), [a2, b2] = P(1.56, 1.2); ln(a1, b1, a2, b2, '#6b5a48', .14 * PX);
+  [a1, b1] = P(1.72, .5); [a2, b2] = P(2.25, .5); ln(a1, b1, a2, b2, '#6b5a48', .12 * PX);
+  // láb
+  const [p0x, p0y] = P(hx, hy), [k1x, k1y] = P(hx + .55, hy - .02), [f1x, f1y] = P(hx + .72, .32);
+  c.beginPath(); c.moveTo(p0x, p0y); c.lineTo(k1x, k1y); c.lineTo(f1x, f1y); c.strokeStyle = D; c.lineWidth = .15 * PX + 4; c.stroke(); c.strokeStyle = Y; c.lineWidth = .15 * PX; c.stroke();
+  // törzs
+  const [s0x, s0y] = P(sx, sy);
+  ln(p0x, p0y, s0x, s0y, D, .24 * PX + 5); ln(p0x, p0y, s0x, s0y, Y, .24 * PX);
+  // kar a kormányig
+  const [wx, wy] = P(chestFront() + num('távolság a kormányig') + .02, 1.0);
+  const ex = (s0x + wx) / 2, ey = Math.max(s0y, wy) + .12 * PX;
+  c.beginPath(); c.moveTo(s0x, s0y); c.quadraticCurveTo(ex, ey, Math.min(wx, s0x + .55 * PX), wy); c.strokeStyle = D; c.lineWidth = .09 * PX + 4; c.stroke(); c.strokeStyle = Y; c.lineWidth = .09 * PX; c.stroke();
+  // fej
+  const [h0x, h0y] = P(hdx, hdy), R = DUM.head * PX;
+  c.beginPath(); c.arc(h0x, h0y, R, 0, TAU); c.fillStyle = Y; c.fill(); c.strokeStyle = D; c.lineWidth = 2.5; c.stroke();
+  c.beginPath(); c.moveTo(h0x, h0y); c.arc(h0x, h0y, R * .55, 0, Math.PI / 2); c.closePath(); c.fillStyle = D; c.fill();
+  c.beginPath(); c.moveTo(h0x, h0y); c.arc(h0x, h0y, R * .55, Math.PI, Math.PI * 1.5); c.closePath(); c.fill();
+  c.lineCap = 'butt';
+  if (belt) {   // öv: a B-oszloptól a vállon át a csípőig
+    const [ax, ay] = P(1.55, 1.25), [cx2, cy2] = P(hx + .05, hy - .02);
+    c.beginPath(); c.moveTo(ax, ay); c.lineTo(s0x + 4, s0y + 6); c.lineTo(cx2, cy2); c.strokeStyle = '#2b2f3a'; c.lineWidth = 7; c.lineJoin = 'round'; c.stroke();
+  }
+  return { head: [hdx, hdy], chest: hx + DUM.chest + .1 + Math.sin(base) * DUM.tor * .6 };
+}
+function steering(P, PX) {     // kormány + műszerfal (a mellkastól pontosan „távolság a kormányig” méterre)
+  const xw = chestFront() + num('távolság a kormányig');
+  const [d1x, d1y] = P(xw + .14, .78), [d2x, d2y] = P(3.3, .98), [d3x, d3y] = P(3.3, .7);
+  c.beginPath(); c.moveTo(d1x, d1y); c.lineTo(d2x, d2y); c.lineTo(d3x, d3y); c.closePath(); c.fillStyle = '#5c6775'; c.fill();
+  const [a1, b1] = P(xw, .82), [a2, b2] = P(xw + .1, 1.12), [cx, cy] = P(xw + .08, .9), [ex, ey] = P(xw + .3, .82);
+  ln(cx, cy, ex, ey, '#3a424e', 8);
+  c.lineCap = 'round'; ln(a1, b1, a2, b2, '#232a35', 11); c.lineCap = 'butt';
+  return xw;
+}
+
+/* ════════ útburkolat (felülnézet) ════════ */
+const SURFS = [
+  { btn: 'száraz gomb', a: 'lassulás száraz úton', fill: '#8d9097', mark: '#f3efe6', col: '#7a4a1a' },
+  { btn: 'vizes gomb', a: 'lassulás vizes úton', fill: '#66788a', mark: '#eef2f4', col: '#1b5a94' },
+  { btn: 'jeges gomb', a: 'lassulás jeges úton', fill: '#cfe2ec', mark: '#7d93a3', col: '#0a6f86' },
+];
+const decel = (i) => num(SURFS[i].a);
+function roadTop(x0, x1, yT, nL, LH, si, a) {
+  const S = SURFS[si], yB = yT + nL * LH;
+  al(a);
+  for (const yy of [yT - 22, yB]) { c.fillStyle = '#ddd3c2'; c.fillRect(x0, yy, x1 - x0, 22); }
+  ln(x0, yT - 22, x1, yT - 22, 'rgba(28,36,64,.35)', 2); ln(x0, yB + 22, x1, yB + 22, 'rgba(28,36,64,.35)', 2);
+  c.fillStyle = S.fill; c.fillRect(x0, yT, x1 - x0, yB - yT);
+  c.save(); c.beginPath(); c.rect(x0, yT, x1 - x0, yB - yT); c.clip();
+  if (si === 1) { const r = U.rng(7); c.fillStyle = 'rgba(220,235,250,.22)'; for (let i = 0; i < 40; i++) { c.beginPath(); c.ellipse(x0 + r() * (x1 - x0), yT + r() * (yB - yT), 30 + r() * 60, 4 + r() * 6, 0, 0, TAU); c.fill(); } }
+  if (si === 2) { const r = U.rng(9); c.strokeStyle = 'rgba(255,255,255,.85)'; c.lineWidth = 2; for (let i = 0; i < 46; i++) { const x = x0 + r() * (x1 - x0), y = yT + r() * (yB - yT); c.beginPath(); c.moveTo(x, y); c.lineTo(x + 20 + r() * 40, y + (r() - .5) * 14); c.stroke(); } }
+  c.restore();
+  ln(x0, yT, x1, yT, 'rgba(28,36,64,.6)', 2.5); ln(x0, yB, x1, yB, 'rgba(28,36,64,.6)', 2.5);
+  ln(x0, yT + 6, x1, yT + 6, S.mark, 3); ln(x0, yB - 6, x1, yB - 6, S.mark, 3);
+  for (let i = 1; i < nL; i++) ln(x0, yT + i * LH, x1, yT + i * LH, S.mark, 3, [26, 20]);
+}
+function zebra(x, w, yT, yB, a) {
+  al(a * .92); c.fillStyle = '#f7f4ee';
+  for (let y = yT + 10; y < yB - 10; y += 26) { c.fillRect(x, y, w, 14); }
+  c.strokeStyle = 'rgba(28,36,64,.25)'; c.lineWidth = 1;
+  for (let y = yT + 10; y < yB - 10; y += 26) c.strokeRect(x + .5, y + .5, w - 1, 13);
+}
+function pedestrian(x, y, a, warn) {
+  al(a);
+  c.beginPath(); c.ellipse(x, y, 16, 9, 0, 0, TAU); c.fillStyle = '#c8401c'; c.fill(); c.strokeStyle = '#6e2410'; c.lineWidth = 2; c.stroke();
+  c.beginPath(); c.arc(x, y, 7, 0, TAU); c.fillStyle = '#4a3426'; c.fill();
+  if (warn > 0) {     // figyelmeztető háromszög (rajz, nem szöveg)
+    al(a * warn); const X = x + 40, Y = y + 2;
+    c.beginPath(); c.moveTo(X, Y - 16); c.lineTo(X + 16, Y + 12); c.lineTo(X - 16, Y + 12); c.closePath(); c.fillStyle = '#f2c230'; c.fill(); c.strokeStyle = BAD; c.lineWidth = 3; c.stroke();
+    c.fillStyle = INK; c.fillRect(X - 2, Y - 7, 4, 11); c.fillRect(X - 2, Y + 6, 4, 4);
+  }
+}
+
+/* ════════ reakcióút + fékút: zárt képletes modell ════════ */
+function brakeRun(v, tr, a) { const sr = v * tr, tb = v / a, sb = v * v / (2 * a); return { v, tr, a, sr, tb, sb, ss: sr + sb, T: tr + tb }; }
+function posAt(R, t) {
+  if (t <= R.tr) return { s: R.v * t, v: R.v, ph: t < 0 ? -1 : 0 };
+  const u = Math.min(t - R.tr, R.tb);
+  return { s: R.sr + R.v * u - .5 * R.a * u * u, v: Math.max(0, R.v - R.a * u), ph: t - R.tr >= R.tb ? 2 : 1 };
+}
+/* sebesség egy adott helyen (pl. a zebránál) */
+function speedAtS(R, s) { if (s <= R.sr) return R.v; if (s >= R.ss) return 0; return Math.sqrt(Math.max(0, R.v * R.v - 2 * R.a * (s - R.sr))); }
+const RX0 = 150, RX1 = 1300;
+function viewLen(d) { for (const o of [40, 60, 80, 100, 150, 200, 300, 400, 600, 800, 1000, 1500, 2000]) if (d * 1.08 + 4 <= o) return o; return 2000; }
+/* nézet-hossz simított váltással (zárt képlet) */
+const mkView = () => ({ from: 60, to: 60, t0: -9 });
+const viewAt = (V, st) => lerp(V.from, V.to, inOut((st - V.t0) / .7));
+function setView(V, st, d) { V.from = viewAt(V, st); V.to = viewLen(d); V.t0 = st; }
+function rulerH(y, VL, a) {
+  const PX = (RX1 - RX0) / VL, stp = niceStep(VL, 8);
+  al(a); ln(RX0, y, RX1, y, INK, 2.5);
+  for (let v = 0; v <= VL + 1e-6; v += stp) { const x = RX0 + v * PX; ln(x, y, x, y + 12, INK, 2.5); tx(fmt(v), x, y + 38, { f: F.M, s: 22, a: 'center', c: MUT, k: 'zebra távolsága' }); }
+  for (let v = stp / 2; v <= VL + 1e-6; v += stp) { const x = RX0 + v * PX; ln(x, y, x, y + 7, INK, 1.5); }
+  const lastV = Math.floor(VL / stp + 1e-6) * stp, lw = Math.abs(lastV - VL) < 1e-6 ? L.measure(fmt(lastV), { f: F.M, s: 22 }).w / 2 : 0;
+  tx('m', Math.max(RX1 + 10, RX1 + lw + 8), y + 38, { f: F.M, s: 22, c: MUT, qa: false });
+}
+/* sávra rajzolt reakció- és fékút */
+function bands(R, s, M, yc, LH, a) {
+  if (s <= 0) return;
+  al(a * .55); c.fillStyle = REA; c.fillRect(M(0), yc - LH / 2 + 8, M(Math.min(s, R.sr)) - M(0), LH - 16);
+  if (s > R.sr) { c.fillStyle = BRK; c.fillRect(M(R.sr), yc - LH / 2 + 8, M(s) - M(R.sr), LH - 16); }
+}
+/* időléptékkel (gyorsítva) lejátszott fékezés: τ = (st − tR − lead) · k */
+const lead = .8;
+const playK = (T) => Math.max(1, T / 5);
+
+/* ════════ 1. Út és elmozdulás ════════ */
+const MAP = { K: 560, H: [170, 920] };
+const S1 = { tB: null };
+function route1() { const L1 = num('első szakasz hossza'), L2 = num('második szakasz hossza'), K = MAP.K, [hx, hy] = MAP.H; return { L1, L2, K, H: [hx, hy], C: [hx + L1 * K, hy], S: [hx + L1 * K, hy - L2 * K] }; }
+function routePt(R, p) { return p <= R.L1 ? [R.H[0] + p * R.K, R.H[1]] : [R.C[0], R.C[1] - (p - R.L1) * R.K]; }
+function scene1(st, cur) {
+  const p0 = out(clamp(st / .6)), R = route1(), D = R.L1 + R.L2;
+  const uF = D * inOut(clamp((st - .8) / 4)), uB = S1.tB == null ? 0 : D * inOut(clamp((st - S1.tB) / 4));
+  const p = uF - uB, back = S1.tB != null && st > S1.tB;
+  // térkép
+  card(40, 60, 960, 980, p0);
+  c.save(); rr(40, 60, 960, 980, 18); c.clip();
+  const XS = [R.H[0], R.H[0] + 224, R.H[0] + 448, R.C[0]], YS = [R.H[1], R.H[1] - 252, R.S[1], R.S[1] - 252];
+  const rnd = U.rng(3);
+  // háztömbök
+  for (let i = -1; i < XS.length; i++) for (let j = -1; j < YS.length; j++) {
+    const xa = i < 0 ? 40 : XS[i] + 17, xb = i + 1 < XS.length ? XS[i + 1] - 17 : 1000, ya = j + 1 < YS.length ? YS[j + 1] + 17 : 60, yb = j < 0 ? 1040 : YS[j] - 17;
+    if (xb - xa < 20 || yb - ya < 20) continue;
+    al(p0);
+    if (i === 1 && j === 1) {   // park
+      rr(xa, ya, xb - xa, yb - ya, 10); c.fillStyle = '#cfe0bf'; c.fill(); c.strokeStyle = 'rgba(29,122,69,.5)'; c.lineWidth = 2; c.stroke();
+      for (let q = 0; q < 14; q++) { const tx_ = xa + 24 + rnd() * (xb - xa - 48), ty_ = ya + 24 + rnd() * (yb - ya - 48); if (Math.abs(ty_ - (ya + yb) / 2) < 34) continue; c.beginPath(); c.arc(tx_, ty_, 10 + rnd() * 8, 0, TAU); c.fillStyle = 'rgba(29,122,69,.55)'; c.fill(); }
+      T('park', (xa + xb) / 2, (ya + yb) / 2 + 8, { s: 24, w: 700, a: 'center', c: GOOD });
+      continue;
+    }
+    rr(xa, ya, xb - xa, yb - ya, 10); c.fillStyle = '#ece2d0'; c.fill(); c.strokeStyle = 'rgba(28,36,64,.18)'; c.lineWidth = 1.5; c.stroke();
+    for (let q = 0; q < 6; q++) { const w = 26 + rnd() * 30, h = 22 + rnd() * 26, x = xa + 8 + rnd() * Math.max(1, xb - xa - w - 16), y = ya + 8 + rnd() * Math.max(1, yb - ya - h - 16); rr(x, y, w, h, 3); c.fillStyle = '#d6c6a8'; c.fill(); c.strokeStyle = 'rgba(28,36,64,.25)'; c.stroke(); }
+  }
+  // utcák
+  al(p0); c.fillStyle = '#f8f4ec';
+  for (const x of XS) c.fillRect(x - 15, 60, 30, 980);
+  for (const y of YS) c.fillRect(40, y - 15, 960, 30);
+  c.strokeStyle = 'rgba(28,36,64,.12)'; c.lineWidth = 1.5;
+  for (const x of XS) { ln(x - 15, 60, x - 15, 1040, 'rgba(28,36,64,.12)', 1.5); ln(x + 15, 60, x + 15, 1040, 'rgba(28,36,64,.12)', 1.5); }
+  c.restore();
+  // tervezett útvonal
+  al(p0 * .8); c.beginPath(); c.moveTo(...R.H); c.lineTo(...R.C); c.lineTo(...R.S); c.strokeStyle = 'rgba(28,36,64,.35)'; c.lineWidth = 4; c.setLineDash([12, 10]); c.stroke(); c.setLineDash([]);
+  // megtett út (oda + vissza, a visszautat kicsit eltolva)
+  const trail = (u0, u1, off, col) => {
+    if (u1 - u0 < .001) return;
+    const pts = [routePt(R, u0)]; if (u0 < R.L1 && u1 > R.L1) pts.push(R.C); pts.push(routePt(R, u1));
+    c.beginPath(); pts.forEach(([x, y], i) => { const xx = x + off, yy = y + off; i ? c.lineTo(xx, yy) : c.moveTo(xx, yy); });
+    c.strokeStyle = col; c.lineWidth = 8; c.lineCap = 'round'; c.lineJoin = 'round'; c.stroke(); c.lineCap = 'butt';
+  };
+  al(p0); trail(0, uF, -5, RED);
+  if (uB > 0) trail(D - uB, D, 7, U.mix(RED, '#ffffff', .35));
+  // otthon, iskola
+  const house = (x, y, col) => { c.beginPath(); c.moveTo(x - 22, y + 18); c.lineTo(x - 22, y - 4); c.lineTo(x, y - 24); c.lineTo(x + 22, y - 4); c.lineTo(x + 22, y + 18); c.closePath(); c.fillStyle = col; c.fill(); c.strokeStyle = INK; c.lineWidth = 2.5; c.stroke(); };
+  al(p0); house(R.H[0] - 52, R.H[1] - 40, '#f2c230');
+  L.pill(lab('otthon'), R.H[0] - 52, R.H[1] + 46, { k: 'otthon', a: 'center', s: 26, w: 700, bg: INK, c: '#fff8ee', pad: 12 });
+  house(R.S[0] + 56, R.S[1] - 40, '#9fc3d6');
+  L.pill(lab('iskola'), R.S[0] + 56, R.S[1] - 96, { k: 'iskola', a: 'center', s: 26, w: 700, bg: INK, c: '#fff8ee', pad: 12 });
+  // elmozdulás-nyíl: a kiindulóponttól az autóig
+  const [cx, cy] = routePt(R, p), dpx = Math.hypot(cx - R.H[0], cy - R.H[1]), disp = dpx / R.K;
+  if (dpx > 14) {
+    al(p0); arrowTo(R.H[0], R.H[1], cx, cy, TEAL, 6, 24);
+    al(p0 * clamp((dpx - 160) / 60));
+    const mx = (R.H[0] + cx) / 2, my = (R.H[1] + cy) / 2, nx = -(cy - R.H[1]) / dpx, ny = (cx - R.H[0]) / dpx;
+    const ox = ny > 0 ? -nx : nx, oy = ny > 0 ? -ny : ny;   // a nyíl felső oldalára
+    L.pill(lab('elmozdulás') + ' ' + fmt(disp, 2) + ' km', mx + ox * 40, my + oy * 40, { k: ['elmozdulás', 'első szakasz hossza', 'második szakasz hossza'], a: 'center', s: 24, w: 700, bg: '#ffffff', bd: TEAL, c: TEAL, pad: 10 });
+  }
+  // autó
+  const ang = p < R.L1 || (p === R.L1 && !back) ? (back ? Math.PI : 0) : (back ? Math.PI / 2 : -Math.PI / 2);
+  al(p0); c.save(); c.translate(cx, cy); c.rotate(ang); carTop(26, 0, 52, 28, '#1b5a94', false, p0); c.restore();
+  // léptékjel
+  al(p0); const sb = .5 * R.K; rr(690, 966, sb + 30, 64, 8); c.fillStyle = 'rgba(255,250,241,.92)'; c.fill();
+  ln(705, 1016, 705 + sb, 1016, INK, 3); ln(705, 1008, 705, 1024, INK, 3); ln(705 + sb, 1008, 705 + sb, 1024, INK, 3);
+  tx('500 m', 705 + sb / 2, 998, { f: F.M, s: 22, w: 700, a: 'center', c: INK, qa: false });
+  // kijelzők
+  const vx = 1030, cw = 290;
+  card(vx, 60, cw, 420, p0);
+  al(p0); T('megtett út', vx + 22, 108, { s: 26, w: 700, c: RED });
+  tx(fmt(uF + uB, 2) + ' km', vx + 22, 166, { k: ['első szakasz hossza', 'második szakasz hossza'], f: F.M, s: 40, w: 700, c: RED });
+  T('az utcákon', vx + 22, 204, { s: 22, w: 500, i: 1, f: F.D, c: MUT });
+  ln(vx + 22, 236, vx + cw - 22, 236, LINE, 2);
+  T('elmozdulás', vx + 22, 286, { s: 26, w: 700, c: TEAL });
+  tx(fmt(disp, 2) + ' km', vx + 22, 344, { k: ['első szakasz hossza', 'második szakasz hossza'], f: F.M, s: 40, w: 700, c: TEAL });
+  T('légvonalban', vx + 22, 382, { s: 22, w: 500, i: 1, f: F.D, c: MUT });
+  if (S1.tB != null) { al(p0 * clamp((st - S1.tB - 4) / .5)); L.pill(lab('elmozdulás nulla'), vx + cw / 2, 440, { k: 'elmozdulás nulla', a: 'center', s: 26, w: 700, bg: GOOD, c: '#ffffff', pad: 12 }); }
+}
+
+/* ════════ 2. Átlagsebesség ════════ */
+const S2 = { w: 60, tR: .8 };
+function trip2() {
+  const L1 = num('első szakasz hossza') * 1000, L2 = num('második szakasz hossza') * 1000, v1 = kmh(num('első szakasz sebessége')), v2 = kmh(num('második szakasz sebessége'));
+  const t1 = L1 / v1, t2 = t1 + S2.w, T = t2 + L2 / v2;
+  return { L1, L2, v1, v2, t1, t2, T, D: L1 + L2 };
+}
+function pos2(R, t) { if (t <= 0) return 0; if (t <= R.t1) return R.v1 * t; if (t <= R.t2) return R.L1; return Math.min(R.D, R.L1 + R.v2 * (t - R.t2)); }
+function scene2(st, cur) {
+  const p0 = out(clamp(st / .6)), R = trip2(), k = num('időgyorsítás'), tau = Math.max(0, Math.min(R.T, (st - S2.tR) * k)), s = pos2(R, tau), done = (st - S2.tR) * k >= R.T;
+  const KD = ['első szakasz hossza', 'második szakasz hossza'];
+  // kiegyenesített útvonal
+  const SX0 = 150, SX1 = 1280, SY = 172, SX = (m) => SX0 + m / R.D * (SX1 - SX0), lx = SX(R.L1);
+  al(p0); rr(SX0 - 10, SY - 16, SX1 - SX0 + 20, 32, 16); c.fillStyle = '#8d9097'; c.fill(); c.strokeStyle = 'rgba(28,36,64,.6)'; c.lineWidth = 2; c.stroke();
+  ln(SX0, SY, SX1, SY, '#f3efe6', 3, [20, 16]);
+  al(p0); tx(fmt(num('első szakasz sebessége')) + ' km/h', (SX0 + lx) / 2, SY - 34, { k: 'első szakasz sebessége', f: F.M, s: 24, w: 700, a: 'center', c: INK });
+  tx(fmt(num('második szakasz sebessége')) + ' km/h', (lx + SX1) / 2, SY - 34, { k: 'második szakasz sebessége', f: F.M, s: 24, w: 700, a: 'center', c: INK });
+  T('otthon', SX0, SY + 50, { s: 24, w: 700, c: INK });
+  T('iskola', SX1, SY + 50, { s: 24, w: 700, a: 'right', c: INK });
+  // lámpa
+  const red = tau >= R.t1 && tau < R.t2;
+  al(p0); rr(lx - 15, SY - 92, 30, 58, 7); c.fillStyle = '#2a2f38'; c.fill(); ln(lx, SY - 34, lx, SY - 16, '#2a2f38', 4);
+  c.beginPath(); c.arc(lx, SY - 77, 9, 0, TAU); c.fillStyle = red ? '#ff3b1f' : '#5a2a22'; c.fill();
+  c.beginPath(); c.arc(lx, SY - 50, 9, 0, TAU); c.fillStyle = red ? '#1f4a2c' : '#2fd36b'; c.fill();
+  T('piros lámpa', lx, SY + 50, { s: 22, w: 600, a: 'center', c: MUT });
+  carTop(SX(s) + 2, SY, 54, 26, '#1b5a94', red, p0);
+  // eltelt idő + gyorsítás
+  al(p0); L.pill(lab('eltelt idő') + ': ' + fmt(tau) + ' s', 40, 60, { k: ['eltelt idő', 'első szakasz sebessége', 'második szakasz sebessége'], s: 24, f: F.M, w: 700, bg: '#ffffff', bd: INK, c: INK, pad: 10 });
+  timePill(k, 'gyorsítva', p0);
+  // út–idő grafikon
+  const G = { x: 150, y: 330, w: 1130, h: 360, xm: 350, ym: niceCeil(R.D / 1000, 5), xk: 'idő tengely', yk: 'út tengely km', xn: 7, yn: 5 };
+  const { X, Y } = axes(G, p0), Yk = (m) => Y(m / 1000);
+  // a két sebesség átlagával számolt (hibás) és a valódi átlagsebesség egyenese
+  const vm = (R.v1 + R.v2) / 2, vav = R.D / R.T;
+  if (done) {
+    const q = clamp(((st - S2.tR) * k - R.T) / k / .6);
+    al(p0 * q); ln(X(0), Yk(0), X(R.D / vm), Yk(R.D), BAD, 3, [12, 9]);
+    ln(X(0), Yk(0), X(R.T), Yk(R.D), GOOD, 3.5, [12, 9]);
+    const pb = { k: ['sebességek átlaga', 'első szakasz sebessége', 'második szakasz sebessége'], s: 24, w: 700, bg: '#ffffff', bd: BAD, c: BAD, pad: 10 };
+    pillIn(lab('sebességek átlaga') + ': ' + fmt(vm * 3.6) + ' km/h', X(R.D / vm) + 10, Yk(R.D) - 50, Object.assign({ a: 'right' }, pb));
+    const sg = lab('átlagsebesség') + ': ' + fmt(vav * 3.6, 1) + ' km/h', og = { k: ['átlagsebesség', 'várakozás a lámpánál'], s: 24, w: 700, bg: '#ffffff', bd: GOOD, c: GOOD, pad: 10 };
+    if (X(R.T) + 18 + pillW(sg, og) <= 1340) L.pill(sg, X(R.T) + 18, Yk(R.D), og); else pillIn(sg, X(R.T), Yk(R.D) - 52, Object.assign({ a: 'center' }, og));
+  }
+  // a menet görbéje
+  al(p0); c.beginPath(); c.moveTo(X(0), Yk(0));
+  for (const tt of [R.t1, R.t2, R.T]) { if (tt >= tau) break; c.lineTo(X(tt), Yk(pos2(R, tt))); }
+  c.lineTo(X(tau), Yk(s)); c.strokeStyle = INK; c.lineWidth = 4.5; c.lineJoin = 'round'; c.stroke();
+  c.beginPath(); c.arc(X(tau), Yk(s), 7, 0, TAU); c.fillStyle = RED; c.fill();
+  if (tau > R.t1 + 4 && R.t2 - R.t1 > 8) { al(p0); T('áll', X((R.t1 + Math.min(tau, R.t2)) / 2), Yk(R.L1) + 34, { s: 22, w: 700, a: 'center', c: RED }); }
+  // számolás
+  const vx = 40, vy = 780, cw = 1280; card(vx, vy, cw, 260, p0);
+  al(p0); T('sebességek átlaga', vx + 28, vy + 56, { s: 26, w: 700, c: BAD });
+  const s1 = '(' + fmt(num('első szakasz sebessége')) + ' + ' + fmt(num('második szakasz sebessége')) + ') / 2 = ' + fmt(vm * 3.6) + ' km/h';
+  const w1 = tx(s1, vx + 420, vy + 56, { k: ['első szakasz sebessége', 'második szakasz sebessége'], f: F.M, s: 26, w: 700, c: BAD }).w;
+  al(p0 * (done ? 1 : .0)); L.pill(lab('nem átlagsebesség'), vx + 440 + w1, vy + 48, { k: 'nem átlagsebesség', s: 24, w: 700, bg: BAD, c: '#ffffff', pad: 10 });
+  al(p0); ln(vx + 28, vy + 88, vx + cw - 28, vy + 88, LINE, 2);
+  const tt = Math.max(tau, 1e-9);
+  T(done ? 'átlagsebesség' : 'eddig', vx + 28, vy + 140, { s: 26, w: 700, c: GOOD });
+  T('összes út per idő', vx + 420, vy + 140, { s: 24, w: 600, i: 1, f: F.D, c: GOOD });
+  const s2 = '= ' + fmt(s) + ' m / ' + fmt(tau, 1) + ' s = ' + (tau > 0 ? fmt(s / tt, 2) + ' m/s ≈ ' + fmt(s / tt * 3.6, 1) + ' km/h' : '…');
+  tx(s2, vx + 420, vy + 190, { k: KD.concat(['első szakasz sebessége', 'második szakasz sebessége', 'várakozás a lámpánál']), f: F.M, s: 26, w: 700, c: GOOD, max: cw - 450 });
+  T('átváltás', vx + cw - 28, vy + 236, { f: F.M, s: 22, w: 600, a: 'right', c: MUT });
+}
+
+/* ════════ 3. Tehetetlenség: a fahasáb ════════ */
+const SURF3 = [
+  { btn: 'szőnyeg gomb', mu: 'súrlódás szőnyegen', col: '#8e2f6e', fill: '#b9879f' },
+  { btn: 'parketta gomb', mu: 'súrlódás parkettán', col: '#9a6b00', fill: '#d7b47a' },
+  { btn: 'jég gomb', mu: 'súrlódás jégen', col: '#0a6f86', fill: '#cfe5ee' },
+  { btn: 'súrlódásmentes gomb', mu: null, col: '#1d7a45', fill: '#e9efe6' },
+];
+const mu3 = (i) => SURF3[i].mu ? num(SURF3[i].mu) : 0;
+const S3 = { i: 1, tR: .6, runs: [1] };
+const TP3 = .3;   // a lökés ideje (s)
+function run3(i, t) {   // t: a lökés kezdete óta (s) → {s, v}
+  const v0 = num('hasáb kezdősebessége'), a = mu3(i) * gA();
+  if (t <= 0) return { s: 0, v: 0, ph: -1 };
+  if (t <= TP3) return { s: .5 * v0 / TP3 * t * t, v: v0 * t / TP3, ph: 0 };
+  const sp = .5 * v0 * TP3, u = t - TP3, ts = a > 0 ? v0 / a : 1e9, uu = Math.min(u, ts);
+  return { s: sp + v0 * uu - .5 * a * uu * uu, v: Math.max(0, v0 - a * uu), ph: u >= ts ? 2 : 1, slide: v0 * uu - .5 * a * uu * uu };
+}
+function scene3(st, cur) {
+  const p0 = out(clamp(st / .6)), i = S3.i, t = st - S3.tR, S = run3(i, t), PX = 150, yF = 470, BX0 = 260, bw = .6 * PX, bh = .45 * PX;
+  const cam = Math.max(0, S.s - 5.2), sx = (m) => BX0 + (m - cam) * PX, sf = SURF3[i];
+  // padló
+  al(p0); c.fillStyle = sf.fill; c.fillRect(40, yF, 1300, 46); c.strokeStyle = U.mix(sf.col, '#000000', .3); c.lineWidth = 2.5; ln(40, yF, 1340, yF, U.mix(sf.col, '#000000', .3), 3);
+  const r = U.rng(4 + i);
+  c.save(); c.beginPath(); c.rect(40, yF, 1300, 46); c.clip();
+  for (let m = Math.floor(cam) - 1; m < cam + 10; m += .25) { const x = sx(m), q = r(); if (i === 0) { c.fillStyle = 'rgba(110,30,70,.25)'; c.fillRect(x, yF + 6 + q * 30, 3, 6); } else if (i === 1) ln(x, yF, x, yF + 46, 'rgba(90,60,10,.35)', 1.5); else if (i === 2) ln(x, yF + 10 + q * 20, x + 24, yF + 16 + q * 20, 'rgba(255,255,255,.9)', 2); }
+  c.restore();
+  // méterjelek
+  for (let m = Math.max(0, Math.ceil(cam - 2)); m <= cam + 9; m++) { const x = sx(m); if (x < 40 || x > 1340) continue; al(p0); ln(x, yF + 46, x, yF + 60, INK, 2.5); tx(fmt(m) + ' m', x, yF + 90, { f: F.M, s: 22, a: 'center', c: MUT, k: 'hasáb kezdősebessége' }); }
+  // hasáb
+  const bx = sx(S.s) - bw;
+  al(p0); rr(bx, yF - bh, bw, bh, 6); c.fillStyle = '#c99a5b'; c.fill(); c.strokeStyle = '#5a3b16'; c.lineWidth = 3; c.stroke();
+  c.strokeStyle = 'rgba(90,59,22,.4)'; c.lineWidth = 2; for (let q = 1; q < 4; q++) ln(bx + 6, yF - bh + q * bh / 4, bx + bw - 6, yF - bh + q * bh / 4 + 3, 'rgba(90,59,22,.35)', 2);
+  // erők
+  if (S.ph <= 0) {   // a kéz közeledik, majd tol
+    const tip = bx - 4 - (S.ph < 0 ? clamp(-t / S3.tR) * 160 : 0);
+    al(p0 * (S.ph < 0 ? clamp(1 + t / S3.tR * 1.5) : 1)); arrowTo(tip - 120, yF - bh / 2, tip, yF - bh / 2, INK, 8, 24);
+    T('kezed tolja', tip - 60, yF - bh - 60, { s: 24, w: 700, a: 'center', c: INK });
+  } else if (S.ph === 1) {
+    if (mu3(i) > 0) {
+      const lenF = 40 + mu3(i) * 320; al(p0); arrowTo(bx + bw / 2, yF + 16, bx + bw / 2 - lenF, yF + 16, RED, 8, 24);
+      T('súrlódási erő', bx + bw / 2 - 40, yF + 132, { s: 24, w: 700, a: 'center', c: RED });
+    } else { al(p0); pillIn(lab('nincs erő'), bx + bw / 2, yF - bh - 70, { k: 'nincs erő', a: 'center', s: 26, w: 700, bg: GOOD, c: '#ffffff', pad: 12 }); }
+  }
+  // sebességnyíl (a mozgás iránya) – fékezéskor ellentétes a súrlódási erővel
+  if (S.v > .02) { al(p0); arrowTo(bx + bw / 2, yF - bh - 14, bx + bw / 2 + 20 + S.v * 50, yF - bh - 14, EM, 5, 18); tx('v', bx + bw / 2 + 28 + S.v * 50, yF - bh - 6, { f: F.D, i: 1, s: 30, w: 600, c: EM, k: 'hasáb kezdősebessége' }); }
+  // sebesség + csúszás
+  al(p0); L.pill('v = ' + fmt(S.v, 1) + ' m/s', 40, 300, { k: 'hasáb kezdősebessége', s: 26, f: F.M, w: 700, bg: '#ffffff', bd: INK, c: INK, pad: 10 });
+  L.pill(lab('csúszás') + ': ' + fmt(S.slide || 0, 1) + ' m', 300, 300, { k: ['csúszás', SURF3[i].mu || 'hasáb kezdősebessége'], s: 26, w: 700, bg: '#ffffff', bd: sf.col, c: sf.col, pad: 10 });
+  // tévhit
+  al(p0); const tw = L.pill(lab('tévhit erő'), 680, 110, { k: 'tévhit erő', a: 'center', s: 38, f: F.D, i: 1, w: 500, bg: '#ffffff', bd: BAD, c: BAD, pad: 18 });
+  const tEnd = S.ph === 2 ? TP3 + num('hasáb kezdősebessége') / (mu3(i) * gA()) : TP3 + 2.5, q = clamp((t - tEnd) / .5);
+  if (q > 0) { al(p0 * q); ln(tw.x + 10, tw.y + tw.h / 2, lerp(tw.x + 10, tw.x + tw.w - 10, q), tw.y + tw.h / 2, BAD, 4); al(p0 * clamp((t - tEnd - .3) / .5)); L.pill(lab('igazság erő'), 680, 196, { k: 'igazság erő', a: 'center', s: 30, w: 700, bg: GOOD, c: '#ffffff', pad: 14 }); }
+  // v–t grafikon, a korábbi menetekkel
+  const v0 = num('hasáb kezdősebessége'), G = { x: 130, y: 676, w: 780, h: 266, xm: 8, ym: niceCeil(v0 * 1.12, 4), xk: 'idő tengely', yk: 'sebesség tengely ms', xn: 8 };
+  const { X, Y } = axes(G, p0);
+  const curve = (j, tmax, a, wd) => { al(a); c.beginPath(); for (let k = 0; k <= 160; k++) { const tt = Math.min(tmax, G.xm) * k / 160, V = run3(j, tt).v; k ? c.lineTo(X(tt), Y(V)) : c.moveTo(X(tt), Y(V)); } c.strokeStyle = SURF3[j].col; c.lineWidth = wd; c.lineJoin = 'round'; c.stroke(); };
+  for (const j of S3.runs) if (j !== i) curve(j, G.xm, p0 * .45, 3.5);
+  if (t > 0) curve(i, t, p0, 5);
+  // eredmények
+  const vx = 970, vy = 640, cw = 350; card(vx, vy, cw, 330, p0);
+  SURF3.forEach((sf2, j) => {
+    const y = vy + 60 + j * 70, seen = S3.runs.includes(j), m = mu3(j);
+    al(p0 * (seen ? 1 : .35)); rr(vx + 22, y - 20, 22, 22, 5); c.fillStyle = sf2.col; c.fill();
+    T(sf2.btn, vx + 56, y, { s: 24, w: 700, c: sf2.col, max: 170 });
+    tx(m > 0 ? fmt(v0 * v0 / (2 * m * gA()), 1) + ' m' : '∞', vx + cw - 22, y, { k: [SURF3[j].mu || 'hasáb kezdősebessége', 'hasáb kezdősebessége'], f: F.M, s: 24, w: 700, a: 'right', c: sf2.col });
+    tx('μ = ' + fmt(m, 2), vx + 56, y + 28, { k: SURF3[j].mu || 'hasáb kezdősebessége', f: F.M, s: 22, c: MUT });
+  });
+}
+
+/* ════════ 4. Mi állítja meg az autót? (oldalnézet) ════════ */
+const S4 = { i: 0, tR: .8, runs: [0] };
+const PX4 = 90, XF4 = 760, YG4 = 430;
+function run4(i) { const v = kmh(num('városi sebesség')), a = decel(i); return { v, a, tb: v / a, sb: v * v / (2 * a), k: Math.max(1, v / a / 3.5) }; }
+function st4(R, tau) { if (tau <= 0) return { s: R.v * tau, v: R.v, ph: 0 }; const u = Math.min(tau, R.tb); return { s: R.v * u - .5 * R.a * u * u, v: R.v - R.a * u, ph: tau >= R.tb ? 2 : 1 }; }
+function scene4(st, cur) {
+  const p0 = out(clamp(st / .6)), i = S4.i, R = run4(i), tau = (st - S4.tR) * R.k, S = st4(R, tau), m = num('autó tömege'), sf = SURFS[i];
+  const KV = ['városi sebesség', sf.a];
+  // út oldalnézetben (a kamera követi az autót)
+  al(p0); c.fillStyle = sf.fill; c.fillRect(40, YG4, 1300, 26); ln(40, YG4, 1340, YG4, U.mix(sf.fill, '#000000', .55), 3);
+  c.fillStyle = '#d9cbb0'; c.fillRect(40, YG4 + 26, 1300, 40); ln(40, YG4 + 26, 1340, YG4 + 26, 'rgba(28,36,64,.3)', 2);
+  // fékút sávja (a fékezés kezdetétől az autó elejéig)
+  if (S.s > 0) { const xs = Math.max(40, XF4 - S.s * PX4); al(p0 * .55); c.fillStyle = BRK; c.fillRect(xs, YG4 + 3, XF4 - xs, 20); }
+  // jelzőoszlopok 5 m-enként
+  for (let p = Math.floor((S.s - 12) / 5) * 5; p <= S.s + 8; p += 5) {
+    const x = XF4 - (S.s - p) * PX4; if (x < 50 || x > 1330) continue;
+    al(p0); rr(x - 6, YG4 - 92, 12, 92, 3); c.fillStyle = '#f4f1ea'; c.fill(); c.strokeStyle = INK; c.lineWidth = 2; c.stroke();
+    c.fillStyle = '#2a2f38'; c.fillRect(x - 6, YG4 - 80, 12, 16); c.fillStyle = '#f08a24'; c.fillRect(x - 4, YG4 - 77, 8, 10);
+  }
+  carSide(XF4 - CAR.len * PX4, YG4, PX4, '#1b5a94', { a: p0, brake: S.ph === 1, rot: S.s / CAR.rW, inside: (P) => { steering(P, PX4); dummy(P, PX4, 0, 0, true); } });
+  // az út fékező ereje a kerekeken (hátrafelé)
+  if (S.ph === 1) {
+    const Fl = 30 + R.a * m / 10000 * 150;
+    al(p0); for (const wx of [CAR.w1, CAR.w2]) { const x = XF4 - (CAR.len - wx) * PX4; arrowTo(x, YG4 + 2, x - Fl, YG4 + 2, RED, 7, 22); }
+    T('fékerő', XF4 - CAR.len * PX4 / 2, YG4 + 100, { s: 24, w: 700, a: 'center', c: RED });
+  }
+  if (S.ph === 2) { al(p0 * clamp((tau - R.tb) / R.k / .4)); L.pill(lab('megállt'), XF4 + 30, YG4 - 160, { k: 'megállt', s: 24, w: 700, bg: INK, c: '#fff8ee', pad: 10 }); }
+  // felső kijelzők
+  al(p0); L.pill(fmt(num('városi sebesség')) + ' km/h = ' + fmt(R.v, 1) + ' m/s', 40, 60, { k: 'városi sebesség', s: 24, f: F.M, w: 700, bg: '#ffffff', bd: INK, c: INK, pad: 10 });
+  L.pill(lab(sf.btn), 40, 116, { k: sf.btn, s: 24, w: 700, bg: sf.col, c: '#ffffff', pad: 10 });
+  L.pill('v = ' + fmt(S.v * 3.6) + ' km/h', 40, 172, { k: 'városi sebesség', s: 24, f: F.M, w: 700, bg: '#ffffff', bd: EM, c: EM, pad: 10 });
+  timePill(R.k, 'gyorsítva', p0);
+  // v–t grafikon
+  const G = { x: 130, y: 610, w: 640, h: 300, xm: 16, ym: niceCeil(num('városi sebesség') * 1.1, 4), xk: 'idő tengely', yk: 'sebesség tengely', xn: 8 };
+  const { X, Y } = axes(G, p0);
+  const curve = (j, tm, a, wd) => { const Rj = run4(j); al(a); c.beginPath(); c.moveTo(X(0), Y(Rj.v * 3.6)); const te = Math.min(tm, Rj.tb); c.lineTo(X(te), Y((Rj.v - Rj.a * te) * 3.6)); if (tm > Rj.tb) c.lineTo(X(Math.min(tm, G.xm)), Y(0)); c.strokeStyle = SURFS[j].col; c.lineWidth = wd; c.stroke(); };
+  for (const j of S4.runs) if (j !== i) curve(j, G.xm, p0 * .45, 3.5);
+  if (tau > 0) curve(i, tau, p0, 5);
+  // számolás
+  const vx = 840, vy = 540, cw = 480; card(vx, vy, cw, 500, p0);
+  const row = (k, v, y, col, kv) => { al(p0); T(k, vx + 24, y, { s: 24, w: 600, c: col, max: 220 }); L.tx(v, vx + cw - 24, y, { k: kv, f: F.M, s: 26, w: 700, a: 'right', c: col }); };
+  row('lassulás', 'a = ' + fmt(R.a) + ' m/s²', vy + 50, INK, sf.a);
+  row('tömeg', 'm = ' + fmt(m) + ' kg', vy + 98, INK, 'autó tömege');
+  row('erő', 'F = ' + fmt(m * R.a) + ' N', vy + 146, RED, ['autó tömege', sf.a]);
+  row('fékidő', 't = ' + fmt(R.tb, 1) + ' s', vy + 194, INK, KV);
+  row('fékút', fmt(Math.max(0, S.s), 1) + ' m', vy + 242, BRK, KV);
+  al(p0); ln(vx + 24, vy + 270, vx + cw - 24, vy + 270, LINE, 2);
+  // energia: mozgási → belső
+  const E0 = .5 * m * R.v * R.v, Em = .5 * m * S.v * S.v, bx = vx + 24, bw = cw - 48, [dEm, dEb] = roundParts([Em / 1000, (E0 - Em) / 1000], E0 / 1000, 0);
+  al(p0); T('mozgási energia', bx, vy + 312, { s: 24, w: 700, c: EM });
+  tx(fmt(dEm) + ' kJ', vx + cw - 24, vy + 312, { k: ['autó tömege', 'városi sebesség'], f: F.M, s: 24, w: 700, a: 'right', c: EM });
+  rr(bx, vy + 324, bw, 22, 6); c.fillStyle = 'rgba(28,36,64,.06)'; c.fill(); if (Em > 1) { rr(bx, vy + 324, bw * Em / E0, 22, 6); c.fillStyle = EM; c.fill(); }
+  T('belső energia', bx, vy + 384, { s: 24, w: 700, c: EB });
+  tx(fmt(dEb) + ' kJ', vx + cw - 24, vy + 384, { k: ['autó tömege', 'városi sebesség'], f: F.M, s: 24, w: 700, a: 'right', c: EB });
+  rr(bx, vy + 396, bw, 22, 6); c.fillStyle = 'rgba(28,36,64,.06)'; c.fill(); if (E0 - Em > 1) { rr(bx, vy + 396, bw * (E0 - Em) / E0, 22, 6); c.fillStyle = EB; c.fill(); }
+  al(p0 * clamp((E0 - Em) / E0 * 3)); T('fék melegszik', bx, vy + 460, { s: 22, w: 500, i: 1, f: F.D, c: EB, max: bw });
+}
+
+/* ════════ közös: felülnézeti fékező jelenet ════════ */
+/* runs: [{R, col, yc}], VL: nézet, tau: idő (s) */
+function drawRuns(runs, VL, tau, M, LH, a, o = {}) {
+  for (const q of runs) { const S = posAt(q.R, tau); bands(q.R, S.s, M, q.yc, LH, a); }
+  if (o.mid) o.mid();
+  for (const q of runs) {
+    const S = posAt(q.R, tau), PX = (RX1 - RX0) / VL, len = Math.max(54, 4.5 * PX);
+    if (q.sensor && S.ph < 2) {     // érzékelők „látómezeje”
+      al(a * .5); const xf = M(S.s); c.beginPath(); c.moveTo(xf, q.yc); c.lineTo(xf + 300, q.yc - 60); c.lineTo(xf + 300, q.yc + 60); c.closePath();
+      const g = c.createLinearGradient(xf, 0, xf + 300, 0); g.addColorStop(0, U.rgba(TEAL, .55)); g.addColorStop(1, U.rgba(TEAL, 0)); c.fillStyle = g; c.fill();
+    }
+    carTop(M(S.s), q.yc, len, 40, q.col, S.ph === 1, a);
+  }
+}
+
+/* ════════ 5. Reakcióút + fékút ════════ */
+const S5 = { v: 50, tr: 1, i: 0, tR: 0, V: mkView() };
+function run5() { return brakeRun(kmh(S5.v), S5.tr, decel(S5.i)); }
+function restart5(st) { S5.tR = st; setView(S5.V, st, Math.max(run5().ss, num('zebra távolsága') + 6)); }
+function scene5(st, cur) {
+  const p0 = out(clamp(st / .6)), R = run5(), k = playK(R.T), tau = (st - S5.tR - lead) * k, S = posAt(R, tau), VL = viewAt(S5.V, st), PX = (RX1 - RX0) / VL, M = (s) => RX0 + s * PX;
+  const sf = SURFS[S5.i], dz = num('zebra távolsága'), KV = ['városi sebesség', 'reakcióidő', sf.a];
+  const yT = 118, LH = 80, yc = yT + LH * 1.5;
+  roadTop(40, 1340, yT, 2, LH, S5.i, p0);
+  drawRuns([{ R, col: '#1b5a94', yc }], VL, tau, M, LH, p0, { mid: () => zebra(M(dz), Math.max(16, 3 * PX), yT, yT + 2 * LH, p0 * .85) });
+  pedestrian(M(dz + 1.5), yT - 11, p0, tau >= 0 ? clamp(tau / k / .3) : 0);
+  // zebra-eredmény
+  if (R.ss > dz && S.s >= dz) {
+    al(p0); pillIn(lab('zebránál még') + ' ' + fmt(speedAtS(R, dz) * 3.6) + ' km/h', M(dz) + Math.max(16, 3 * PX) + 14, yT + LH / 2, { k: ['zebránál még'].concat(KV), s: 24, w: 700, bg: BAD, c: '#ffffff', pad: 10 });
+  } else if (R.ss <= dz && S.ph === 2) {
+    al(p0 * clamp((tau - R.T) / k / .4)); pillIn(lab('megáll előtte'), M(dz) + Math.max(16, 3 * PX) + 14, yT + LH / 2, { k: ['megáll előtte'].concat(KV), s: 24, w: 700, bg: GOOD, c: '#ffffff', pad: 10 });
+  }
+  rulerH(yT + 2 * LH + 44, VL, p0);
+  // zárójelek a vonalzó alatt
+  const yb = yT + 2 * LH + 108, sNow = Math.max(0, S.s), sr = Math.min(sNow, R.sr), sbn = Math.max(0, sNow - R.sr), [dr, db] = roundParts([sr, sbn], sNow);
+  if (sNow > 0) {
+    al(p0); ln(M(0), yb, M(sr), yb, REA, 8);
+    const s1 = lab('reakcióút') + ' ' + M1(dr), w1 = L.measure(s1, { s: 24, w: 700 }).w;
+    tx(s1, clamp((M(0) + M(sr)) / 2, RX0 + w1 / 2 - 100, 1340 - w1 / 2), yb + 32, { k: ['reakcióút'].concat(KV), s: 24, w: 700, a: 'center', c: REA });
+    if (sbn > 0) {
+      ln(M(R.sr), yb, M(sNow), yb, BRK, 8);
+      const s2 = lab('fékút') + ' ' + M1(db), w2 = L.measure(s2, { s: 24, w: 700 }).w;
+      tx(s2, clamp((M(R.sr) + M(sNow)) / 2, RX0 + w2 / 2 - 100, 1340 - w2 / 2), yb + 66, { k: ['fékút'].concat(KV), s: 24, w: 700, a: 'center', c: BRK });
+    }
+  }
+  // felső sor
+  al(p0); L.pill(fmt(S5.v) + ' km/h = ' + fmt(R.v, 1) + ' m/s', 40, 56, { k: 'városi sebesség', s: 24, f: F.M, w: 700, bg: '#ffffff', bd: INK, c: INK, pad: 10 });
+  const pw = L.pill(lab(sf.btn) + ' · a = ' + fmt(R.a) + ' m/s²', 360, 56, { k: [sf.btn, sf.a], s: 24, w: 700, bg: sf.col, c: '#ffffff', pad: 10 });
+  timePill(k, 'gyorsítva', p0, 1320, 56);
+  // grafikonok
+  const tm = niceCeil(R.T * 1.05, 5), Gv = { x: 120, y: 520, w: 500, h: 210, xm: tm, ym: niceCeil(S5.v, 4), xk: 'idő tengely', yk: 'sebesség tengely', xn: 5 };
+  const A = axes(Gv, p0), tc = clamp(tau, 0, R.T);
+  if (tau > 0) {
+    al(p0 * .45); c.fillStyle = REA; c.fillRect(A.X(0), A.Y(S5.v), A.X(Math.min(tc, R.tr)) - A.X(0), A.Y(0) - A.Y(S5.v));
+    if (tc > R.tr) { c.beginPath(); c.moveTo(A.X(R.tr), A.Y(0)); c.lineTo(A.X(R.tr), A.Y(S5.v)); c.lineTo(A.X(tc), A.Y(posAt(R, tc).v * 3.6)); c.lineTo(A.X(tc), A.Y(0)); c.closePath(); c.fillStyle = BRK; c.fill(); }
+    al(p0); c.beginPath(); c.moveTo(A.X(0), A.Y(S5.v)); c.lineTo(A.X(Math.min(tc, R.tr)), A.Y(S5.v)); if (tc > R.tr) c.lineTo(A.X(tc), A.Y(posAt(R, tc).v * 3.6)); if (tau > R.T) c.lineTo(A.X(Math.min(tau, tm)), A.Y(0));
+    c.strokeStyle = INK; c.lineWidth = 4; c.lineJoin = 'round'; c.stroke();
+    al(p0 * clamp((tau - R.T) / k / .5)); T('terület', Gv.x + Gv.w, Gv.y + 4, { s: 22, w: 500, i: 1, f: F.D, a: 'right', c: MUT });
+  }
+  const Gs = { x: 800, y: 520, w: 500, h: 210, xm: tm, ym: niceCeil(Math.max(R.ss, dz) * 1.05, 4), xk: 'idő tengely', yk: 'út tengely', xn: 5 };
+  const B = axes(Gs, p0);
+  if (dz <= Gs.ym) { al(p0 * .8); ln(B.X(0), B.Y(dz), B.X(tm), B.Y(dz), U.rgba(INK, .55), 2, [8, 6]); al(p0); T('zebra', B.X(tm) - 4, B.Y(dz) + (R.ss > dz ? 28 : -10), { s: 22, w: 600, a: 'right', c: MUT }); }
+  if (tau > 0) {
+    al(p0); const seg = (t0, t1, col) => { if (t1 <= t0) return; c.beginPath(); for (let j = 0; j <= 60; j++) { const tt = t0 + (t1 - t0) * j / 60, p = posAt(R, tt); j ? c.lineTo(B.X(tt), B.Y(p.s)) : c.moveTo(B.X(tt), B.Y(p.s)); } c.strokeStyle = col; c.lineWidth = 4.5; c.stroke(); };
+    seg(0, Math.min(tc, R.tr), REA); seg(R.tr, tc, BRK);
+    if (tau > R.T) ln(B.X(R.T), B.Y(R.ss), B.X(Math.min(tau, tm)), B.Y(R.ss), INK, 4);
+  }
+  // számolás
+  const vx = 40, vy = 840, cw = 1280, col = 427; card(vx, vy, cw, 200, p0);
+  const [ar, ab] = roundParts([R.sr, R.sb], R.ss);
+  const cx = [vx + 26, vx + 26 + col, vx + 26 + 2 * col];
+  al(p0); ln(vx + col, vy + 20, vx + col, vy + 180, LINE, 2); ln(vx + 2 * col, vy + 20, vx + 2 * col, vy + 180, LINE, 2);
+  T('reakcióút', cx[0], vy + 44, { s: 26, w: 700, c: REA });
+  formula([['s', 'r'], ['=', ''], ['v', ''], ['·', ''], ['t', 'r']], cx[0], vy + 98, { s: 34, c: REA, gap: 8 });
+  tx(fmt(R.v, 1) + ' m/s · ' + fmt(R.tr, 1) + ' s', cx[0], vy + 142, { k: ['városi sebesség', 'reakcióidő'], f: F.M, s: 23, w: 600, c: INK, max: col - 40 });
+  tx('= ' + M1(ar), cx[0], vy + 180, { k: ['városi sebesség', 'reakcióidő'], f: F.M, s: 26, w: 700, c: REA });
+  T('fékút', cx[1], vy + 44, { s: 26, w: 700, c: BRK });
+  formula([['s', 'f'], ['=', ''], ['v²', ''], ['/', ''], ['(2 · a)', '']], cx[1], vy + 98, { s: 34, c: BRK, gap: 8 });
+  tx('(' + fmt(R.v, 1) + ' m/s)² / (2 · ' + fmt(R.a) + ' m/s²)', cx[1], vy + 142, { k: ['városi sebesség', sf.a], f: F.M, s: 23, w: 600, c: INK, max: col - 40 });
+  tx('= ' + M1(ab), cx[1], vy + 180, { k: ['városi sebesség', sf.a], f: F.M, s: 26, w: 700, c: BRK });
+  T('megállási út', cx[2], vy + 44, { s: 26, w: 700, c: INK });
+  formula([['s', ''], ['=', ''], ['s', 'r'], ['+', ''], ['s', 'f']], cx[2], vy + 98, { s: 34, c: INK, gap: 8 });
+  tx(M1(ar) + ' + ' + M1(ab), cx[2], vy + 142, { k: KV, f: F.M, s: 23, w: 600, c: INK, max: col - 40 });
+  tx('= ' + M1(ar + ab), cx[2], vy + 182, { k: KV, f: F.M, s: 30, w: 800, c: INK });
+}
+
+/* ════════ 6. Kétszer gyorsabb – négyszer hosszabb fékút ════════ */
+const S6 = { v: 45, tR: 0, V: mkView() };
+const CA = '#1b5a94', CB = '#8e2f6e';
+function runs6() { const a = decel(0); return [brakeRun(kmh(S6.v), 0, a), brakeRun(kmh(2 * S6.v), 0, a)]; }
+function restart6(st) { S6.tR = st; setView(S6.V, st, runs6()[1].ss); }
+function scene6(st, cur) {
+  const p0 = out(clamp(st / .6)), [RA, RB] = runs6(), k = playK(RB.T), tau = (st - S6.tR - lead) * k, VL = viewAt(S6.V, st), PX = (RX1 - RX0) / VL, M = (s) => RX0 + s * PX;
+  const yT = 130, LH = 80, KV = ['lassabb autó sebessége', 'lassulás száraz úton'];
+  roadTop(40, 1340, yT, 2, LH, 0, p0);
+  // a fékezés kezdete
+  al(p0); ln(M(0), yT - 22, M(0), yT + 2 * LH + 22, INK, 3, [8, 6]); T('fékezés kezdete', M(0) - 6, yT - 34, { s: 22, w: 600, c: INK });
+  drawRuns([{ R: RA, col: CA, yc: yT + LH / 2 }, { R: RB, col: CB, yc: yT + LH * 1.5 }], VL, tau, M, LH, p0);
+  rulerH(yT + 2 * LH + 44, VL, p0);
+  // ahol a lassabb megállt, ott a gyorsabb még…
+  const SB = posAt(RB, tau);
+  if (SB.s >= RA.ss) {
+    const x = M(RA.ss); al(p0); ln(x, yT + LH / 2 - 30, x, yT + 2 * LH + 40, BAD, 3, [6, 5]);
+    pillIn(lab('itt még') + ' ' + fmt(speedAtS(RB, RA.ss) * 3.6) + ' km/h', x - 30, yT + 2 * LH + 110, { k: ['itt még'].concat(KV), s: 24, w: 700, bg: BAD, c: '#ffffff', pad: 10 });
+  }
+  // felső sor
+  al(p0); const pa = L.pill(lab('lassabb') + ': ' + fmt(S6.v) + ' km/h', 40, 56, { k: ['lassabb', 'lassabb autó sebessége'], s: 24, w: 700, bg: CA, c: '#ffffff', pad: 10 });
+  L.pill(lab('gyorsabb') + ': ' + fmt(2 * S6.v) + ' km/h', pa.x + pa.w + 16, 56, { k: ['gyorsabb', 'lassabb autó sebessége'], s: 24, w: 700, bg: CB, c: '#ffffff', pad: 10 });
+  timePill(k, 'gyorsítva', p0, 1320, 56);
+  // fékút–sebesség grafikon (parabola)
+  const a = decel(0), G = { x: 130, y: 512, w: 540, h: 268, xm: 140, ym: niceCeil(kmh(140) ** 2 / (2 * a), 4), xk: 'sebesség tengely', yk: 'fékút tengely', xn: 7 };
+  const { X, Y } = axes(G, p0);
+  al(p0); c.beginPath(); for (let j = 0; j <= 100; j++) { const v = 140 * j / 100; const y = kmh(v) ** 2 / (2 * a); j ? c.lineTo(X(v), Y(y)) : c.moveTo(X(v), Y(y)); } c.strokeStyle = BRK; c.lineWidth = 4; c.stroke();
+  for (const [R, col, vk] of [[RA, CA, S6.v], [RB, CB, 2 * S6.v]]) {
+    al(p0 * .8); ln(X(vk), Y(0), X(vk), Y(R.sb), col, 2, [6, 5]); ln(X(0), Y(R.sb), X(vk), Y(R.sb), col, 2, [6, 5]);
+    al(p0); c.beginPath(); c.arc(X(vk), Y(R.sb), 9, 0, TAU); c.fillStyle = col; c.fill(); c.strokeStyle = '#ffffff'; c.lineWidth = 2.5; c.stroke();
+  }
+  // táblázat
+  const vx = 740, vy = 476, cw = 580, ca = vx + 330, cb = vx + 455, cc = vx + cw - 24; card(vx, vy, cw, 340, p0);
+  const m = num('autó tömege'), EA = .5 * m * RA.v * RA.v, EBn = .5 * m * RB.v * RB.v;
+  al(p0); rr(ca - 110, vy + 30, 110, 12, 4); c.fillStyle = CA; c.fill(); rr(cb - 110, vy + 30, 110, 12, 4); c.fillStyle = CB; c.fill();
+  const row = (kk, va, vb, ratio, y, col, kv) => { al(p0); T(kk, vx + 24, y, { s: 24, w: 600, c: col, max: 200 }); L.tx(va, ca, y, { k: kv, f: F.M, s: 24, w: 700, a: 'right', c: CA }); L.tx(vb, cb, y, { k: kv, f: F.M, s: 24, w: 700, a: 'right', c: CB }); L.tx(ratio, cc, y, { k: kv, f: F.M, s: 26, w: 800, a: 'right', c: col }); };
+  row('sebesség tengely', fmt(S6.v), fmt(2 * S6.v), fmt(2, 1) + '×', vy + 96, INK, KV);
+  row('mozgási energia', fmt(EA / 1000) + ' kJ', fmt(EBn / 1000) + ' kJ', fmt(EBn / EA, 1) + '×', vy + 160, EM, KV.concat(['autó tömege']));
+  row('fékút', M1(RA.sb), M1(RB.sb), fmt(RB.sb / RA.sb, 1) + '×', vy + 224, BRK, KV);
+  al(p0); ln(vx + 24, vy + 256, vx + cw - 24, vy + 256, LINE, 2);
+  T('képlet erő', vx + cw / 2, vy + 304, { s: 24, w: 500, i: 1, f: F.D, a: 'center', c: INK, max: cw - 48 });
+  // tanulság
+  const q = p0 * clamp((tau - RB.T) / k / .6);
+  al(q); rr(40, 872, 1280, 140, 18); c.fillStyle = U.rgba(RED, .09); c.fill(); c.strokeStyle = U.rgba(RED, .5); c.lineWidth = 2; c.stroke();
+  T('négyszer', 680, 958, { f: F.D, i: 1, s: 46, w: 500, a: 'center', c: RED, max: 1220 });
+}
+
+/* ════════ 7. Önvezető autó ════════ */
+const S7 = { v: 50, i: 0, tR: 0, V: mkView() };
+const DRV = [{ k: 'telefonozó', tr: 'telefonozó reakcióideje', col: '#b06a1a' }, { k: 'figyelő', tr: 'reakcióidő', col: '#1b5a94' }, { k: 'önvezető', tr: 'önvezető reakcióideje', col: '#0a6f86', sensor: true }];
+function runs7() { const a = decel(S7.i); return DRV.map((d) => brakeRun(kmh(S7.v), num(d.tr), a)); }
+function restart7(st) { S7.tR = st; setView(S7.V, st, Math.max(runs7()[0].ss, num('zebra távolsága') + 6)); }
+function scene7(st, cur) {
+  const p0 = out(clamp(st / .6)), RS = runs7(), k = playK(RS[0].T), tau = (st - S7.tR - lead) * k, VL = viewAt(S7.V, st), PX = (RX1 - RX0) / VL, M = (s) => RX0 + s * PX;
+  const sf = SURFS[S7.i], dz = num('zebra távolsága'), yT = 118, LH = 80;
+  roadTop(40, 1340, yT, 3, LH, S7.i, p0);
+  drawRuns(RS.map((R, j) => ({ R, col: DRV[j].col, yc: yT + LH * (j + .5), sensor: DRV[j].sensor })), VL, tau, M, LH, p0, { mid: () => zebra(M(dz), Math.max(16, 3 * PX), yT, yT + 3 * LH, p0 * .85) });
+  pedestrian(M(dz + 1.5), yT - 11, p0, tau >= 0 ? clamp(tau / k / .3) : 0);
+  const S3_ = posAt(RS[2], tau);
+  if (S3_.ph < 2) { al(p0); pillIn(lab('érzékelők'), M(S3_.s) + 40, yT + LH * 2.5, { k: 'érzékelők', s: 22, w: 700, bg: TEAL, c: '#ffffff', pad: 8 }); }
+  rulerH(yT + 3 * LH + 44, VL, p0);
+  al(p0); L.pill(fmt(S7.v) + ' km/h = ' + fmt(kmh(S7.v), 1) + ' m/s', 40, 56, { k: 'városi sebesség', s: 24, f: F.M, w: 700, bg: '#ffffff', bd: INK, c: INK, pad: 10 });
+  L.pill(lab(sf.btn) + ' · a = ' + fmt(decel(S7.i)) + ' m/s²', 360, 56, { k: [sf.btn, sf.a], s: 24, w: 700, bg: sf.col, c: '#ffffff', pad: 10 });
+  timePill(k, 'gyorsítva', p0, 1320, 56);
+  // táblázat
+  const vx = 40, vy = 480, cw = 1280; card(vx, vy, cw, 330, p0);
+  const C = [vx + 500, vx + 690, vx + 870, vx + 1060, vx + cw - 26], KV = ['városi sebesség', sf.a];
+  al(p0); T('reakcióidő oszlop', C[0], vy + 50, { s: 22, w: 600, a: 'right', c: MUT }); T('reakcióút', C[1], vy + 50, { s: 22, w: 600, a: 'right', c: REA });
+  T('fékút', C[2], vy + 50, { s: 22, w: 600, a: 'right', c: BRK }); T('megállási út', C[3], vy + 50, { s: 22, w: 600, a: 'right', c: INK }); T('zebránál', C[4], vy + 50, { s: 22, w: 600, a: 'right', c: MUT });
+  ln(vx + 24, vy + 70, vx + cw - 24, vy + 70, LINE, 2);
+  RS.forEach((R, j) => {
+    const y = vy + 128 + j * 70, d = DRV[j], kv = KV.concat([d.tr]), [ar, ab] = roundParts([R.sr, R.sb], R.ss), done = tau >= R.T;
+    al(p0); rr(vx + 26, y - 22, 46, 26, 7); c.fillStyle = d.col; c.fill(); c.strokeStyle = U.mix(d.col, '#000000', .4); c.lineWidth = 2; c.stroke();
+    T(d.k, vx + 90, y, { s: 26, w: 700, c: d.col });
+    tx(fmt(R.tr, 1) + ' s', C[0], y, { k: d.tr, f: F.M, s: 26, w: 700, a: 'right', c: INK });
+    tx(M1(ar), C[1], y, { k: kv, f: F.M, s: 26, w: 700, a: 'right', c: REA });
+    tx(M1(ab), C[2], y, { k: kv, f: F.M, s: 26, w: 700, a: 'right', c: BRK });
+    tx(M1(ar + ab), C[3], y, { k: kv, f: F.M, s: 26, w: 800, a: 'right', c: INK });
+    al(p0 * (done || R.ss > dz && posAt(R, tau).s >= dz ? 1 : .0));
+    if (R.ss > dz) L.pill(fmt(speedAtS(R, dz) * 3.6) + ' km/h', C[4], y - 8, { k: ['zebránál'].concat(kv), a: 'right', s: 24, f: F.M, w: 700, bg: BAD, c: '#ffffff', pad: 9 });
+    else L.pill(lab('megállt'), C[4], y - 8, { k: ['megállt'].concat(kv), a: 'right', s: 24, w: 700, bg: GOOD, c: '#ffffff', pad: 9 });
+  });
+  // a fékút mindhárom autónál ugyanannyi
+  const q = p0 * clamp((tau - RS[0].T) / k / .6);
+  al(q); rr(40, 850, 1280, 150, 18); c.fillStyle = U.rgba(RED, .09); c.fill(); c.strokeStyle = U.rgba(RED, .5); c.lineWidth = 2; c.stroke();
+  const tw = T('ugyanannyi', 640, 940, { f: F.D, i: 1, s: 40, w: 500, a: 'center', c: RED, max: 900 });
+  tx(M1(roundParts([RS[0].sr, RS[0].sb], RS[0].ss)[1]), tw.x + tw.w + 20, 940, { k: KV, f: F.M, s: 40, w: 800, c: BRK });
+}
+
+/* ════════ 8. Öv és légzsák (oldalnézet, lassítva) ════════ */
+const S8 = { v: 50, tR: 0 };
+const PX8 = 160, XB8 = 1180;
+function crash8() {
+  const v = kmh(S8.v), dc = num('gyűrődési zóna'), db = num('test megállási útja övvel'), gap = num('távolság a kormányig'), dh = num('test megállási útja öv nélkül');
+  const ac = v * v / (2 * dc), tc = 2 * dc / v, ab = v * v / (2 * db), tb = 2 * db / v;
+  const th = (dc + gap) / v, ah = v * v / (2 * dh), te = th + 2 * dh / v;     // öv nélkül: a kormányba csapódás (az autó már áll, mert gap ≥ dc)
+  return { v, dc, db, gap, dh, ac, tc, ab, tb, th, ah, te, lead: .6 / v };
+}
+function car8(C, t) { if (t <= 0) return { x: C.v * t, v: C.v }; const u = Math.min(t, C.tc); return { x: C.v * u - .5 * C.ac * u * u, v: C.v - C.ac * u }; }
+function body8(C, t, belt) {
+  if (t <= 0) return { x: C.v * t, v: C.v };
+  if (belt) { const u = Math.min(t, C.tb); return { x: C.v * u - .5 * C.ab * u * u, v: C.v - C.ab * u }; }
+  if (t <= C.th) return { x: C.v * t, v: C.v };
+  const u = Math.min(t - C.th, C.te - C.th); return { x: C.dc + C.gap + C.v * u - .5 * C.ah * u * u, v: C.v - C.ah * u, hit: true };
+}
+function scene8(st, cur) {
+  const p0 = out(clamp(st / .6)), C = crash8(), kS = num('ütközési lassítás'), t = (st - S8.tR) / kS - C.lead, m = num('utas tömege'), g = gA();
+  const KV = ['városi sebesség', 'utas tömege', 'gyűrődési zóna'];
+  const rows = [{ y: 70, belt: true, key: 'bekötve', d: C.db, kd: 'test megállási útja övvel' }, { y: 455, belt: false, key: 'bekötetlen', d: C.dh, kd: 'test megállási útja öv nélkül' }];
+  for (const rw of rows) {
+    const yg = rw.y + 330, cs = car8(C, t), bs = body8(C, t, rw.belt), rel = Math.max(0, bs.x - cs.x);
+    // talaj + fal
+    al(p0); c.fillStyle = '#8d9097'; c.fillRect(40, yg, 1300, 18); ln(40, yg, 1340, yg, 'rgba(28,36,64,.6)', 2.5);
+    rr(XB8, yg - 1.3 * PX8, 140, 1.3 * PX8, 6); c.fillStyle = '#a7adb5'; c.fill(); c.strokeStyle = '#2c3644'; c.lineWidth = 3; c.stroke();
+    c.save(); c.beginPath(); c.rect(XB8, yg - 1.3 * PX8, 140, 1.3 * PX8); c.clip(); for (let q = -200; q < 200; q += 26) ln(XB8 + q, yg, XB8 + q + 200, yg - 200, 'rgba(28,36,64,.18)', 6); c.restore();
+    const xr = XB8 + (cs.x - CAR.len) * PX8, cr = Math.max(0, cs.x);
+    const th = rw.belt ? Math.asin(clamp(rel * .8 / DUM.tor, 0, .9)) : 0;
+    carSide(xr, yg, PX8, rw.belt ? '#7d8a99' : '#9a8f7d', { a: p0, cr, inside: (P) => {
+      steering(P, PX8);
+      if (rw.belt) {   // légzsák: kb. 30 ms alatt fúvódik fel
+        const q = clamp((t - .012) / .03); if (q > 0) { const [ax, ay] = P(chestFront() + C.gap - .12, 1.08); c.beginPath(); c.arc(ax, ay, .2 * PX8 * q, 0, TAU); c.fillStyle = 'rgba(245,245,240,.95)'; c.fill(); c.strokeStyle = '#8a8f99'; c.lineWidth = 2; c.stroke(); }
+      }
+      dummy(P, PX8, rel, th, rw.belt);
+    } });
+    // a fej „stroboszkópos” nyomai (egyenlő időközönként): öv nélkül egyenletesen halad tovább
+    for (let tt = -C.lead; tt < Math.min(t, rw.belt ? C.tb : C.te) - .004; tt += .01) {
+      const c2 = car8(C, tt), b2 = body8(C, tt, rw.belt), r2 = Math.max(0, b2.x - c2.x), th2 = rw.belt ? Math.asin(clamp(r2 * .8 / DUM.tor, 0, .9)) : 0;
+      const hx = DUM.hip[0] + (rw.belt ? r2 * .2 : r2) + Math.sin(.22 + th2) * (DUM.tor + .16), hy = DUM.hip[1] + Math.cos(.22 + th2) * (DUM.tor + .16);
+      al(p0 * .5); c.beginPath(); c.arc(XB8 + (c2.x - CAR.len + hx) * PX8, yg - hy * PX8, DUM.head * PX8 * .55, 0, TAU); c.strokeStyle = rw.belt ? GOOD : BAD; c.lineWidth = 2; c.stroke();
+    }
+    if (!rw.belt && bs.hit) {   // becsapódás
+      const q = clamp(1 - (t - C.th) / .04); if (q > 0) { const [hx2, hy2] = [XB8 + (cs.x - CAR.len + chestFront() + C.gap) * PX8, yg - 1.0 * PX8]; al(p0 * q); c.beginPath(); for (let j = 0; j < 16; j++) { const an = j * TAU / 16, rr2 = j % 2 ? 18 : 44; c.lineTo(hx2 + Math.cos(an) * rr2, hy2 + Math.sin(an) * rr2); } c.closePath(); c.fillStyle = '#f2c230'; c.fill(); c.strokeStyle = BAD; c.lineWidth = 3; c.stroke(); }
+    }
+    if (!rw.belt && t > -C.lead + .01) {   // a test egyenes vonalú pályája
+      const hy = DUM.hip[1] + Math.cos(.22) * (DUM.tor + .16), y = yg - hy * PX8 - 50;
+      al(p0 * .8); arrowTo(XB8 - 700, y, XB8 - 40, y, BAD, 3, 16);
+      T('tovább halad', XB8 - 370, y - 14, { s: 24, w: 700, a: 'center', c: BAD });
+    }
+    // kijelzők
+    al(p0); T(rw.key, 40, rw.y + 34, { s: 28, w: 700, c: rw.belt ? GOOD : BAD });
+    T('sebesség', 40, rw.y + 82, { s: 22, w: 600, c: MUT });
+    const wl = Math.max(L.measure(lab('autó') + ':', { s: 24, w: 700 }).w, L.measure(lab('test') + ':', { s: 24, w: 700 }).w) + 14;
+    L.tx(lab('autó') + ':', 40, rw.y + 120, { k: 'autó', s: 24, w: 700, c: MUT }); tx(fmt(cs.v * 3.6) + ' km/h', 40 + wl, rw.y + 120, { k: 'városi sebesség', f: F.M, s: 26, w: 700, c: MUT });
+    L.tx(lab('test') + ':', 40, rw.y + 158, { k: 'test', s: 24, w: 700, c: INK }); tx(fmt(bs.v * 3.6) + ' km/h', 40 + wl, rw.y + 158, { k: 'városi sebesség', f: F.M, s: 26, w: 800, c: INK });
+    const Fv = m * C.v * C.v / (2 * rw.d), done = rw.belt ? t >= C.tb : t >= C.te;
+    al(p0 * (done ? 1 : 0));
+    T('átlagos erő', 40, rw.y + 206, { s: 22, w: 600, c: MUT });
+    tx(fmt(Fv / 1000, Fv < 99500 ? 1 : 0) + ' kN', 40, rw.y + 244, { k: KV.concat([rw.kd]), f: F.M, s: 32, w: 800, c: rw.belt ? GOOD : BAD });
+    T('súlya', 40, rw.y + 278, { s: 22, w: 500, i: 1, f: F.D, c: MUT });
+    tx(fmt(Math.round(Fv / g / 10) * 10) + ' kg', 40, rw.y + 312, { k: KV.concat([rw.kd]), f: F.M, s: 26, w: 700, c: INK });
+  }
+  timePill(kS, 'lassítva', p0, 1320, 40);
+  // összehasonlítás
+  const vx = 40, vy = 862, cw = 1280; card(vx, vy, cw, 178, p0);
+  const done = t >= Math.max(C.te, C.tb);
+  al(p0 * (done ? 1 : .3)); T('arány', vx + 28, vy + 54, { s: 26, w: 700, c: BAD });
+  tx(fmt(C.db / C.dh, 0) + '×', vx + cw - 28, vy + 54, { k: ['test megállási útja övvel', 'test megállási útja öv nélkül'], f: F.M, s: 30, w: 800, a: 'right', c: BAD });
+  al(p0); ln(vx + 28, vy + 82, vx + cw - 28, vy + 82, LINE, 2);
+  T('zuhanás', vx + 28, vy + 130, { s: 26, w: 700, c: INK });
+  tx(fmt(C.v * C.v / (2 * g), 1) + ' m', vx + cw - 28, vy + 130, { k: ['városi sebesség', 'nehézségi gyorsulás'], f: F.M, s: 30, w: 800, a: 'right', c: INK });
+  T('képlet erő', vx + 28, vy + 166, { s: 22, w: 500, i: 1, f: F.D, c: MUT });
+}
+
+/* ════════ 9. Összefoglalás ════════ */
+function scene9(st) {
+  const p0 = out(clamp(st / .6)), a = decel(0), tr = num('reakcióidő');
+  card(40, 60, 1280, 520, p0);
+  al(p0); T('összefoglaló cím', 70, 116, { f: F.D, i: 1, s: 36, w: 500, c: INK, max: 1220 });
+  const sp = [['városban', 'városi sebesség'], ['országúton', 'országúti sebesség'], ['autópályán', 'autópálya sebesség']];
+  const R3 = sp.map(([, k]) => brakeRun(kmh(num(k)), tr, a)), mx = niceCeil(Math.max(...R3.map((R) => R.ss)) * 1.05, 5), bx = 330, bw = 900, PXs = bw / mx;
+  R3.forEach((R, j) => {
+    const y = 200 + j * 110, q = p0 * clamp((st - .3 - j * .35) / .5), [ar, ab] = roundParts([R.sr, R.sb], R.ss), kv = [sp[j][1], 'reakcióidő', 'lassulás száraz úton'];
+    al(q); T(sp[j][0], 70, y + 8, { s: 26, w: 700, c: INK });
+    tx(fmt(num(sp[j][1])) + ' km/h', 70, y + 44, { k: sp[j][1], f: F.M, s: 22, w: 600, c: MUT });
+    const g = clamp((st - .5 - j * .35) / .8);
+    rr(bx, y - 18, R.sr * PXs * g, 36, 4); c.fillStyle = REA; c.fill();
+    if (g > 0) { c.fillStyle = BRK; c.fillRect(bx + R.sr * PXs * g, y - 18, R.sb * PXs * g, 36); }
+    tx(M1(ar + ab), bx + R.ss * PXs * g + 14, y + 9, { k: kv, f: F.M, s: 26, w: 800, c: INK });
+    al(q * clamp(g * 2 - 1)); tx(M1(ar), bx, y + 50, { k: kv, f: F.M, s: 22, w: 600, c: REA });
+    tx(M1(ab), bx + R.sr * PXs + 12, y + 50, { k: kv, f: F.M, s: 22, w: 600, c: BRK });
+  });
+  al(p0); const yl = 530; rr(bx, yl - 18, 22, 22, 5); c.fillStyle = REA; c.fill(); const w1 = T('reakcióút', bx + 32, yl, { s: 24, w: 700, c: REA }).w;
+  rr(bx + 72 + w1, yl - 18, 22, 22, 5); c.fillStyle = BRK; c.fill(); T('fékút', bx + 104 + w1, yl, { s: 24, w: 700, c: BRK });
+  // képletek
+  const fq = p0 * clamp((st - 1.6) / .5);
+  card(40, 610, 1280, 200, fq);
+  al(fq); const fw = formula([['v', 'átl'], ['=', '']], 80, 690, { s: 38, c: INK, gap: 12 });
+  T('összes út per idő', 80 + fw + 4, 690, { f: F.D, i: 1, s: 38, w: 500, c: INK, max: 520 });
+  ln(700, 640, 700, 780, LINE, 2);
+  T('képlet erő', 740, 690, { f: F.D, i: 1, s: 30, w: 500, c: INK, max: 560 });
+  formula([['F', ''], ['·', ''], ['s', ''], ['=', ''], ['½ · m · v²', '']], 740, 770, { s: 38, c: INK, gap: 12 });
+  formula([['s', ''], ['=', ''], ['v · t', 'r'], ['+', ''], ['v² / (2 · a)', '']], 80, 770, { s: 38, c: INK, gap: 12 });
+  const pm = p0 * clamp((st - 2.4) / .6);
+  al(pm); rr(40, 850, 1280, 150, 18); c.fillStyle = U.rgba(RED, .09); c.fill(); c.strokeStyle = U.rgba(RED, .5); c.lineWidth = 2; c.stroke();
+  T('tanulság', 680, 942, { f: F.D, i: 1, s: 48, w: 500, a: 'center', c: RED, max: 1220 });
+}
+
+/* ════════════════════════════════════════════════════════════════ */
+const sT = new Array(9).fill(0);
+const SCENES = [scene1, scene2, scene3, scene4, scene5, scene6, scene7, scene8, scene9];
+function surfButtons(S, onPick) {
+  const bs = SURFS.map((sf, j) => L.button(lab(sf.btn), () => { S.i = j; bs.forEach((b, q) => b.classList.toggle('on', q === j)); onPick(j); }, sf.btn));
+  bs.forEach((b, q) => b.classList.toggle('on', q === 0));
+}
+L = Lesson.create({
+  content: window.LESSON_CONTENT,
+  home: false,
+  steps: [
+    { settle: 5.5, enter() { S1.tB = null; },
+      controls(L) { L.button(lab('vissza gomb'), () => { if (S1.tB == null) S1.tB = Math.max(L.st, 4.8); else { S1.tB = null; L.st = 0; } }, 'vissza gomb'); } },
+    { settle: 9.5, enter() { S2.w = num('várakozás a lámpánál'); S2.tR = .8; },
+      controls(L) {
+        L.slider({ label: lab('lámpa csúszka'), k: 'lámpa csúszka', min: 0, max: 120, step: 10, value: num('várakozás a lámpánál'), format: (v) => fmt(v) + ' s',
+          onInput: (v) => { S2.w = v; S2.tR = L.st + .3; } });
+      } },
+    { settle: 3.5, enter() { S3.i = 1; S3.tR = .6; S3.runs = [1]; },
+      controls(L) {
+        const bs = SURF3.map((sf, j) => L.button(lab(sf.btn), () => { S3.i = j; S3.tR = L.st + .6; S3.runs = S3.runs.filter((q) => q !== j).concat([j]); bs.forEach((b, q) => b.classList.toggle('on', q === j)); }, sf.btn));
+        bs.forEach((b, q) => b.classList.toggle('on', q === 1));
+      } },
+    { settle: 4, enter() { S4.i = 0; S4.tR = .8; S4.runs = [0]; },
+      controls(L) { surfButtons(S4, (j) => { S4.tR = L.st + .6; S4.runs = S4.runs.filter((q) => q !== j).concat([j]); }); } },
+    { settle: 5, enter() { S5.v = num('városi sebesség'); S5.tr = num('reakcióidő'); S5.i = 0; S5.V = mkView(); S5.V.from = S5.V.to = viewLen(Math.max(run5().ss, num('zebra távolsága') + 6)); S5.tR = 0; },
+      controls(L) {
+        L.slider({ label: lab('sebesség csúszka'), k: 'sebesség csúszka', min: 30, max: 130, step: 5, value: num('városi sebesség'), format: (v) => fmt(v) + ' km/h', onInput: (v) => { S5.v = v; restart5(L.st); } });
+        L.slider({ label: lab('reakcióidő csúszka'), k: 'reakcióidő csúszka', min: .5, max: 2, step: .1, value: num('reakcióidő'), format: (v) => fmt(v, 1) + ' s', onInput: (v) => { S5.tr = v; restart5(L.st); } });
+        surfButtons(S5, () => restart5(L.st));
+      } },
+    { settle: 5.5, enter() { S6.v = num('lassabb autó sebessége'); S6.V = mkView(); S6.V.from = S6.V.to = viewLen(runs6()[1].ss); S6.tR = 0; },
+      controls(L) {
+        L.slider({ label: lab('lassabb csúszka'), k: 'lassabb csúszka', min: 20, max: 65, step: 5, value: num('lassabb autó sebessége'), format: (v) => fmt(v) + ' km/h', onInput: (v) => { S6.v = v; restart6(L.st); } });
+      } },
+    { settle: 6, enter() { S7.v = num('városi sebesség'); S7.i = 0; S7.V = mkView(); S7.V.from = S7.V.to = viewLen(Math.max(runs7()[0].ss, num('zebra távolsága') + 6)); S7.tR = 0; },
+      controls(L) {
+        L.slider({ label: lab('sebesség csúszka'), k: 'sebesség csúszka', min: 30, max: 130, step: 5, value: num('városi sebesség'), format: (v) => fmt(v) + ' km/h', onInput: (v) => { S7.v = v; restart7(L.st); } });
+        surfButtons(S7, () => restart7(L.st));
+      } },
+    { settle: 4.5, enter() { S8.v = num('városi sebesség'); S8.tR = 0; },
+      controls(L) {
+        L.slider({ label: lab('ütközés csúszka'), k: 'ütközés csúszka', min: 20, max: 90, step: 5, value: num('városi sebesség'), format: (v) => fmt(v) + ' km/h', onInput: (v) => { S8.v = v; S8.tR = L.st; } });
+        L.button(lab('újra gomb'), () => { S8.tR = L.st; }, 'újra gomb');
+      } },
+    { settle: 4 },
+  ],
+  init(Lx) { L = Lx; c = L.ctx; },
+  draw(Lx) {
+    L = Lx; c = L.ctx; GA = 1; background();
+    const sp = L.sp;
+    if (L.step >= 0) sT[L.step] = L.st;
+    for (let i = 0; i < SCENES.length; i++) {
+      const w = clamp(1 - Math.abs(sp - i) * 2); if (w <= .005) continue;
+      GA = w; SCENES[i](sT[i], L.step === i);
+    }
+    c.globalAlpha = 1;
+  },
+});
+})();
+</script>
+</body>
+</html>
