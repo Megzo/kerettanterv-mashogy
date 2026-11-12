@@ -12,6 +12,7 @@ Szabály: egyszerre legfeljebb 3 al-ügynök fut.
 | A | Közös motor, tartalomformátum + build, QA-eszköz, 01-suruseg lecke | 1. hullám | 26 p 30 mp | 253 336 (kimenet 142 388; cache-írás 372 159; cache-olvasás 9 457 676) | kész: 9 lépés, QA hibátlan |
 | B | Leckesor terve (terv.md) | 1. hullám | 9 p 15 mp | 106 401 (kimenet 54 407; cache-írás 151 246; cache-olvasás 499 275) | kész: 16 lecke, 6 köteg |
 | C | 05-inga lecke | 2. hullám | 20 p 12 mp | 259 895 (kimenet 100 478; cache-írás 339 735; cache-olvasás 5 650 608) | kész: 8 lépés, QA hibátlan |
+| D | 07-felhajtoero lecke (Arkhimédész) | 2. hullám | 28 p 34 mp | 298 313 (kimenet 124 720; cache-írás 290 054; cache-olvasás 10 430 756) | kész: 8 lépés, QA hibátlan |
 
 A token-oszlop az al-ügynök saját fogyasztása (a koordináló fő munkamenet nélkül).
 Az első szám a Claude Code által jelentett al-ügynök-tokenszám; zárójelben az API-hívások
@@ -28,3 +29,4 @@ kimenet ~60 ezer, cache-írás ~169 ezer token (cache-olvasás ~6,8 millió).
 |---|---|---|---|---|---|
 | 01-suruseg | 9 | az A feladat része (motor + eszközök is) | 0 JS-hiba, 0 túlcsordulás | 2 hiba: 7. lépés ok-okozati ugrás (befagyás); 8. lépés a hajó 30 px-szel mélyebben látszik (két eltérő tartálygeometria) | mindkettő javítva a fő munkamenetben, kis költséggel |
 | 05-inga | 8 | 20 perc, ~260 ezer token | 0 JS-hiba, 0 túlcsordulás | – | build: „15°” nem volt elfogadva → javítva a build-szkriptben (fő munkamenet) |
+| 07-felhajtoero | 8 | 28,5 perc, ~298 ezer token | 0 JS-hiba, 0 túlcsordulás | 4. lépés számai ellenőrizve (p = ρgh, 9,81 N) | alsó index a panelen lokálisan megoldva (a szerződésből hiányzott) |

@@ -1,0 +1,730 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Miért könnyebb a kő a vízben? — Fizika</title>
+<link rel="stylesheet" href="../../shared/lesson.css">
+<style>
+  .lp-text b { color: var(--ink); }
+  .lp-text sub { font-size: .6em; vertical-align: -.25em; line-height: 0; font-style: italic; }
+</style>
+<!-- A lecke által várt tartalomkulcsok. A tools/build_lesson.py ez alapján ellenőrzi a .md-t.
+     labels: felirat → max. karakterszám (null = alapértelmezett 32) · data: adat → mértékegység, tartomány -->
+<script type="application/json" id="lesson-spec">
+{
+  "steps": 8,
+  "labels": {
+    "súly": 16, "felhajtóerő": 16, "erőmérő": 16, "tartóerő": 24, "kő": 22, "acél": 22, "fenyőfa": 22, "doboz": 26,
+    "úszik": 12, "lebeg": 12, "elmerül": 12,
+    "levegőben": 20, "vízben": 20, "hová lett": 30, "ugyanaz a kő": 34,
+    "merítés csúszka": 34, "tengely mélység": 40, "tengely erő": 16, "teljesen víz alatt": 22, "nem nő tovább": 22,
+    "kiszorított víz": 22, "vízszint": 14,
+    "túlfolyó edény": 22, "napló levegőben": 26, "napló vízben": 26, "napló különbség": 28, "napló kifolyt víz": 26,
+    "napló súlya": 26, "arkhimédész": 40, "kő gomb": 18, "acél gomb": 18, "fél gomb": 18,
+    "mélység csúszka": 34, "lap területe": 24, "felülről": 26, "alulról": 26, "különbség": 26, "egyenlő felhajtóerő": 20,
+    "felül rövid": 8, "alul rövid": 8, "eredő rövid": 8, "mélység": 16,
+    "kéz csúszka": 34, "bemerülés": 22, "fonal laza": 24, "egyensúly": 26,
+    "doboz csúszka": 34, "legnagyobb felhajtóerő": 26, "most felhajtóerő": 22,
+    "rakomány csúszka": 24, "duna gomb": 20, "tenger gomb": 20, "duna": 22, "tenger": 22, "üres hajó": 22, "rakomány": 22,
+    "összesen": 40, "kiszorított térfogat": 30, "merülés": 16, "hajó mérete": 28,
+    "jelentés felhajtóerő": 30, "jelentés sűrűség": 30, "jelentés térfogat": 30, "jelentés g": 30, "tanulság": 60
+  },
+  "data": {
+    "víz sűrűsége":        {"unit": "g/cm³", "min": 0.95, "max": 1.05},
+    "nehézségi gyorsulás": {"unit": "N/kg", "min": 9.7, "max": 10},
+    "kocka éle":           {"unit": "cm", "min": 8, "max": 12},
+    "kő sűrűsége":         {"unit": "g/cm³", "min": 2.0, "max": 3.0},
+    "acél sűrűsége":       {"unit": "g/cm³", "min": 7.5, "max": 8.0},
+    "fenyőfa sűrűsége":    {"unit": "g/cm³", "min": 0.35, "max": 0.7},
+    "tengervíz sűrűsége":  {"unit": "g/cm³", "min": 1.01, "max": 1.04},
+    "kocka mélysége":      {"unit": "cm", "min": 0, "max": 50},
+    "doboz tömege":        {"unit": "g", "min": 100, "max": 2000},
+    "hajó hossza":         {"unit": "m", "min": 40, "max": 200},
+    "hajó szélessége":     {"unit": "m", "min": 8, "max": 14},
+    "hajó oldalmagassága": {"unit": "m", "min": 4, "max": 7},
+    "üres hajó tömege":    {"unit": "t", "min": 200, "max": 5000},
+    "rakomány tömege":     {"unit": "t", "min": 0, "max": 3000}
+  }
+}
+</script>
+</head>
+<body>
+<script src="07-felhajtoero.content.js"></script>
+<script src="../../shared/lesson.js"></script>
+<script>
+(function () {
+'use strict';
+const U = Lesson.U, { clamp, lerp, smooth, out, inOut, TAU } = U, fmt = U.fmt;
+const F = Lesson.FONTS;
+/* ── paletta (világos téma, lásd SZERZODES.md) ── */
+const INK = '#1c2440', MUT = '#565d72', RED = '#c8401c', TEAL = '#0a6f86', GOOD = '#1d7a45', BAD = '#b3261e',
+  WATER_D = '#1b5a94', CARD = '#fffaf1', LINE = 'rgba(28,36,64,.16)';
+/* erők színe – minden jelenetben ugyanaz */
+const C_G = INK, C_F = RED, C_R = TEAL;   // súly · felhajtóerő · tartóerő (erőmérő vagy fenék)
+let L, c, GA = 1;
+const al = (a = 1) => { c.globalAlpha = GA * clamp(a); };
+const lab = (k) => L.lab(k), num = (k) => L.num(k);
+const T = (k, x, y, o = {}) => L.tx(lab(k), x, y, Object.assign({ k }, o));
+const tx = (s, x, y, o) => L.tx(s, x, y, o);
+const rr = (x, y, w, h, r) => { c.beginPath(); c.roundRect(x, y, w, h, r); };
+const P = (pts) => { c.beginPath(); pts.forEach((p, i) => i ? c.lineTo(p[0], p[1]) : c.moveTo(p[0], p[1])); c.closePath(); };
+const ln = (x1, y1, x2, y2, col, w = 2, dash) => { c.beginPath(); c.moveTo(x1, y1); c.lineTo(x2, y2); c.strokeStyle = col; c.lineWidth = w; c.setLineDash(dash || []); c.stroke(); c.setLineDash([]); };
+
+/* ── fizika: egyetlen forrás minden jelenetnek ── */
+const gN = () => num('nehézségi gyorsulás'), rw = () => num('víz sűrűsége');
+const wN = (grams) => grams / 1000 * gN();             // tömeg (g) → súly (N)
+const fN = (v, d = 2) => fmt(v, d) + ' N';
+const edge = () => num('kocka éle');
+const KG = ['nehézségi gyorsulás'], KW = ['víz sűrűsége', 'kocka éle', 'nehézségi gyorsulás'];
+
+/* ── anyagok ── */
+const MAT = {
+  ko:    { k: 'kő', r: 'kő sűrűsége', base: '#b9aea4', dark: '#463c36', light: '#ddd4ca' },
+  acel:  { k: 'acél', r: 'acél sűrűsége', base: '#8b96a3', dark: '#2c3644', light: '#c9d0d8' },
+  fenyo: { k: 'fenyőfa', r: 'fenyőfa sűrűsége', base: '#d9a066', dark: '#7a4519', light: '#efc999' },
+  doboz: { k: 'doboz', r: null, base: '#d3e6e2', dark: '#0f5a52', light: '#eef6f4' },
+};
+
+/* ── háttér: meleg papír, halvány négyzetrács ── */
+function background() {
+  c.globalAlpha = 1;
+  const g = c.createRadialGradient(680, 480, 100, 680, 540, 1300); g.addColorStop(0, '#f7f1e6'); g.addColorStop(1, '#efe6d6');
+  c.fillStyle = g; c.fillRect(0, 0, 1920, 1080);
+  c.strokeStyle = 'rgba(28,36,64,.045)'; c.lineWidth = 1; c.beginPath();
+  for (let x = 0; x <= 1920; x += 40) { c.moveTo(x + .5, 0); c.lineTo(x + .5, 1080); }
+  for (let y = 0; y <= 1080; y += 40) { c.moveTo(0, y + .5); c.lineTo(1920, y + .5); }
+  c.stroke();
+}
+
+/* ── test ferde vetületben; (x, yb) = az elülső lap bal alsó sarka, w × h az elülső lap ── */
+function block(x, yb, w, h, mk, o = {}) {
+  const M = MAT[mk], d = o.d == null ? w * .26 : o.d, dy = -d * .7, a = o.a == null ? 1 : o.a;
+  if (a <= .01) return;
+  const yt = yb - h;
+  const front = [[x, yb], [x + w, yb], [x + w, yt], [x, yt]];
+  const top = [[x, yt], [x + w, yt], [x + w + d, yt + dy], [x + d, yt + dy]];
+  const side = [[x + w, yb], [x + w + d, yb + dy], [x + w + d, yt + dy], [x + w, yt]];
+  al(a);
+  if (d > 0) { P(side); c.fillStyle = U.mix(M.base, M.dark, .38); c.fill(); P(top); c.fillStyle = M.light; c.fill(); }
+  let g = c.createLinearGradient(x, yt, x + w, yb);
+  g.addColorStop(0, U.mix(M.base, M.light, .35)); g.addColorStop(1, U.mix(M.base, M.dark, .12));
+  P(front); c.fillStyle = g; c.fill();
+  c.save(); P(front); c.clip();
+  if (mk === 'ko') {                 // gránit pöttyök
+    const r = U.rng(7);
+    for (let i = 0; i < 70; i++) { const u = r(), v = r(), k = r(); c.fillStyle = k < .45 ? 'rgba(40,32,28,.55)' : k < .8 ? 'rgba(255,255,255,.7)' : 'rgba(190,120,100,.6)'; c.fillRect(x + u * w, yt + v * h, 3 + k * 3, 3 + k * 2); }
+  } else if (mk === 'acel') {        // fémes csík
+    g = c.createLinearGradient(x, yt, x + w, yb);
+    g.addColorStop(.25, 'rgba(255,255,255,0)'); g.addColorStop(.42, 'rgba(255,255,255,.55)'); g.addColorStop(.52, 'rgba(255,255,255,0)');
+    c.fillStyle = g; c.fillRect(x, yt, w, h);
+  } else if (mk === 'fenyo') {       // évgyűrű-erezet
+    c.strokeStyle = U.rgba(M.dark, .32); c.lineWidth = 2;
+    for (let i = 0; i < 6; i++) { c.beginPath(); const yy = yt + h * (.1 + i * .16); for (let k = 0; k <= 12; k++) c.lineTo(x + w * k / 12, yy + Math.sin(k * .9 + i * 1.7) * h * .025); c.stroke(); }
+  } else if (mk === 'doboz') {       // homok a dobozban
+    const hf = h * clamp(o.fill == null ? .5 : o.fill), r = U.rng(3);
+    c.fillStyle = '#dcbd7c'; c.fillRect(x, yb - hf, w, hf);
+    c.fillStyle = 'rgba(122,82,30,.45)'; for (let i = 0; i < 60 * hf / h; i++) c.fillRect(x + r() * w, yb - r() * hf, 2.5, 2.5);
+    ln(x, yb - hf, x + w, yb - hf, '#9a7433', 2);
+  }
+  c.restore();
+  c.lineJoin = 'round'; c.strokeStyle = M.dark; c.lineWidth = 2.5;
+  if (d > 0) { P(side); c.stroke(); P(top); c.stroke(); }
+  P(front); c.stroke();
+  if (mk === 'doboz') { al(a); ln(x - 3, yt + 7, x + w + 3, yt + 7, M.dark, 3); }   // fedél
+}
+/* a felső lap közepe (ide köt a fonal) */
+const topMid = (x, yb, w, h) => { const d = w * .26; return [x + w / 2 + d / 2, yb - h - d * .35]; };
+
+/* ── vízfelszín hullámzással ── */
+const wave = (x, t, amp) => Math.sin(x * .021 + t * 1.6) * amp + Math.sin(x * .053 - t * 2.3) * amp * .4;
+function waterBody(x0, x1, ys, yb, t, a, amp = 1.5, tint) {
+  al(a);
+  const g = c.createLinearGradient(0, ys, 0, yb);
+  g.addColorStop(0, tint ? 'rgba(40,150,170,.32)' : 'rgba(70,150,215,.30)'); g.addColorStop(1, tint ? 'rgba(14,92,120,.50)' : 'rgba(27,90,148,.50)');
+  c.beginPath(); c.moveTo(x0, yb); for (let x = x0; x <= x1; x += 8) c.lineTo(x, ys + wave(x, t, amp)); c.lineTo(x1, ys + wave(x1, t, amp)); c.lineTo(x1, yb); c.closePath();
+  c.fillStyle = g; c.fill();
+  c.beginPath(); for (let x = x0; x <= x1; x += 8) c.lineTo(x, ys + wave(x, t, amp)); c.lineTo(x1, ys + wave(x1, t, amp)); c.strokeStyle = WATER_D; c.lineWidth = 3; c.stroke();
+}
+
+/* ── tartály: EGY geometria a rajzhoz és a számításhoz ──
+   x0: bal belső fal (px), wcm × dcm: alapterület (cm), bot: belső fenék (px), h0: vízmélység test nélkül (cm), Hcm: fal magassága */
+function mkTank(x0, wcm, bot, h0, dcm, px, Hcm) { return { x0, x1: x0 + wcm * px, wcm, dcm, A: wcm * dcm, bot, h0, px, rim: bot - Hcm * px }; }
+const wsY = (Tk, V) => Tk.bot - (Tk.h0 + V / Tk.A) * Tk.px;                 // vízfelszín, ha V cm³ test van a víz alatt
+/* test (Ab alapterület, a magasság) alja h cm-rel a (pillanatnyi) vízfelszín alatt (h < 0: fölötte) */
+function dip(Tk, Ab, a, h) { const s = clamp(h, 0, a), V = Ab * s, ws = wsY(Tk, V); return { s, V, ws, yb: ws + h * Tk.px }; }
+/* ugyanez a test aljának képernyő-helyéből */
+function dipY(Tk, Ab, a, yb) {
+  const s = clamp((yb - wsY(Tk, 0)) / (Tk.px * (1 - Ab / Tk.A)), 0, a), V = Ab * s;
+  return { s, V, ws: wsY(Tk, V), yb };
+}
+function tankDraw(Tk, ws, a, inside, after, tint) {
+  const { x0, x1, bot, rim } = Tk;
+  al(a); rr(x0 - 4, rim, x1 - x0 + 8, bot - rim + 6, 6); c.fillStyle = 'rgba(255,255,255,.45)'; c.fill();
+  if (inside) inside();
+  waterBody(x0, x1, ws, bot, L.t, a, 1.4, tint);
+  if (after) after();
+  al(a); c.strokeStyle = 'rgba(28,36,64,.72)'; c.lineWidth = 4; c.lineJoin = 'round';
+  c.beginPath(); c.moveTo(x0 - 4, rim); c.lineTo(x0 - 4, bot + 6); c.lineTo(x1 + 4, bot + 6); c.lineTo(x1 + 4, rim); c.stroke();
+  ln(x0 - 14, bot + 8, x1 + 14, bot + 8, 'rgba(28,36,64,.35)', 3);
+}
+
+/* ── rugós erőmérő; yTop = a cső teteje. Vissza: a kampó helye ── */
+const MLEN = (o) => o.len - 16;   // rúdhossz: a mutatótól a kampóig
+function meter(x, yTop, Fv, o, a = 1) {
+  const len = o.len, k = (len - 60) / o.Fmax, z0 = yTop + 34, py = z0 + clamp(Fv, 0, o.Fmax) * k, hook = py + MLEN(o);
+  if (a <= .01) return hook;
+  al(a);
+  ln(x, o.hang || 0, x, yTop - 17, INK, 2.5);
+  c.beginPath(); c.arc(x, yTop - 9, 8, 0, TAU); c.strokeStyle = INK; c.lineWidth = 3; c.stroke();
+  rr(x - 24, yTop, 48, len, 12); c.fillStyle = 'rgba(255,250,241,.92)'; c.fill();
+  for (let f = 0; f <= o.Fmax + 1e-9; f += o.minor) {
+    const y = z0 + f * k, major = Math.abs(f / o.major - Math.round(f / o.major)) < 1e-6;
+    ln(x - 22, y, x - (major ? 9 : 15), y, INK, major ? 2 : 1.2);
+    if (major) tx(fmt(f), x - 32, y + 8, { f: F.M, s: 22, a: 'right', c: MUT });
+  }
+  tx('N', x + 32, z0 + 8, { f: F.M, s: 22, w: 700, c: MUT, qa: false });
+  // rugó
+  c.beginPath(); const n = 16, y0 = yTop + 6, y1 = py - 3;
+  c.moveTo(x, y0); for (let i = 1; i < n; i++) c.lineTo(x + (i % 2 ? 7 : -7), lerp(y0, y1, i / n)); c.lineTo(x, y1);
+  c.strokeStyle = '#4a5566'; c.lineWidth = 2; c.stroke();
+  ln(x, py, x, hook - 12, '#4a5566', 4);
+  rr(x - 20, py - 3, 40, 6, 3); c.fillStyle = RED; c.fill();
+  rr(x - 24, yTop, 48, len, 12); c.strokeStyle = INK; c.lineWidth = 2.5; c.stroke();
+  c.beginPath(); c.arc(x, hook - 6, 6, -Math.PI / 2, Math.PI * 1.15); c.strokeStyle = '#2c3644'; c.lineWidth = 3; c.stroke();
+  return hook;
+}
+/* erőmérő magassága: a kampót a megadott helyre tevő csőtető */
+const meterTop = (hook, Fv, o) => hook - MLEN(o) - 34 - clamp(Fv, 0, o.Fmax) * (o.len - 60) / o.Fmax;
+/* digitális kijelző */
+function readout(s, x, y, k, a = 'left', sz = 26) { return L.pill(s, x, y, { k, a, s: sz, f: F.M, w: 700, bg: '#22302a', c: '#8df0a6', pad: 10, r: 8 }); }
+
+/* ── erőnyíl: (x, y)-ból dy hosszan (a hegy a dy végén; a hossz arányos az erővel) ── */
+function arrow(x, y, dy, col, w = 7) {
+  const len = Math.abs(dy); if (len < 3) return; const s = Math.sign(dy), hl = Math.min(24, len * .55), hw = Math.max(7, hl * .6);
+  c.lineCap = 'butt';
+  for (const [cl, lw] of [['rgba(255,250,241,.85)', w + 5], [col, w]]) {
+    c.strokeStyle = cl; c.lineWidth = lw; c.beginPath(); c.moveTo(x, y); c.lineTo(x, y + dy - s * hl * .9); c.stroke();
+  }
+  c.beginPath(); c.moveTo(x, y + dy); c.lineTo(x - hw, y + dy - s * hl); c.lineTo(x + hw, y + dy - s * hl); c.closePath(); c.fillStyle = col; c.fill();
+  c.strokeStyle = 'rgba(255,250,241,.85)'; c.lineWidth = 1.5; c.stroke();
+}
+function arrowH(x, y, dx, col, w = 4) {
+  const len = Math.abs(dx); if (len < 3) return; const s = Math.sign(dx), hl = Math.min(16, len * .55), hw = Math.max(5, hl * .55);
+  ln(x, y, x + dx - s * hl * .9, y, col, w);
+  c.beginPath(); c.moveTo(x + dx, y); c.lineTo(x + dx - s * hl, y - hw); c.lineTo(x + dx - s * hl, y + hw); c.closePath(); c.fillStyle = col; c.fill();
+}
+/* színes jelmagyarázat-sor: négyzet + név + érték */
+function legendRow(k, val, x, y, col, kv, wmax = 560) {
+  al(1 * curA); rr(x, y - 22, 26, 26, 5); c.fillStyle = col; c.fill();
+  const w = T(k, x + 40, y, { s: 26, w: 600, c: INK, max: wmax * .55 }).w;
+  L.tx(val, x + wmax, y, { k: kv, f: F.M, s: 28, w: 700, a: 'right', c: col });
+  return w;
+}
+let curA = 1;
+/* képletjel alsó indexszel (kódban rögzített jelölés) */
+function sym(base, sub, x, y, o) {
+  const s = o.s || 40, ss = Math.max(22, s * .58), oo = Object.assign({ f: F.D, i: 1, w: 500, qa: false }, o);
+  const w1 = L.measure(base, oo).w, w2 = sub ? L.measure(sub, Object.assign({}, oo, { s: ss })).w : 0, W = w1 + w2 + (sub ? 2 : 0);
+  const x0 = o.a === 'center' ? x - W / 2 : o.a === 'right' ? x - W : x;
+  L.tx(base, x0, y, Object.assign({}, oo, { a: 'left' }));
+  if (sub) L.tx(sub, x0 + w1 + 2, y + s * .2, Object.assign({}, oo, { a: 'left', s: ss }));
+  return W;
+}
+
+/* ── konyhai mérleg (g); (cx, y) = a tányér teteje ── */
+function kitchenScale(cx, y, w, grams, k, a = 1) {
+  if (a <= .01) return;
+  al(a);
+  rr(cx - w / 2, y + 12, w, 58, 14); c.fillStyle = '#fbf8f1'; c.fill(); c.strokeStyle = 'rgba(28,36,64,.55)'; c.lineWidth = 2.5; c.stroke();
+  rr(cx - w * .46, y, w * .92, 13, 6); c.fillStyle = '#d9dde3'; c.fill(); c.stroke();
+  const dw = Math.min(w - 30, 176);
+  rr(cx - dw / 2, y + 22, dw, 40, 8); c.fillStyle = '#22302a'; c.fill();
+  tx(fmt(grams) + ' g', cx + dw / 2 - 12, y + 52, { f: F.M, s: 26, w: 700, a: 'right', c: '#8df0a6', max: dw - 20, k });
+}
+
+/* ── kártya ── */
+function card(x, y, w, h, a) { al(a); rr(x, y, w, h, 18); c.fillStyle = CARD; c.fill(); c.strokeStyle = LINE; c.lineWidth = 2; c.stroke(); }
+
+/* ════════ 1. Miért könnyebb a kő a vízben? ════════ */
+const M1 = { len: 260, Fmax: 30, minor: 1, major: 5, hang: 0 };
+function hangBody(Tk, cx, yb, w, h, mk, Fm, o, a, sideR) {
+  // a test és a fonal a tartályon belül (a víz alá), az erőmérő utána
+  const x = cx - (w + w * .26) / 2, [sx, sy] = topMid(x, yb, w, h), hook = sy - (o.str || 44);
+  return { x, sx, sy, hook, yTop: meterTop(hook, Fm, o) };
+}
+function scene1(st) {
+  const p0 = out(clamp(st / .6)), PX = 11, e = edge(), s = e * PX, Ab = e * e, G = wN(num('kő sűrűsége') * e * e * e), t = L.t;
+  const TA = mkTank(70, 30, 990, 20, 30, PX, 26), TB = mkTank(930, 30, 990, 20, 30, PX, 26);
+  const hB = lerp(-5, e + 3, inOut(clamp((st - 1.6) / 2.6)));
+  const res = [];
+  for (const [Tk, h] of [[TA, -5], [TB, hB]]) {
+    const d = dip(Tk, Ab, e, h), Fm = G - wN(rw() * d.V), cx = (Tk.x0 + Tk.x1) / 2;
+    const hb = hangBody(Tk, cx, d.yb, s, s, 'ko', Fm, M1);
+    tankDraw(Tk, d.ws, p0, () => { block(hb.x, d.yb, s, s, 'ko', { a: p0 }); ln(hb.sx, hb.hook, hb.sx, hb.sy, INK, 2); });
+    meter(hb.sx, hb.yTop, Fm, M1, p0);
+    res.push({ Tk, d, Fm, cx: hb.sx, yTop: hb.yTop });
+  }
+  const [A, B] = res, kk = ['kő sűrűsége', 'kocka éle', 'nehézségi gyorsulás'];
+  const ry = (R) => R.yTop + M1.len - 40;
+  al(p0 * clamp((st - .8) / .5)); readout(fN(A.Fm), A.cx + 40, ry(A), kk);
+  readout(fN(B.Fm), B.cx - 74, ry(B), kk.concat('víz sűrűsége'), 'right');
+  al(p0); T('levegőben', (TA.x0 + TA.x1) / 2, 1048, { s: 30, w: 700, a: 'center', c: INK });
+  T('vízben', (TB.x0 + TB.x1) / 2, 1048, { s: 30, w: 700, a: 'center', c: WATER_D });
+  al(p0 * clamp((st - .9) / .5)); L.pill(lab('kő') + ' · ' + fmt(e) + ' cm', 330, 640, { k: ['kő', 'kocka éle'], s: 24, w: 600, bg: '#ffffff', bd: MAT.ko.dark, c: INK });
+  // a különbség
+  const pd = clamp((st - 4.4) / .6), mx = 665;
+  if (pd > 0) {
+    al(pd); const y1 = ry(A), y2 = ry(B);
+    c.beginPath(); c.moveTo(440, y1); c.bezierCurveTo(640, y1, 640, y2, 860, y2); c.strokeStyle = U.rgba(RED, .7); c.lineWidth = 3; c.setLineDash([8, 7]); c.stroke(); c.setLineDash([]);
+    L.pill('− ' + fN(A.Fm - B.Fm), mx, (y1 + y2) / 2, { k: KW, a: 'center', s: 34, f: F.M, w: 700, bg: RED, c: '#fff8ee', pad: 14 });
+  }
+  al(clamp((st - 5.0) / .7)); T('hová lett', mx, 140, { f: F.D, i: 1, s: 46, w: 500, a: 'center', c: RED, max: 520 });
+  al(clamp((st - 5.6) / .7)); T('ugyanaz a kő', mx, 760, { s: 24, w: 600, a: 'center', c: MUT, max: 420 });
+}
+
+/* ════════ 2. Mélyebben nagyobb? ════════ */
+const S2 = { user: false, from: 0, to: 0, t0: 0, h: 0 };
+const M2 = { len: 260, Fmax: 30, minor: 1, major: 5, hang: 0 };
+const h2 = (st) => S2.user ? lerp(S2.from, S2.to, inOut(clamp((st - S2.t0) / .7))) : lerp(-3, 16, inOut(clamp((st - 1) / 5)));
+function scene2(st) {
+  const p0 = out(clamp(st / .6)), PX = 11, e = edge(), s = e * PX, Ab = e * e, G = wN(num('kő sűrűsége') * e * e * e);
+  const Tk = mkTank(60, 44, 1010, 30, 30, PX, 34), cx = 200, h = h2(st); S2.h = h;
+  const d = dip(Tk, Ab, e, h), Fb = wN(rw() * d.V), Fm = G - Fb, hb = hangBody(Tk, cx, d.yb, s, s, 'ko', Fm, M2), AP = 5;
+  const ws0 = wsY(Tk, 0);
+  tankDraw(Tk, d.ws, p0, () => { block(hb.x, d.yb, s, s, 'ko', { a: p0 }); ln(hb.sx, hb.hook, hb.sx, hb.sy, INK, 2); }, () => {
+    // eredeti vízszint + emelkedés
+    al(p0 * .8); ln(Tk.x1 - 120, ws0, Tk.x1 + 4, ws0, U.rgba(WATER_D, .8), 2, [6, 5]);
+    // erőnyilak a test közepéből
+    const cy = d.yb - s / 2, ax = hb.sx; al(p0);
+    arrow(ax, cy, G * AP, C_G); arrow(ax - 30, cy, -Fb * AP, C_F); arrow(ax + 30, cy, -Fm * AP, C_R);
+  });
+  meter(hb.sx, hb.yTop, Fm, M2, p0);
+  al(p0); readout(fN(Fm), hb.sx + 40, hb.yTop + 70, ['kő sűrűsége', 'kocka éle', 'nehézségi gyorsulás', 'víz sűrűsége']);
+  const rise = d.V / Tk.A;
+  al(p0 * clamp(rise * 4)); L.pill(lab('vízszint') + ' +' + fmt(rise, 2) + ' cm', Tk.x1 - 10, ws0 + 36, { k: ['vízszint', 'kocka éle'], a: 'right', s: 22, f: F.M, w: 600, bg: '#ffffff', bd: WATER_D, c: WATER_D, pad: 8 });
+  // grafikon
+  const g = { x0: 700, x1: 1300, y0: 200, y1: 690, xmax: 20, ymax: 30 }, X = (v) => g.x0 + v / g.xmax * (g.x1 - g.x0), Y = (v) => g.y1 - v / g.ymax * (g.y1 - g.y0);
+  al(p0); rr(g.x0 - 80, g.y0 - 60, g.x1 - g.x0 + 110, g.y1 - g.y0 + 140, 18); c.fillStyle = 'rgba(255,250,241,.8)'; c.fill(); c.strokeStyle = LINE; c.lineWidth = 1.5; c.stroke();
+  c.strokeStyle = LINE; c.lineWidth = 1.2; c.beginPath();
+  for (let v = 0; v <= g.xmax; v += 5) { c.moveTo(X(v), g.y0); c.lineTo(X(v), g.y1); }
+  for (let v = 0; v <= g.ymax; v += 5) { c.moveTo(g.x0, Y(v)); c.lineTo(g.x1, Y(v)); }
+  c.stroke();
+  ln(g.x0, g.y1, g.x1 + 14, g.y1, INK, 2.5); ln(g.x0, g.y1, g.x0, g.y0 - 14, INK, 2.5);
+  for (let v = 0; v <= g.xmax; v += 5) tx(fmt(v), X(v), g.y1 + 30, { f: F.M, s: 22, a: 'center', c: MUT });
+  for (let v = 5; v <= g.ymax; v += 5) tx(fmt(v), g.x0 - 12, Y(v) + 8, { f: F.M, s: 22, a: 'right', c: MUT });
+  T('tengely mélység', g.x1, g.y1 + 62, { f: F.M, s: 22, w: 600, a: 'right', c: INK, max: 560 });
+  T('tengely erő', g.x0 - 60, g.y0 - 24, { f: F.M, s: 22, w: 600, c: INK });
+  const Fb_ = (hh) => wN(rw() * Ab * clamp(hh, 0, e)), hc = clamp(h, 0, g.xmax);
+  const curve = (fn, col, a, upto, w) => { al(p0 * a); c.beginPath(); for (let v = 0; v <= upto + 1e-9; v += .25) { const yy = Y(fn(Math.min(v, upto))); v ? c.lineTo(X(Math.min(v, upto)), yy) : c.moveTo(X(0), yy); } c.lineTo(X(upto), Y(fn(upto))); c.strokeStyle = col; c.lineWidth = w; c.lineJoin = 'round'; c.stroke(); };
+  al(p0); ln(X(0), Y(G), X(g.xmax), Y(G), U.rgba(C_G, .75), 3, [10, 7]);
+  curve((v) => G - Fb_(v), C_R, .22, g.xmax, 4); curve(Fb_, C_F, .22, g.xmax, 4);
+  if (h > 0) { curve((v) => G - Fb_(v), C_R, 1, hc, 5); curve(Fb_, C_F, 1, hc, 5); }
+  al(p0); T('súly', g.x1 - 4, Y(G) - 16, { s: 24, w: 700, a: 'right', c: C_G });
+  T('erőmérő', g.x1 - 4, Y(G - Fb_(e)) - 20, { s: 24, w: 700, a: 'right', c: C_R });
+  T('felhajtóerő', g.x1 - 4, Y(Fb_(e)) - 20, { s: 24, w: 700, a: 'right', c: C_F });
+  if (h >= 0) for (const [v, col] of [[G - Fb_(hc), C_R], [Fb_(hc), C_F]]) { al(p0); c.beginPath(); c.arc(X(hc), Y(v), 10, 0, TAU); c.fillStyle = '#ffffff'; c.fill(); c.strokeStyle = col; c.lineWidth = 4; c.stroke(); }
+  // teljesen víz alatt
+  const pf = clamp((h - e + .5) / .8);
+  al(p0 * (.35 + .65 * pf)); ln(X(e), g.y0, X(e), g.y1, U.rgba(INK, .5), 2, [6, 6]);
+  L.pill(lab('teljesen víz alatt'), X(e) + 8, g.y0 + 4, { k: 'teljesen víz alatt', s: 22, w: 600, bg: '#ffffff', bd: INK, c: INK, pad: 8 });
+  const pn = clamp((h - e - 1.5) / 1);
+  al(p0 * pn); L.pill(lab('nem nő tovább'), X(14.5), Y(Fb_(e)) + 44, { k: 'nem nő tovább', a: 'center', s: 24, w: 700, bg: RED, c: '#fff8ee' });
+  // értékek
+  const vx = 640, vy = 860; card(vx - 20, vy - 46, 700, 220, p0); curA = p0;
+  legendRow('súly', fN(G), vx + 10, vy, C_G, ['kő sűrűsége', 'kocka éle', 'nehézségi gyorsulás'], 640);
+  legendRow('felhajtóerő', fN(Fb), vx + 10, vy + 52, C_F, KW, 640);
+  legendRow('erőmérő', fN(Fm), vx + 10, vy + 104, C_R, KW, 640);
+  al(p0); T('kiszorított víz', vx + 50, vy + 152, { s: 24, w: 500, c: MUT, max: 340 });
+  L.tx(fmt(d.V) + ' cm³', vx + 650, vy + 152, { k: 'kocka éle', f: F.M, s: 26, w: 600, a: 'right', c: WATER_D });
+}
+
+/* ════════ 3. Heuréka: a kiszorított víz súlya ════════ */
+const S3 = { mk: 'ko', half: false, t0: 0 };
+const M3 = { len: 260, Fmax: 80, minor: 5, major: 20, hang: 0 };
+function scene3(st) {
+  const p0 = out(clamp(st / .6)), PX = 11, e = edge(), Ab = e * e, a = S3.half ? e / 2 : e, w = e * PX, hpx = a * PX;
+  const rho = num(MAT[S3.mk].r), G = wN(rho * Ab * a), tau = st - S3.t0;
+  const Tk = mkTank(80, 30, 1000, 24, 20, PX, 27), ws = wsY(Tk, 0);    // túlfolyó: a víz szintje a kifolyónál marad
+  const hAt = (tt) => lerp(-2, a + 2, inOut(clamp((tt - .8) / 2.8)));
+  const Vsub = (tt) => Ab * clamp(hAt(tt), 0, a), lag = .45;
+  const V = Vsub(tau), Vout = Vsub(tau - lag), flow = (Vsub(tau - lag) - Vsub(tau - lag - .1)) / .1;  // cm³/s
+  const Fb = wN(rw() * V), Fm = G - Fb, cx = 245, yb = ws + hAt(tau) * PX;
+  const x = cx - (w + w * .26) / 2, [sx, sy] = topMid(x, yb, w, hpx), hook = sy - 34, yTop = meterTop(hook, Fm, M3);
+  const kk = [MAT[S3.mk].r, 'kocka éle', 'nehézségi gyorsulás'];
+  // kiömlő víz
+  const jx = 540, jw = 12 * PX, jBot = 918, jA = 12 * 12, jH = 12 * PX, jLev = jBot - Vout / jA * PX, sxp = Tk.x1 + 62, syp = ws + 12;
+  tankDraw(Tk, ws, p0, () => { block(x, yb, w, hpx, S3.mk, { a: p0 }); ln(sx, hook, sx, sy, INK, 2); }, () => {
+    // kifolyócső
+    al(p0); c.beginPath(); c.moveTo(Tk.x1 + 4, ws - 8); c.lineTo(sxp, ws + 2); c.lineTo(sxp, ws + 16); c.lineTo(Tk.x1 + 4, ws + 8); c.closePath();
+    c.fillStyle = 'rgba(255,255,255,.7)'; c.fill(); c.strokeStyle = 'rgba(28,36,64,.72)'; c.lineWidth = 3; c.stroke();
+  });
+  // vízsugár
+  if (flow > 2) {
+    const thick = clamp(flow / 120, .25, 1) * 9; al(p0 * .85);
+    c.beginPath(); c.moveTo(sxp - 2, syp); c.quadraticCurveTo(sxp + 22, syp + 10, sxp + 18, jLev);
+    c.strokeStyle = 'rgba(70,150,215,.75)'; c.lineWidth = thick; c.lineCap = 'round'; c.stroke(); c.lineCap = 'butt';
+  }
+  // kancsó a mérlegen
+  al(p0); rr(jx - jw / 2 - 5, jBot - jH, jw + 10, jH + 6, 6); c.fillStyle = 'rgba(255,255,255,.5)'; c.fill();
+  if (Vout > .5) waterBody(jx - jw / 2, jx + jw / 2, jLev, jBot, L.t, p0, .8);
+  al(p0); c.strokeStyle = 'rgba(28,36,64,.72)'; c.lineWidth = 3.5; c.beginPath(); c.moveTo(jx - jw / 2 - 5, jBot - jH); c.lineTo(jx - jw / 2 - 5, jBot + 6); c.lineTo(jx + jw / 2 + 5, jBot + 6); c.lineTo(jx + jw / 2 + 5, jBot - jH); c.stroke();
+  kitchenScale(jx, jBot + 8, 230, Math.round(rw() * Vout), ['víz sűrűsége', 'kocka éle'], p0);
+  meter(sx, yTop, Fm, M3, p0);
+  al(p0); readout(fN(Fm), sx + 40, yTop + 70, kk.concat('víz sűrűsége'));
+  al(p0); T('túlfolyó edény', (Tk.x0 + Tk.x1) / 2, 1048, { s: 26, w: 700, a: 'center', c: WATER_D });
+  // mérési napló
+  const cx0 = 760, cy0 = 150, cw = 580;
+  card(cx0, cy0, cw, 500, p0);
+  al(p0); L.pill((S3.half ? lab('fél gomb') + ' · ' + fmt(e) + ' × ' + fmt(e) + ' × ' + fmt(a) : lab(MAT[S3.mk].k) + ' · ' + fmt(e)) + ' cm', cx0 + 24, cy0 + 44, { k: [S3.half ? 'fél gomb' : MAT[S3.mk].k, 'kocka éle'], s: 24, w: 600, bg: '#ffffff', bd: MAT[S3.mk].dark, c: INK, max: cw - 70 });
+  const row = (k, v, y, col, kv, q) => { al(p0 * q); T(k, cx0 + 24, y, { s: 24, w: 500, c: MUT, max: cw - 220 }); L.tx(v, cx0 + cw - 24, y, { k: kv, f: F.M, s: 30, w: 700, a: 'right', c: col }); };
+  const done = clamp((tau - 3.9) / .5), done2 = clamp((tau - 4.4) / .5);
+  row('napló levegőben', fN(G), cy0 + 130, INK, kk, clamp((tau - .3) / .5));
+  row('napló vízben', fN(Fm), cy0 + 200, INK, kk.concat('víz sűrűsége'), done);
+  al(p0 * done); ln(cx0 + 24, cy0 + 232, cx0 + cw - 24, cy0 + 232, LINE, 2);
+  row('napló különbség', fN(G - Fm), cy0 + 280, RED, KW, done);
+  row('napló kifolyt víz', fmt(Math.round(rw() * Vout)) + ' g', cy0 + 370, WATER_D, ['víz sűrűsége', 'kocka éle'], done2);
+  row('napló súlya', fN(wN(rw() * Vout)), cy0 + 440, WATER_D, KW, done2);
+  // egyenlőség
+  const pe = clamp((tau - 5.0) / .6);
+  al(p0 * pe); rr(cx0, cy0 + 530, cw, 220, 18); c.fillStyle = U.rgba(RED, .09); c.fill(); c.strokeStyle = U.rgba(RED, .5); c.lineWidth = 2; c.stroke();
+  T('arkhimédész', cx0 + cw / 2, cy0 + 588, { f: F.D, i: 1, s: 32, w: 500, a: 'center', c: RED, max: cw - 40 });
+  const mW = rw() * Ab * a;   // a kiszorított víz tömege (g)
+  L.tx('ρ · V = ' + fmt(rw(), 2) + ' g/cm³ · ' + fmt(Ab * a) + ' cm³ = ' + fmt(mW) + ' g', cx0 + 30, cy0 + 645, { k: KW, f: F.M, s: 24, w: 600, c: INK, max: cw - 60 });
+  L.tx(fmt(mW / 1000, 3).replace(/,?0+$/, '') + ' kg · ' + fmt(gN(), 2) + ' N/kg = ' + fN(wN(mW)), cx0 + 30, cy0 + 700, { k: KW, f: F.M, s: 24, w: 700, c: RED, max: cw - 60 });
+}
+
+/* ════════ 4. A nyomáskülönbség ════════ */
+const S4 = { user: false, from: 0, to: 0, t0: 0, h: 20 };
+const h4 = (st) => S4.user ? lerp(S4.from, S4.to, inOut(clamp((st - S4.t0) / .6))) : lerp(0, num('kocka mélysége'), inOut(clamp((st - 1.0) / 2.2)));
+function scene4(st) {
+  const p0 = out(clamp(st / .6)), PX = 10, e = edge(), s = e * PX, Ab = e * e;
+  const Tk = mkTank(70, 62, 1010, 74, 30, PX, 79), ws = wsY(Tk, Ab * e), h = h4(st); S4.h = h;
+  const x0 = 330, yt = ws + h * PX, yb = yt + s, KP = 20;                                   // KP: px / kPa
+  const pk = (dcm) => rw() * gN() * dcm / 100;                                              // kPa (ρ: g/cm³, mélység: cm)
+  const pTop = pk(h), pBot = pk(h + e), Fz = (p) => p * 1000 * Ab / 1e4;                    // N = Pa · m²
+  const FT = Fz(pTop), FB = Fz(pBot);
+  const ap = clamp((st - .5) / .8);
+  tankDraw(Tk, ws, p0, () => {
+    // tartópálca
+    al(p0); ln(x0 + s - 6, 150, x0 + s - 6, yt, '#6b7380', 4);
+    block(x0, yb, s, s, 'ko', { a: p0, d: 0 });
+  }, () => {
+    al(p0 * ap);
+    for (let i = 0; i < 4; i++) {
+      const xx = x0 + 12 + i * (s - 38) / 3;
+      if (pTop * KP > 3) arrow(xx, yt - pTop * KP - 2, pTop * KP, WATER_D, 4);
+      arrow(xx, yb + pBot * KP + 2, -pBot * KP, WATER_D, 4);
+    }
+    al(p0 * ap * .55);
+    for (let i = 0; i < 4; i++) { const yy = yt + 12 + i * (s - 24) / 3, p = pk(h + (yy - yt) / PX) * KP; arrowH(x0 - p - 2, yy, p, WATER_D, 3); arrowH(x0 + s + p + 2, yy, -p, WATER_D, 3); }
+    // mélységmérő
+    al(p0); const rx = Tk.x0 + 14;
+    for (let v = 0; v <= 70; v += 5) { const y = ws + v * PX; ln(rx, y, rx + (v % 10 ? 10 : 18), y, INK, v % 10 ? 1.5 : 2.5); if (v % 10 === 0 && v) tx(fmt(v), rx + 24, y + 8, { f: F.M, s: 22, c: MUT }); }
+    T('mélység', Tk.x0 - 4, Tk.rim - 16, { f: F.M, s: 22, w: 700, c: INK });
+  });
+  al(p0); L.pill(fmt(h, 0) + ' cm', 215, yt, { k: 'kocka mélysége', a: 'center', s: 22, f: F.M, w: 700, bg: '#ffffff', bd: INK, c: INK, pad: 8 });
+  L.pill(fmt(h + e, 0) + ' cm', 215, yb, { k: ['kocka mélysége', 'kocka éle'], a: 'center', s: 22, f: F.M, w: 700, bg: '#ffffff', bd: INK, c: INK, pad: 8 });
+  ln(260, yt, x0 - 4, yt, U.rgba(INK, .3), 1.5, [4, 5]); ln(260, yb, x0 - 4, yb, U.rgba(INK, .3), 1.5, [4, 5]);
+  // kártya
+  const cx0 = 760, cy0 = 150, cw = 580, kk = ['kocka mélysége', 'víz sűrűsége', 'nehézségi gyorsulás'];
+  card(cx0, cy0, cw, 870, p0);
+  al(p0); L.tx(lab('lap területe') + ': A = ' + fmt(Ab) + ' cm² = ' + fmt(Ab / 1e4, 2) + ' m²', cx0 + 24, cy0 + 50, { k: ['lap területe', 'kocka éle'], s: 24, w: 600, c: MUT, max: cw - 48 });
+  const blockRow = (k, p, Fv, y, sign) => {
+    al(p0); T(k, cx0 + 24, y, { s: 26, w: 700, c: WATER_D, max: 330 });
+    L.tx('p = ' + fmt(p * 1000) + ' Pa', cx0 + 24, y + 44, { k: kk, f: F.M, s: 26, w: 600, c: INK, max: 330 });
+    L.tx('p · A = ' + fN(Fv), cx0 + 24, y + 86, { k: kk, f: F.M, s: 26, w: 700, c: INK, max: 330 });
+  };
+  blockRow('felülről', pTop, FT, cy0 + 130, 1);
+  blockRow('alulról', pBot, FB, cy0 + 290, -1);
+  al(p0 * ap); ln(cx0 + 24, cy0 + 420, cx0 + 360, cy0 + 420, LINE, 2);
+  T('különbség', cx0 + 24, cy0 + 470, { s: 26, w: 700, c: RED, max: 330 });
+  L.tx(fN(FB - FT), cx0 + 24, cy0 + 524, { k: KW, f: F.M, s: 36, w: 700, c: RED });
+  T('egyenlő felhajtóerő', cx0 + 24, cy0 + 570, { s: 26, w: 600, c: RED, max: 330 });
+  // erőnyilak közös alapvonalról, azonos léptékben (4 px / N)
+  const NP = 5, B = cy0 + 790, ax = [cx0 + 410, cx0 + 470, cx0 + 530];
+  al(p0 * ap);
+  arrow(ax[0], B - FT * NP, FT * NP, WATER_D, 9);
+  arrow(ax[1], B, -FB * NP, WATER_D, 9);
+  arrow(ax[2], B, -(FB - FT) * NP, RED, 9);
+  ln(cx0 + 380, B, cx0 + 560, B, INK, 2);
+  T('felül rövid', ax[0], B + 34, { s: 22, w: 600, a: 'center', c: MUT });
+  T('alul rövid', ax[1], B + 34, { s: 22, w: 600, a: 'center', c: MUT });
+  T('eredő rövid', ax[2], B + 34, { s: 22, w: 700, a: 'center', c: RED });
+}
+
+/* ════════ 5. Úszás: a felhajtóerő = a súly ════════ */
+const S5 = { user: false, from: 0, to: 0, t0: 0, d: 0 };
+const M5 = { len: 240, Fmax: 10, minor: .5, major: 2, hang: 0 };
+const STR5 = 110, TK5 = () => mkTank(100, 40, 1010, 25, 30, 11, 30);
+const d5 = (st) => S5.user ? lerp(S5.from, S5.to, inOut(clamp((st - S5.t0) / .8))) : lerp(-4, 15, inOut(clamp((st - 1) / 5)));
+/* a kéz (erőmérő) d cm-rel lejjebb, mint ahol a kocka alja épp a vizet éri → minden helyzet egyetlen geometriából */
+function woodState(d) {
+  const PX = 11, e = edge(), Ab = e * e, Tk = TK5(), m = num('fenyőfa sűrűsége') * e * e * e, G = wN(m);
+  const k = (M5.len - 60) / M5.Fmax, c0 = wN(rw() * Ab), sEq = Math.min(e, m / (rw() * Ab));   // c0: N / cm bemerülés
+  const base = 34 + MLEN(M5) + STR5 + e * PX + e * PX * .26 * .35;   // csőtető → test alja, a rugónyúlás nélkül
+  const yTop = wsY(Tk, 0) - base - G * k + d * PX;
+  const f = (s) => yTop + base + (G - c0 * s) * k - (wsY(Tk, Ab * s) + s * PX);   // > 0: a rugó lejjebb vinné a testet
+  let s, slack = false;
+  if (f(0) <= 0) s = 0;
+  else if (f(sEq) >= 0) { s = sEq; slack = true; }
+  else { let lo = 0, hi = sEq; for (let i = 0; i < 50; i++) { const mid = (lo + hi) / 2; if (f(mid) > 0) lo = mid; else hi = mid; } s = (lo + hi) / 2; }
+  const Fb = c0 * s, Fm = slack ? 0 : Math.max(0, G - Fb);
+  const ws = wsY(Tk, Ab * s), yb = s > 0 ? ws + s * PX : yTop + base + G * k;
+  return { Tk, e, PX, G, Fb, Fm, s, sEq, slack, ws, yb, yTop, hook: yTop + 34 + Fm * k + MLEN(M5) };
+}
+function scene5(st) {
+  const p0 = out(clamp(st / .6)), d = d5(st), S = woodState(d), { Tk, e, PX } = S, w = e * PX, cx = 320, AP = 20;
+  const x = cx - (w + w * .26) / 2, [sx, sy] = topMid(x, S.yb, w, w);
+  tankDraw(Tk, S.ws, p0, () => {
+    block(x, S.yb, w, w, 'fenyo', { a: p0 });
+    al(p0); c.beginPath(); c.moveTo(sx, S.hook);
+    const gap = sy - S.hook, sag = Math.max(0, STR5 - gap);
+    if (sag > .5) c.quadraticCurveTo(sx + Math.sqrt(sag * STR5) * .55, (S.hook + sy) / 2, sx, sy); else c.lineTo(sx, sy);
+    c.strokeStyle = INK; c.lineWidth = 2; c.stroke();
+  }, () => {
+    const cy = S.yb - w / 2; al(p0);
+    arrow(sx, cy, S.G * AP, C_G); arrow(sx - 30, cy, -S.Fb * AP, C_F); if (S.Fm > .01) arrow(sx + 30, cy, -S.Fm * AP, C_R);
+    // bemerülés jelölése
+    if (S.s > .3) { const xr = x - 18; al(p0); ln(xr, S.ws, xr, S.yb, WATER_D, 3); ln(xr - 7, S.ws, xr + 7, S.ws, WATER_D, 3); ln(xr - 7, S.yb, xr + 7, S.yb, WATER_D, 3);
+      L.pill(fmt(S.s, 1) + ' cm', xr - 12, (S.ws + S.yb) / 2, { k: ['fenyőfa sűrűsége', 'kocka éle'], a: 'right', s: 22, f: F.M, w: 700, bg: '#ffffff', bd: WATER_D, c: WATER_D, pad: 8 }); }
+  });
+  meter(sx, S.yTop, S.Fm, M5, p0);
+  al(p0); readout(fN(S.Fm), sx + 40, S.yTop + 70, ['fenyőfa sűrűsége', 'kocka éle', 'nehézségi gyorsulás', 'víz sűrűsége']);
+  // kártya
+  const vx = 660, vy = 340, kk = ['fenyőfa sűrűsége', 'kocka éle', 'nehézségi gyorsulás'];
+  card(vx - 20, vy - 120, 700, 500, p0); curA = p0;
+  al(p0); L.pill(lab('fenyőfa') + ' · ' + fmt(e) + ' cm · ' + L.val('fenyőfa sűrűsége'), vx + 4, vy - 66, { k: ['fenyőfa', 'kocka éle', 'fenyőfa sűrűsége'], s: 24, w: 600, bg: '#ffffff', bd: MAT.fenyo.dark, c: INK, max: 640 });
+  legendRow('súly', fN(S.G), vx + 10, vy, C_G, kk, 640);
+  legendRow('felhajtóerő', fN(S.Fb), vx + 10, vy + 56, C_F, KW, 640);
+  legendRow('erőmérő', fN(S.Fm), vx + 10, vy + 112, C_R, KW, 640);
+  al(p0); T('bemerülés', vx + 50, vy + 180, { s: 24, w: 500, c: MUT, max: 340 });
+  L.tx(fmt(S.s, 1) + ' cm  (' + fmt(Math.round(S.s / e * 100)) + ' %)', vx + 650, vy + 180, { k: ['fenyőfa sűrűsége', 'kocka éle'], f: F.M, s: 26, w: 600, a: 'right', c: WATER_D });
+  // úszik
+  const ps = S.slack ? 1 : 0, q = clamp((S.s / S.sEq - .97) / .03);
+  al(p0); ln(vx + 10, vy + 218, vx + 650, vy + 218, LINE, 2);
+  const pw = (al(p0 * q), L.pill(lab('úszik'), vx + 10, vy + 280, { k: 'úszik', s: 30, w: 700, bg: GOOD, c: '#ffffff', pad: 14 }).w);
+  L.tx(lab('egyensúly'), vx + 30 + pw, vy + 292, { k: 'egyensúly', f: F.D, i: 1, s: 34, w: 500, c: GOOD, max: 620 - pw });
+  al(p0 * ps); T('fonal laza', vx + 10, vy + 350, { s: 24, w: 600, c: MUT, max: 600 });
+}
+
+/* ════════ 6. Úszik, lebeg vagy elmerül? ════════ */
+const S6 = { m: 600, from: 0, to: 0, t0: 0, y: 0 };
+const TK6 = () => mkTank(90, 48, 960, 34, 30, 11, 40);
+function eq6(m) {
+  const Tk = TK6(), e = edge(), Ab = e * e, PX = 11, mmax = rw() * Ab * e;
+  if (m < mmax - .5) { const s = m / (rw() * Ab); return wsY(Tk, Ab * s) + s * PX; }
+  if (m <= mmax + .5) return wsY(Tk, Ab * e) + (e + 12) * PX;     // lebeg: bárhol megállna – a víz közepén mutatjuk
+  return Tk.bot;
+}
+function y6(st) {
+  if (st < S6.t0) return S6.from;
+  const tau = st - S6.t0, k = 3.2;
+  return S6.to + (S6.from - S6.to) * (1 + k * tau) * Math.exp(-k * tau);   // kritikusan csillapított beállás
+}
+function retarget6(st, m) { S6.from = y6(st); S6.to = eq6(m); S6.t0 = st; S6.m = m; }
+function scene6(st) {
+  const p0 = out(clamp(st / .6)), Tk = TK6(), PX = 11, e = edge(), Ab = e * e, w = e * PX, cx = 354, AP = 8;
+  const y = y6(st); S6.y = y;
+  const D = dipY(Tk, Ab, e, y), G = wN(S6.m), Fb = wN(rw() * D.V), Fmax = wN(rw() * Ab * e);
+  const onBottom = y >= Tk.bot - 1.5 && G > Fb, N = onBottom ? G - Fb : 0;
+  const x = cx - (w + w * .26) / 2, fill = clamp(S6.m / 2000 * .95);
+  tankDraw(Tk, D.ws, p0, () => block(x, y, w, w, 'doboz', { a: p0, fill }), () => {
+    const cy = y - w / 2, ax = x + w / 2; al(p0);
+    arrow(ax, cy, G * AP, C_G); arrow(ax - 30, cy, -Fb * AP, C_F);
+    if (N > .02) arrow(ax + 30, y - 4, -N * AP, C_R);
+  });
+  // kártya
+  const vx = 690, vy = 170, cw = 650, BP = 28, kk = ['víz sűrűsége', 'kocka éle', 'nehézségi gyorsulás'];
+  card(vx, vy, cw, 700, p0);
+  al(p0); L.pill(lab('doboz') + ' · ' + fmt(e) + ' cm', vx + 24, vy + 46, { k: ['doboz', 'kocka éle'], s: 24, w: 600, bg: '#ffffff', bd: MAT.doboz.dark, c: INK, max: cw - 50 });
+  L.tx(fmt(S6.m) + ' g', vx + cw - 24, vy + 56, { k: 'doboz tömege', f: F.M, s: 30, w: 700, a: 'right', c: INK });
+  const bar = (k, v, y0, col, kv, outline) => {
+    al(p0); T(k, vx + 24, y0, { s: 26, w: 600, c: col, max: cw - 200 });
+    L.tx(fN(v), vx + cw - 24, y0, { k: kv, f: F.M, s: 28, w: 700, a: 'right', c: col });
+    rr(vx + 24, y0 + 16, Math.max(2, v * BP), 30, 6);
+    if (outline) { c.strokeStyle = col; c.lineWidth = 3; c.setLineDash([8, 5]); c.stroke(); c.setLineDash([]); } else { c.fillStyle = col; c.fill(); }
+  };
+  bar('súly', G, vy + 140, C_G, ['doboz tömege', 'nehézségi gyorsulás']);
+  bar('legnagyobb felhajtóerő', Fmax, vy + 250, C_F, kk, true);
+  bar('most felhajtóerő', Fb, vy + 360, C_F, kk);
+  if (N > .02 || onBottom) { al(p0 * clamp(N * 3)); T('tartóerő', vx + 24, vy + 470, { s: 26, w: 600, c: C_R, max: cw - 200 }); L.tx(fN(N), vx + cw - 24, vy + 470, { k: kk, f: F.M, s: 28, w: 700, a: 'right', c: C_R }); rr(vx + 24, vy + 486, Math.max(2, N * BP), 30, 6); c.fillStyle = C_R; c.fill(); }
+  // döntés: a súly és a legnagyobb felhajtóerő összevetése
+  const mmax = rw() * Ab * e, st6 = S6.m < mmax - .5 ? 0 : S6.m <= mmax + .5 ? 1 : 2;
+  const [kS, col] = [['úszik', GOOD], ['lebeg', TEAL], ['elmerül', BAD]][st6];
+  al(p0); ln(vx + 24, vy + 545, vx + cw - 24, vy + 545, LINE, 2);
+  const pw = L.pill(lab(kS), vx + 24, vy + 620, { k: kS, s: 30, w: 700, bg: col, c: '#ffffff', pad: 14 }).w;
+  L.tx(lab('súly') + ' ' + ['<', '=', '>'][st6] + ' ' + lab('legnagyobb felhajtóerő'), vx + 44 + pw, vy + 630, { k: ['súly', 'legnagyobb felhajtóerő'], s: 26, w: 600, c: col, max: cw - 70 - pw });
+}
+
+/* ════════ 7. A hajó: vízkiszorítás ════════ */
+const S7 = { cargo: 2400, sea: false, user: false, from: 0, to: 0, t0: 0, dr: 0 };
+const draftOf = (cargo, sea) => (num('üres hajó tömege') + cargo) / ((sea ? num('tengervíz sűrűsége') : rw()) * num('hajó hossza') * num('hajó szélessége'));   // t / (t/m³ · m²) = m
+function draft7(st) {
+  if (!S7.user) return draftOf(S7.cargo * smooth(clamp((st - .8) / 2.2)), false);
+  const tau = st - S7.t0, k = 3.5; return S7.to + (S7.from - S7.to) * (1 + k * tau) * Math.exp(-k * tau);
+}
+function retarget7(st) { S7.from = draft7(st); S7.user = true; S7.to = draftOf(S7.cargo, S7.sea); S7.t0 = st; }
+function scene7(st) {
+  const p0 = out(clamp(st / .6)), PM = 50, Bm = num('hajó szélessége'), Hm = num('hajó oldalmagassága'), WL = 560, cx = 430;
+  const dr = draft7(st); S7.dr = dr;
+  const cargoNow = S7.user ? S7.cargo : S7.cargo * smooth(clamp((st - .8) / 2.2));
+  const hw = Bm * PM / 2, x0 = cx - hw, x1 = cx + hw, yk = WL + dr * PM, yd = yk - Hm * PM;
+  const sea = S7.user && S7.sea, t = L.t;
+  // hajótest (doboz) + konténerek
+  al(p0);
+  const nC = Math.round(cargoNow / 100), cw = 50, ch = 36;
+  for (let i = 0; i < nC; i++) {
+    const row = Math.floor(i / 10), col = i % 10, xx = x0 + 34 + col * (cw + 3), yy = yd - (row + 1) * (ch + 3);
+    rr(xx, yy, cw, ch, 3); c.fillStyle = ['#c8401c', '#0a6f86', '#d9a066', '#5c6775'][(i * 7 + row) % 4]; c.fill(); c.strokeStyle = 'rgba(28,36,64,.7)'; c.lineWidth = 1.5; c.stroke();
+    for (let k = 1; k < 4; k++) ln(xx + k * cw / 4, yy + 5, xx + k * cw / 4, yy + ch - 5, 'rgba(255,255,255,.35)', 1.5);
+  }
+  const g = c.createLinearGradient(x0, yd, x1, yk); g.addColorStop(0, '#a3adb9'); g.addColorStop(1, '#5c6775');
+  c.beginPath(); c.moveTo(x0, yd); c.lineTo(x1, yd); c.lineTo(x1, yk - 18); c.quadraticCurveTo(x1, yk, x1 - 18, yk); c.lineTo(x0 + 18, yk); c.quadraticCurveTo(x0, yk, x0, yk - 18); c.closePath();
+  c.fillStyle = g; c.fill(); c.strokeStyle = '#2c3644'; c.lineWidth = 3; c.lineJoin = 'round'; c.stroke();
+  rr(x0 - 6, yd - 6, x1 - x0 + 12, 10, 3); c.fillStyle = '#2c3644'; c.fill();
+  // víz
+  waterBody(0, 1360, WL, 1080, t, p0, 3, sea);
+  // kiszorított víz (a test víz alatti része)
+  al(p0); c.save(); c.beginPath(); c.rect(x0, WL, x1 - x0, yk - WL); c.clip();
+  c.strokeStyle = U.rgba(RED, .55); c.lineWidth = 2; c.beginPath(); for (let k = -700; k < 800; k += 22) { c.moveTo(x0 + k, yk); c.lineTo(x0 + k + 400, yk - 400); } c.stroke(); c.restore();
+  al(p0); c.strokeStyle = RED; c.lineWidth = 3; c.setLineDash([9, 6]); c.strokeRect(x0, WL, x1 - x0, yk - WL); c.setLineDash([]);
+  if (yk - WL > 40) L.pill(lab('kiszorított víz'), cx, (WL + yk) / 2, { k: 'kiszorított víz', a: 'center', s: 24, w: 700, bg: '#fff8ee', bd: RED, c: RED, pad: 10 });
+  // merülési skála a test jobb oldalán
+  al(p0);
+  for (let v = 0; v <= Hm + 1e-9; v += .5) { const y = yk - v * PM, major = v % 1 === 0; ln(x1 + 4, y, x1 + (major ? 22 : 13), y, INK, major ? 2.5 : 1.5); if (major && v) tx(fmt(v) + ' m', x1 + 28, y + 8, { f: F.M, s: 22, w: 600, c: INK }); }
+  const wp = L.pill(lab(sea ? 'tenger' : 'duna'), 40, 1030, { k: sea ? 'tenger' : 'duna', s: 26, w: 700, bg: '#ffffff', bd: WATER_D, c: WATER_D }).w;
+  L.tx(L.val(sea ? 'tengervíz sűrűsége' : 'víz sűrűsége'), 60 + wp, 1040, { k: sea ? 'tengervíz sűrűsége' : 'víz sűrűsége', f: F.M, s: 24, w: 600, c: WATER_D });
+  // kártya
+  const vx = 880, vy = 150, cwd = 460, M = num('üres hajó tömege') + cargoNow, rho = sea ? num('tengervíz sűrűsége') : rw();
+  card(vx, vy, cwd, 830, p0);
+  al(p0); L.tx(lab('hajó mérete') + ': ' + fmt(num('hajó hossza')) + ' m × ' + fmt(Bm) + ' m', vx + 24, vy + 50, { k: ['hajó mérete', 'hajó hossza', 'hajó szélessége'], s: 24, w: 600, c: MUT, max: cwd - 48 });
+  const row = (k, v, y, col, kv, big) => { al(p0); T(k, vx + 24, y, { s: 24, w: 500, c: MUT, max: cwd - 48 }); L.tx(v, vx + 24, y + 46, { k: kv, f: F.M, s: big ? 38 : 30, w: 700, c: col, max: cwd - 48 }); };
+  row('üres hajó', fmt(num('üres hajó tömege')) + ' t', vy + 120, INK, 'üres hajó tömege');
+  row('rakomány', fmt(Math.round(cargoNow)) + ' t', vy + 225, INK, 'rakomány tömege');
+  al(p0); ln(vx + 24, vy + 300, vx + cwd - 24, vy + 300, LINE, 2);
+  row('összesen', fmt(Math.round(M)) + ' t', vy + 350, RED, ['üres hajó tömege', 'rakomány tömege'], true);
+  row('kiszorított térfogat', fmt(Math.round(M / rho)) + ' m³', vy + 470, WATER_D, ['víz sűrűsége', 'tengervíz sűrűsége']);
+  row('merülés', fmt(dr, 2) + ' m', vy + 580, INK, ['hajó hossza', 'hajó szélessége'], true);
+  al(p0); L.tx('= ' + fmt(Math.round(M / rho)) + ' m³ : (' + fmt(num('hajó hossza')) + ' m · ' + fmt(Bm) + ' m)', vx + 24, vy + 690, { k: ['hajó hossza', 'hajó szélessége'], f: F.M, s: 22, w: 500, c: MUT, max: cwd - 48 });
+}
+
+/* ════════ 8. Összefoglalás ════════ */
+function scene8(st) {
+  const p0 = out(clamp(st / .6)), e = edge(), Ab = e * e;
+  card(60, 160, 660, 520, p0);
+  al(p0);
+  const y0 = 290, fs = 64;
+  let xx = 100;
+  xx += sym('F', 'fel', xx, y0, { s: fs, c: RED }) + 18;
+  xx += sym('=', '', xx, y0, { s: fs, c: RED }) + 18;
+  xx += sym('ρ', 'víz', xx, y0, { s: fs, c: RED }) + 14;
+  xx += sym('·', '', xx, y0, { s: fs, c: RED }) + 14;
+  xx += sym('V', '', xx, y0, { s: fs, c: RED }) + 14;
+  xx += sym('·', '', xx, y0, { s: fs, c: RED }) + 14;
+  sym('g', '', xx, y0, { s: fs, c: RED });
+  ln(100, 340, 680, 340, LINE, 2);
+  [['F', 'fel', 'jelentés felhajtóerő', null], ['ρ', 'víz', 'jelentés sűrűség', 'víz sűrűsége'], ['V', '', 'jelentés térfogat', null], ['g', '', 'jelentés g', 'nehézségi gyorsulás']].forEach(([b, sb, k, dk], i) => {
+    const y = 410 + i * 66, q = clamp((st - .6 - i * .3) / .5); al(p0 * q);
+    sym(b, sb, 150, y, { s: 40, c: RED, a: 'center' });
+    const w = T(k, 230, y - 2, { s: 26, w: 500, c: INK, max: dk ? 270 : 450 }).w;
+    if (dk) L.tx(L.val(dk), 680, y - 2, { k: dk, f: F.M, s: 24, w: 600, a: 'right', c: MUT });
+  });
+  // három kis tartály, azonos léptékkel (6 px/cm, 5 px/N)
+  const PX = 7, AP = 4, s = e * PX, cases = [
+    { mk: 'fenyo', st: 'úszik', col: GOOD, m: num('fenyőfa sűrűsége') * Ab * e },
+    { mk: 'doboz', st: 'lebeg', col: TEAL, m: rw() * Ab * e },
+    { mk: 'ko', st: 'elmerül', col: BAD, m: num('kő sűrűsége') * Ab * e }];
+  cases.forEach((C, i) => {
+    const q = clamp((st - 1.6 - i * .5) / .6); if (q <= 0) return;
+    const Tk = mkTank(784 + i * 194, 25, 640, 30, 20, PX, 36), cx = (Tk.x0 + Tk.x1) / 2, mmax = rw() * Ab * e;
+    let yb; if (C.m < mmax - .5) { const sd = C.m / (rw() * Ab); yb = wsY(Tk, Ab * sd) + sd * PX; } else if (C.m <= mmax + .5) yb = wsY(Tk, Ab * e) + (e + 9) * PX; else yb = Tk.bot;
+    const D = dipY(Tk, Ab, e, yb), G = wN(C.m), Fb = wN(rw() * D.V), N = Math.max(0, G - Fb), x = cx - (s + s * .26) / 2;
+    GA *= q;
+    tankDraw(Tk, D.ws, p0, () => block(x, yb, s, s, C.mk, { a: p0, fill: .5 }), () => {
+      const cy = yb - s / 2, ax = x + s / 2; al(p0); arrow(ax, cy, G * AP, C_G, 6); arrow(ax - 16, cy, -Fb * AP, C_F, 6); if (N > .05) arrow(ax + 16, yb - 3, -N * AP, C_R, 6);
+    });
+    al(p0); L.pill(lab(C.st), cx, 780, { k: C.st, a: 'center', s: 24, w: 700, bg: C.col, c: '#ffffff', pad: 10 });
+    GA /= q;
+  });
+  al(p0 * clamp((st - 3.4) / .6)); curA = p0 * clamp((st - 3.4) / .6);
+  legendRow('súly', '', 100, 750, C_G, null, 520); legendRow('felhajtóerő', '', 100, 796, C_F, null, 520); legendRow('tartóerő', '', 100, 842, C_R, null, 520);
+  const pm = clamp((st - 4.2) / .6);
+  al(p0 * pm); rr(60, 900, 1280, 100, 18); c.fillStyle = U.rgba(RED, .09); c.fill(); c.strokeStyle = U.rgba(RED, .5); c.lineWidth = 2; c.stroke();
+  T('tanulság', 700, 962, { f: F.D, i: 1, s: 36, w: 500, a: 'center', c: RED, max: 1220 });
+}
+
+/* ── panel: „F_fel” → F<sub>fel</sub> (helyi kiegészítés, a motor változatlan) ── */
+function subscripts(root) {
+  const re = /([A-Za-zρ])_([0-9A-Za-zÁÉÍÓÖŐÚÜŰáéíóöőúüű]+)/g, walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT), nodes = [];
+  while (walker.nextNode()) if (re.test(walker.currentNode.nodeValue)) nodes.push(walker.currentNode);
+  for (const n of nodes) {
+    const frag = document.createDocumentFragment(), s = n.nodeValue; let last = 0; re.lastIndex = 0; let m;
+    while ((m = re.exec(s))) { frag.append(s.slice(last, m.index) + m[1]); const sb = document.createElement('sub'); sb.textContent = m[2]; frag.append(sb); last = m.index + m[0].length; }
+    frag.append(s.slice(last)); n.replaceWith(frag);
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════ */
+const sT = new Array(8).fill(0);
+const SCENES = [scene1, scene2, scene3, scene4, scene5, scene6, scene7, scene8];
+const panelFix = () => subscripts(L.panel.querySelector('.lp-text'));
+L = Lesson.create({
+  content: window.LESSON_CONTENT,
+  home: false,
+  steps: [
+    { settle: 7, enter: () => panelFix() },
+    { settle: 7, enter() { panelFix(); S2.user = false; },
+      controls(L) {
+        L.slider({ label: lab('merítés csúszka'), k: 'merítés csúszka', min: 0, max: 20, step: .5, value: 16, format: (v) => fmt(v, 1) + ' cm',
+          onInput: (v) => { S2.from = S2.h; S2.to = v; S2.t0 = L.st; S2.user = true; } });
+      } },
+    { settle: 6.5, enter() { panelFix(); Object.assign(S3, { mk: 'ko', half: false, t0: 0 }); },
+      controls(L) {
+        const go = (mk, half) => { S3.mk = mk; S3.half = half; S3.t0 = L.st; };
+        L.button(lab('kő gomb'), () => go('ko', false), 'kő gomb');
+        L.button(lab('acél gomb'), () => go('acel', false), 'acél gomb');
+        L.button(lab('fél gomb'), () => go('ko', true), 'fél gomb');
+      } },
+    { settle: 5, enter() { panelFix(); S4.user = false; },
+      controls(L) {
+        L.slider({ label: lab('mélység csúszka'), k: 'mélység csúszka', min: 0, max: 50, step: 1, value: num('kocka mélysége'), format: (v) => fmt(v) + ' cm',
+          onInput: (v) => { S4.from = S4.h; S4.to = v; S4.t0 = L.st; S4.user = true; } });
+      } },
+    { settle: 7, enter() { panelFix(); S5.user = false; },
+      controls(L) {
+        L.slider({ label: lab('kéz csúszka'), k: 'kéz csúszka', min: 0, max: 18, step: .5, value: 15, format: (v) => fmt(v, 1) + ' cm',
+          onInput: (v) => { S5.from = d5(L.st); S5.to = v; S5.t0 = L.st; S5.user = true; } });
+      } },
+    { settle: 5, enter() {
+        panelFix(); const Tk = TK6(); S6.m = num('doboz tömege'); S6.from = wsY(Tk, 0) - 150; S6.to = eq6(S6.m); S6.t0 = .7;
+      },
+      controls(L) {
+        L.slider({ label: lab('doboz csúszka'), k: 'doboz csúszka', min: 100, max: 2000, step: 50, value: num('doboz tömege'), format: (v) => fmt(v) + ' g',
+          onInput: (v) => { if (L.st < S6.t0) L.st = S6.t0; retarget6(L.st, v); } });
+      } },
+    { settle: 4.5, enter() { panelFix(); Object.assign(S7, { cargo: num('rakomány tömege'), sea: false, user: false }); },
+      controls(L) {
+        L.slider({ label: lab('rakomány csúszka'), k: 'rakomány csúszka', min: 0, max: 3000, step: 100, value: num('rakomány tömege'), format: (v) => fmt(v) + ' t',
+          onInput: (v) => { const f = draft7(L.st); S7.cargo = v; retarget7(L.st); S7.from = f; } });
+        L.button(lab('duna gomb'), () => { const f = draft7(L.st); S7.sea = false; retarget7(L.st); S7.from = f; }, 'duna gomb');
+        L.button(lab('tenger gomb'), () => { const f = draft7(L.st); S7.sea = true; retarget7(L.st); S7.from = f; }, 'tenger gomb');
+      } },
+    { settle: 5.5, enter: () => panelFix() },
+  ],
+  init(Lx) { L = Lx; c = L.ctx; },
+  draw(Lx) {
+    L = Lx; c = L.ctx; GA = 1; background();
+    const sp = L.sp;
+    if (L.step >= 0) sT[L.step] = L.st;
+    for (let i = 0; i < SCENES.length; i++) {
+      const w = clamp(1 - Math.abs(sp - i) * 2); if (w <= .005) continue;
+      GA = w; curA = 1; SCENES[i](sT[i], L.step === i);
+    }
+    c.globalAlpha = 1;
+  },
+});
+})();
+</script>
+</body>
+</html>
