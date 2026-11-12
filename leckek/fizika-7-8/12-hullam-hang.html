@@ -1,0 +1,824 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mitől magas a hang? — Fizika</title>
+<link rel="stylesheet" href="../../shared/lesson.css">
+<style>
+  .lp-text .big-fx { font-size: 40px; margin: 4px 0 12px; }
+  .lp-text > :last-child { margin-bottom: 0; }
+  .lp-text b { color: var(--ink); }
+</style>
+<!-- A lecke által várt tartalomkulcsok. A tools/build_lesson.py ez alapján ellenőrzi a .md-t.
+     labels: felirat → max. karakterszám (null = alapértelmezett 32) · data: adat → mértékegység, tartomány -->
+<script type="application/json" id="lesson-spec">
+{
+  "steps": 9,
+  "labels": {
+    "frekvencia név": 18, "hullámhossz név": 18, "amplitúdó név": 18, "periódusidő név": 18, "sebesség név": 22, "lassítva": 28,
+    "gyöngysor": 22, "kéz": 18, "minta halad": 18, "piros gyöngy": 40, "stadionhullám": 22, "stadion magyarázat": 44,
+    "papírcsík": 40, "korábban": 16, "most": 10,
+    "frekvencia csúszka": 34, "1 s alatt": 14, "f darab hullám": 34,
+    "hangszóró": 14, "fül": 8, "sűrűsödés": 14, "ritkulás": 14, "piros pontok": 60, "sűrűség grafikon": 30,
+    "sűrűbb": 10, "ritkább": 10, "terjedés iránya": 22,
+    "verseny cím": 30, "valódi sebesség": 40, "idő": 8, "halk levegő": 28, "hangos levegő": 28, "víz": 28, "acél": 28,
+    "vákuum": 28, "nem jut át": 16, "újra gomb": 18, "hőmérséklet csúszka": 34,
+    "nyomás grafikon": 40, "hangmagasság": 18, "hangerő": 18, "mély": 10, "magas": 10, "halk": 10, "hangos": 10,
+    "infrahang": 12, "hallható": 18, "ultrahang": 12, "zenei a": 16, "hullámhossz levegőben": 30,
+    "frekvencia csúszka 2": 34, "amplitúdó csúszka": 34, "hang gomb": 20, "némítás gomb": 20,
+    "gitár": 30, "lefogás csúszka": 34, "pengetés gomb": 18, "mód gomb": 10, "csomópont": 14, "duzzadóhely": 14,
+    "húzd": 18, "bund": 12, "üres húr": 14, "rezgő hossz": 18, "oktáv": 44, "lassítva húr": 22,
+    "decibel cím": 24, "hallásküszöb": 18, "suttogás": 18, "beszélgetés felirat": 18, "forgalom felirat": 18,
+    "koncert felirat": 18, "fájdalomküszöb": 18, "károsító felirat": 30, "hangszint csúszka": 30, "idő cím": 44,
+    "nem károsít": 32, "óra": 8, "perc": 8, "másodperc": 12, "nyolc óra": 10, "felezés": 30,
+    "össz minta cím": 32, "össz minta szöveg": 36, "össz képlet szöveg": 40, "össz magasság cím": 32,
+    "össz magasság szöveg": 36, "össz hangerő cím": 32, "össz hangerő szöveg": 36, "össz közeg cím": 32,
+    "össz közeg szöveg": 36, "össz fül cím": 32, "össz fül szöveg": 36, "levegő rövid": 10, "víz rövid": 10, "acél rövid": 10
+  },
+  "data": {
+    "hullám sebessége a kötélen":      {"unit": "m/s", "min": 0.6, "max": 1.4},
+    "kötél rezgésének frekvenciája":   {"unit": "Hz", "min": 0.5, "max": 1.5},
+    "kötél rezgésének amplitúdója":    {"unit": "m", "min": 0.1, "max": 0.3},
+    "hangsebesség 0 °C-os levegőben":  {"unit": "m/s", "min": 325, "max": 335},
+    "hangsebesség növekedése fokonként": {"unit": "m/s", "min": 0.5, "max": 0.7},
+    "levegő hőmérséklete":             {"unit": "°C", "min": -20, "max": 40},
+    "hangsebesség vízben":             {"unit": "m/s", "min": 1400, "max": 1550},
+    "hangsebesség acélban":            {"unit": "m/s", "min": 4500, "max": 6200},
+    "legmélyebb hallható hang":        {"unit": "Hz", "min": 10, "max": 40},
+    "legmagasabb hallható hang":       {"unit": "Hz", "min": 12000, "max": 25000},
+    "zenei a frekvenciája":            {"unit": "Hz", "min": 400, "max": 460},
+    "károsító szint":                  {"unit": "dB", "min": 75, "max": 95},
+    "távolság":                        {"unit": "km", "min": 0.5, "max": 3},
+    "húr hossza":                      {"unit": "m", "min": 0.5, "max": 0.8},
+    "üres A-húr frekvenciája":         {"unit": "Hz", "min": 100, "max": 120},
+    "suttogás szintje":                {"unit": "dB", "min": 15, "max": 40},
+    "beszélgetés":                     {"unit": "dB", "min": 50, "max": 70},
+    "forgalom":                        {"unit": "dB", "min": 70, "max": 90},
+    "koncert":                         {"unit": "dB", "min": 95, "max": 118},
+    "fájdalomküszöb alja":             {"unit": "dB", "min": 110, "max": 125},
+    "fájdalomküszöb teteje":           {"unit": "dB", "min": 120, "max": 140},
+    "biztonságos idő a károsító szinten": {"unit": "óra", "min": 4, "max": 10},
+    "felezési lépés":                  {"unit": "dB", "min": 2, "max": 6},
+    "példa hangszint":                 {"unit": "dB", "min": 60, "max": 125}
+  }
+}
+</script>
+</head>
+<body>
+<script src="12-hullam-hang.content.js"></script>
+<script src="../../shared/lesson.js"></script>
+<script>
+(function () {
+'use strict';
+const U = Lesson.U, { clamp, lerp, out, smooth, TAU } = U, fmt = U.fmt;
+const F = Lesson.FONTS;
+/* ── paletta (világos téma, lásd SZERZODES.md) ── */
+const INK = '#1c2440', MUT = '#565d72', RED = '#c8401c', TEAL = '#0a6f86', GOOD = '#1d7a45', BAD = '#b3261e',
+  CARD = '#fffaf1', LINE = 'rgba(28,36,64,.16)', AIR = '#1b5a94', REDD = '#7f2810', TEALD = '#08485a';
+let L, c, GA = 1;
+const al = (a = 1) => { c.globalAlpha = GA * clamp(a); };
+const lab = (k) => L.lab(k), num = (k) => L.num(k);
+const T = (k, x, y, o = {}) => L.tx(lab(k), x, y, Object.assign({ k }, o));
+const TP = (k, x, y, o = {}) => L.pill(lab(k), x, y, Object.assign({ k }, o));
+const tx = (s, x, y, o) => L.tx(s, x, y, o);
+const rr = (x, y, w, h, r) => { c.beginPath(); c.roundRect(x, y, w, h, r); };
+const ln = (x1, y1, x2, y2, col, w = 2, dash) => { c.beginPath(); c.moveTo(x1, y1); c.lineTo(x2, y2); c.strokeStyle = col; c.lineWidth = w; c.setLineDash(dash || []); c.stroke(); c.setLineDash([]); };
+const mod = (a, m) => ((a % m) + m) % m;
+const fade = (u, e = .1) => clamp(u / e) * clamp((1 - u) / e);
+function arrowHead(x, y, ang, col, s = 12) {
+  c.beginPath(); c.moveTo(x, y); c.lineTo(x - s * Math.cos(ang - .45), y - s * Math.sin(ang - .45)); c.lineTo(x - s * Math.cos(ang + .45), y - s * Math.sin(ang + .45)); c.closePath();
+  c.fillStyle = col; c.fill();
+}
+function arrow(x1, y1, x2, y2, col, w = 3, s = 14) { ln(x1, y1, x2, y2, col, w); arrowHead(x2, y2, Math.atan2(y2 - y1, x2 - x1), col, s); }
+function card(x, y, w, h, r = 20) { rr(x, y, w, h, r); c.fillStyle = CARD; c.fill(); c.strokeStyle = LINE; c.lineWidth = 2; c.stroke(); }
+
+/* ── háttér: meleg papír, halvány négyzetrács (a 05-inga leckéből) ── */
+function background() {
+  c.globalAlpha = 1;
+  const g = c.createRadialGradient(680, 480, 100, 680, 540, 1300); g.addColorStop(0, '#f7f1e6'); g.addColorStop(1, '#efe6d6');
+  c.fillStyle = g; c.fillRect(0, 0, 1920, 1080);
+  c.strokeStyle = 'rgba(28,36,64,.045)'; c.lineWidth = 1; c.beginPath();
+  for (let x = 0; x <= 1920; x += 40) { c.moveTo(x + .5, 0); c.lineTo(x + .5, 1080); }
+  for (let y = 0; y <= 1080; y += 40) { c.moveTo(0, y + .5); c.lineTo(1920, y + .5); }
+  c.stroke();
+}
+
+/* ════════ Hullám-modell (1D): a forrás rezgése fázis-szakaszokból ════════
+   A forrás kitérése s(τ) = A·sin φ(τ); a hullám az x távolságba d/v idő alatt ér el:
+   y(d, t) = s(t − d/v). A frekvencia változtatása új szakaszt kezd (folytonos fázissal),
+   így az új frekvencia a forrástól v sebességgel terjed ki – a rajz mindig v = λ·f-et követi.
+   Zárt képlet: bármely (d, t) közvetlenül számolható (QA, visszaléptetés). */
+function mkWave(t0, f, ramp = 0) { return { t0, ramp, segs: [{ t: t0, f, ph: 0 }] }; }
+function phase(Wv, tau) {
+  const s = Wv.segs; if (tau < s[0].t) return null;
+  let i = s.length - 1; while (i > 0 && s[i].t > tau) i--;
+  return s[i].ph + TAU * s[i].f * (tau - s[i].t);
+}
+function setF(Wv, t, f) {
+  const s = Wv.segs;
+  if (t <= s[0].t) { s.length = 1; s[0].f = f; return; }
+  while (s.length > 1 && s[s.length - 1].t >= t) s.pop();
+  s.push({ t, f, ph: phase(Wv, t) });
+  while (s.length > 2 && s[2].t < t - 10) s.splice(1, 1);   // a 10 s-nál régebbi szakaszok már kifutottak a képből
+}
+/* forrás-kitérés τ időpontban (A egységben) */
+function src(Wv, tau) {
+  const p = phase(Wv, tau); if (p == null) return 0;
+  return (Wv.ramp ? smooth((tau - Wv.t0) / Wv.ramp) : 1) * Math.sin(p);
+}
+/* egy hullámhegy követése a legutóbbi szakasz tartományában: d ∈ [D0, D0 + n·λ), áttűnéssel */
+function crest(Wv, t, v, D0, n, ph0 = TAU / 4) {
+  const s = Wv.segs[Wv.segs.length - 1], P = phase(Wv, t); if (P == null) return null;
+  const lam = v / s.f, span = n * lam, c0 = lam * ((P - ph0) / TAU);
+  const d = D0 + mod(c0 - D0, span), R = v * (t - s.t);
+  if (d > R) return null;
+  return { d, lam, a: fade((d - D0) / span, .1) };
+}
+
+/* ════════ gyöngysor ════════ */
+const XS = 120, XE = 1330, SR = 300, BSP = 24;   // forrás x, kötél vége, px/m lépték, gyöngytávolság
+const ropeV = () => num('hullám sebessége a kötélen') * SR, ropeF = () => num('kötél rezgésének frekvenciája'),
+  ropeA = () => num('kötél rezgésének amplitúdója') * SR;
+function bead(x, y, r, red, a) {
+  al(a);
+  const g = c.createRadialGradient(x - r * .35, y - r * .4, r * .1, x, y, r);
+  if (red) { g.addColorStop(0, '#fbdccd'); g.addColorStop(1, '#d4643d'); } else { g.addColorStop(0, '#d6eff4'); g.addColorStop(1, '#3d9db3'); }
+  c.beginPath(); c.arc(x, y, r, 0, TAU); c.fillStyle = g; c.fill(); c.strokeStyle = red ? REDD : TEALD; c.lineWidth = 2.5; c.stroke();
+}
+/* kötél + gyöngyök; yAt(d) → függőleges kitérés (px, felfelé +). redX: a kiemelt gyöngy x-e */
+function rope(RY, yAt, a, redX) {
+  al(a); c.beginPath();
+  for (let x = XS; x <= XE; x += 3) { const y = RY - yAt(x - XS); x === XS ? c.moveTo(x, y) : c.lineTo(x, y); }
+  c.strokeStyle = INK; c.lineWidth = 3; c.lineJoin = 'round'; c.stroke();
+  for (let x = XS + BSP; x <= XE; x += BSP) { if (x === redX) continue; bead(x, RY - yAt(x - XS), 9, false, a); }
+  if (redX) bead(redX, RY - yAt(redX - XS), 12, true, a);
+}
+/* a „kéz”: függőleges sín + ököl a kötél elején */
+function hand(RY, y, A, a) {
+  al(a * .5); rr(XS - 9, RY - A - 26, 18, 2 * A + 52, 9); c.fillStyle = 'rgba(28,36,64,.08)'; c.fill(); c.strokeStyle = 'rgba(28,36,64,.3)'; c.lineWidth = 2; c.stroke();
+  al(a); rr(XS - 34, RY - y - 22, 40, 44, 14); c.fillStyle = '#f2cfa8'; c.fill(); c.strokeStyle = '#7a4f2a'; c.lineWidth = 2.5; c.stroke();
+  ln(XS - 26, RY - y - 6, XS - 4, RY - y - 6, '#7a4f2a', 2); ln(XS - 26, RY - y + 6, XS - 4, RY - y + 6, '#7a4f2a', 2);
+  rr(XS - 70, RY - y - 12, 38, 24, 8); c.fillStyle = '#7cc2d2'; c.fill(); c.strokeStyle = TEALD; c.lineWidth = 2.5; c.stroke();
+}
+
+/* ════════ 1. A minta halad, nem a kötél ════════ */
+const W1 = mkWave(1.0, 1, .4);
+const RX1 = XS + 27 * BSP;   // a piros gyöngy
+function person(x, base, h, H, shirt, dark, a) {
+  al(a); c.lineCap = 'round';
+  const up = clamp(h / H), top = base - h;
+  c.strokeStyle = '#3b4556'; c.lineWidth = 9; c.beginPath(); c.moveTo(x - 6, top - 14); c.lineTo(x - 6, base + 4); c.moveTo(x + 6, top - 14); c.lineTo(x + 6, base + 4); c.stroke();
+  for (const s of [-1, 1]) {
+    const an = lerp(Math.PI / 2 - s * .25, -Math.PI / 2 - s * .35, up), sx = x + s * 11, sy = top - 52;
+    c.strokeStyle = shirt; c.lineWidth = 8; c.beginPath(); c.moveTo(sx, sy); c.lineTo(sx + 30 * Math.cos(an), sy + 30 * Math.sin(an)); c.stroke();
+  }
+  rr(x - 14, top - 60, 28, 50, 10); c.fillStyle = shirt; c.fill(); c.strokeStyle = dark; c.lineWidth = 2.5; c.stroke();
+  c.beginPath(); c.arc(x, top - 74, 12, 0, TAU); c.fillStyle = '#f2cfa8'; c.fill(); c.strokeStyle = '#7a4f2a'; c.lineWidth = 2.5; c.stroke();
+  c.lineCap = 'butt';
+}
+function scene1(st) {
+  const RY = 330, v = ropeV(), A = ropeA(), p0 = out(clamp(st / .6));
+  W1.segs[0].f = ropeF();
+  const yAt = (d) => A * src(W1, st - d / v);
+  al(p0); T('gyöngysor', 60, 110, { f: F.D, s: 36, w: 560, c: INK });
+  // a piros gyöngy pályája
+  al(p0 * .8); ln(RX1, RY - A - 18, RX1, RY + A + 18, U.rgba(RED, .6), 2, [6, 6]);
+  for (const yy of [RY - A, RY + A]) ln(RX1 - 14, yy, RX1 + 14, yy, U.rgba(RED, .8), 2.5);
+  rope(RY, yAt, p0, RX1);
+  hand(RY, A * src(W1, st), A, p0);
+  al(p0); T('kéz', XS - 30, RY + A + 62, { s: 24, w: 600, a: 'center', c: MUT });
+  al(p0 * clamp((st - 1.6) / .6)); T('piros gyöngy', RX1, RY + A + 62, { s: 28, w: 700, a: 'center', c: RED });
+  // a minta (egy hullámhegy) halad
+  const cr = crest(W1, st, v, 150, 3);
+  if (cr) {
+    const x = XS + cr.d, y = RY - yAt(cr.d);
+    al(p0 * cr.a); c.beginPath(); c.moveTo(x - 11, y - 34); c.lineTo(x + 11, y - 34); c.lineTo(x, y - 16); c.closePath(); c.fillStyle = TEAL; c.fill();
+    const b = TP('minta halad', x, RY - A - 66, { a: 'center', s: 24, w: 700, bg: TEAL, c: '#ffffff' });
+    arrow(b.x + b.w + 8, RY - A - 66, b.x + b.w + 58, RY - A - 66, TEAL, 3.5);
+  }
+  // stadionhullám
+  const base = 975, H = 46, xc = st < 1.5 ? -500 : -150 + mod(st - 1.5, 6) * 300;
+  al(p0); T('stadionhullám', 60, 690, { f: F.D, s: 36, w: 560, c: INK });
+  T('stadion magyarázat', 60, 732, { s: 24, w: 500, c: MUT, max: 900 });
+  al(p0); rr(40, base - 4, 1300, 26, 6); c.fillStyle = '#d8c7a1'; c.fill(); c.strokeStyle = '#8c7444'; c.lineWidth = 2.5; c.stroke();
+  const shirts = [['#7cc2d2', TEALD], ['#e3b04b', '#7a5410'], ['#9aa6c4', '#3b4556'], ['#86c28f', '#1d5a32']];
+  for (let i = 0, x = 100; x <= 1300; x += 44, i++) {
+    const h = H * Math.exp(-Math.pow((x - xc) / 110, 2)), red = x === 760;
+    const [sh, dk] = red ? ['#e0714a', REDD] : shirts[i % 4];
+    person(x, base, h, H, sh, dk, p0);
+  }
+}
+
+/* ════════ 2. Amplitúdó, frekvencia, hullámhossz ════════ */
+const W2 = mkWave(-30, 1);
+const RX2 = XS + 37 * BSP, VP = 150, ST0 = .6;   // piros gyöngy = toll helye; papírsebesség px/s; a toll indulása
+function scene2(st) {
+  const RY = 250, v = ropeV(), f = ropeF(), A = ropeA(), p0 = out(clamp(st / .6));
+  W2.segs[0].f = f;
+  const yAt = (d) => A * src(W2, st - d / v), lam = v / f;
+  // burkoló (±A)
+  const pa = clamp((st - 1) / .6);
+  al(p0 * (.35 + .65 * pa)); for (const yy of [RY - A, RY + A]) ln(XS, yy, XE, yy, U.rgba(TEAL, .55), 2, [8, 8]);
+  ln(XS, RY, XE, RY, 'rgba(28,36,64,.2)', 1.5, [4, 6]);
+  rope(RY, yAt, p0, RX2);
+  hand(RY, A * src(W2, st), A, p0);
+  // amplitúdó-jelölés (jobb szélen, állandó helyen)
+  if (pa > 0) {
+    al(p0 * pa); arrow(1346, RY, 1346, RY - A + 2, TEAL, 3, 12); arrowHead(1346, RY, Math.PI / 2, TEAL, 12); ln(1334, RY, 1356, RY, TEAL, 2);
+    L.pill(lab('amplitúdó név') + ' (A)', 1318, RY - A - 36, { k: 'amplitúdó név', a: 'right', s: 24, w: 700, bg: CARD, bd: TEAL, c: TEALD });
+  }
+  // hullámhossz: két szomszédos hegy, a hullámmal együtt halad
+  const pl = clamp((st - 2) / .6), cr = crest(W2, st, v, 60, 3);
+  if (pl > 0 && cr && cr.d + lam < XE - XS - 10) {
+    const x1 = XS + cr.d, x2 = x1 + lam, yb = RY + A + 30;
+    al(p0 * pl * cr.a);
+    ln(x1, RY - A, x1, yb + 8, U.rgba(RED, .55), 2, [5, 5]); ln(x2, RY - A, x2, yb + 8, U.rgba(RED, .55), 2, [5, 5]);
+    arrow(x1 + (x2 - x1) / 2, yb, x2, yb, RED, 3, 12); arrow(x1 + (x2 - x1) / 2, yb, x1, yb, RED, 3, 12);
+    L.pill(lab('hullámhossz név') + ' (λ)', (x1 + x2) / 2, yb + 38, { k: 'hullámhossz név', a: 'center', s: 24, w: 700, bg: CARD, bd: RED, c: REDD });
+  }
+  // papírcsík: a piros gyöngy kitérése az idő függvényében (a 05-inga papírcsíkjának vízszintes változata)
+  const top = 490, bot = 850, YC = 670, x0 = 140, x1 = RX2;
+  al(p0); T('papírcsík', x0, top - 18, { s: 26, w: 700, c: INK });
+  al(p0); rr(x0, top, x1 - x0, bot - top, 10); c.fillStyle = CARD; c.fill(); c.strokeStyle = LINE; c.lineWidth = 2; c.stroke();
+  c.save(); rr(x0, top, x1 - x0, bot - top, 10); c.clip();
+  ln(x0, YC, x1, YC, 'rgba(28,36,64,.3)', 1.5, [6, 6]);
+  for (const yy of [YC - A, YC + A]) ln(x0, yy, x1, yy, 'rgba(28,36,64,.12)', 1.5);
+  if (st > ST0) for (let k = 0; ; k++) { const x = x1 - (st - ST0 - k) * VP; if (x > x1) break; if (x >= x0) ln(x, top, x, bot, 'rgba(28,36,64,.13)', 1.2); }
+  const yB = (tau) => A * src(W2, tau - (RX2 - XS) / v);   // a piros gyöngy kitérése
+  c.beginPath(); let n = 0;
+  for (let x = x1; x >= x0 - 2; x -= 2) { const tau = st - (x1 - x) / VP; if (tau < ST0) break; const y = YC - yB(tau); n++ ? c.lineTo(x, y) : c.moveTo(x, y); }
+  c.strokeStyle = RED; c.lineWidth = 3.5; c.lineJoin = 'round'; c.stroke();
+  c.restore();
+  const yb = yB(st);
+  al(p0 * .7); ln(RX2, RY - yb + 14, RX2, YC - yb - 12, U.rgba(RED, .5), 2, [4, 6]);
+  al(p0); c.beginPath(); c.moveTo(x1 + 2, YC - yb); c.lineTo(x1 + 18, YC - yb - 10); c.lineTo(x1 + 18, YC - yb + 10); c.closePath(); c.fillStyle = RED; c.fill(); c.strokeStyle = REDD; c.lineWidth = 2; c.stroke();
+  T('korábban', x0, bot + 34, { s: 22, w: 600, c: MUT });
+  T('most', x1, bot + 34, { s: 22, w: 600, a: 'right', c: MUT });
+  // periódusidő: két szomszédos csúcs a papíron
+  const pt = clamp((st - 3) / .6), per = VP / f;
+  if (pt > 0) {
+    const P = phase(W2, st - (RX2 - XS) / v), c0 = per * ((P - TAU / 4) / TAU), D0 = 40, span = 4 * per;
+    const s = D0 + mod(c0 - D0, span), hist = (st - ST0) * VP;
+    if (s + per < Math.min(hist, x1 - x0) - 4) {
+      const xa = x1 - s, xb = xa - per, yy = YC - A - 22;
+      al(p0 * pt * fade((s - D0) / span));
+      ln(xa, YC - A, xa, yy - 8, U.rgba(RED, .5), 2, [5, 5]); ln(xb, YC - A, xb, yy - 8, U.rgba(RED, .5), 2, [5, 5]);
+      arrow((xa + xb) / 2, yy, xa, yy, INK, 3, 12); arrow((xa + xb) / 2, yy, xb, yy, INK, 3, 12);
+      L.pill(lab('periódusidő név') + ' (T)', (xa + xb) / 2, yy - 34, { k: 'periódusidő név', a: 'center', s: 24, w: 700, bg: CARD, bd: INK, c: INK });
+    }
+  }
+  // értékek
+  const rows = [['amplitúdó név', 'A = ' + fmt(A / SR, 2) + ' m', TEAL, 1, 'kötél rezgésének amplitúdója'],
+    ['hullámhossz név', 'λ = ' + fmt(lam / SR, 2) + ' m', RED, 2, ['hullám sebessége a kötélen', 'kötél rezgésének frekvenciája']],
+    ['periódusidő név', 'T = ' + fmt(1 / f, 1) + ' s', INK, 3, 'kötél rezgésének frekvenciája'],
+    ['frekvencia név', 'f = ' + fmt(f, 1) + ' Hz', INK, 4, 'kötél rezgésének frekvenciája']];
+  al(p0 * clamp((st - 1) / .5)); card(1046, top - 10, 290, bot - top + 20);
+  rows.forEach(([k, v2, col, t, kv], i) => {
+    const q = clamp((st - t) / .5); if (q <= 0) return;
+    al(p0 * q); const y = top + 34 + i * 88;
+    T(k, 1070, y, { s: 24, w: 600, c: MUT, max: 250 });
+    tx(v2, 1070, y + 40, { f: F.M, s: 30, w: 700, c: col, k: kv, max: 250 });
+  });
+}
+
+/* ════════ 3. v = λ · f ════════ */
+const S3 = { W: mkWave(-30, 1) };
+const PROBE = {};   // csak teszthez: window.__lesson.probe – a rajzoló függvények (olvasásra)
+function scene3(st) {
+  const RY = 270, v = ropeV(), A = ropeA(), p0 = out(clamp(st / .6)), Wv = S3.W;
+  const f = Wv.segs[Wv.segs.length - 1].f, lam = v / f;
+  const yAt = (d) => A * src(Wv, st - d / v);
+  PROBE.rope3 = { yAt, lam, v, f, SR, region: v * (st - Wv.segs[Wv.segs.length - 1].t) };
+  ln(XS, RY, XE, RY, 'rgba(28,36,64,.2)', 1.5, [4, 6]);
+  rope(RY, yAt, p0, 0);
+  hand(RY, A * src(Wv, st), A, p0);
+  // a piros hullámhegy és a helye 1 s-mal korábban
+  const D0 = v + 30, n = Math.max(1, Math.round(640 / lam)), cr = crest(Wv, st, v, D0, n);
+  if (cr) {
+    const x = XS + cr.d, y = RY - yAt(cr.d), xg = x - v, ya = RY - A - 34;
+    al(p0 * cr.a);
+    c.beginPath(); c.arc(xg, RY - A, 12, 0, TAU); c.setLineDash([5, 4]); c.strokeStyle = RED; c.lineWidth = 2.5; c.stroke(); c.setLineDash([]);
+    c.beginPath(); c.arc(x, y, 13, 0, TAU); c.fillStyle = RED; c.fill(); c.strokeStyle = REDD; c.lineWidth = 2.5; c.stroke();
+    ln(xg, RY - A - 14, xg, ya - 10, U.rgba(RED, .5), 2, [4, 5]); ln(x, y - 14, x, ya - 10, U.rgba(RED, .5), 2, [4, 5]);
+    arrow(xg, ya, x, ya, RED, 3.5, 14);
+    L.pill(lab('1 s alatt') + ': ' + fmt(v / SR, 2) + ' m', (x + xg) / 2, ya - 34, { k: ['1 s alatt', 'hullám sebessége a kötélen'], a: 'center', s: 24, w: 700, bg: RED, c: '#ffffff' });
+    // λ: a követett hegy és a következő között
+    const right = cr.d + lam <= Math.min(v * (st - Wv.segs[Wv.segs.length - 1].t), XE - XS - 6);
+    const xa = right ? x : x - lam, xb = xa + lam, yb = RY + A + 28;
+    if (xa >= XS + 4) {
+      ln(xa, RY - A + 14, xa, yb + 8, U.rgba(TEAL, .6), 2, [5, 5]); ln(xb, RY - A + 14, xb, yb + 8, U.rgba(TEAL, .6), 2, [5, 5]);
+      arrow((xa + xb) / 2, yb, xb, yb, TEAL, 3, 12); arrow((xa + xb) / 2, yb, xa, yb, TEAL, 3, 12);
+      tx('λ', (xa + xb) / 2, yb + 40, { f: F.D, i: 1, s: 34, w: 600, a: 'center', c: TEAL });
+    }
+  }
+  // vonalzó (méter)
+  const yr = 480;
+  al(p0); ln(XS, yr, XS + 4 * SR, yr, INK, 2.5);
+  for (let m = 0; m <= 8; m++) { const x = XS + m * SR / 2; ln(x, yr - (m % 2 ? 7 : 12), x, yr + (m % 2 ? 7 : 12), INK, 2); if (m % 2 === 0) tx(m / 2 + ' m', x, yr + 40, { f: F.M, s: 22, a: 'center', c: MUT }); }
+  // 1 s alatt f darab λ hosszú hullám = v
+  const yv = 600;
+  al(p0); tx(lab('f darab hullám').replace('#', fmt(f, 1)), XS, yv - 24, { k: 'f darab hullám', s: 26, w: 600, c: INK });
+  for (let x = 0, i = 0; x < v - .5; x += lam, i++) {
+    const w = Math.min(lam, v - x);
+    rr(XS + x, yv, w, 30, 4); c.fillStyle = i % 2 ? U.rgba(TEAL, .25) : U.rgba(RED, .22); c.fill(); c.strokeStyle = i % 2 ? TEAL : RED; c.lineWidth = 2; c.stroke();
+  }
+  tx(fmt(f, 1) + ' · ' + fmt(lam / SR, 2) + ' m = ' + fmt(v / SR, 2) + ' m', XS + v + 24, yv + 25, { f: F.M, s: 26, w: 700, c: INK, k: ['hullám sebessége a kötélen'] });
+  // egyenlet
+  al(p0); card(60, 700, 1260, 280);
+  const cols = [[240, 'v', fmt(v / SR, 2) + ' m/s', 'sebesség név', INK], [450, '=', '', null, MUT], [680, 'λ', fmt(lam / SR, 2) + ' m', 'hullámhossz név', TEAL],
+    [900, '·', '', null, MUT], [1110, 'f', fmt(f, 1) + ' Hz', 'frekvencia név', RED]];
+  for (const [x, sym, val, k, col] of cols) {
+    tx(sym, x, 790, { f: F.D, i: sym.length === 1 && /[a-zλ]/.test(sym), s: 60, w: 600, a: 'center', c: col });
+    if (val) tx(val, x, 870, { f: F.M, s: 40, w: 700, a: 'center', c: col, k: k === 'frekvencia név' ? 'kötél rezgésének frekvenciája' : ['hullám sebessége a kötélen', 'kötél rezgésének frekvenciája'] });
+    if (k) T(k, x, 930, { s: 24, w: 600, a: 'center', c: MUT, max: 300 });
+  }
+}
+
+/* ════════ 4. A hang a levegőben (hosszanti hullám) ════════ */
+const XM0 = 200, V4 = 240, F4 = .8, A4 = 24, W4 = mkWave(.6, F4, .6);
+const PART = (() => {
+  const r = U.rng(4242), a = [];
+  for (let row = 0; row < 8; row++) for (let col = 0; col < 64; col++)
+    a.push({ x: 214 + col * 16 + (r() - .5) * 6, y: 170 + row * 40 + (r() - .5) * 8, red: row === 3 && (col === 17 || col === 34 || col === 51) });
+  return a;
+})();
+function scene4(st) {
+  const p0 = out(clamp(st / .6)), lam = V4 / F4, kA = TAU * A4 / lam;
+  const xi = (d) => A4 * src(W4, st - Math.max(0, d) / V4);   // vízszintes elmozdulás (px), jobbra +
+  const dens = (d) => -(xi(d + 2) - xi(d - 2)) / 4;            // relatív sűrűségtöbblet = −dξ/dx
+  // cső
+  al(p0); rr(XM0 + 4, 140, 1046, 340, 16); c.fillStyle = 'rgba(70,150,215,.10)'; c.fill(); c.strokeStyle = 'rgba(27,90,148,.35)'; c.lineWidth = 2; c.stroke();
+  c.save(); rr(XM0 + 4, 140, 1046, 340, 16); c.clip();
+  for (let x = XM0 + 4; x < 1250; x += 6) { const dd = dens(x - XM0); if (dd > 0) { al(p0 * clamp(dd / kA) * .22); c.fillStyle = RED; c.fillRect(x, 140, 6, 340); } }
+  c.restore();
+  // nyugalmi helyek a piros pontoknál
+  for (const p of PART) if (p.red) { al(p0 * .8); ln(p.x, p.y - 20, p.x, p.y + 20, INK, 2); ln(p.x - A4, p.y + 24, p.x + A4, p.y + 24, U.rgba(RED, .8), 2.5); ln(p.x - A4, p.y + 18, p.x - A4, p.y + 30, U.rgba(RED, .8), 2.5); ln(p.x + A4, p.y + 18, p.x + A4, p.y + 30, U.rgba(RED, .8), 2.5); }
+  al(p0); c.fillStyle = 'rgba(70,150,215,.55)'; c.strokeStyle = AIR; c.lineWidth = 2;
+  for (const p of PART) { if (p.red) continue; c.beginPath(); c.arc(p.x + xi(p.x - XM0), p.y, 6, 0, TAU); c.fill(); c.stroke(); }
+  for (const p of PART) if (p.red) { c.beginPath(); c.arc(p.x + xi(p.x - XM0), p.y, 9, 0, TAU); c.fillStyle = RED; c.fill(); c.strokeStyle = REDD; c.lineWidth = 2.5; c.stroke(); }
+  // hangszóró
+  const xm = XM0 + xi(0);
+  al(p0); rr(54, 262, 46, 96, 8); c.fillStyle = '#4a5566'; c.fill(); c.strokeStyle = INK; c.lineWidth = 2.5; c.stroke();
+  c.beginPath(); c.moveTo(100, 280); c.lineTo(xm, 160); c.lineTo(xm, 460); c.lineTo(100, 340); c.closePath(); c.fillStyle = '#d9d1c0'; c.fill(); c.strokeStyle = INK; c.lineWidth = 2.5; c.stroke();
+  ln(xm, 156, xm, 464, INK, 6);
+  T('hangszóró', 110, 112, { s: 24, w: 700, a: 'center', c: INK });
+  // fül
+  al(p0); c.beginPath(); c.moveTo(1268, 230); c.bezierCurveTo(1350, 200, 1352, 330, 1310, 360); c.bezierCurveTo(1290, 378, 1300, 410, 1272, 400);
+  c.lineWidth = 12; c.strokeStyle = '#e8b892'; c.lineCap = 'round'; c.stroke(); c.lineWidth = 2.5; c.strokeStyle = '#7a4f2a'; c.stroke(); c.lineCap = 'butt';
+  c.beginPath(); c.moveTo(1290, 262); c.bezierCurveTo(1322, 262, 1322, 320, 1296, 330); c.strokeStyle = '#7a4f2a'; c.lineWidth = 2.5; c.stroke();
+  T('fül', 1296, 452, { s: 24, w: 700, a: 'center', c: INK });
+  // sűrűsödés / ritkulás címkék (együtt haladnak a hullámmal)
+  const cr = crest(W4, st, V4, 150, 3, 0);
+  if (cr) {
+    const xc = XM0 + cr.d, xr = xc - lam / 2;
+    al(p0 * cr.a); TP('sűrűsödés', xc, 108, { a: 'center', s: 24, w: 700, bg: RED, c: '#ffffff' });
+    arrowHead(xc, 138, Math.PI / 2, RED, 12);
+    if (xr > XM0 + 30) { TP('ritkulás', xr, 516, { a: 'center', s: 24, w: 700, bg: CARD, bd: AIR, c: AIR }); arrowHead(xr, 482, -Math.PI / 2, AIR, 12); }
+  }
+  al(p0 * clamp((st - 2.5) / .6)); T('piros pontok', 725, 590, { s: 26, w: 700, a: 'center', c: RED, max: 1100 });
+  // sűrűség-grafikon (ugyanabból a ξ-ből számolva)
+  const gy = 790, gs = 110 / kA, gx0 = XM0 + 4, gx1 = 1250;
+  al(p0); T('sűrűség grafikon', gx0, 650, { s: 24, w: 700, c: INK });
+  T('sűrűbb', gx0 - 14, gy - 70, { s: 22, w: 600, a: 'right', c: RED });
+  T('ritkább', gx0 - 14, gy + 86, { s: 22, w: 600, a: 'right', c: AIR });
+  ln(gx0, gy, gx1, gy, 'rgba(28,36,64,.35)', 1.5, [6, 6]); ln(gx0, gy - 125, gx0, gy + 125, INK, 2);
+  c.beginPath(); c.moveTo(gx0, gy);
+  for (let x = gx0; x <= gx1; x += 3) c.lineTo(x, gy - dens(x - XM0) * gs);
+  c.lineTo(gx1, gy); c.closePath();
+  c.save(); c.clip(); c.fillStyle = U.rgba(RED, .22); c.fillRect(gx0, gy - 130, gx1 - gx0, 130); c.fillStyle = 'rgba(70,150,215,.28)'; c.fillRect(gx0, gy, gx1 - gx0, 130); c.restore();
+  c.beginPath(); for (let x = gx0; x <= gx1; x += 3) { const y = gy - dens(x - XM0) * gs; x === gx0 ? c.moveTo(x, y) : c.lineTo(x, y); }
+  c.strokeStyle = INK; c.lineWidth = 3; c.stroke();
+  // terjedés iránya
+  al(p0); const b = T('terjedés iránya', gx0, 990, { s: 24, w: 600, c: INK });
+  arrow(b.x + b.w + 14, 982, b.x + b.w + 120, 982, INK, 3.5);
+  T('lassítva', gx1, 990, { s: 22, w: 500, a: 'right', c: MUT });
+}
+
+/* ════════ 5. Hol gyorsabb a hang? (verseny, valódi sebességgel) ════════ */
+const S5 = { T: 20, t0: 1 };
+const vAir = (t) => num('hangsebesség 0 °C-os levegőben') + num('hangsebesség növekedése fokonként') * t;
+const X50 = 240, X51 = 1240;
+function burst(x, y, s, a) {
+  if (a <= .01) return; al(a); c.beginPath();
+  for (let i = 0; i < 16; i++) { const r = i % 2 ? s * .45 : s, an = i / 16 * TAU; c.lineTo(x + r * Math.cos(an), y + r * Math.sin(an)); }
+  c.closePath(); c.fillStyle = '#f2b33d'; c.fill(); c.strokeStyle = '#8a5a00'; c.lineWidth = 2.5; c.stroke();
+}
+function miniEar(x, y, a, hit) {
+  al(a); c.beginPath(); c.moveTo(x - 10, y - 22); c.bezierCurveTo(x + 22, y - 34, x + 26, y + 8, x + 4, y + 16); c.bezierCurveTo(x - 4, y + 22, x, y + 30, x - 10, y + 28);
+  c.lineWidth = 8; c.strokeStyle = '#e8b892'; c.lineCap = 'round'; c.stroke(); c.lineWidth = 2; c.strokeStyle = '#7a4f2a'; c.stroke(); c.lineCap = 'butt';
+  if (hit > 0) { al(a * hit); c.beginPath(); c.arc(x + 4, y, 30 + 14 * (1 - hit), 0, TAU); c.strokeStyle = GOOD; c.lineWidth = 3; c.stroke(); }
+}
+function scene5(st) {
+  const p0 = out(clamp(st / .6)), dist = num('távolság') * 1000, pxm = (X51 - X50) / dist, t = st - S5.t0;
+  const va = vAir(S5.T), tEnd = dist / va;
+  const tracks = [
+    { k: 'halk levegő', v: va, A: 5, b: 16, sk: ['hangsebesség 0 °C-os levegőben', 'hangsebesség növekedése fokonként'] },
+    { k: 'hangos levegő', v: va, A: 13, b: 30, sk: ['hangsebesség 0 °C-os levegőben', 'hangsebesség növekedése fokonként'] },
+    { k: 'víz', v: num('hangsebesség vízben'), A: 9, b: 22, sk: 'hangsebesség vízben' },
+    { k: 'acél', v: num('hangsebesség acélban'), A: 9, b: 22, sk: 'hangsebesség acélban' },
+    { k: 'vákuum', v: 0, A: 0, b: 22 },
+  ];
+  al(p0); T('verseny cím', 60, 96, { f: F.D, s: 40, w: 560, c: INK, max: 760, k: ['verseny cím', 'távolság'] });
+  T('valódi sebesség', 60, 138, { s: 24, w: 500, c: MUT, max: 760 });
+  tx(lab('idő') + ': ' + fmt(clamp(t, 0, tEnd), 2) + ' s', 1320, 110, { f: F.M, s: 44, w: 700, a: 'right', c: INK, k: 'idő' });
+  tracks.forEach((tr, i) => {
+    const y = 260 + i * 142, q = clamp((st - .2 - i * .1) / .5);
+    al(p0 * q); T(tr.k, X50, y - 34, { s: 24, w: 700, c: INK, max: 600 });
+    if (tr.v) tx(fmt(tr.v, 0) + ' m/s', X51, y - 34, { f: F.M, s: 22, w: 700, a: 'right', c: MUT, k: tr.sk });
+    burst(X50 - 40, y, tr.b * (t >= 0 ? 1 + .4 * Math.exp(-t * 6) : .8), p0 * q * (t >= 0 ? .35 + .65 * Math.exp(-t * 2) : .35));
+    const arr = tr.v ? dist / tr.v : Infinity, hit = t >= arr ? Math.exp(-(t - arr) * 1.5) : 0;
+    miniEar(X51 + 46, y, p0 * q, hit);
+    if (!tr.v) {   // vákuum: nincs részecske
+      al(p0 * q); rr(X50 - 8, y - 20, X51 - X50 + 16, 40, 10); c.setLineDash([7, 6]); c.strokeStyle = 'rgba(28,36,64,.35)'; c.lineWidth = 2; c.stroke(); c.setLineDash([]);
+      if (t > tEnd + .3) { al(p0 * clamp((t - tEnd - .3) / .4)); TP('nem jut át', (X50 + X51) / 2, y, { a: 'center', s: 24, w: 700, bg: BAD, c: '#ffffff' }); }
+      return;
+    }
+    const cx = X50 + tr.v * t * pxm, w = 30, live = t >= 0 && cx < X51 + 3 * w;
+    al(p0 * q); ln(X50, y + 16, X51, y + 16, 'rgba(28,36,64,.15)', 1.5);
+    if (live) {   // a hangimpulzus helye: halvány sáv
+      c.save(); c.beginPath(); c.rect(X50 - 8, y - 22, X51 - X50 + 16, 44); c.clip();
+      const gr = c.createLinearGradient(cx - 2.2 * w, 0, cx + 2.2 * w, 0); gr.addColorStop(0, U.rgba(RED, 0)); gr.addColorStop(.5, U.rgba(RED, .1 + .02 * tr.A)); gr.addColorStop(1, U.rgba(RED, 0));
+      c.fillStyle = gr; c.fillRect(cx - 2.2 * w, y - 22, 4.4 * w, 44); c.restore();
+    }
+    for (let x = X50; x <= X51; x += 14) {
+      const g = live ? Math.exp(-Math.pow((x - cx) / w, 2)) : 0;
+      const xi = tr.A * g, dd = tr.A * 2 * (x - cx) / (w * w) * g;      // −dξ/dx > 0 → sűrűsödés
+      c.beginPath(); c.arc(x + xi, y, 4.5, 0, TAU);
+      c.fillStyle = dd > 0 ? U.mix('#7fb0d6', RED, clamp(dd / .25)) : '#7fb0d6'; c.fill(); c.strokeStyle = AIR; c.lineWidth = 1.5; c.stroke();
+    }
+    if (t >= arr) { al(p0 * q * clamp((t - arr) / .3)); L.pill(fmt(arr, 2) + ' s', X51, y + 44, { a: 'right', s: 22, f: F.M, w: 700, bg: GOOD, c: '#ffffff', k: tr.sk }); }
+  });
+  // távolság-skála
+  al(p0); ln(X50, 990, X51, 990, INK, 2.5); ln(X50, 978, X50, 1002, INK, 2.5); ln(X51, 978, X51, 1002, INK, 2.5);
+  tx(L.val('távolság'), (X50 + X51) / 2, 980, { f: F.M, s: 24, w: 700, a: 'center', c: INK, k: 'távolság' });
+}
+
+/* ════════ hang (Web Audio) – csak kattintásra, mérsékelt hangerővel, lágy be-/kikapcsolással ════════ */
+const AU = { ctx: null, osc: null, g: null };
+function actx() {
+  if (!AU.ctx) { const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return null; try { AU.ctx = new AC(); } catch (e) { return null; } }
+  if (AU.ctx.state === 'suspended') AU.ctx.resume();
+  return AU.ctx;
+}
+const GMAX = .16;
+function toneOn(f, a) {
+  const C = actx(); if (!C) return; toneOff();
+  const o = C.createOscillator(), g = C.createGain(), n = C.currentTime;
+  o.type = 'sine'; o.frequency.value = f; g.gain.setValueAtTime(0, n); g.gain.setTargetAtTime(GMAX * a, n, .04);
+  o.connect(g); g.connect(C.destination); o.start(n); AU.osc = o; AU.g = g;
+}
+function toneSet(f, a) { if (!AU.osc) return; const n = AU.ctx.currentTime; AU.osc.frequency.setTargetAtTime(f, n, .015); AU.g.gain.setTargetAtTime(GMAX * a, n, .04); }
+function toneOff() {
+  if (!AU.osc) return; const n = AU.ctx.currentTime, o = AU.osc, g = AU.g;
+  g.gain.cancelScheduledValues(n); g.gain.setValueAtTime(g.gain.value, n); g.gain.setTargetAtTime(0, n, .04); o.stop(n + .35);
+  AU.osc = null; AU.g = null;
+}
+function pluck(f) {
+  const C = actx(); if (!C) return;
+  const n = C.currentTime, g = C.createGain(); g.gain.setValueAtTime(0, n); g.gain.linearRampToValueAtTime(.14, n + .008); g.gain.exponentialRampToValueAtTime(.0008, n + 2.2);
+  g.connect(C.destination);
+  [[1, 1], [2, .45], [3, .22], [4, .1]].forEach(([h, a]) => { const o = C.createOscillator(), og = C.createGain(); o.frequency.value = f * h; og.gain.value = a / 1.8; o.connect(og); og.connect(g); o.start(n); o.stop(n + 2.3); });
+}
+
+/* ════════ 6. Hangmagasság és hangerő ════════ */
+const S6 = { f: 440, a: .6, on: false };
+const logf = (f) => Math.log10(f);
+const fmtHz = (f) => (f >= 1000 ? fmt(Math.round(f / 10) * 10, 0) : fmt(Math.round(f), 0)) + ' Hz';
+const fmtLam = (m) => (m >= .1 ? fmt(m, 2) + ' m' : fmt(m * 100, 1) + ' cm');
+function scene6(st) {
+  const p0 = out(clamp(st / .6)), f = S6.f, a = S6.a, va = vAir(num('levegő hőmérséklete'));
+  // nyomás–idő grafikon, 10 ms ablak
+  const gx0 = 130, gx1 = 1260, gy = 300, H = 120, WIN = .01;
+  al(p0); card(60, 80, 1260, 430);
+  T('nyomás grafikon', 100, 124, { s: 26, w: 700, c: INK });
+  ln(gx0, gy, gx1, gy, 'rgba(28,36,64,.35)', 1.5, [6, 6]); ln(gx0, gy - H - 20, gx0, gy + H + 20, INK, 2);
+  for (let k = 0; k <= 10; k += 2) { const x = gx0 + (gx1 - gx0) * k / 10; ln(x, gy + H + 22, x, gy + H + 32, INK, 2); tx(k + ' ms', x, gy + H + 62, { f: F.M, s: 22, a: 'center', c: MUT }); }
+  const ppp = (gx1 - gx0) / (f * WIN), step = Math.min(2, ppp / 12), ph = -TAU * .25 * st;
+  c.save(); c.beginPath(); c.rect(gx0, gy - H - 30, gx1 - gx0, 2 * H + 60); c.clip();
+  c.beginPath();
+  for (let x = gx0; x <= gx1 + step; x += step) { const tt = (x - gx0) / (gx1 - gx0) * WIN, y = gy - H * a * Math.sin(TAU * f * tt + ph); x === gx0 ? c.moveTo(x, y) : c.lineTo(x, y); }
+  c.strokeStyle = RED; c.lineWidth = ppp < 8 ? 1.5 : 3.5; c.lineJoin = 'round'; c.stroke();
+  c.restore();
+  // két mérő: hangmagasság, hangerő
+  const meter = (x, k, kl, kr, u, val, kv, col) => {
+    al(p0); T(k, x, 576, { s: 24, w: 700, c: INK });
+    tx(val, x + 560, 576, { f: F.M, s: 26, w: 700, a: 'right', c: col, k: kv });
+    rr(x, 598, 560, 26, 13); c.fillStyle = 'rgba(28,36,64,.08)'; c.fill(); c.strokeStyle = LINE; c.lineWidth = 2; c.stroke();
+    rr(x, 598, Math.max(26, 560 * u), 26, 13); c.fillStyle = col; c.fill();
+    T(kl, x, 660, { s: 22, w: 600, c: MUT }); T(kr, x + 560, 660, { s: 22, w: 600, a: 'right', c: MUT });
+  };
+  const fl = num('legmélyebb hallható hang'), fh = num('legmagasabb hallható hang');
+  meter(80, 'hangmagasság', 'mély', 'magas', (logf(f) - logf(fl)) / (logf(fh) - logf(fl)), fmtHz(f), null, RED);
+  meter(740, 'hangerő', 'halk', 'hangos', a, fmt(a * 100, 0) + ' %', null, TEAL);
+  // hullámhossz a levegőben
+  al(p0); tx(lab('hullámhossz levegőben') + ': λ = v / f = ' + fmt(va, 0) + ' m/s / ' + fmtHz(f) + ' ≈ ' + fmtLam(va / f), 80, 740,
+    { s: 26, w: 600, c: INK, max: 1240, k: ['hullámhossz levegőben', 'levegő hőmérséklete', 'hangsebesség 0 °C-os levegőben'] });
+  // hallástartomány (log skála 5 Hz – 100 kHz)
+  const bx0 = 80, bx1 = 1300, by = 836, bh = 44, lo = logf(5), hi = logf(100000), X = (ff) => bx0 + (logf(ff) - lo) / (hi - lo) * (bx1 - bx0);
+  al(p0);
+  rr(bx0, by, X(fl) - bx0, bh, [10, 0, 0, 10]); c.fillStyle = 'rgba(28,36,64,.10)'; c.fill();
+  rr(X(fl), by, X(fh) - X(fl), bh, 0); c.fillStyle = U.rgba(GOOD, .18); c.fill();
+  rr(X(fh), by, bx1 - X(fh), bh, [0, 10, 10, 0]); c.fillStyle = 'rgba(28,36,64,.10)'; c.fill();
+  rr(bx0, by, bx1 - bx0, bh, 10); c.strokeStyle = INK; c.lineWidth = 2; c.stroke();
+  ln(X(fl), by, X(fl), by + bh, INK, 2); ln(X(fh), by, X(fh), by + bh, INK, 2);
+  T('infrahang', (bx0 + X(fl)) / 2, by + 30, { s: 22, w: 600, a: 'center', c: MUT, max: X(fl) - bx0 - 12 });
+  const xf = X(f), xm = (X(1500) + X(6000)) / 2, xh = Math.abs(xf - xm) < 110 ? xf + (xf < xm ? 130 : -130) : xm;   // a felirat kitér a jelölő elől
+  T('hallható', xh, by + 30, { s: 22, w: 700, a: 'center', c: GOOD });
+  T('ultrahang', (X(fh) + bx1) / 2, by + 30, { s: 22, w: 600, a: 'center', c: MUT, max: bx1 - X(fh) - 12 });
+  for (const [ff, s] of [[10, '10 Hz'], [100, '100 Hz'], [1000, '1 kHz'], [10000, '10 kHz'], [100000, '100 kHz']]) {
+    const x = X(ff); ln(x, by + bh, x, by + bh + 8, INK, 2); tx(s, U.clamp(x, bx0 + 40, bx1 - 50), by + bh + 34, { f: F.M, s: 22, a: 'center', c: MUT });
+  }
+  const xa = X(num('zenei a frekvenciája'));
+  ln(xa, by + bh, xa, by + bh + 52, TEAL, 2.5, [4, 4]); ln(xa, by, xa, by + 10, TEAL, 3); ln(xa, by + bh - 10, xa, by + bh, TEAL, 3);
+  tx(lab('zenei a') + ' · ' + L.val('zenei a frekvenciája'), xa + 10, by + bh + 74, { s: 22, w: 600, c: TEALD, k: ['zenei a', 'zenei a frekvenciája'] });
+  c.beginPath(); c.moveTo(xf, by + 4); c.lineTo(xf - 12, by - 14); c.lineTo(xf + 12, by - 14); c.closePath(); c.fillStyle = RED; c.fill();
+  ln(xf, by, xf, by + bh, RED, 3);
+  // jel: szól-e
+  if (S6.on) { const k = .5 + .5 * Math.sin(L.t * 8); al(p0 * (.6 + .4 * k)); c.beginPath(); c.arc(1286, 118, 10, 0, TAU); c.fillStyle = RED; c.fill(); }
+}
+
+/* ════════ 7. A húr állóhulláma ════════ */
+const NX = 120, BX = 1250, NY = 320, KSLOW = 200;
+const S7 = { fret: 0, n: 1, tp: 0 };
+const fretX = (n) => NX + (BX - NX) * (1 - Math.pow(2, -n / 12));
+const fingerX = (n) => (n === 0 ? NX - 30 : fretX(n) - .42 * (fretX(n) - fretX(n - 1)));
+const fingerP = (n) => (n === 0 ? { x: NX + 70, y: NY - 92 } : { x: fingerX(n), y: NY });   // üres húrnál az ujj a nyak fölött „lebeg”
+function scene7(st) {
+  const p0 = out(clamp(st / .6)), L0 = num('húr hossza'), f0 = num('üres A-húr frekvenciája'), vs = 2 * L0 * f0;
+  const n = S7.n, fr = S7.fret, xa = fr ? fretX(fr) : NX, Lr = L0 * (BX - xa) / (BX - NX), f = n * vs / (2 * Lr);
+  al(p0); T('gitár', 60, 100, { f: F.D, s: 36, w: 560, c: INK });
+  // test
+  al(p0);
+  c.beginPath(); c.moveTo(1115, NY); c.ellipse(975, NY, 140, 175, 0, 0, TAU); c.moveTo(1340, NY); c.ellipse(1190, NY, 150, 205, 0, 0, TAU);
+  c.lineWidth = 7; c.strokeStyle = '#8a5a2b'; c.stroke(); c.fillStyle = '#ecc98f'; c.fill();
+  c.beginPath(); c.arc(1000, NY, 66, 0, TAU); c.strokeStyle = '#a77a45'; c.lineWidth = 6; c.stroke();
+  c.beginPath(); c.arc(1000, NY, 56, 0, TAU); c.fillStyle = '#3a2410'; c.fill();
+  rr(BX - 14, NY - 50, 30, 100, 6); c.fillStyle = '#5a3414'; c.fill(); c.strokeStyle = '#2e1a08'; c.lineWidth = 2; c.stroke();
+  // fogólap, fej
+  rr(16, NY - 66, NX - 10, 132, 14); c.fillStyle = '#7a4a22'; c.fill(); c.strokeStyle = '#3a2410'; c.lineWidth = 2.5; c.stroke();
+  for (let i = 0; i < 3; i++) for (const s of [-1, 1]) { c.beginPath(); c.arc(40 + i * 30, NY + s * 44, 9, 0, TAU); c.fillStyle = '#c9c9c9'; c.fill(); c.strokeStyle = '#555'; c.lineWidth = 2; c.stroke(); }
+  rr(NX - 6, NY - 48, fretX(19) - NX + 18, 104, 4); c.fillStyle = '#5c3a1c'; c.fill(); c.strokeStyle = '#2e1a08'; c.lineWidth = 2.5; c.stroke();
+  for (const k of [3, 5, 7, 9, 15, 17]) { c.beginPath(); c.arc((fretX(k) + fretX(k - 1)) / 2, NY + 8, 7, 0, TAU); c.fillStyle = '#e9dcc2'; c.fill(); }
+  for (const s of [-1, 1]) { c.beginPath(); c.arc((fretX(12) + fretX(11)) / 2, NY + 8 + s * 26, 7, 0, TAU); c.fillStyle = '#e9dcc2'; c.fill(); }
+  for (let k = 1; k <= 19; k++) ln(fretX(k), NY - 48, fretX(k), NY + 56, '#b9b9b9', 4);
+  rr(NX - 6, NY - 50, 10, 108, 2); c.fillStyle = '#efe6d0'; c.fill(); c.strokeStyle = '#8a7a5a'; c.lineWidth = 1.5; c.stroke();
+  // többi húr (halványan, nyugalomban)
+  for (const dy of [-32, -16, 16, 32, 48]) { al(p0 * .5); ln(NX, NY + dy, BX, NY + dy, '#8f8f8f', dy < 0 ? 1.5 : 2.5); }
+  // az A-húr: álló (lefogott) rész + rezgő rész
+  const amp = 62 * (.45 + .55 * Math.exp(-(st - S7.tp) / 2.2)) * clamp((st - S7.tp) / .05 + 1), fv = f / KSLOW;
+  const cs = Math.cos(TAU * fv * (st - S7.tp)), Y = (x) => NY + amp * Math.sin(n * Math.PI * (x - xa) / (BX - xa)) * cs;
+  al(p0); if (xa > NX) ln(NX, NY, xa, NY, '#6b5a3a', 3.5);
+  PROBE.string = { xa, Lr, f, n, nodes: Array.from({ length: n + 1 }, (_, j) => xa + j * (BX - xa) / n) };
+  al(p0 * .7); c.beginPath(); for (let x = xa; x <= BX; x += 3) { const e = amp * Math.sin(n * Math.PI * (x - xa) / (BX - xa)); x === xa ? c.moveTo(x, NY + e) : c.lineTo(x, NY + e); }
+  for (let x = BX; x >= xa; x -= 3) c.lineTo(x, NY - amp * Math.sin(n * Math.PI * (x - xa) / (BX - xa)));
+  c.closePath(); c.fillStyle = 'rgba(255,214,180,.38)'; c.fill(); c.strokeStyle = U.rgba(RED, .75); c.lineWidth = 2; c.setLineDash([5, 5]); c.stroke(); c.setLineDash([]);
+  al(p0); c.beginPath(); for (let x = xa; x <= BX + .1; x += 2) { const y = Y(Math.min(x, BX)); x === xa ? c.moveTo(x, y) : c.lineTo(x, y); }
+  c.strokeStyle = RED; c.lineWidth = 4; c.lineJoin = 'round'; c.stroke();
+  for (let j = 0; j <= n; j++) { const x = xa + j * (BX - xa) / n; c.beginPath(); c.arc(x, NY, 7, 0, TAU); c.fillStyle = INK; c.fill(); }
+  // csomópont, duzzadóhely
+  const pn = clamp((st - .8) / .5), xn = xa + (n >= 2 ? 1 : 1) * (BX - xa) / n, xd = xa + (BX - xa) / (2 * n);
+  al(p0 * pn); ln(xn, NY - 12, xn, NY - 108, U.rgba(INK, .5), 2, [4, 5]);
+  TP('csomópont', Math.min(xn, 1240), NY - 128, { a: 'center', s: 24, w: 700, bg: CARD, bd: INK, c: INK });
+  ln(xd, NY + amp + 6, xd, NY + 110, U.rgba(RED, .6), 2, [4, 5]);
+  TP('duzzadóhely', xd, NY + 130, { a: 'center', s: 24, w: 700, bg: CARD, bd: RED, c: REDD });
+  // ujj
+  const fp = fingerP(fr), fx = fp.x, fy = fp.y;
+  al(p0 * (fr ? 1 : .85)); c.beginPath(); c.ellipse(fx, fy, 17, 26, 0, 0, TAU); c.fillStyle = '#f2cfa8'; c.fill(); c.strokeStyle = '#7a4f2a'; c.lineWidth = 2.5; c.stroke();
+  c.beginPath(); c.ellipse(fx, fy - 12, 10, 8, 0, 0, TAU); c.fillStyle = '#fbe6d2'; c.fill();
+  DR.list = []; grab('ujj', fx, fy, 34, (x, y) => setFret(y < NY - 64 ? 0 : nearestFret(x)));
+  ring('ujj', fx, fy, 36);
+  al(p0); L.pill(fr ? lab('bund').replace('#', fr) : lab('üres húr'), fx, NY + 186, { k: fr ? 'bund' : 'üres húr', a: 'center', s: 24, w: 700, bg: TEAL, c: '#ffffff' });
+  hint('ujj', fx, NY - 150, p0);
+  // értékek
+  al(p0); card(60, 590, 1260, 400);
+  const cols = [[100, 'rezgő hossz', 'L = ' + fmt(Lr, 3) + ' m', 'húr hossza', INK], [520, 'hullámhossz név', 'λ = 2L / n = ' + fmt(2 * Lr / n, 2) + ' m', 'húr hossza', TEAL],
+    [940, 'frekvencia név', 'f = ' + fmt(f, 0) + ' Hz', 'üres A-húr frekvenciája', RED]];
+  for (const [x, k, v, kv, col] of cols) { T(k, x, 648, { s: 24, w: 600, c: MUT }); tx(v, x, 702, { f: F.M, s: 34, w: 700, c: col, k: kv, max: 380 }); }
+  tx('f = n · v / (2 · L) = ' + n + ' · ' + fmt(vs, 0) + ' m/s / (2 · ' + fmt(Lr, 3) + ' m) = ' + fmt(f, 0) + ' Hz', 690, 800,
+    { f: F.M, s: 30, w: 600, a: 'center', c: INK, max: 1200, k: ['húr hossza', 'üres A-húr frekvenciája'] });
+  if (fr === 12) { al(p0); TP('oktáv', 690, 880, { a: 'center', s: 28, w: 700, bg: GOOD, c: '#ffffff' }); }
+  al(p0); tx(lab('lassítva húr').replace('#', KSLOW), 1290, 966, { s: 22, w: 500, a: 'right', c: MUT, k: 'lassítva húr' });
+}
+function nearestFret(x) { let b = 0, bd = 1e9; for (let k = 0; k <= 12; k++) { const d = Math.abs(fingerX(k) - x); if (d < bd) { bd = d; b = k; } } return b; }
+function setFret(k) { if (k === S7.fret) return; S7.fret = k; S7.tp = L.st; if (S7.sl) S7.sl.set(k); }
+
+/* ── húzható elemek (a 11-lencse-szem leckéből; a motor csak L.pointer-t ad) ── */
+const DR = { list: [], act: null, hov: null, used: {} };
+function grab(id, x, y, r, fn) { DR.list.push({ id, x, y, r, fn }); }
+function pick(p) {
+  let best = null, bd = 1e9;
+  if (p.x > 1370 || L.step !== 6) return null;
+  for (const h of DR.list) { const d = Math.hypot(p.x - h.x, p.y - h.y); if (d < h.r + 12 && d < bd) { bd = d; best = h; } }
+  return best;
+}
+function installDrag() {
+  const st = L.stage;
+  st.addEventListener('pointerdown', (e) => {
+    if (e.target.closest && e.target.closest('#lesson-panel')) return;
+    const p = L.toStage(e), h = pick(p); if (!h) return;
+    DR.act = { id: h.id, fn: h.fn, dx: h.x - p.x, dy: h.y - p.y }; DR.used[h.id] = 1;
+    st.style.cursor = 'grabbing'; e.preventDefault();
+  });
+  window.addEventListener('pointermove', (e) => {
+    const p = L.toStage(e);
+    if (DR.act) { DR.act.fn(p.x + DR.act.dx, p.y + DR.act.dy); return; }
+    const h = (e.target.closest && e.target.closest('#lesson-panel')) ? null : pick(p);
+    DR.hov = h ? h.id : null; st.style.cursor = h ? 'grab' : '';
+  });
+  window.addEventListener('pointerup', () => { DR.act = null; st.style.cursor = DR.hov ? 'grab' : ''; });
+}
+const isHot = (id) => DR.hov === id || (DR.act && DR.act.id === id);
+function ring(id, x, y, r) {
+  if (!isHot(id)) return;
+  c.beginPath(); c.arc(x, y, r, 0, TAU); c.setLineDash([7, 6]); c.strokeStyle = U.rgba(TEAL, .8); c.lineWidth = 2.5; c.stroke(); c.setLineDash([]);
+}
+function hint(id, x, y, a) {
+  if (DR.used[id] || a <= .01) return;
+  const k = .5 + .5 * Math.sin(L.t * 3.2);
+  al(a * (.75 + .25 * k)); TP('húzd', x, y, { s: 22, w: 700, a: 'center', c: '#fff', bg: TEAL, pad: 10 }); al(a);
+}
+
+/* ════════ 8. Vigyázz a füledre! ════════ */
+const S8 = { db: 100 };
+const safeH = (db) => num('biztonságos idő a károsító szinten') * Math.pow(2, -(db - num('károsító szint')) / num('felezési lépés'));
+function fmtTime(h) {
+  const one = (v, d) => (Math.abs(v - Math.round(v)) < .05 ? fmt(Math.round(v), 0) : fmt(v, d));
+  if (h >= 1) return [one(h, 1), 'óra'];
+  if (h * 60 >= 1) return [one(h * 60, 1), 'perc'];
+  return [fmt(h * 3600, 0), 'másodperc'];
+}
+function scene8(st) {
+  const p0 = out(clamp(st / .6)), Y0 = 960, Y1 = 150, Y = (db) => Y0 - (Y0 - Y1) * db / 140, bx = 330, bw = 40;
+  al(p0); T('decibel cím', 60, 100, { f: F.D, s: 36, w: 560, c: INK });
+  const g = c.createLinearGradient(0, Y0, 0, Y1);
+  g.addColorStop(0, '#5fae7b'); g.addColorStop(70 / 140, '#c9c25a'); g.addColorStop(85 / 140, '#e39a3b'); g.addColorStop(110 / 140, '#d2552c'); g.addColorStop(1, '#a61f17');
+  rr(bx, Y1, bw, Y0 - Y1, 10); c.fillStyle = g; c.fill(); c.strokeStyle = INK; c.lineWidth = 2.5; c.stroke();
+  for (let d = 0; d <= 140; d += 10) { ln(bx - (d % 20 ? 6 : 12), Y(d), bx, Y(d), INK, 2); if (d % 20 === 0 && Math.abs(d - S8.db) > 5) tx(String(d), bx - 18, Y(d) + 8, { f: F.M, s: 22, a: 'right', c: MUT }); }
+  // példák
+  const ex = [['hallásküszöb', 0, null], ['suttogás', num('suttogás szintje'), 'suttogás szintje'], ['beszélgetés felirat', num('beszélgetés'), 'beszélgetés'],
+    ['forgalom felirat', num('forgalom'), 'forgalom'], ['koncert felirat', num('koncert'), 'koncert']];
+  ex.forEach(([k, d, kd], i) => {
+    const q = clamp((st - .3 - i * .25) / .4); if (q <= 0) return;
+    al(p0 * q); ln(bx + bw + 4, Y(d), bx + bw + 24, Y(d), INK, 2.5);
+    tx(lab(k) + ' · ' + fmt(d, 0) + ' dB', bx + bw + 32, Y(d) + 8, { s: 24, w: 600, c: INK, k: kd ? [k, kd] : k });
+  });
+  const pa = num('fájdalomküszöb alja'), pf = num('fájdalomküszöb teteje'), qp = clamp((st - 1.6) / .4);
+  al(p0 * qp); c.fillStyle = U.rgba(BAD, .2); c.fillRect(bx + bw + 4, Y(pf), 20, Y(pa) - Y(pf)); c.strokeStyle = BAD; c.lineWidth = 2.5; c.strokeRect(bx + bw + 4, Y(pf), 20, Y(pa) - Y(pf));
+  tx(lab('fájdalomküszöb') + ' · ' + fmt(pa, 0) + '–' + fmt(pf, 0) + ' dB', bx + bw + 32, (Y(pa) + Y(pf)) / 2 + 8, { s: 24, w: 700, c: BAD, k: ['fájdalomküszöb', 'fájdalomküszöb alja', 'fájdalomküszöb teteje'] });
+  // károsító határ
+  const dk = num('károsító szint'), yk = Y(dk), qk = clamp((st - 2) / .5);
+  al(p0 * qk); ln(bx - 4, yk, 1320, yk, RED, 3, [10, 7]);
+  tx(L.val('károsító szint') + ' · ' + lab('károsító felirat'), 1320, yk - 14, { s: 24, w: 700, a: 'right', c: RED, k: ['károsító szint', 'károsító felirat'] });
+  // a beállított szint
+  const db = S8.db, ym = Y(db);
+  al(p0); ln(196, ym, bx, ym, RED, 3);
+  c.beginPath(); c.moveTo(bx - 2, ym); c.lineTo(bx - 20, ym - 11); c.lineTo(bx - 20, ym + 11); c.closePath(); c.fillStyle = RED; c.fill();
+  L.pill(fmt(db, 0) + ' dB', 60, ym, { s: 26, f: F.M, w: 700, bg: RED, c: '#ffffff' });
+  // biztonságos idő
+  const qc = clamp((st - 1) / .5);
+  al(p0 * qc); card(780, 520, 540, 420);
+  T('idő cím', 810, 572, { s: 24, w: 700, c: INK, max: 480 });
+  const h = safeH(db), H8 = num('biztonságos idő a károsító szinten');
+  if (db <= dk) {
+    T('nem károsít', 810, 680, { f: F.D, s: 40, w: 600, c: GOOD, max: 480 });
+  } else {
+    const [v, u] = fmtTime(h);
+    tx(v + ' ' + lab(u), 810, 690, { f: F.D, s: 76, w: 600, c: RED, max: 480, k: [u, 'károsító szint', 'felezési lépés'] });
+  }
+  const bx0 = 810, bx1 = 1290, by = 750, fr = clamp(h / H8);
+  rr(bx0, by, bx1 - bx0, 34, 8); c.fillStyle = 'rgba(28,36,64,.08)'; c.fill(); c.strokeStyle = LINE; c.lineWidth = 2; c.stroke();
+  if (fr > 0) { rr(bx0, by, Math.max(4, (bx1 - bx0) * fr), 34, 8); c.fillStyle = db <= dk ? GOOD : RED; c.fill(); }
+  tx('0', bx0, by + 66, { f: F.M, s: 22, c: MUT });
+  T('nyolc óra', bx1, by + 66, { f: F.M, s: 22, a: 'right', c: MUT, k: ['nyolc óra', 'biztonságos idő a károsító szinten'] });
+  T('felezés', 810, 900, { s: 24, w: 600, c: MUT, k: ['felezés', 'felezési lépés'] });
+}
+
+/* ════════ 9. Összefoglalás ════════ */
+function miniWave(x, y, w, A, n, col, a, t, lw = 3) {
+  al(a); c.beginPath(); for (let i = 0; i <= w; i += 2) { const yy = y - A * Math.sin(TAU * (n * i / w) - t); i ? c.lineTo(x + i, yy) : c.moveTo(x + i, yy); }
+  c.strokeStyle = col; c.lineWidth = lw; c.stroke();
+}
+function scene9(st) {
+  const p0 = out(clamp(st / .6)), t = st * TAU * .5;
+  const cards = [
+    ['össz minta cím', 'össz minta szöveg'], [null, 'össz képlet szöveg'], ['össz magasság cím', 'össz magasság szöveg'],
+    ['össz hangerő cím', 'össz hangerő szöveg'], ['össz közeg cím', 'össz közeg szöveg'], ['össz fül cím', 'össz fül szöveg']];
+  cards.forEach(([kt, ks], i) => {
+    const x = 60 + (i % 2) * 640, y = 70 + Math.floor(i / 2) * 320, q = clamp((st - .3 - i * .35) / .5); if (q <= 0) return;
+    al(p0 * q); card(x, y + (1 - out(q)) * 20, 620, 296);
+    const dx = x + 40, dy = y + 30, dw = 540;   // rajzterület: dx..dx+dw, dy..dy+130
+    if (i === 0) {
+      al(p0 * q); c.beginPath(); for (let k = 0; k <= dw; k += 3) { const yy = dy + 70 - 34 * Math.sin(TAU * k / 180 - t); k ? c.lineTo(dx + k, yy) : c.moveTo(dx + k, yy); } c.strokeStyle = INK; c.lineWidth = 2.5; c.stroke();
+      for (let k = 18; k <= dw; k += 18) bead(dx + k, dy + 70 - 34 * Math.sin(TAU * k / 180 - t), 6, k === 270, p0 * q);
+    } else if (i === 1) {
+      miniWave(dx, dy + 70, dw, 34, 3, TEAL, p0 * q, 0);
+      ln(dx + 45, dy + 36, dx + 45, dy + 126, U.rgba(TEAL, .5), 2, [4, 4]); ln(dx + 225, dy + 36, dx + 225, dy + 126, U.rgba(TEAL, .5), 2, [4, 4]);
+      ln(dx + 45, dy + 120, dx + 225, dy + 120, TEAL, 2.5); arrowHead(dx + 45, dy + 120, Math.PI, TEAL, 10); arrowHead(dx + 225, dy + 120, 0, TEAL, 10);
+    } else if (i === 2) {
+      miniWave(dx, dy + 40, dw, 24, 2, MUT, p0 * q, t * .5, 2.5); miniWave(dx, dy + 105, dw, 24, 7, RED, p0 * q, t * .5, 2.5);
+    } else if (i === 3) {
+      miniWave(dx, dy + 70, dw, 14, 3, MUT, p0 * q, t * .5, 2.5); miniWave(dx, dy + 70, dw, 52, 3, TEAL, p0 * q, t * .5, 3);
+    } else if (i === 4) {
+      const items = [['levegő rövid', vAir(num('levegő hőmérséklete'))], ['víz rövid', num('hangsebesség vízben')], ['acél rövid', num('hangsebesség acélban')]];
+      items.forEach(([k, v], j) => {
+        const yy = dy + 18 + j * 42; al(p0 * q); T(k, dx, yy + 8, { s: 22, w: 600, c: INK });
+        rr(dx + 90, yy - 10, Math.max(8, (dw - 220) * v / 6000), 22, 6); c.fillStyle = [AIR, TEAL, '#6b7380'][j]; c.fill();
+        tx(fmt(v, 0) + ' m/s', dx + dw, yy + 8, { f: F.M, s: 22, w: 700, a: 'right', c: INK });
+      });
+    } else {
+      const g = c.createLinearGradient(dx, 0, dx + dw, 0); g.addColorStop(0, '#5fae7b'); g.addColorStop(.6, '#e39a3b'); g.addColorStop(1, '#a61f17');
+      rr(dx, dy + 50, dw, 34, 10); c.fillStyle = g; c.fill(); c.strokeStyle = INK; c.lineWidth = 2; c.stroke();
+      const xk = dx + dw * num('károsító szint') / 140; ln(xk, dy + 36, xk, dy + 98, INK, 3.5);
+      tx(L.val('károsító szint'), xk, dy + 24, { f: F.M, s: 22, w: 700, a: 'center', c: INK, k: 'károsító szint' });
+    }
+    al(p0 * q);
+    if (kt) T(kt, dx, y + 214, { f: F.D, s: 34, w: 560, c: i === 2 || i === 3 ? RED : INK, max: dw });
+    else tx('v = λ · f', dx, y + 214, { f: F.D, i: 1, s: 34, w: 600, c: INK, qa: false });
+    T(ks, dx, y + 256, { s: 24, w: 500, c: MUT, max: dw });
+  });
+}
+
+/* ════════════════════════════════════════════════════════════════ */
+const sT = new Array(9).fill(0);
+const SCENES = [scene1, scene2, scene3, scene4, scene5, scene6, scene7, scene8, scene9];
+const srcOf = (k) => (L.content && L.content.src && L.content.src[k]) || 0;
+function relabel(b, k) { b.innerHTML = lab(k); b.dataset.key = k; b.dataset.src = srcOf(k); if (L.review) L.setReview(true); }
+L = Lesson.create({
+  content: window.LESSON_CONTENT,
+  home: false,
+  steps: [
+    { settle: 8 },
+    { settle: 7 },
+    { settle: 6,
+      enter() { S3.W = mkWave(-30, ropeF()); },
+      controls(L) {
+        L.slider({ label: lab('frekvencia csúszka'), k: 'frekvencia csúszka', min: .5, max: 3, step: .1, value: ropeF(), format: (v) => fmt(v, 1) + ' Hz',
+          onInput: (v) => setF(S3.W, L.st, v) });
+      } },
+    { settle: 8 },
+    { settle: 6,
+      enter() { S5.T = num('levegő hőmérséklete'); S5.t0 = 1; },
+      controls(L) {
+        L.slider({ label: lab('hőmérséklet csúszka'), k: 'hőmérséklet csúszka', min: -20, max: 40, step: 1, value: num('levegő hőmérséklete'), format: (v) => fmt(v, 0) + ' °C',
+          onInput: (v) => { S5.T = v; S5.t0 = L.st + .5; } });
+        L.button(lab('újra gomb'), () => { S5.t0 = L.st + .3; }, 'újra gomb');
+      } },
+    { settle: 4,
+      enter() { S6.f = num('zenei a frekvenciája'); S6.a = .6; },
+      leave() { toneOff(); S6.on = false; },
+      controls(L) {
+        const lo = Math.log(num('legmélyebb hallható hang')), hi = Math.log(num('legmagasabb hallható hang'));
+        const fA = num('zenei a frekvenciája'), s0 = Math.round((Math.log(fA) - lo) / (hi - lo) * 1000);
+        /* logaritmikus csúszka, 2 értékes jegyre kerekítve; a kezdőhelyzet pontosan a zenei a */
+        const toF = (s) => { if (s === s0) return fA; const f = Math.exp(lo + (hi - lo) * s / 1000); const m = Math.pow(10, Math.floor(Math.log10(f)) - 1); return Math.round(f / m) * m; };
+        L.slider({ label: lab('frekvencia csúszka 2'), k: 'frekvencia csúszka 2', min: 0, max: 1000, step: 1, value: s0, format: (s) => fmtHz(toF(s)),
+          onInput: (s) => { S6.f = toF(s); toneSet(S6.f, S6.a); } });
+        L.slider({ label: lab('amplitúdó csúszka'), k: 'amplitúdó csúszka', min: 0, max: 100, step: 1, value: 60, format: (v) => fmt(v, 0) + ' %',
+          onInput: (v) => { S6.a = v / 100; toneSet(S6.f, S6.a); } });
+        S6.on = false;
+        const b = L.button(lab('hang gomb'), () => {
+          S6.on = !S6.on; if (S6.on) toneOn(S6.f, S6.a); else toneOff();
+          relabel(b, S6.on ? 'némítás gomb' : 'hang gomb'); b.classList.toggle('on', S6.on);
+        }, 'hang gomb');
+      } },
+    { settle: 5,
+      enter() { S7.fret = 0; S7.n = 1; S7.tp = 0; },
+      controls(L) {
+        S7.sl = L.slider({ label: lab('lefogás csúszka'), k: 'lefogás csúszka', min: 0, max: 12, step: 1, value: 0, format: (v) => (v ? lab('bund').replace('#', v) : lab('üres húr')),
+          onInput: (v) => setFret(v) });
+        const bs = [];
+        for (let k = 1; k <= 4; k++) {
+          const b = L.button(lab('mód gomb').replace('#', k), () => { S7.n = k; S7.tp = L.st; bs.forEach((x, j) => x.classList.toggle('on', j === k - 1)); }, 'mód gomb');
+          if (k === 1) b.classList.add('on'); bs.push(b);
+        }
+        const row = document.createElement('div'); row.className = 'lp-btnrow'; L.controlsEl.append(row);
+        L.button(lab('pengetés gomb'), () => {
+          const L0 = num('húr hossza'), f0 = num('üres A-húr frekvenciája'), xa = S7.fret ? fretX(S7.fret) : NX;
+          S7.tp = L.st; pluck(S7.n * f0 * (BX - NX) / (BX - xa));
+        }, 'pengetés gomb');
+      } },
+    { settle: 4,
+      enter() { S8.db = num('példa hangszint'); },
+      controls(L) {
+        L.slider({ label: lab('hangszint csúszka'), k: 'hangszint csúszka', min: 60, max: 125, step: 1, value: num('példa hangszint'), format: (v) => fmt(v, 0) + ' dB',
+          onInput: (v) => { S8.db = v; } });
+      } },
+    { settle: 5 },
+  ],
+  init(Lx) { L = Lx; c = L.ctx; L.probe = PROBE; installDrag(); },
+  draw(Lx) {
+    L = Lx; c = L.ctx; GA = 1; background();
+    const sp = L.sp;
+    if (L.step >= 0) sT[L.step] = L.st;
+    for (let i = 0; i < SCENES.length; i++) {
+      const w = clamp(1 - Math.abs(sp - i) * 2); if (w <= .005) continue;
+      GA = w; SCENES[i](sT[i]);
+    }
+    c.globalAlpha = 1;
+  },
+});
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,410 @@
+/* GENERÁLT FÁJL — ne szerkeszd kézzel. Forrás: 12-hullam-hang.md
+   Újragenerálás: python3 tools/build_lesson.py leckek/fizika-7-8/12-hullam-hang.md */
+window.LESSON_CONTENT = {
+ "source": "12-hullam-hang.md",
+ "title": "Mitől magas a hang? – hullámok és hang",
+ "titleLine": 1,
+ "meta": {
+  "subject": "Fizika",
+  "grade": "7–8.",
+  "topic": "8. Hullámok"
+ },
+ "steps": [
+  {
+   "title": "A minta halad, nem a kötél",
+   "html": "<p data-src=\"48\">Rázd meg egy kifeszített gyöngysor végét! A rezgés végigfut rajta: ez a <b>hullám</b>.</p><p data-src=\"50\">Figyeld a piros gyöngyöt: <span class=\"key\">csak fel-le mozog, nem halad a hullámmal</span>. A minta és az energia halad, az anyag helyben marad.</p><p class=\"note\" data-src=\"52\">Minden gyöngy úgy rezeg ide-oda, mint az inga – csak kicsit később indul, mint a szomszédja.</p>",
+   "line": 47,
+   "words": 49
+  },
+  {
+   "title": "Amplitúdó, frekvencia, hullámhossz",
+   "html": "<p data-src=\"63\">Az <b>amplitúdó</b> (A) a legnagyobb kitérés. A <b>frekvencia</b> (f) megmutatja, hány rezgés történik 1 másodperc alatt: 1 Hz = 1 rezgés/s.</p><p data-src=\"65\">A <b>hullámhossz</b> (λ) két szomszédos hullámhegy távolsága. <span class=\"key\">Egy rezgés alatt a hullám éppen egy λ-t halad.</span></p><p class=\"note\" data-src=\"67\">A papírcsíkon a piros gyöngy mozgása látszik időben – mint az ingánál.</p>",
+   "line": 62,
+   "words": 48
+  },
+  {
+   "title": "v = λ · f",
+   "html": "<p data-src=\"75\">Egy másodperc alatt a kéz f rezgést végez, és mindegyik egy λ hosszú hullámot indít el. Ezért a hullám 1 s alatt λ · f utat tesz meg:</p><p class=\"big-fx\" data-src=\"77\">v = λ · f</p><p data-src=\"79\">Állítsd a frekvenciát! <span class=\"key\">Kétszer akkora f → fele akkora λ</span>, a sebesség nem változik: azt a kötél szabja meg.</p><p class=\"note\" data-src=\"81\">Kövesd a piros hullámhegyet!</p>",
+   "line": 74,
+   "words": 52
+  },
+  {
+   "title": "A hang a levegőben",
+   "html": "<p data-src=\"89\">A hangszóró membránja ide-oda rezeg, és meglöki a levegőt. <b>Sűrűsödések</b> és <b>ritkulások</b> futnak tova.</p><p data-src=\"91\">Tévhit: a levegő a hangszórótól a fülig utazik. Valójában a piros pontok <span class=\"key\">helyben rezegnek, csak a sűrűsödés halad</span>. A rezgés iránya a haladás irányába esik.</p><p class=\"note\" data-src=\"93\">A pontok kis levegőadagok, nem molekulák.</p>",
+   "line": 88,
+   "words": 45
+  },
+  {
+   "title": "Hol gyorsabb a hang?",
+   "html": "<p data-src=\"107\">A csattanás 1 km utat tesz meg:</p><ul><li data-src=\"109\">Vízben és acélban <span class=\"key\">sokkal gyorsabb, mint levegőben</span>.</li><li data-src=\"110\">Légüres térben nincs mit rezegtetni: ott nem terjed.</li><li data-src=\"111\">A hangosabb hang nem gyorsabb.</li></ul><p data-src=\"113\">Melegebb levegőben fokonként 0,6 m/s-mal gyorsabb.</p><p class=\"note\" data-src=\"115\">Villámláskor számold a másodperceket: 3 s ≈ 1 km.</p>",
+   "line": 106,
+   "words": 39
+  },
+  {
+   "title": "Hangmagasság és hangerő",
+   "html": "<p data-src=\"134\">Húzd a csúszkákat, és kapcsold be a hangot!</p><p data-src=\"136\"><span class=\"key\">A hangmagasság a frekvenciától, a hangerő az amplitúdótól függ.</span></p><p data-src=\"138\">Az ember kb. 20 Hz és 20 000 Hz között hall. A zenei a hang 440 Hz.</p><p class=\"note\" data-src=\"140\">Nagyon mély és nagyon magas hangot a hangszóró és a fül is gyengébben ad át.</p>",
+   "line": 133,
+   "words": 45
+  },
+  {
+   "title": "A húr állóhulláma",
+   "html": "<p data-src=\"161\">A húron a hullám a két rögzített vég között oda-vissza verődik. Csak az a rezgés marad meg, amelynél egész számú félhullám fér rá: ez az <b>állóhullám</b>.</p><p class=\"big-fx\" data-src=\"163\">f = n · v / (2 · L)</p><p data-src=\"165\"><span class=\"key\">Fele olyan hosszú húr → kétszer akkora frekvencia</span>: a 12. bundnál egy oktávval magasabb a hang.</p>",
+   "line": 160,
+   "words": 46
+  },
+  {
+   "title": "Vigyázz a füledre!",
+   "html": "<p data-src=\"186\">A hangszintet <b>decibelben</b> (dB) mérjük. A beszélgetés kb. 60 dB, az erős forgalom 80 dB, egy rockkoncert 110 dB.</p><p data-src=\"188\">85 dB felett napi 8 óra már <span class=\"key\">maradandóan károsíthatja a hallást</span>. Minden +3 dB felezi ezt az időt.</p><p class=\"note\" data-src=\"190\">A belső fül szőrsejtjei nem nőnek vissza. Koncerten használj füldugót!</p>",
+   "line": 185,
+   "words": 43
+  },
+  {
+   "title": "Összefoglalás",
+   "html": "<ul><li data-src=\"222\">A hullámban a <b>minta és az energia</b> halad, az anyag helyben rezeg.</li><li data-src=\"223\">v = λ · f; a sebességet a közeg szabja meg.</li><li data-src=\"224\"><span class=\"key\">Magasabb hang = nagyobb frekvencia, hangosabb hang = nagyobb amplitúdó.</span></li><li data-src=\"225\">Vízben és acélban gyorsabb, mint levegőben; légüres térben nem terjed.</li><li data-src=\"226\">85 dB felett védd a füled!</li></ul><p class=\"note\" data-src=\"228\">Feladat: villámláskor mérd meg, hány km-re csapott le!</p>",
+   "line": 221,
+   "words": 52
+  }
+ ],
+ "labels": {
+  "frekvencia név": "frekvencia",
+  "hullámhossz név": "hullámhossz",
+  "amplitúdó név": "amplitúdó",
+  "periódusidő név": "periódusidő",
+  "sebesség név": "terjedési sebesség",
+  "lassítva": "lassítva és nagyítva",
+  "gyöngysor": "gyöngysor",
+  "kéz": "a kéz rezgeti",
+  "minta halad": "a minta halad",
+  "piros gyöngy": "a piros gyöngy csak fel-le mozog",
+  "stadionhullám": "stadionhullám",
+  "stadion magyarázat": "mindenki a helyén áll fel és ül le",
+  "papírcsík": "a piros gyöngy mozgása időben",
+  "korábban": "← korábban",
+  "most": "most",
+  "frekvencia csúszka": "A rezgés frekvenciája",
+  "1 s alatt": "1 s alatt",
+  "f darab hullám": "1 s alatt # hullám indul el",
+  "hangszóró": "hangszóró",
+  "fül": "fül",
+  "sűrűsödés": "sűrűsödés",
+  "ritkulás": "ritkulás",
+  "piros pontok": "a piros pontok helyben rezegnek, nem utaznak a fülig",
+  "sűrűség grafikon": "a levegő sűrűsége",
+  "sűrűbb": "sűrűbb",
+  "ritkább": "ritkább",
+  "terjedés iránya": "terjedés iránya",
+  "verseny cím": "Verseny 1 km távon",
+  "valódi sebesség": "valódi idő, kicsinyített távolság",
+  "idő": "idő",
+  "halk levegő": "levegő, halk csattanás",
+  "hangos levegő": "levegő, hangos csattanás",
+  "víz": "víz",
+  "acél": "acélsín",
+  "vákuum": "légüres tér (vákuum)",
+  "nem jut át": "nem jut át",
+  "újra gomb": "Újra!",
+  "hőmérséklet csúszka": "A levegő hőmérséklete",
+  "nyomás grafikon": "a légnyomás változása a fülnél",
+  "hangmagasság": "hangmagasság",
+  "hangerő": "hangerő",
+  "mély": "mély",
+  "magas": "magas",
+  "halk": "halk",
+  "hangos": "hangos",
+  "infrahang": "infrahang",
+  "hallható": "hallható hang",
+  "ultrahang": "ultrahang",
+  "zenei a": "A4 (zenei a)",
+  "hullámhossz levegőben": "hullámhossz a levegőben",
+  "frekvencia csúszka 2": "Frekvencia → hangmagasság",
+  "amplitúdó csúszka": "Amplitúdó → hangerő",
+  "hang gomb": "Szólaltasd meg!",
+  "némítás gomb": "Némítás",
+  "gitár": "a gitár A-húrja",
+  "lefogás csúszka": "Lefogás: hányadik bund?",
+  "pengetés gomb": "Pengesd meg!",
+  "mód gomb": "#. mód",
+  "csomópont": "csomópont",
+  "duzzadóhely": "duzzadóhely",
+  "húzd": "húzd az ujjad",
+  "bund": "#. bund",
+  "üres húr": "üres húr",
+  "rezgő hossz": "rezgő hossz",
+  "oktáv": "fele hossz → dupla frekvencia: oktáv",
+  "lassítva húr": "#-szor lassítva",
+  "decibel cím": "Hangszint (dB)",
+  "hallásküszöb": "hallásküszöb",
+  "suttogás": "suttogás",
+  "beszélgetés felirat": "beszélgetés",
+  "forgalom felirat": "erős forgalom",
+  "koncert felirat": "rockkoncert",
+  "fájdalomküszöb": "fájdalomküszöb",
+  "károsító felirat": "e fölött hosszan károsít",
+  "hangszint csúszka": "Hangszint",
+  "idő cím": "Naponta ennyi idő után már károsíthat:",
+  "nem károsít": "napi 8 óra alatt sem károsít",
+  "óra": "óra",
+  "perc": "perc",
+  "másodperc": "másodperc",
+  "nyolc óra": "8 óra",
+  "felezés": "+3 dB → fele annyi idő",
+  "össz minta cím": "a minta halad, nem az anyag",
+  "össz minta szöveg": "a gyöngyök helyben rezegnek",
+  "össz képlet szöveg": "sebesség = hullámhossz × frekvencia",
+  "össz magasság cím": "hangmagasság ↔ frekvencia",
+  "össz magasság szöveg": "nagyobb f → magasabb hang",
+  "össz hangerő cím": "hangerő ↔ amplitúdó",
+  "össz hangerő szöveg": "nagyobb kitérés → hangosabb hang",
+  "össz közeg cím": "a hangnak közeg kell",
+  "össz közeg szöveg": "vákuumban nem terjed",
+  "össz fül cím": "85 dB felett védd a füled",
+  "össz fül szöveg": "+3 dB → fele annyi biztonságos idő",
+  "levegő rövid": "levegő",
+  "víz rövid": "víz",
+  "acél rövid": "acél"
+ },
+ "data": {
+  "hullám sebessége a kötélen": {
+   "v": 1.0,
+   "u": "m/s",
+   "d": 1
+  },
+  "kötél rezgésének frekvenciája": {
+   "v": 1.0,
+   "u": "Hz",
+   "d": 1
+  },
+  "kötél rezgésének amplitúdója": {
+   "v": 0.25,
+   "u": "m",
+   "d": 2
+  },
+  "hangsebesség 0 °C-os levegőben": {
+   "v": 331.0,
+   "u": "m/s",
+   "d": 0
+  },
+  "hangsebesség növekedése fokonként": {
+   "v": 0.6,
+   "u": "m/s",
+   "d": 1
+  },
+  "levegő hőmérséklete": {
+   "v": 20.0,
+   "u": "°C",
+   "d": 0
+  },
+  "hangsebesség vízben": {
+   "v": 1480.0,
+   "u": "m/s",
+   "d": 0
+  },
+  "hangsebesség acélban": {
+   "v": 5900.0,
+   "u": "m/s",
+   "d": 0
+  },
+  "legmélyebb hallható hang": {
+   "v": 20.0,
+   "u": "Hz",
+   "d": 0
+  },
+  "legmagasabb hallható hang": {
+   "v": 20000.0,
+   "u": "Hz",
+   "d": 0
+  },
+  "zenei a frekvenciája": {
+   "v": 440.0,
+   "u": "Hz",
+   "d": 0
+  },
+  "károsító szint": {
+   "v": 85.0,
+   "u": "dB",
+   "d": 0
+  },
+  "távolság": {
+   "v": 1.0,
+   "u": "km",
+   "d": 0
+  },
+  "húr hossza": {
+   "v": 0.65,
+   "u": "m",
+   "d": 2
+  },
+  "üres A-húr frekvenciája": {
+   "v": 110.0,
+   "u": "Hz",
+   "d": 0
+  },
+  "suttogás szintje": {
+   "v": 30.0,
+   "u": "dB",
+   "d": 0
+  },
+  "beszélgetés": {
+   "v": 60.0,
+   "u": "dB",
+   "d": 0
+  },
+  "forgalom": {
+   "v": 80.0,
+   "u": "dB",
+   "d": 0
+  },
+  "koncert": {
+   "v": 110.0,
+   "u": "dB",
+   "d": 0
+  },
+  "fájdalomküszöb alja": {
+   "v": 120.0,
+   "u": "dB",
+   "d": 0
+  },
+  "fájdalomküszöb teteje": {
+   "v": 130.0,
+   "u": "dB",
+   "d": 0
+  },
+  "biztonságos idő a károsító szinten": {
+   "v": 8.0,
+   "u": "óra",
+   "d": 0
+  },
+  "felezési lépés": {
+   "v": 3.0,
+   "u": "dB",
+   "d": 0
+  },
+  "példa hangszint": {
+   "v": 100.0,
+   "u": "dB",
+   "d": 0
+  }
+ },
+ "src": {
+  "hullám sebessége a kötélen": 34,
+  "kötél rezgésének frekvenciája": 35,
+  "kötél rezgésének amplitúdója": 36,
+  "hangsebesség 0 °C-os levegőben": 37,
+  "hangsebesség növekedése fokonként": 38,
+  "levegő hőmérséklete": 39,
+  "hangsebesség vízben": 40,
+  "hangsebesség acélban": 41,
+  "legmélyebb hallható hang": 42,
+  "legmagasabb hallható hang": 43,
+  "zenei a frekvenciája": 44,
+  "károsító szint": 45,
+  "távolság": 131,
+  "húr hossza": 182,
+  "üres A-húr frekvenciája": 183,
+  "suttogás szintje": 211,
+  "beszélgetés": 212,
+  "forgalom": 213,
+  "koncert": 214,
+  "fájdalomküszöb alja": 215,
+  "fájdalomküszöb teteje": 216,
+  "biztonságos idő a károsító szinten": 217,
+  "felezési lépés": 218,
+  "példa hangszint": 219,
+  "frekvencia név": 26,
+  "hullámhossz név": 27,
+  "amplitúdó név": 28,
+  "periódusidő név": 29,
+  "sebesség név": 30,
+  "lassítva": 31,
+  "gyöngysor": 55,
+  "kéz": 56,
+  "minta halad": 57,
+  "piros gyöngy": 58,
+  "stadionhullám": 59,
+  "stadion magyarázat": 60,
+  "papírcsík": 70,
+  "korábban": 71,
+  "most": 72,
+  "frekvencia csúszka": 84,
+  "1 s alatt": 85,
+  "f darab hullám": 86,
+  "hangszóró": 96,
+  "fül": 97,
+  "sűrűsödés": 98,
+  "ritkulás": 99,
+  "piros pontok": 100,
+  "sűrűség grafikon": 101,
+  "sűrűbb": 102,
+  "ritkább": 103,
+  "terjedés iránya": 104,
+  "verseny cím": 118,
+  "valódi sebesség": 119,
+  "idő": 120,
+  "halk levegő": 121,
+  "hangos levegő": 122,
+  "víz": 123,
+  "acél": 124,
+  "vákuum": 125,
+  "nem jut át": 126,
+  "újra gomb": 127,
+  "hőmérséklet csúszka": 128,
+  "nyomás grafikon": 143,
+  "hangmagasság": 144,
+  "hangerő": 145,
+  "mély": 146,
+  "magas": 147,
+  "halk": 148,
+  "hangos": 149,
+  "infrahang": 150,
+  "hallható": 151,
+  "ultrahang": 152,
+  "zenei a": 153,
+  "hullámhossz levegőben": 154,
+  "frekvencia csúszka 2": 155,
+  "amplitúdó csúszka": 156,
+  "hang gomb": 157,
+  "némítás gomb": 158,
+  "gitár": 168,
+  "lefogás csúszka": 169,
+  "pengetés gomb": 170,
+  "mód gomb": 171,
+  "csomópont": 172,
+  "duzzadóhely": 173,
+  "húzd": 174,
+  "bund": 175,
+  "üres húr": 176,
+  "rezgő hossz": 177,
+  "oktáv": 178,
+  "lassítva húr": 179,
+  "decibel cím": 193,
+  "hallásküszöb": 194,
+  "suttogás": 195,
+  "beszélgetés felirat": 196,
+  "forgalom felirat": 197,
+  "koncert felirat": 198,
+  "fájdalomküszöb": 199,
+  "károsító felirat": 200,
+  "hangszint csúszka": 201,
+  "idő cím": 202,
+  "nem károsít": 203,
+  "óra": 204,
+  "perc": 205,
+  "másodperc": 206,
+  "nyolc óra": 207,
+  "felezés": 208,
+  "össz minta cím": 231,
+  "össz minta szöveg": 232,
+  "össz képlet szöveg": 233,
+  "össz magasság cím": 234,
+  "össz magasság szöveg": 235,
+  "össz hangerő cím": 236,
+  "össz hangerő szöveg": 237,
+  "össz közeg cím": 238,
+  "össz közeg szöveg": 239,
+  "össz fül cím": 240,
+  "össz fül szöveg": 241,
+  "levegő rövid": 242,
+  "víz rövid": 243,
+  "acél rövid": 244
+ }
+};
