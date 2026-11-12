@@ -34,7 +34,7 @@ Az első szám a Claude Code által jelentett al-ügynök-tokenszám; zárójelb
 
 - Al-ügynök-tokenek (Claude Code által jelentett): **4 554 546** (a 15-ös lecke jelentett száma tömörítés miatt alacsony)
 - Kimeneti tokenek összesen: **2 174 626**; cache-írás: **6 921 117**
-- Al-ügynök-munkaidő összesen: **7.9 óra** (egyszerre legfeljebb 3 futott; a pilot teljes falióra-ideje kb. 5,5 óra)
+- Al-ügynök-munkaidő összesen: **7,9 óra** (egyszerre legfeljebb 3 futott; a pilot teljes falióra-ideje kb. 5,5 óra)
 - Egy lecke átlagosan: **~31 perc**, **~315 ezer** jelentett token, **~141 ezer** kimeneti token
 - Felhasználó által talált tartalmi hiba: 2 (01: befagyás-magyarázat, hajó merülése); koordinátor által talált: 1 (01 hajó); al-ügynök által a briefben talált: 1 (Rayleigh-arány)
 
