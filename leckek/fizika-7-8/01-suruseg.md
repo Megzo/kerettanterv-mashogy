@@ -138,7 +138,7 @@ A legtöbb anyag megfagyva összehúzódik – a víz viszont **kitágul**. A j�
 
 Ugyanannyi víz jégként kb. 9 %-kal nagyobb helyet foglal, ezért kisebb a sűrűsége: {jég sűrűsége}.
 
-> megjegyzés: Ezért fagynak be a tavak felülről, és ezért élik túl a halak a telet.
+> megjegyzés: Ezért a jég a tó tetején marad, és szigetelő takaróként védi az alatta lévő vizet. Ha lesüllyedne, a tavak alulról fölfelé fagynának be.
 
 ### Feliratok
 - folyékony víz: folyékony víz

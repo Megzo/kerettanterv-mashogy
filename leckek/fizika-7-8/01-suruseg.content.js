@@ -48,9 +48,9 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "Miért úszik a jég? A víz különc!",
-   "html": "<p data-src=\"137\">A legtöbb anyag megfagyva összehúzódik – a víz viszont <b>kitágul</b>. A jégben a molekulák szabályos, <span class=\"key\">hatszöges rácsba</span> rendeződnek, sok üres hellyel.</p><p data-src=\"139\">Ugyanannyi víz jégként kb. 9 %-kal nagyobb helyet foglal, ezért kisebb a sűrűsége: 0,92 g/cm³.</p><p class=\"note\" data-src=\"141\">Ezért fagynak be a tavak felülről, és ezért élik túl a halak a telet.</p>",
+   "html": "<p data-src=\"137\">A legtöbb anyag megfagyva összehúzódik – a víz viszont <b>kitágul</b>. A jégben a molekulák szabályos, <span class=\"key\">hatszöges rácsba</span> rendeződnek, sok üres hellyel.</p><p data-src=\"139\">Ugyanannyi víz jégként kb. 9 %-kal nagyobb helyet foglal, ezért kisebb a sűrűsége: 0,92 g/cm³.</p><p class=\"note\" data-src=\"141\">Ezért a jég a tó tetején marad, és szigetelő takaróként védi az alatta lévő vizet. Ha lesüllyedne, a tavak alulról fölfelé fagynának be.</p>",
    "line": 136,
-   "words": 48
+   "words": 57
   },
   {
    "title": "Hogyan úszik egy acélhajó?",

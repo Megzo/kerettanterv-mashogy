@@ -11,6 +11,12 @@ modell, élő interakció), és a diák **tényleg értse meg** (egy gondolat l�
 kimondva és megcáfolva, a végén összefoglalás). 6–9 lépés. A számok valódiak és pontosak,
 a modell legyen becsületes (ha egyszerűsítesz, a panelszöveg mondja ki).
 
+**Ne ugorj át ok-okozati lépést.** Minden „ezért” mögött legyen ott a mechanizmus, vagy
+hagyd ki az állítást. Rossz: „a jég kisebb sűrűségű, *ezért* fagynak be a tavak felülről”
+(a hideg felülről jön; a sűrűség azért számít, mert a jég fent marad és szigetel – ha
+lesüllyedne, a tó alulról töltődne fel jéggel). Ha egy következtetéshez a leckében nem
+szereplő tudás kell, ne állítsd egy mondatban.
+
 ## 2. Fájlok
 
 ```
