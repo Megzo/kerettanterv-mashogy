@@ -1,0 +1,739 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Miért melegszik a Föld? — Fizika</title>
+<link rel="stylesheet" href="../../shared/lesson.css">
+<style>
+  .lp-text > :last-child { margin-bottom: 0; }
+  .lp-text b { color: var(--ink); }
+  .lp-text sub { font-size: .65em; vertical-align: -.25em; line-height: 0; }
+  .lp-text li { margin-bottom: 5px; }
+</style>
+<!-- A lecke által várt tartalomkulcsok. A tools/build_lesson.py ez alapján ellenőrzi a .md-t.
+     labels: felirat → max. karakterszám (null = alapértelmezett 32) · data: adat → mértékegység, tartomány -->
+<script type="application/json" id="lesson-spec">
+{
+  "steps": 9,
+  "labels": {
+    "világűr": 14, "légkör": 14, "felszín": 14, "napfény": 14,
+    "be": 26, "ki": 26, "ki felszín": 26, "melegszik": 26, "hűl": 26, "egyensúly": 26,
+    "hőmérő cím": 24, "légkör nélküli modell": 30,
+    "rövid hullám": 40, "napállandó felirat": 24, "átlag felirat": 26, "negyede": 8,
+    "visszavert": 22, "elnyelt": 24, "felhő": 12, "jég": 12,
+    "hőmérséklet csúszka": 34, "hosszú hullám": 34, "láthatatlan": 30,
+    "kezdő csúszka": 34, "egyensúlyi vonal": 34, "valódi vonal": 30, "különbség": 6, "idő tengely": 12,
+    "hőmérséklet tengely": 22, "modell felirat": 34,
+    "légkör nélkül gomb": 20, "légkörrel gomb": 20, "átengedi": 28, "elnyeli": 28, "tükör tévhit": 30, "tükör helyes": 44,
+    "CO₂ csúszka": 34, "égetés": 36, "különbség mérő": 24, "melegedés hőmérő": 22, "melegedés alap": 24,
+    "albedó csúszka": 42, "100 egység": 28, "visszaver": 18, "elnyel": 18,
+    "friss hó": 16, "tengeri jég": 16, "sivatag": 16, "erdő": 16, "óceán": 16, "skála cím": 32,
+    "kör melegedés": 22, "kör olvad": 22, "kör sötét": 22, "kör elnyel": 26,
+    "CO₂ grafikon": 34, "hőmérséklet grafikon": 44, "iparosodás előtt": 28, "mérés forrása": 44, "évtized": 24,
+    "alapidőszak": 28, "hideg tél tévhit": 30, "hideg tél helyes": 30,
+    "újra gomb": 22, "úszó jég": 22, "szárazföldi jég": 22, "hőtágulás": 22, "nem emelkedik": 18, "emelkedik": 18,
+    "olvadékvíz": 16, "vízszint": 14, "felnagyítva": 40, "tengerszint mérés": 36,
+    "igaz": 8, "hamis": 8,
+    "állítás káros": 50, "válasz káros": 50, "állítás ózon": 50, "válasz ózon": 60, "állítás tükör": 50, "válasz tükör": 50,
+    "állítás CO₂": 50, "válasz CO₂": 50, "állítás úszó jég": 50, "válasz úszó jég": 50, "állítás tél": 50, "válasz tél": 50
+  },
+  "data": {
+    "napállandó":                  {"unit": "W/m²", "min": 1300, "max": 1400},
+    "albedó":                      {"unit": "%", "min": 25, "max": 35},
+    "Stefan–Boltzmann-állandó":    {"unit": "W/(m²·K⁴)", "min": 5.6e-8, "max": 5.7e-8},
+    "mai átlaghőmérséklet":        {"unit": "°C", "min": 13, "max": 16},
+    "CO₂ iparosodás előtt":        {"unit": "ppm", "min": 270, "max": 290},
+    "CO₂ ma":                      {"unit": "ppm", "min": 400, "max": 500},
+    "melegedés duplázásonként":    {"unit": "°C", "min": 1.5, "max": 6},
+    "CO₂-hatás együtthatója":      {"unit": "W/m²", "min": 5, "max": 6},
+    "friss hó fényvisszaverése":   {"unit": "%", "min": 70, "max": 95},
+    "tengeri jég fényvisszaverése": {"unit": "%", "min": 40, "max": 75},
+    "sivatag fényvisszaverése":    {"unit": "%", "min": 25, "max": 45},
+    "erdő fényvisszaverése":       {"unit": "%", "min": 5, "max": 20},
+    "óceán fényvisszaverése":      {"unit": "%", "min": 3, "max": 12},
+    "CO₂ éves növekedése":         {"unit": "ppm", "min": 1, "max": 4},
+    "CO₂ 1850": {"unit": "ppm", "min": 270, "max": 300}, "CO₂ 1900": {"unit": "ppm", "min": 280, "max": 310},
+    "CO₂ 1950": {"unit": "ppm", "min": 295, "max": 325}, "CO₂ 1960": {"unit": "ppm", "min": 305, "max": 330},
+    "CO₂ 1970": {"unit": "ppm", "min": 315, "max": 340}, "CO₂ 1980": {"unit": "ppm", "min": 325, "max": 350},
+    "CO₂ 1990": {"unit": "ppm", "min": 340, "max": 365}, "CO₂ 2000": {"unit": "ppm", "min": 355, "max": 380},
+    "CO₂ 2010": {"unit": "ppm", "min": 375, "max": 400}, "CO₂ 2020": {"unit": "ppm", "min": 400, "max": 425},
+    "adatok éve": {"unit": "", "min": 2020, "max": 2040},
+    "melegedés 1900-as évek": {"unit": "°C", "min": -0.5, "max": 0.5}, "melegedés 1910-es évek": {"unit": "°C", "min": -0.5, "max": 0.5},
+    "melegedés 1920-as évek": {"unit": "°C", "min": -0.5, "max": 0.5}, "melegedés 1930-as évek": {"unit": "°C", "min": -0.5, "max": 0.6},
+    "melegedés 1940-es évek": {"unit": "°C", "min": -0.3, "max": 0.7}, "melegedés 1950-es évek": {"unit": "°C", "min": -0.3, "max": 0.7},
+    "melegedés 1960-as évek": {"unit": "°C", "min": -0.3, "max": 0.7}, "melegedés 1970-es évek": {"unit": "°C", "min": -0.3, "max": 0.8},
+    "melegedés 1980-as évek": {"unit": "°C", "min": 0, "max": 1}, "melegedés 1990-es évek": {"unit": "°C", "min": 0.2, "max": 1.2},
+    "melegedés 2000-es évek": {"unit": "°C", "min": 0.4, "max": 1.4}, "melegedés 2010-es évek": {"unit": "°C", "min": 0.6, "max": 1.6},
+    "melegedés 2020–2024": {"unit": "°C", "min": 0.8, "max": 2},
+    "jég sűrűsége":                {"unit": "g/cm³", "min": 0.9, "max": 0.93},
+    "víz hőtágulási együtthatója": {"unit": "1/°C", "min": 0.0001, "max": 0.0004},
+    "melegítés a pohárban":        {"unit": "°C", "min": 1, "max": 20},
+    "tágulás nagyítása":           {"unit": "", "min": 10, "max": 500},
+    "tengerszint-emelkedés 1900 óta": {"unit": "cm", "min": 10, "max": 40}
+  }
+}
+</script>
+</head>
+<body>
+<script src="14-uveghaz.content.js"></script>
+<script src="../../shared/lesson.js"></script>
+<script>
+(function () {
+'use strict';
+const U = Lesson.U, { clamp, lerp, smooth, out, inOut, TAU } = U, fmt = U.fmt;
+const F = Lesson.FONTS;
+/* ── paletta (világos téma, lásd SZERZODES.md) ── */
+const INK = '#1c2440', MUT = '#565d72', RED = '#c8401c', TEAL = '#0a6f86', GOOD = '#1d7a45', BAD = '#b3261e',
+  CARD = '#fffaf1', LINE = 'rgba(28,36,64,.16)', WATER_D = '#1b5a94';
+const SUN = '#c98a00', SUN_D = '#7d5600', IR = '#c8401c';     // napfény (rövid hullám) · infravörös (hosszú hullám)
+let L, c, GA = 1;
+const al = (a = 1) => { c.globalAlpha = GA * clamp(a); };
+const lab = (k) => L.lab(k), num = (k) => L.num(k);
+const T = (k, x, y, o = {}) => L.tx(lab(k), x, y, Object.assign({ k }, o));
+const TH = (k, v, x, y, o = {}, ks = []) => L.tx(lab(k).replace('#', v), x, y, Object.assign({}, o, { k: [k].concat(ks) }));
+const tx = (s, x, y, o) => L.tx(s, x, y, o);
+const rr = (x, y, w, h, r) => { c.beginPath(); c.roundRect(x, y, w, h, r); };
+const ln = (x1, y1, x2, y2, col, w = 2, dash) => { c.beginPath(); c.moveTo(x1, y1); c.lineTo(x2, y2); c.strokeStyle = col; c.lineWidth = w; c.setLineDash(dash || []); c.stroke(); c.setLineDash([]); };
+const sg = (v, d = 1) => (v >= Math.pow(10, -d) / 2 ? '+' : '') + fmt(v, d);
+const DEG = (v, d = 1) => sg(v, d) + ' °C';
+const WM = (v) => fmt(v) + ' W/m²';
+
+/* ── háttér: meleg papír, halvány négyzetrács ── */
+function background() {
+  c.globalAlpha = 1;
+  const g = c.createRadialGradient(680, 480, 100, 680, 540, 1300); g.addColorStop(0, '#f7f1e6'); g.addColorStop(1, '#efe6d6');
+  c.fillStyle = g; c.fillRect(0, 0, 1920, 1080);
+  c.strokeStyle = 'rgba(28,36,64,.045)'; c.lineWidth = 1; c.beginPath();
+  for (let x = 0; x <= 1920; x += 40) { c.moveTo(x + .5, 0); c.lineTo(x + .5, 1080); }
+  for (let y = 0; y <= 1080; y += 40) { c.moveTo(0, y + .5); c.lineTo(1920, y + .5); }
+  c.stroke();
+}
+function card(x, y, w, h, a, bg, bd) { al(a); rr(x, y, w, h, 18); c.fillStyle = bg || CARD; c.fill(); c.strokeStyle = bd || LINE; c.lineWidth = 2; c.stroke(); }
+function arrowTo(x1, y1, x2, y2, col, w = 4, hs = 16) {
+  const an = Math.atan2(y2 - y1, x2 - x1), bx = x2 - Math.cos(an) * hs * .8, by = y2 - Math.sin(an) * hs * .8;
+  ln(x1, y1, bx, by, col, w);
+  c.beginPath(); c.moveTo(x2, y2); c.lineTo(x2 - hs * Math.cos(an - .45), y2 - hs * Math.sin(an - .45)); c.lineTo(x2 - hs * Math.cos(an + .45), y2 - hs * Math.sin(an + .45)); c.closePath();
+  c.fillStyle = col; c.fill();
+}
+/* áthúzott tévhit-doboz + helyes válasz (a 06-halmazallapot mintájára) */
+function myth(kq, ka, x, y, st, t0, a, o = {}) {
+  const s = o.s || 26;
+  al(a * clamp((st - t0) / .5)); const b = L.pill(lab(kq), x, y, { k: kq, a: o.a || 'center', s, f: F.D, i: 1, w: 500, bg: '#ffffff', bd: BAD, c: BAD, pad: 14 });
+  const q = clamp((st - t0 - 1.2) / .4);
+  if (q > 0) { al(a); ln(b.x + 10, b.y + b.h / 2, lerp(b.x + 10, b.x + b.w - 10, q), b.y + b.h / 2, BAD, 4); }
+  al(a * clamp((st - t0 - 1.6) / .5)); L.pill(lab(ka), o.a === 'left' ? b.x : x, y + (o.dy || 56), { k: ka, a: o.a || 'center', s: s - 2, w: 700, bg: GOOD, c: '#ffffff', pad: 12 });
+}
+/* determinisztikus hash → véletlenmag (a fotonfolyamokhoz) */
+const hash = (a, b) => { let h = Math.imul(a ^ 0x9e3779b9, 0x85ebca6b) ^ Math.imul(b + 0x632be5ab, 0xc2b2ae35); h ^= h >>> 13; h = Math.imul(h, 0x27d4eb2f); return ((h ^ (h >>> 16)) >>> 0) || 1; };
+
+/* ════════ A modell – minden szám innen jön (rajz és kiírás is) ════════ */
+const M = {};
+function model() {
+  M.S0 = num('napállandó'); M.alb = num('albedó') / 100; M.sig = num('Stefan–Boltzmann-állandó');
+  M.inAvg = M.S0 / 4; M.ref = M.inAvg * M.alb; M.abs = M.inAvg - M.ref;          // W/m², a Föld teljes felszínére átlagolva
+  M.Te = Math.pow(M.abs / M.sig, .25) - 273.15;                                  // légkör nélküli egyensúly (°C)
+  M.Tr = num('mai átlaghőmérséklet');
+  M.eps = 2 * (1 - M.abs / emit(M.Tr));     // egyrétegű légkör: ennyi részét nyeli el a felszín infravörösének (fele fel, fele le)
+  M.C0 = num('CO₂ iparosodás előtt'); M.Cn = num('CO₂ ma'); M.S2 = num('melegedés duplázásonként'); M.k5 = num('CO₂-hatás együtthatója');
+  M.lam = M.k5 * Math.LN2 / M.S2;           // W/m² többlet-kisugárzás 1 °C melegedésenként (visszacsatolásokkal)
+}
+const emit = (Tc) => M.sig * Math.pow(Tc + 273.15, 4);       // kisugárzás (Stefan–Boltzmann)
+const dF = (C) => M.k5 * Math.log(C / M.C0);                  // sugárzási többlet (W/m²)
+const dTeq = (C) => M.S2 * Math.log2(C / M.C0);               // egyensúlyi melegedés (°C)
+const EMAX = 560;                                              // a mérlegsávok skálája (W/m²)
+const KPH = .032;                                              // fotonok másodpercenként W/m²-enként (jelképes)
+
+/* ════════ A légkör metszete (1–5. lépés közös alapja) ════════ */
+const GY = 650, Y0 = 46, ATM = 150;            // felszín teteje · fotonok indulása · légkör teteje
+const SUNP = { x: 1270, y: 64, r: 62 };
+const CLOUD = { x: 560, y: 300 };
+const SD = (() => { const x = -.42, y = .91, n = Math.hypot(x, y); return { x: x / n, y: y / n }; })();   // a napsugarak iránya
+const MOL = { air: [], gh: [], co2: [] };
+function buildMolecules() {
+  const r = U.rng(1405), pts = [];
+  const free = (x, y, d) => !pts.some((p) => Math.hypot(p.x - x, p.y - y) < d) &&
+    !(x < 500 && y < 340) && !(Math.abs(x - CLOUD.x) < 160 && Math.abs(y - CLOUD.y) < 70) && !(x > 700 && x < 1260 && y > 540);
+  const put = (n, d, arr, kind) => { let g = 0; while (arr.length < n && g++ < 5000) { const x = 60 + r() * 1250, y = ATM + 40 + r() * (GY - ATM - 80); if (free(x, y, d)) { const p = { x, y, ph: r() * TAU, ang: r() * TAU, kind }; pts.push(p); arr.push(p); } } };
+  put(14, 64, MOL.co2, 'co2');
+  const h = []; put(5, 64, h, 'h2o'); const m = []; put(1, 64, m, 'ch4');
+  MOL.gh = MOL.co2.slice(0, 6).concat(h, m);
+  put(40, 56, MOL.air, 'air');
+  MOL.h = h; MOL.m = m;
+}
+const wob = (p, st) => [p.x + Math.sin(st * .7 + p.ph) * 6, p.y + Math.cos(st * .55 + p.ph * 1.3) * 5];
+
+function sunDisk(a) {
+  al(a); const { x, y, r } = SUNP;
+  for (let i = 0; i < 12; i++) { const an = i / 12 * TAU; ln(x + Math.cos(an) * (r + 10), y + Math.sin(an) * (r + 10), x + Math.cos(an) * (r + 30), y + Math.sin(an) * (r + 30), SUN, 4); }
+  const g = c.createRadialGradient(x - 18, y - 18, 6, x, y, r); g.addColorStop(0, '#ffe9a0'); g.addColorStop(1, '#f0b429');
+  c.beginPath(); c.arc(x, y, r, 0, TAU); c.fillStyle = g; c.fill(); c.strokeStyle = '#a86d00'; c.lineWidth = 3; c.stroke();
+}
+function cloud(x, y, a, dim) {    // halványítás színkeveréssel (átlátszósággal a belső körívek átlátszanának)
+  al(a); c.beginPath();
+  for (const [dx, dy, r] of [[-90, 12, 34], [-45, -14, 44], [8, -24, 50], [62, -6, 40], [100, 14, 30], [0, 18, 40], [-50, 20, 32], [55, 20, 32]]) { c.moveTo(x + dx + r, y + dy); c.arc(x + dx, y + dy, r, 0, TAU); }
+  c.strokeStyle = U.mix('#d3dce2', '#7d889c', dim); c.lineWidth = 5; c.stroke();     // a vastag körvonal felét a kitöltés eltakarja → csak a külső kontúr marad
+  c.fillStyle = U.mix('#dbe3e7', '#fbf8f2', dim); c.fill();
+}
+/* o: {atm: a légkör erőssége, glow: 0..1 a felszín „hőkamerás” izzása, ice: a jég rajza} */
+function drawBase(a, o) {
+  if (a <= .005) return;
+  // légkör
+  al(a * o.atm); const g = c.createLinearGradient(0, ATM - 40, 0, GY);
+  g.addColorStop(0, 'rgba(70,150,215,0)'); g.addColorStop(.25, 'rgba(70,150,215,.10)'); g.addColorStop(1, 'rgba(70,150,215,.26)');
+  c.fillStyle = g; c.fillRect(0, ATM - 40, 1380, GY - ATM + 40);
+  al(a); T('világűr', 56, 66, { s: 24, w: 700, c: MUT, ls: '3px' });
+  al(a * Math.max(.35, o.atm)); T('légkör', 56, ATM + 52, { s: 24, w: 700, c: WATER_D, ls: '3px' });
+  // felszín: óceán | szárazföld | jég
+  al(a); c.fillStyle = 'rgba(70,150,215,.50)'; c.fillRect(0, GY, 430, 74);
+  c.fillStyle = '#9db36f'; c.fillRect(430, GY, 580, 74);
+  c.fillStyle = '#e6ecf1'; c.fillRect(1010, GY, 370, 74);
+  c.fillStyle = '#a58a62'; c.fillRect(0, GY + 74, 1380, 14);
+  ln(0, GY, 430, GY, WATER_D, 3); ln(430, GY, 1010, GY, '#4d6b2e', 3); ln(1010, GY, 1380, GY, '#6f8499', 3);
+  ln(0, GY + 74, 1380, GY + 74, 'rgba(28,36,64,.5)', 2);
+  if (o.glow > .01) {
+    for (const [wd, aa] of [[26, .22], [10, .55]]) { al(a * o.glow * aa); ln(0, GY + 2, 1380, GY + 2, '#ff6a2a', wd); }
+  }
+  al(a); L.pill(lab('felszín'), 452, GY + 37, { k: 'felszín', s: 22, w: 700, c: '#2f4a17', ls: '2px', bg: 'rgba(255,250,241,.75)', pad: 8 });
+  al(a * o.ice); T('jég', 1040, GY + 46, { s: 22, w: 700, c: '#3d5468' });
+  sunDisk(a);
+  al(a); T('napfény', SUNP.x - SUNP.r - 40, SUNP.y + 12, { s: 24, w: 700, a: 'right', c: SUN_D });
+  cloud(CLOUD.x, CLOUD.y, a, o.cloud);
+  al(a * o.cloud); T('felhő', CLOUD.x, CLOUD.y + 74, { s: 22, w: 600, a: 'center', c: MUT });
+}
+
+/* ── hullámcsomag (foton): napfény = rövid hullám, infravörös = hosszú hullám ── */
+const PK = { sun: { len: 52, lam: 13, amp: 6, col: SUN, lw: 3 }, ir: { len: 92, lam: 30, amp: 9, col: IR, lw: 3.5 } };
+function packet(x, y, dx, dy, kind, a) {
+  if (a <= .01) return;
+  const P = PK[kind], nx = -dy, ny = dx; al(a);
+  c.beginPath();
+  for (let i = 0; i <= 30; i++) {
+    const s = (i / 30 - .5) * P.len, env = Math.sin(Math.PI * i / 30), w = Math.sin(TAU * s / P.lam) * P.amp * env;
+    const px = x + dx * s + nx * w, py = y + dy * s + ny * w; i ? c.lineTo(px, py) : c.moveTo(px, py);
+  }
+  c.strokeStyle = P.col; c.lineWidth = P.lw; c.lineCap = 'round'; c.lineJoin = 'round'; c.stroke(); c.lineCap = 'butt';
+  const fx = x + dx * (P.len / 2 + 8), fy = y + dy * (P.len / 2 + 8);
+  c.beginPath(); c.moveTo(fx, fy); c.lineTo(fx - dx * 13 + nx * 7, fy - dy * 13 + ny * 7); c.lineTo(fx - dx * 13 - nx * 7, fy - dy * 13 - ny * 7); c.closePath(); c.fillStyle = P.col; c.fill();
+}
+function flash(x, y, u, col, a) { if (u < 0 || u > 1) return; al(a * (1 - u)); c.beginPath(); c.arc(x, y, 5 + 20 * u, 0, TAU); c.strokeStyle = col; c.lineWidth = 3; c.stroke(); }
+/* fotonfolyam zárt képlettel: az n. foton a tn = (n + véletlen)/rate időpontban indul */
+function stream(st, rate, seed, life, fn) {
+  const n0 = Math.max(0, Math.floor((st - life) * rate) - 1), n1 = Math.floor(st * rate);
+  for (let n = n0; n <= n1; n++) {
+    const r = U.rng(hash(seed, n)), tn = (n + r() * .9) / rate, age = st - tn;
+    if (age < 0 || age > life) continue;
+    fn(r, age, tn);
+  }
+}
+/* napfény-foton: a felhőn / jégen visszaverődik (az albedó szerint), különben a felszín elnyeli */
+const VS = 480;
+function sunPhotons(st, a, o = {}) {
+  const cl = .13, rate = KPH * M.inAvg;
+  stream(st, rate, 11, 3.2, (r, age) => {
+    const u = r(), u2 = r(), u3 = r(); let H, fate;
+    if (u < cl) { fate = 'ref'; H = { x: CLOUD.x - 95 + u2 * 190, y: CLOUD.y - 36 }; }
+    else if (u < M.alb) { fate = 'ref'; H = { x: 1030 + u2 * 270, y: GY }; }
+    else { fate = 'abs'; let x = 60 + u2 * 700; if (x > 279) x += 240; H = { x, y: GY }; }
+    const sx = H.x - SD.x / SD.y * (H.y - Y0), len = (H.y - Y0) / SD.y, t1 = len / VS;
+    if (age < t1) { const s = age * VS; packet(sx + SD.x * s, Y0 + SD.y * s, SD.x, SD.y, 'sun', a * clamp(age / .15)); return; }
+    const t = age - t1;
+    if (fate === 'abs') { flash(H.x, H.y - 4, t / .4, SUN, a); return; }
+    const an = -Math.PI / 2 + (u3 - .5) * 1.1, dx = Math.cos(an), dy = Math.sin(an), y = H.y + dy * t * VS;
+    if (y < Y0 - 30) return;
+    packet(H.x + dx * t * VS, y, dx, dy, 'sun', a * clamp((y - Y0 + 30) / 60));
+  });
+}
+/* infravörös foton a felszínről. Tf(tn): a felszín hőmérséklete az indításkor; pf(tn): elnyelési esély (üvegházgázok) */
+const VI = 400;
+function irPhotons(st, a, Tf, pf, mols, exc) {
+  const rmax = KPH * EMAX;
+  stream(st, rmax, 23, 5, (r, age, tn) => {
+    const u0 = r(), u1 = r(), u2 = r(), u3 = r(), u4 = r(), u5 = r();
+    if (u0 > emit(Tf(tn)) / EMAX) return;
+    const p = mols.length ? pf(tn) : 0;
+    if (u1 < p) {
+      const mi = Math.floor(u2 * mols.length), m = mols[mi];
+      let an = -Math.PI / 2 + (u3 - .5) * .7, cx = Math.cos(an), cy = Math.sin(an), s = (m.y - GY) / cy;
+      let sx = m.x - cx * s; if (sx < 30 || sx > 1330) { cx = 0; cy = -1; s = GY - m.y; sx = m.x; }
+      const t1 = s / VI, D = .35;
+      if (age < t1) { const q = age * VI; packet(sx + cx * q, GY + cy * q, cx, cy, 'ir', a * clamp(age / .15)); return; }
+      if (age < t1 + D) { exc[mi] = Math.max(exc[mi] || 0, 1 - (age - t1) / D); return; }
+      const t = age - t1 - D, up = u4 < .5, sp = (u5 - .5) * 2.2, dx = Math.sin(sp), dy = up ? -Math.cos(sp) : Math.cos(sp);
+      const x = m.x + dx * t * VI, y = m.y + dy * t * VI;
+      if (!up && y >= GY) { const tg = (GY - m.y) / (dy * VI); flash(m.x + dx * tg * VI, GY - 4, (t - tg) / .4, IR, a); return; }
+      if (up && y < Y0 - 40) return;
+      packet(x, y, dx, dy, 'ir', a * (up ? clamp((y - Y0 + 40) / 60) : 1) * clamp(t / .12));
+      return;
+    }
+    const sx = 60 + u2 * 1240, an = -Math.PI / 2 + (u3 - .5) * .7, dx = Math.cos(an), dy = Math.sin(an), y = GY + dy * age * VI;
+    if (y < Y0 - 40) return;
+    packet(sx + dx * age * VI, y, dx, dy, 'ir', a * clamp((y - Y0 + 40) / 60) * clamp(age / .15));
+  });
+}
+/* molekulák */
+function atom(x, y, r, fill, bd) { c.beginPath(); c.arc(x, y, r, 0, TAU); c.fillStyle = fill; c.fill(); c.strokeStyle = bd; c.lineWidth = 1.8; c.stroke(); }
+function airMol(x, y, ang, a) { al(a); for (const s of [-1, 1]) atom(x + Math.cos(ang) * 8 * s, y + Math.sin(ang) * 8 * s, 9, '#b4bccb', '#3b4560'); }
+function co2Mol(x, y, ang, a, v = 0) {
+  al(a); const d = 19 + v * Math.sin(L.t * 40) * 4;
+  for (const s of [-1, 1]) atom(x + Math.cos(ang) * d * s, y + Math.sin(ang) * d * s, 9, '#d2412a', '#7a1c0e');
+  atom(x, y, 10, '#3b3f48', '#11151c');
+}
+function h2oMol(x, y, ang, a, v = 0) {
+  al(a); const d = 15 + v * Math.sin(L.t * 40) * 3;
+  for (const da of [-.92, .92]) atom(x + Math.cos(ang + da) * d, y + Math.sin(ang + da) * d, 6.5, '#ffffff', '#4a5566');
+  atom(x, y, 11, '#d2412a', '#7a1c0e');
+}
+function ch4Mol(x, y, ang, a, v = 0) {
+  al(a); const d = 16 + v * Math.sin(L.t * 40) * 3;
+  for (let i = 0; i < 4; i++) atom(x + Math.cos(ang + i * TAU / 4) * d, y + Math.sin(ang + i * TAU / 4) * d, 6, '#ffffff', '#4a5566');
+  atom(x, y, 10, '#3b3f48', '#11151c');
+}
+function ghMol(p, x, y, a, v) { if (v > 0) { al(a * v * .6); c.beginPath(); c.arc(x, y, 30, 0, TAU); c.fillStyle = 'rgba(255,106,42,.35)'; c.fill(); } (p.kind === 'co2' ? co2Mol : p.kind === 'h2o' ? h2oMol : ch4Mol)(x, y, p.ang, a, v); }
+function drawMolecules(st, a, gh, exc, list) {
+  for (const p of MOL.air) { const [x, y] = wob(p, st); airMol(x, y, p.ang + st * .2, a * .6); }
+  list.forEach((p, i) => { const [x, y] = wob(p, st); ghMol(p, x, y, a * lerp(.22, 1, gh) * (p.fade == null ? 1 : p.fade), exc[i] || 0); });
+}
+
+/* ════════ Az alsó sáv: energiamérleg + hőmérő ════════ */
+const BAL = { x: 40, y: 752, w: 860, h: 290 }, THM = { x: 920, y: 752, w: 400, h: 290 };
+function balance(rows, a, o = {}) {
+  card(BAL.x, BAL.y, BAL.w, BAL.h, a);
+  rows.forEach((r, i) => {
+    const y = BAL.y + 58 + i * 60, bx = BAL.x + 300, bw = 400;
+    al(a * (r.a == null ? 1 : r.a)); T(r.k, BAL.x + 26, y, { s: 25, w: 700, c: r.tc, max: 262 });
+    rr(bx, y - 22, bw, 28, 6); c.fillStyle = 'rgba(28,36,64,.07)'; c.fill();
+    const ww = Math.min(bw, Math.max(0, r.v) / EMAX * bw); if (ww > .5) { rr(bx, y - 22, ww, 28, 6); c.fillStyle = r.c; c.fill(); }
+    L.tx(WM(r.v), BAL.x + BAL.w - 22, y, { f: F.M, s: 25, w: 700, a: 'right', c: r.tc, k: r.kv });
+  });
+  if (o.verdict != null) {
+    const d = o.verdict, k = Math.abs(d) < (o.tol || .6) ? 'egyensúly' : d > 0 ? 'melegszik' : 'hűl';
+    al(a * (o.va == null ? 1 : o.va)); L.pill(lab(k), BAL.x + 26, BAL.y + BAL.h - 40, { k, s: 25, w: 700, bg: k === 'egyensúly' ? GOOD : k === 'melegszik' ? RED : TEAL, c: '#ffffff', pad: 12 });
+  }
+}
+/* függőleges hőmérő: lo..hi skála, Tv érték, o: {k: cím kulcs, sub, val (kiírt szöveg), kv, step, marks} */
+function thermo(Tv, lo, hi, a, o) {
+  const { x, y, w, h } = THM; card(x, y, w, h, a);
+  al(a); T(o.k, x + 24, y + 42, { s: 24, w: 700, c: INK });
+  if (o.sub) T(o.sub, x + 24, y + 74, { s: 22, w: 500, c: MUT });
+  const tx0 = x + 74, top = y + (o.sub ? 100 : 76), bot = y + h - 52, yv = (v) => bot - (v - lo) / (hi - lo) * (bot - top);
+  rr(tx0 - 11, top - 12, 22, bot - top + 24, 11); c.fillStyle = '#ffffff'; c.fill(); c.strokeStyle = INK; c.lineWidth = 2.5; c.stroke();
+  const col = o.col || (Tv < 0 ? TEAL : RED), yy = yv(clamp(Tv, lo, hi));
+  rr(tx0 - 6, yy, 12, bot + 14 - yy, 6); c.fillStyle = col; c.fill();
+  c.beginPath(); c.arc(tx0, bot + 26, 20, 0, TAU); c.fillStyle = col; c.fill(); c.strokeStyle = INK; c.lineWidth = 2.5; c.stroke();
+  for (let v = lo; v <= hi + 1e-9; v += o.step) {
+    const q = yv(v); ln(tx0 + 12, q, tx0 + 22, q, INK, 2);
+    tx(sg(v, 0), tx0 + 30, q + 8, { f: F.M, s: 22, c: v === 0 ? INK : MUT, w: v === 0 ? 700 : 500 });
+  }
+  for (const m of o.marks || []) { const q = yv(clamp(m.v, lo, hi)); al(a * (m.a || 1)); ln(tx0 - 22, q, tx0 + 12, q, m.c, 3, [5, 4]); }
+  al(a); L.tx(o.val, x + w - 22, y + h - 72, { f: F.M, s: 42, w: 800, a: 'right', c: col, k: o.kv, max: 210 });
+}
+
+/* ════════ 1. Napfény be ════════ */
+function scene1(st, a) {
+  sunPhotons(st, a);
+  // jelmagyarázat a fotonhoz
+  const qa = a * clamp((st - 1.2) / .5);
+  al(qa); L.pill(lab('rövid hullám'), 520, 120, { k: 'rövid hullám', s: 24, w: 700, c: SUN_D, bg: CARD, bd: SUN, pad: 12, a: 'left' });
+  packet(470, 120, 1, 0, 'sun', qa);
+  al(qa); T('visszavert', 1030, 560, { s: 24, w: 700, c: SUN_D, a: 'left' });
+  // a bejövő energia útja
+  const { x, y, w } = { x: 40, y: 752, w: 1280 }; card(x, y, w, 290, a);
+  const q1 = a * clamp((st - .6) / .5), q2 = clamp((st - 1.4) / 1.2), q3 = a * clamp((st - 2.6) / .5);
+  al(q1); L.tx(WM(M.S0), x + 30, y + 64, { f: F.M, s: 32, w: 800, c: SUN_D, k: 'napállandó' });
+  T('napállandó felirat', x + 30, y + 100, { s: 24, w: 500, c: MUT });
+  arrowTo(x + 330, y + 54, x + 520, y + 54, INK, 4, 18);
+  T('negyede', x + 425, y + 40, { s: 26, w: 800, c: INK, a: 'center', f: F.M });
+  L.tx(WM(M.inAvg), x + 560, y + 64, { f: F.M, s: 32, w: 800, c: SUN_D, k: 'napállandó' });
+  T('átlag felirat', x + 560, y + 100, { s: 24, w: 500, c: MUT });
+  // sáv: visszavert | elnyelt
+  const bx = x + 30, bw = 1220, sc = bw / M.inAvg, wr = M.ref * sc, wa = M.abs * sc, yb = y + 140;
+  al(a * (q2 > 0 ? 1 : 0)); rr(bx, yb, bw * smooth(q2), 50, 10); c.save(); c.clip();
+  c.fillStyle = '#f6dd94'; c.fillRect(bx, yb, wr, 50); c.fillStyle = '#e08a1e'; c.fillRect(bx + wr, yb, wa, 50); c.restore();
+  if (q2 > 0) { rr(bx, yb, bw * smooth(q2), 50, 10); c.strokeStyle = INK; c.lineWidth = 2.5; c.stroke(); if (bw * smooth(q2) > wr) ln(bx + wr, yb, bx + wr, yb + 50, INK, 2.5); }
+  al(q3);
+  T('visszavert', bx + 14, yb + 92, { s: 25, w: 700, c: SUN_D });
+  L.tx(WM(M.ref) + ' · ' + fmt(M.alb * 100) + ' %', bx + 14, yb + 128, { f: F.M, s: 24, w: 700, c: SUN_D, k: ['napállandó', 'albedó'] });
+  T('elnyelt', bx + wr + 18, yb + 92, { s: 25, w: 700, c: '#8a4a00' });
+  L.tx(WM(M.abs), bx + wr + 18, yb + 128, { f: F.M, s: 24, w: 700, c: '#8a4a00', k: ['napállandó', 'albedó'] });
+}
+
+/* ════════ 2. A Föld infravöröset sugároz ════════ */
+const S2 = {};
+function reset2() { Object.assign(S2, { touched: false, from: 15, to: 15, t0: 0 }); }
+function T2(t) {
+  if (!S2.touched) return t < .8 ? -40 : lerp(-40, M.Tr, inOut(clamp((t - .8) / 3)));
+  return lerp(S2.from, S2.to, out(clamp((t - S2.t0) / .45)));
+}
+function scene2(st, a) {
+  const Tn = T2(st);
+  if (!S2.touched && S2.sl) S2.sl.set(Math.round(Tn * 5) / 5);
+  sunPhotons(st, a);
+  irPhotons(st, a, T2, () => 0, [], []);
+  al(a); L.pill(lab('légkör nélküli modell'), 680, 66, { k: 'légkör nélküli modell', s: 24, w: 700, a: 'center', c: INK, bg: CARD, bd: INK, pad: 12 });
+  const qa = a * clamp((st - .8) / .5);
+  packet(110, 560, 1, 0, 'ir', qa);
+  al(qa); L.pill(lab('hosszú hullám'), 170, 560, { k: 'hosszú hullám', s: 24, w: 700, c: IR, bg: CARD, bd: IR, pad: 12 });
+  T('láthatatlan', 184, 610, { s: 22, w: 500, i: 1, f: F.D, c: MUT });
+  const E = emit(Tn);
+  balance([{ k: 'be', v: M.abs, c: SUN, tc: SUN_D, kv: ['napállandó', 'albedó'] }, { k: 'ki', v: E, c: IR, tc: IR, kv: 'Stefan–Boltzmann-állandó' }], a, { verdict: M.abs - E, tol: .5 });
+  thermo(Tn, -60, 60, a, { k: 'hőmérő cím', val: DEG(Tn, 1), step: 30, marks: [] });
+}
+
+/* ════════ 3. Légkör nélkül: az egyensúly ════════ */
+const G3 = { x0: 170, x1: 1290, yT: 104, yB: 652, lo: -80, hi: 60, tMax: 5 };
+const S3 = { curves: [] };
+const CCAP = 2.25;      // hőkapacitás (jelképes): az egyensúly kb. 0,6 s alatt „húzza be” a görbét
+function solve(T0) { const out = [T0]; let Tc = T0; for (let i = 1; i <= 500; i++) { for (let j = 0; j < 4; j++) Tc += .0025 * (M.abs - emit(Tc)) / CCAP; out.push(Tc); } return out; }
+const at3 = (cv, t) => { const f = clamp(t, 0, G3.tMax) / .01, i = Math.min(499, Math.floor(f)); return lerp(cv.T[i], cv.T[i + 1], f - i); };
+function reset3() { S3.curves = [{ T0: M.Tr, t0: .6, T: solve(M.Tr) }]; }
+function scene3(st, a) {
+  const gx = (t) => G3.x0 + t / G3.tMax * (G3.x1 - G3.x0), gy = (v) => G3.yB - (v - G3.lo) / (G3.hi - G3.lo) * (G3.yB - G3.yT);
+  card(40, 40, 1280, 690, a);
+  al(a);
+  for (let v = G3.lo; v <= G3.hi; v += 20) {
+    const y = gy(v); ln(G3.x0, y, G3.x1, y, v === 0 ? 'rgba(28,36,64,.35)' : 'rgba(28,36,64,.10)', v === 0 ? 2 : 1.5, v === 0 ? [8, 6] : null);
+    tx(sg(v, 0), G3.x0 - 14, y + 8, { f: F.M, s: 22, a: 'right', c: v === 0 ? INK : MUT, w: v === 0 ? 700 : 500 });
+  }
+  ln(G3.x0, G3.yB, G3.x1 + 10, G3.yB, INK, 2.5); ln(G3.x0, G3.yB, G3.x0, G3.yT - 14, INK, 2.5);
+  T('idő tengely', G3.x1, G3.yB + 40, { s: 24, w: 700, a: 'right', c: INK });
+  T('hőmérséklet tengely', 64, 80, { s: 24, w: 700, c: INK });
+  // egyensúlyi és valódi szint
+  const ye = gy(M.Te), yr = gy(M.Tr), q1 = a * clamp((st - 1.6) / .6), q2 = a * clamp((st - 3.2) / .6);
+  al(q1); ln(G3.x0, ye, G3.x1, ye, TEAL, 3, [12, 8]);
+  TH('egyensúlyi vonal', DEG(M.Te), G3.x1 - 10, ye + 36, { s: 26, w: 700, a: 'right', c: TEAL }, ['napállandó', 'albedó', 'Stefan–Boltzmann-állandó']);
+  al(q2); ln(G3.x0, yr, G3.x1, yr, GOOD, 3, [12, 8]);
+  TH('valódi vonal', DEG(M.Tr, 0), G3.x1 - 10, yr - 14, { s: 26, w: 700, a: 'right', c: GOOD }, ['mai átlaghőmérséklet']);
+  const xg = 760; al(q2); arrowTo(xg, ye - 4, xg, yr + 6, RED, 4, 16); arrowTo(xg, yr + 6, xg, ye - 4, RED, 4, 16);
+  TH('különbség', fmt(M.Tr - M.Te, 1) + ' °C', xg + 18, yr + 46, { f: F.M, s: 30, w: 800, c: RED }, ['mai átlaghőmérséklet', 'albedó']);
+  al(a); L.pill(lab('légkör nélküli modell'), G3.x1 - 4, 92, { k: 'légkör nélküli modell', s: 24, w: 700, a: 'right', c: INK, bg: CARD, bd: INK, pad: 12 });
+  L.pill(lab('modell felirat'), G3.x1 - 4, 146, { k: 'modell felirat', s: 22, w: 600, a: 'right', c: MUT, bg: CARD, bd: LINE, pad: 10 });
+  // görbék (a legutóbbi erős, a korábbiak halványak)
+  c.save(); c.beginPath(); c.rect(G3.x0, G3.yT - 20, G3.x1 - G3.x0, G3.yB - G3.yT + 22); c.clip();
+  const n = S3.curves.length;
+  S3.curves.forEach((cv, j) => {
+    const tc = clamp(st - cv.t0, 0, G3.tMax); if (tc <= 0) return;
+    al(a * (j === n - 1 ? 1 : .3)); c.beginPath();
+    for (let i = 0; i <= tc / .01 + 1e-9; i++) { const x = gx(i * .01), y = gy(cv.T[i]); i ? c.lineTo(x, y) : c.moveTo(x, y); }
+    c.strokeStyle = RED; c.lineWidth = j === n - 1 ? 5 : 3.5; c.lineCap = 'round'; c.stroke();
+    if (j === n - 1) { al(a); c.beginPath(); c.arc(gx(tc), gy(at3(cv, tc)), 9, 0, TAU); c.fillStyle = RED; c.fill(); c.strokeStyle = INK; c.lineWidth = 2.5; c.stroke(); }
+  });
+  c.restore();
+  const cv = S3.curves[n - 1], Tn = st < cv.t0 ? cv.T0 : at3(cv, st - cv.t0), E = emit(Tn);
+  balance([{ k: 'be', v: M.abs, c: SUN, tc: SUN_D, kv: ['napállandó', 'albedó'] }, { k: 'ki', v: E, c: IR, tc: IR, kv: 'Stefan–Boltzmann-állandó' }], a, { verdict: M.abs - E, tol: .5 });
+  thermo(Tn, -60, 60, a, { k: 'hőmérő cím', val: DEG(Tn), step: 30, marks: [{ v: M.Te, c: TEAL, a: clamp((st - 1.6) / .6) }] });
+}
+
+/* ════════ 4. Üvegházgázok ════════ */
+const S4 = {};
+function reset4() { Object.assign(S4, { on: 1, Tf: M.Te, Tt: M.Tr, pf: 0, pt: M.eps, t0: .8 }); }
+const T4 = (t) => t < S4.t0 ? S4.Tf : lerp(S4.Tf, S4.Tt, out(clamp((t - S4.t0) / 3.6)));
+const P4 = (t) => t < S4.t0 ? S4.pf : lerp(S4.pf, S4.pt, smooth(clamp((t - S4.t0) / .6)));
+function set4(on) { const st = L.st; Object.assign(S4, { on, Tf: T4(st), pf: P4(st), Tt: on ? M.Tr : M.Te, pt: on ? M.eps : 0, t0: st }); }
+function scene4(st, a) {
+  const exc = [], p = P4(st), gh = p / M.eps;
+  sunPhotons(st, a);
+  irPhotons(st, a, T4, P4, MOL.gh, exc);
+  drawMolecules(st, a, gh, exc, MOL.gh);
+  // jelmagyarázat
+  const qa = a * clamp((st - .4) / .5);
+  al(qa); L.pill(lab('átengedi'), 56, ATM + 104, { k: 'átengedi', s: 24, w: 700, c: INK, bg: CARD, bd: LINE, pad: 12 });
+  al(qa * lerp(.35, 1, gh)); L.pill(lab('elnyeli'), 56, ATM + 158, { k: 'elnyeli', s: 24, w: 700, c: IR, bg: CARD, bd: IR, pad: 12 });
+  myth('tükör tévhit', 'tükör helyes', 700, 64, st, 2.2, a, { s: 26, dy: 54 });
+  const Tn = T4(st), E = emit(Tn), Ko = E * (1 - p / 2);
+  balance([{ k: 'be', v: M.abs, c: SUN, tc: SUN_D, kv: ['napállandó', 'albedó'] },
+    { k: 'ki felszín', v: E, c: U.rgba(IR, .45), tc: IR, kv: 'Stefan–Boltzmann-állandó' },
+    { k: 'ki', v: Ko, c: IR, tc: IR, kv: ['Stefan–Boltzmann-állandó', 'mai átlaghőmérséklet'] }], a, { verdict: M.abs - Ko, tol: .5 });
+  thermo(Tn, -60, 60, a, { k: 'hőmérő cím', val: DEG(Tn), kv: 'mai átlaghőmérséklet', step: 30, marks: [{ v: M.Te, c: TEAL }, { v: M.Tr, c: GOOD }] });
+}
+
+/* ════════ 5. Több CO₂ ════════ */
+const S5 = {};
+function reset5() { Object.assign(S5, { touched: false, Cf: M.C0, Ct: M.Cn, tC: .8, Df: 0, tD: 1.2 }); }
+const C5 = (t) => lerp(S5.Cf, S5.Ct, (S5.touched ? smooth : inOut)(clamp((t - S5.tC) / (S5.touched ? .5 : 1.6))));
+const D5 = (t) => lerp(S5.Df, dTeq(S5.Ct), out(clamp((t - S5.tD) / 5)));
+function set5(v) { const st = L.st; Object.assign(S5, { touched: true, Cf: C5(st), Ct: v, tC: st, Df: D5(st), tD: st + .3 }); }
+function scene5(st, a) {
+  const Cn = C5(st), Dn = D5(st);
+  if (!S5.touched && S5.sl) S5.sl.set(Math.round(Cn));
+  // a CO₂-molekulák száma a koncentrációval nő (jelképes: 280 ppm ≈ 6 molekula)
+  const nC = clamp(6 * Cn / M.C0, 0, MOL.co2.length), list = [];
+  MOL.co2.forEach((p, i) => { if (i < Math.ceil(nC)) { p.fade = clamp(nC - i); list.push(p); } });
+  for (const p of MOL.h.concat(MOL.m)) { p.fade = 1; list.push(p); }
+  const exc = [], pv = (t) => Math.min(.95, M.eps + .05 * Math.log2(C5(t) / M.C0));
+  sunPhotons(st, a);
+  irPhotons(st, a, (t) => M.Tr + D5(t), pv, list, exc);
+  drawMolecules(st, a, 1, exc, list);
+  for (const p of MOL.co2) p.fade = null;
+  // gyárkémény: a füstben CO₂ száll fel
+  al(a); c.fillStyle = '#8b8f99'; rr(762, 596, 96, 54, 4); c.fill(); c.strokeStyle = INK; c.lineWidth = 2.5; c.stroke();
+  rr(818, 548, 22, 50, 3); c.fillStyle = '#7a7f8a'; c.fill(); c.stroke();
+  for (let i = 0; i < 5; i++) {
+    const u = ((st * .35 + i / 5) % 1 + 1) % 1, x = 829 + u * 70 + Math.sin(u * 9 + i) * 10, y = 540 - u * 230;
+    co2Mol(x, y, i + u * 2, a * (1 - u) * .9 * clamp(st / .5));
+  }
+  al(a); L.pill(lab('égetés'), 876, 610, { k: 'égetés', s: 22, w: 700, c: INK, bg: CARD, bd: LINE, pad: 10, a: 'left' });
+  const Nn = dF(Cn) - M.lam * Dn, Ko = M.abs - Nn;
+  balance([{ k: 'be', v: M.abs, c: SUN, tc: SUN_D, kv: ['napállandó', 'albedó'] },
+    { k: 'ki', v: Ko, c: IR, tc: IR, kv: ['CO₂-hatás együtthatója', 'melegedés duplázásonként'] }], a, { verdict: Nn, tol: .05, va: 1 });
+  // nagyított mérleg: be − ki
+  const gy = BAL.y + 58 + 2 * 60, gx0 = BAL.x + 300, gw = 400, gc = gx0 + gw / 2, G = 4;
+  al(a); T('különbség mérő', BAL.x + 26, gy, { s: 24, w: 700, c: INK, max: 262 });
+  rr(gx0, gy - 20, gw, 26, 6); c.fillStyle = 'rgba(28,36,64,.07)'; c.fill();
+  ln(gc, gy - 28, gc, gy + 14, INK, 2.5);
+  const wv = clamp(Nn / G, -1, 1) * gw / 2; if (Math.abs(wv) > .5) { c.fillStyle = Nn > 0 ? RED : TEAL; c.fillRect(Math.min(gc, gc + wv), gy - 17, Math.abs(wv), 20); }
+  L.tx((Nn >= .05 ? '+' : '') + fmt(Nn, 1) + ' W/m²', BAL.x + BAL.w - 22, gy, { f: F.M, s: 25, w: 700, a: 'right', c: Nn > .05 ? RED : INK, k: ['CO₂-hatás együtthatója', 'melegedés duplázásonként'] });
+  thermo(Dn, 0, 4, a, { k: 'melegedés hőmérő', sub: 'melegedés alap', val: DEG(Dn), kv: 'melegedés duplázásonként', step: 1, col: RED, marks: [{ v: dTeq(S5.Ct), c: INK }] });
+}
+
+/* ════════ 6. Világos és sötét felszín ════════ */
+const S6 = {};
+const SURF = [['óceán', '#1f4f75', '#0d2a44'], ['erdő', '#2f6a3c', '#173a1f'], ['sivatag', '#d6b77d', '#7a5a22'], ['tengeri jég', '#bcd0dd', '#4f6a80'], ['friss hó', '#e8eef2', '#6f8499']];
+const albOf = (k) => num(k + ' fényvisszaverése') / 100;
+function surfCol(al_, j) {
+  const v = SURF.map((s) => albOf(s[0]));
+  if (al_ <= v[0]) return SURF[0][j]; if (al_ >= v[4]) return SURF[4][j];
+  for (let i = 0; i < 4; i++) if (al_ <= v[i + 1]) return U.mix(SURF[i][j], SURF[i + 1][j], (al_ - v[i]) / (v[i + 1] - v[i]));
+}
+const nearest = (al_) => SURF.reduce((b, s) => Math.abs(albOf(s[0]) - al_) < Math.abs(albOf(b[0]) - al_) ? s : b)[0];
+function reset6() { Object.assign(S6, { af: albOf('óceán'), at: albOf('óceán'), t0: -9 }); }
+const A6 = (t) => lerp(S6.af, S6.at, out(clamp((t - S6.t0) / .4)));
+function half(st, a, x0, alb, nameK, seed, albK) {
+  const w = 600, cx = x0 + w / 2, PY = 600, top = 250;
+  // fotonok
+  stream(st, 9, seed, 2.4, (r, age) => {
+    const u = r(), xh = x0 + 40 + r() * (w - 80), u3 = r(), d = { x: -.25, y: .97 }, sx = xh - d.x / d.y * (PY - top), len = (PY - top) / d.y, t1 = len / 420;
+    if (age < t1) { const s = age * 420; packet(sx + d.x * s, top + d.y * s, d.x, d.y, 'sun', a * clamp(age / .15)); return; }
+    const t = age - t1;
+    if (u >= alb) { flash(xh, PY - 4, t / .4, SUN, a); return; }
+    const an = -Math.PI / 2 + (u3 - .5) * 1.2, dx = Math.cos(an), dy = Math.sin(an), y = PY + dy * t * 420;
+    if (y < top - 20) return;
+    packet(xh + dx * t * 420, y, dx, dy, 'sun', a * clamp((y - top + 20) / 60));
+  });
+  // felszín
+  al(a); rr(x0, PY, w, 90, 10); c.fillStyle = surfCol(alb, 1); c.fill(); c.strokeStyle = surfCol(alb, 2); c.lineWidth = 3; c.stroke();
+  // név + sáv: 100 egységből
+  al(a); L.pill(lab(nameK), cx, 64, { k: nameK, s: 28, w: 700, a: 'center', c: INK, bg: CARD, bd: INK, pad: 14 });
+  T('100 egység', x0 + 10, 134, { s: 22, w: 500, c: MUT });
+  const bx = x0 + 10, bw = w - 20, R = Math.round(alb * 100), wr = bw * R / 100, yb = 150;
+  rr(bx, yb, bw, 34, 8); c.save(); c.clip(); c.fillStyle = '#f6dd94'; c.fillRect(bx, yb, wr, 34); c.fillStyle = '#e08a1e'; c.fillRect(bx + wr, yb, bw - wr, 34); c.restore();
+  rr(bx, yb, bw, 34, 8); c.strokeStyle = INK; c.lineWidth = 2.5; c.stroke(); if (R > 0 && R < 100) ln(bx + wr, yb, bx + wr, yb + 34, INK, 2.5);
+  TH('visszaver', R, bx, yb + 66, { s: 24, w: 700, c: SUN_D }, [albK]);
+  TH('elnyel', 100 - R, bx + bw, yb + 66, { s: 24, w: 700, c: '#8a4a00', a: 'right' }, [albK]);
+}
+function scene6(st, a) {
+  const aR = A6(st), aS = albOf('friss hó');
+  half(st, a, 40, aS, 'friss hó', 61, 'friss hó fényvisszaverése');
+  half(st, a, 720, aR, nearest(aR), 67, nearest(aR) + ' fényvisszaverése');
+  // albedó-skála
+  card(40, 730, 1280, 150, a);
+  const sx0 = 150, sx1 = 1180, xs = (v) => sx0 + v * (sx1 - sx0), ys = 818;
+  al(a); T('skála cím', 1296, 768, { s: 24, w: 700, c: INK, a: 'right' });
+  const gr = c.createLinearGradient(sx0, 0, sx1, 0); gr.addColorStop(0, '#2a3a4a'); gr.addColorStop(1, '#eef2f5');
+  rr(sx0, ys - 9, sx1 - sx0, 18, 9); c.fillStyle = gr; c.fill(); c.strokeStyle = INK; c.lineWidth = 2; c.stroke();
+  tx('0 %', sx0 - 14, ys + 8, { f: F.M, s: 22, a: 'right', c: MUT }); tx('100 %', sx1 + 14, ys + 8, { f: F.M, s: 22, c: MUT });
+  SURF.forEach((s, i) => {
+    const v = albOf(s[0]), x = xs(v), up = i % 2 === 1;
+    ln(x, ys - 16, x, ys + 16, INK, 2.5);
+    T(s[0], x, up ? ys - 24 : ys + 44, { s: 22, w: 700, a: 'center', c: INK, k: [s[0], s[0] + ' fényvisszaverése'] });
+  });
+  // jelölők: bal (hó) és jobb (a csúszka)
+  for (const [v, col] of [[aS, INK], [aR, RED]]) { const x = xs(v); al(a); c.beginPath(); c.moveTo(x, ys + 2); c.lineTo(x - 11, ys + 22); c.lineTo(x + 11, ys + 22); c.closePath(); c.fillStyle = col; c.fill(); }
+  // önerősítő kör
+  card(40, 900, 1280, 142, a);
+  const ks = ['kör melegedés', 'kör olvad', 'kör sötét', 'kör elnyel'], q = clamp((st - 1) / 2.4), bx = [];
+  let x = 80; const yk = 950;
+  ks.forEach((k, i) => {
+    const qa = a * clamp(q * 4 - i);
+    al(qa); const b = L.pill(lab(k), x, yk, { k, s: 25, w: 700, c: '#ffffff', bg: i === 0 ? RED : i === 3 ? '#8a4a00' : TEAL, pad: 14 });
+    bx.push(b); if (i < 3) { al(qa); arrowTo(b.x + b.w + 10, yk, b.x + b.w + 60, yk, INK, 4, 16); }
+    x = b.x + b.w + 72;
+  });
+  const qr = a * clamp(q * 4 - 3.4);
+  if (bx.length === 4 && qr > 0) {
+    const l = bx[3], f = bx[0], yb2 = yk + 52;
+    al(qr); c.beginPath(); c.moveTo(l.x + l.w / 2, l.y + l.h + 4); c.lineTo(l.x + l.w / 2, yb2); c.lineTo(f.x + f.w / 2, yb2); c.strokeStyle = INK; c.lineWidth = 4; c.stroke();
+    arrowTo(f.x + f.w / 2, yb2, f.x + f.w / 2, f.y + f.h + 4, INK, 4, 16);
+  }
+}
+
+/* ════════ 7. Mit mutatnak a mérések? ════════ */
+const DEC = ['1900-as évek', '1910-es évek', '1920-as évek', '1930-as évek', '1940-es évek', '1950-es évek', '1960-as évek', '1970-es évek', '1980-as évek', '1990-es évek', '2000-es évek', '2010-es évek'];
+let CO2S = [], TMPS = [];
+function buildData() {
+  CO2S = [1850, 1900, 1950, 1960, 1970, 1980, 1990, 2000, 2010, 2020].map((y) => [y, num('CO₂ ' + y), 'CO₂ ' + y]);
+  CO2S.push([num('adatok éve'), M.Cn, 'CO₂ ma']);
+  TMPS = DEC.map((k, i) => [1900 + i * 10, 1910 + i * 10, num('melegedés ' + k), 'melegedés ' + k]);
+  TMPS.push([2020, 2025, num('melegedés 2020–2024'), 'melegedés 2020–2024']);
+}
+function scene7(st, a) {
+  const Y1 = Math.max(2030, num('adatok éve') + 5), X0 = 190, X1 = 1280, xy = (y) => X0 + (y - 1850) / (Y1 - 1850) * (X1 - X0);
+  const yr = lerp(1850, Y1, inOut(clamp((st - .5) / 4)));
+  // CO₂
+  card(40, 40, 1280, 400, a);
+  al(a); T('CO₂ grafikon', 64, 88, { s: 28, w: 700, c: INK });
+  T('mérés forrása', 1296, 88, { s: 22, w: 500, c: MUT, a: 'right' });
+  const c1 = { yT: 130, yB: 388, lo: 250, hi: 440 }, cy = (v) => c1.yB - (v - c1.lo) / (c1.hi - c1.lo) * (c1.yB - c1.yT);
+  for (let v = 280; v <= 440; v += 40) { const y = cy(v); ln(X0, y, X1, y, 'rgba(28,36,64,.10)', 1.5); tx(fmt(v), X0 - 14, y + 8, { f: F.M, s: 22, a: 'right', c: MUT }); }
+  ln(X0, c1.yB, X1, c1.yB, INK, 2.5); ln(X0, c1.yB, X0, c1.yT - 10, INK, 2.5);
+  for (let y = 1850; y <= Y1; y += 25) { ln(xy(y), c1.yB, xy(y), c1.yB + 8, INK, 2); if (y % 50 === 0 || y === 2025) tx(String(y), xy(y), c1.yB + 34, { f: F.M, s: 22, a: 'center', c: MUT }); }
+  const ypi = cy(M.C0); ln(X0, ypi, X1, ypi, TEAL, 3, [12, 8]);
+  TH('iparosodás előtt', fmt(M.C0) + ' ppm', X0 + 16, ypi + 30, { s: 24, w: 700, c: TEAL }, ['CO₂ iparosodás előtt']);
+  c.save(); c.beginPath(); c.rect(X0, 0, xy(yr) - X0, 1080); c.clip();
+  al(a); c.beginPath(); CO2S.forEach(([y, v], i) => { const X = xy(y), Y = cy(v); i ? c.lineTo(X, Y) : c.moveTo(X, Y); });
+  c.strokeStyle = INK; c.lineWidth = 5; c.lineJoin = 'round'; c.stroke();
+  for (const [y, v] of CO2S) { c.beginPath(); c.arc(xy(y), cy(v), 6, 0, TAU); c.fillStyle = INK; c.fill(); }
+  c.restore();
+  const qe = a * clamp((st - 4.4) / .5);
+  al(qe); L.tx(fmt(M.Cn) + ' ppm', xy(num('adatok éve')) - 16, cy(M.Cn) - 4, { f: F.M, s: 28, w: 800, a: 'right', c: RED, k: 'CO₂ ma' });
+  // hőmérséklet (tízéves átlagok)
+  card(40, 460, 1280, 410, a);
+  al(a); T('hőmérséklet grafikon', 64, 508, { s: 28, w: 700, c: INK });
+  T('évtized', 1296, 508, { s: 22, w: 500, c: MUT, a: 'right' });
+  const c2 = { yT: 560, yB: 820, lo: -.3, hi: 1.6 }, ty = (v) => c2.yB - (v - c2.lo) / (c2.hi - c2.lo) * (c2.yB - c2.yT);
+  for (const v of [0, .5, 1, 1.5]) { const y = ty(v); ln(X0, y, X1, y, v === 0 ? INK : 'rgba(28,36,64,.10)', v === 0 ? 2.5 : 1.5); tx(sg(v, 1), X0 - 14, y + 8, { f: F.M, s: 22, a: 'right', c: v === 0 ? INK : MUT, w: v === 0 ? 700 : 500 }); }
+  ln(X0, c2.yB, X0, c2.yT - 10, INK, 2.5);
+  for (let y = 1850; y <= Y1; y += 25) { if (y % 50 === 0 || y === 2025) tx(String(y), xy(y), c2.yB + 34, { f: F.M, s: 22, a: 'center', c: MUT }); }
+  al(a); ln(xy(1850), ty(0), xy(Math.min(yr, 1900)), ty(0), MUT, 9);
+  al(a * clamp((yr - 1880) / 10)); T('alapidőszak', xy(1850) + 4, ty(0) - 18, { s: 22, w: 600, c: MUT });
+  for (const [y0, y1, v] of TMPS) {
+    if (yr <= y0) continue;
+    const u = clamp((yr - y0) / (y1 - y0)), xa = xy(y0) + 3, xb = lerp(xa, xy(y1) - 3, u), y = ty(v), z = ty(0);
+    al(a); c.fillStyle = v >= 0 ? RED : TEAL; c.fillRect(xa, Math.min(y, z), xb - xa, Math.abs(z - y));
+  }
+  const last = TMPS[TMPS.length - 1];
+  al(qe); L.tx(DEG(last[2]), (xy(last[0]) + xy(last[1])) / 2 - 20, ty(last[2]) - 14, { f: F.M, s: 28, w: 800, a: 'right', c: RED, k: last[3] });
+  myth('hideg tél tévhit', 'hideg tél helyes', 680, 930, st, 4.8, a, { s: 26, dy: 56 });
+}
+
+/* ════════ 8. A tengerszint emelkedése ════════ */
+const S8 = { t0: 0 };
+const BX = { top: 250, bot: 640, lvl: 470, iw: 320 };     // medence: belső szélesség (px), alja, kezdeti vízszint
+function basin(px, a) {
+  const x = px + 50; al(a);
+  c.beginPath(); c.moveTo(x - 6, BX.top); c.lineTo(x - 6, BX.bot + 6); c.lineTo(x + BX.iw + 6, BX.bot + 6); c.lineTo(x + BX.iw + 6, BX.top);
+  c.strokeStyle = INK; c.lineWidth = 5; c.lineJoin = 'round'; c.stroke();
+}
+function water(x, w, yl, a, tint) {
+  al(a); c.fillStyle = tint || 'rgba(70,150,215,.42)'; c.fillRect(x, yl, w, BX.bot - yl); ln(x, yl, x + w, yl, WATER_D, 3);
+}
+function ice(x, y, w, h, a) { if (w < 1 || h < 1) return; al(a); rr(x, y, w, h, Math.min(8, w * .15, h * .3)); c.fillStyle = 'rgba(214,236,248,.95)'; c.fill(); c.strokeStyle = '#2b6f9a'; c.lineWidth = 2.5; c.stroke(); al(a * .8); ln(x + w * .2, y + Math.min(10, h * .3), x + w * .6, y + Math.min(10, h * .3), '#ffffff', 3); }
+function ghost(x, y, w, h, a) { if (a <= .01) return; al(a * .8); rr(x, y, w, h, 8); c.setLineDash([7, 6]); c.strokeStyle = '#2b6f9a'; c.lineWidth = 2.5; c.stroke(); c.setLineDash([]); }
+function refLine(px, a) { const x = px + 50; al(a * .9); ln(x - 30, BX.lvl, x + BX.iw + 30, BX.lvl, INK, 2, [8, 6]); }
+function scene8(st, a) {
+  const t = st - S8.t0, m = smooth(clamp((t - .8) / 3.4)), rho = num('jég sűrűsége'), s = 110;
+  const verdict = (px, k, col) => { al(a * clamp((t - 4.4) / .5)); L.pill(lab(k), px + 210, 700, { k, s: 26, w: 700, a: 'center', bg: col, c: '#ffffff', pad: 14 }); };
+  const panels = [[40, 'úszó jég'], [470, 'szárazföldi jég'], [900, 'hőtágulás']];
+  for (const [px, k] of panels) { card(px, 40, 420, 700, a); al(a); T(k, px + 210, 100, { s: 30, w: 600, f: F.D, a: 'center', c: INK }); }
+  // A) úszó jég: a kiszorított víz térfogata = a megolvadó jégből lett víz térfogata → a szint nem változik
+  { const px = 40, x = px + 50, s1 = s * Math.sqrt(1 - m), A0 = BX.iw * (BX.bot - BX.lvl) - rho * s * s;   // folyékony víz (px²) kezdetben
+    const liquid = A0 + rho * s * s * m, sub = rho * s1 * s1, yl = BX.bot - (liquid + sub) / BX.iw;
+    water(x, BX.iw, yl, a); ghost(x + BX.iw / 2 - s / 2, BX.lvl - (1 - rho) * s, s, s, a * m); ice(x + BX.iw / 2 - s1 / 2, yl - (1 - rho) * s1, s1, s1, a);
+    refLine(px, a); basin(px, a); al(a); T('vízszint', x + 12, BX.lvl - 14, { s: 22, w: 600, c: MUT });
+    verdict(px, 'nem emelkedik', GOOD); }
+  // B) szárazföldi jég: az olvadékvíz a medencébe folyik → a szint emelkedik
+  { const px = 470, x = px + 50, rw = 120, rockTop = 400, ww = BX.iw - rw;
+    const A0 = ww * (BX.bot - BX.lvl), liquid = A0 + rho * s * s * m, yl = BX.bot - liquid / ww;
+    water(x + rw, ww, yl, a);
+    al(a); c.fillStyle = '#8f7a5c'; c.beginPath(); c.moveTo(x, rockTop); c.lineTo(x + rw - 16, rockTop); c.lineTo(x + rw, BX.bot); c.lineTo(x, BX.bot); c.closePath(); c.fill(); c.strokeStyle = '#4a3b26'; c.lineWidth = 2.5; c.stroke();
+    const hI = s * (1 - m); ghost(x + 4, rockTop - s, 100, s, a * m); ice(x + 4, rockTop - hI, 100, hI, a);
+    if (BX.lvl - yl > 8) { al(a); arrowTo(x + BX.iw - 30, BX.lvl - 2, x + BX.iw - 30, yl + 4, RED, 4, 14); }
+    if (m > .02 && m < .98) { al(a * .9); c.beginPath(); c.moveTo(x + rw - 18, rockTop + 2); c.quadraticCurveTo(x + rw + 8, rockTop + 10, x + rw + 12, yl); c.strokeStyle = 'rgba(27,90,148,.75)'; c.lineWidth = 5; c.stroke();
+      T('olvadékvíz', x + rw + 24, rockTop - 30, { s: 22, w: 600, c: WATER_D }); }
+    refLine(px, a); basin(px, a); verdict(px, 'emelkedik', RED); }
+  // C) hőtágulás: Δh = h · β · ΔT, a rajzon felnagyítva
+  { const px = 900, x = px + 50, h0 = BX.bot - BX.lvl, dT = num('melegítés a pohárban'), mag = num('tágulás nagyítása');
+    const dh = h0 * num('víz hőtágulási együtthatója') * dT * mag * m, yl = BX.lvl - dh;
+    water(x, BX.iw, yl, a, U.rgba('#4696d7', .42 + .0 * m));
+    if (BX.lvl - yl > 8) { al(a); arrowTo(x + BX.iw - 30, BX.lvl - 2, x + BX.iw - 30, yl + 4, RED, 4, 14); }
+    al(a); rr(x + 30, BX.bot + 10, BX.iw - 60, 14, 6); c.fillStyle = U.mix('#59606e', '#ff5a1a', m); c.fill();
+    L.pill('+' + fmt(dT) + ' °C', x + BX.iw / 2, BX.bot - 60, { k: 'melegítés a pohárban', s: 26, w: 800, f: F.M, a: 'center', bg: CARD, bd: RED, c: RED, pad: 10 });
+    refLine(px, a); basin(px, a);
+    al(a); TH('felnagyítva', fmt(mag), px + 210, 146, { s: 22, w: 500, a: 'center', c: MUT, i: 1, f: F.D, max: 390 }, ['tágulás nagyítása', 'víz hőtágulási együtthatója']);
+    verdict(px, 'emelkedik', RED); }
+  // tengerszint 1900 óta
+  card(40, 760, 1280, 282, a);
+  const cm = num('tengerszint-emelkedés 1900 óta'), q = a * clamp((t - 4.6) / .6);
+  al(a); TH('tengerszint mérés', fmt(cm) + ' cm', 80, 830, { s: 36, w: 600, f: F.D, c: INK }, ['tengerszint-emelkedés 1900 óta']);
+  const rx = 80, rw2 = 1200, ppc = rw2 / 40, ry = 920;
+  al(a); rr(rx, ry, rw2, 60, 8); c.fillStyle = '#f3e3b8'; c.fill(); c.strokeStyle = INK; c.lineWidth = 2.5; c.stroke();
+  for (let i = 0; i <= 40; i++) { const xx = rx + i * ppc; ln(xx, ry, xx, ry + (i % 10 === 0 ? 30 : i % 5 === 0 ? 20 : 12), INK, 2); if (i % 10 === 0) tx(fmt(i) + (i === 40 ? ' cm' : ''), xx + (i === 0 ? 4 : i === 40 ? -4 : 0), ry + 54, { f: F.M, s: 22, a: i === 0 ? 'left' : i === 40 ? 'right' : 'center', c: MUT }); }
+  al(q); c.fillStyle = 'rgba(27,90,148,.55)'; c.fillRect(rx, ry - 26, cm * ppc * smooth(clamp((t - 4.6) / 1)), 20); ln(rx + cm * ppc, ry - 30, rx + cm * ppc, ry + 4, WATER_D, 3);
+}
+
+/* ════════ 9. Összefoglalás: igaz vagy hamis? ════════ */
+const BOARD = [['káros', 0], ['ózon', 0], ['tükör', 0], ['CO₂', 1], ['úszó jég', 0], ['tél', 0]];
+function scene9(st, a) {
+  BOARD.forEach(([k, ok], i) => {
+    const y = 100 + i * 152, q = a * clamp((st - .3 - i * .45) / .5), qv = a * clamp((st - .7 - i * .45) / .5);
+    card(40, y - 50, 1280, 132, q);
+    al(qv); L.pill(lab(ok ? 'igaz' : 'hamis'), 70, y, { k: ok ? 'igaz' : 'hamis', s: 24, w: 800, f: F.M, bg: ok ? GOOD : BAD, c: '#ffffff', pad: 12, ls: '1px' });
+    al(q); T('állítás ' + k, 230, y + 10, { s: 32, w: 500, f: F.D, i: 1, c: INK, max: 1060 });
+    const ans = k === 'káros' ? DEG(M.Te) : k === 'CO₂' ? DEG(M.S2, 0) : null, kk = 'válasz ' + k;
+    al(qv); if (ans) TH(kk, ans, 230, y + 54, { s: 25, w: 600, c: ok ? GOOD : MUT, max: 1060 }, k === 'káros' ? ['napállandó', 'albedó'] : ['melegedés duplázásonként']);
+    else T(kk, 230, y + 54, { s: 25, w: 600, c: MUT, max: 1060 });
+  });
+}
+
+/* ════════════════════════════════════════════════════════════════ */
+const sT = new Array(9).fill(0);
+const SCENES = [scene1, scene2, scene3, scene4, scene5, scene6, scene7, scene8, scene9];
+const BASE = [{ atm: 1, glow: 0, cloud: 1, ice: 1 }, { atm: .3, glow: 1, cloud: .25, ice: 1 }, null, { atm: 1, glow: 0, cloud: .25, ice: 1 }, { atm: 1, glow: 0, cloud: .25, ice: 1 }];
+L = Lesson.create({
+  content: window.LESSON_CONTENT,
+  home: false,
+  steps: [
+    { settle: 4 },
+    { settle: 5, enter() { reset2(); },
+      controls(L) {
+        S2.sl = L.slider({ label: lab('hőmérséklet csúszka'), k: 'hőmérséklet csúszka', min: -40, max: 40, step: .2, value: num('mai átlaghőmérséklet'), format: (v) => DEG(v, 1),
+          onInput: (v) => { const st = L.st; S2.from = T2(st); S2.to = v; S2.t0 = st; S2.touched = true; } });
+      } },
+    { settle: 6, enter() { reset3(); },
+      controls(L) {
+        L.slider({ label: lab('kezdő csúszka'), k: 'kezdő csúszka', min: -80, max: 60, step: 5, value: num('mai átlaghőmérséklet'), format: (v) => DEG(v, 0),
+          onInput: (v) => { const st = L.st, cur = S3.curves[S3.curves.length - 1]; if (st - cur.t0 < .25) S3.curves.pop(); S3.curves.push({ T0: v, t0: st, T: solve(v) }); if (S3.curves.length > 5) S3.curves.shift(); } });
+      } },
+    { settle: 6, enter() { reset4(); },
+      controls(L) {
+        L.button(lab('légkör nélkül gomb'), () => set4(0), 'légkör nélkül gomb');
+        L.button(lab('légkörrel gomb'), () => set4(1), 'légkörrel gomb');
+      } },
+    { settle: 6.5, enter() { reset5(); },
+      controls(L) {
+        S5.sl = L.slider({ label: lab('CO₂ csúszka'), k: 'CO₂ csúszka', min: 280, max: 560, step: 1, value: num('CO₂ ma'), format: (v) => fmt(v) + ' ppm',
+          onInput: (v) => set5(v) });
+      } },
+    { settle: 4.5, enter() { reset6(); },
+      controls(L) {
+        L.slider({ label: lab('albedó csúszka'), k: 'albedó csúszka', min: 5, max: 90, step: 1, value: num('óceán fényvisszaverése'), format: (v) => fmt(v) + ' %',
+          onInput: (v) => { const st = L.st; S6.af = A6(st); S6.at = v / 100; S6.t0 = st; } });
+      } },
+    { settle: 7 },
+    { settle: 6, enter() { S8.t0 = 0; },
+      controls(L) { L.button(lab('újra gomb'), () => { S8.t0 = L.st; }, 'újra gomb'); } },
+    { settle: 4.5 },
+  ],
+  init(Lx) {
+    L = Lx; c = L.ctx; model(); buildMolecules(); buildData();
+    reset2(); reset3(); reset4(); reset5(); reset6();
+  },
+  draw(Lx) {
+    L = Lx; c = L.ctx; GA = 1; background();
+    const sp = L.sp;
+    if (L.step >= 0) sT[L.step] = L.st;
+    // közös alap (légkörmetszet) a 1., 2., 4., 5. lépésnek: súlyozott keverék
+    let wb = 0; const o = { atm: 0, glow: 0, cloud: 0, ice: 0 };
+    BASE.forEach((b, i) => { if (!b) return; const w = clamp(1 - Math.abs(sp - i) * 2); if (w <= 0) return; wb += w; for (const k in o) o[k] += b[k] * w; });
+    if (wb > .005) { for (const k in o) o[k] /= wb; if (o.glow > 0) o.glow *= clamp((emit(T2(sT[1])) - 150) / 400); GA = 1; drawBase(Math.min(1, wb), o); }
+    for (let i = 0; i < SCENES.length; i++) {
+      const w = clamp(1 - Math.abs(sp - i) * 2); if (w <= .005) continue;
+      GA = 1; SCENES[i](sT[i], w);
+    }
+    c.globalAlpha = 1;
+  },
+});
+})();
+</script>
+</body>
+</html>
