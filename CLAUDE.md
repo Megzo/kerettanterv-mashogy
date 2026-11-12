@@ -170,3 +170,9 @@ másolj belőle.
 - Kommunikáció a felhasználóval magyarul.
 - Közzététel (git push, GitHub Pages, bármi külső szolgáltatás) csak kifejezett jóváhagyás
   után.
+- **A repó nyilvános** (https://github.com/Megzo/kerettanterv-mashogy). Minden, ami commitba
+  kerül, publikus: ne kerüljön bele személyes adat, e-mail-cím, abszolút helyi útvonal
+  (`/home/…`, `C:\Users\…`), token/kulcs, belső jegyzet vagy harmadik fél jogvédett anyaga.
+  A letöltött forrásdokumentumok (`sources/**` DOCX/PDF/HTML) `.gitignore`-on vannak; csak a
+  `manifest.json` (URL + hash) és a belőlük generált Markdown kerül be. Commit előtt nézd át a
+  diffet ebből a szempontból (`git grep` útvonalakra, e-mailekre).
