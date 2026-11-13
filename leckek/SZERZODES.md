@@ -190,6 +190,9 @@ háborúk, határok, anakronizmus) és a saját briefed a 3. fejezetben.
   - *monda, hagyomány*: okker kartus – keret `#8f5a0c` (5,1 : 1 a papíron), kitöltés
     `rgba(201,150,60,.16)`, lekerekített/csigás sarok.
   A réteg neve kis feliratként (`forrás` / `rekonstrukció` / `monda`) a keret sarkában is álljon.
+  Vallási szövegeknél (bibliai történetek) és élő hagyománynál a felirat `hagyomány`, ne `monda`.
+  A tárgyi lelet maga `forrás`; a belőle levont következtetés (pl. egy elterjedési térkép)
+  `rekonstrukció`.
 - **Bélyegek:** „vázlatos” (kézi határ, vázlatos térkép), „illusztráció” (stilizált alak, jelenet),
   „becslés” (bizonytalan szám). `L.pill`, Bricolage 22 px, 600, betűköz 0,08 em, kisbetű, −3°-kal
   elforgatva, háttér `#fffaf1`, keret 2 px – „vázlatos”/„illusztráció”: halvány tinta `#565d72`,
