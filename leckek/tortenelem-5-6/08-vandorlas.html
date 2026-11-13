@@ -1,0 +1,808 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Honnan jöttünk? — Történelem</title>
+<link rel="stylesheet" href="../../shared/lesson.css">
+<style>
+  .lp-text b { color: var(--ink); }
+</style>
+<!-- Átdolgozás: a „Mozgó magyarázatok” sorozat tortenelem-vandorlas.html leckéje alapján
+     (világos téma, tartalom a .md-ben). Térkép: Natural Earth (közkincs), vandorlas-map.js.
+     A lecke által várt tartalomkulcsok; a tools/build_lesson.py ez alapján ellenőrzi a .md-t.
+     labels: felirat → max. karakterszám (null = 32) · data: adat → egység, értelmes tartomány -->
+<script type="application/json" id="lesson-spec">
+{
+  "steps": 10,
+  "labels": {
+    "cím felső": 34, "cím vásznon": 32, "alcím": 48, "kezdőpont": 24, "végpont": 24, "út hossza": 18,
+    "állomás őshaza": 26, "állomás ugor": 26, "állomás magna": 26, "állomás levédia": 26, "állomás etelköz": 26, "állomás kárpát": 26,
+    "kazárok": 24, "volgai bolgárok": 24, "besenyők": 18, "bolgárok": 22, "bizánc": 24, "morvák": 24, "frankok": 30,
+    "kijev": 18, "konstantinápoly": 18,
+    "fekete-tenger": 20, "kaszpi-tenger": 20, "balti-tenger": 20, "aral-tó": 20, "azovi-tenger": 20,
+    "Volga folyó": 14, "Don folyó": 14, "Dnyeper folyó": 14, "Duna folyó": 14, "Káma folyó": 14, "Urál folyó": 14,
+    "Ob folyó": 14, "Irtis folyó": 14, "Tobol folyó": 14, "Dnyeszter folyó": 14, "Prut folyó": 14, "Szeret folyó": 14,
+    "Tisza folyó": 14, "Maros folyó": 14, "Dráva folyó": 14, "Belaja folyó": 14,
+    "Urál hegység": 14, "Kárpátok": 14, "Kaukázus": 14, "észak": 3, "lépték": 10,
+    "idővonal": 34, "idővonal évek": 140, "idővonal nevek": 220,
+    "nyelvcsalád cím": 30, "ág uráli": 12, "ág finnugor": 12, "ág szamojéd": 12, "ág finn-permi": 12,
+    "ág finn-permi nyelvek": 20, "ág ugor": 12, "ág obi-ugor": 12, "ág obi-ugor nyelvek": 20, "ág magyar": 12,
+    "nyelvfa megjegyzés": 40,
+    "obi-ugorok": 34,
+    "törzsek": 90, "kabarok": 32,
+    "hadjárat": 36, "besenyő támadás": 30, "simeon": 30,
+    "vereckei-hágó": 20, "verecke hagyomány": 24, "erdélyi hágók": 30,
+    "alföld és erdély": 28, "dunántúl": 28, "pozsony": 28,
+    "csúszka": 16, "csúszka nevek": 200, "lejátszás gomb": 20, "julianus gomb": 20, "források gomb": 24, "julianus": 40,
+    "forráskártya cím": 24, "típus írott": 20, "típus hagyomány": 20, "típus rekonstrukció": 20,
+    "forrás 1 ki": 46, "forrás 1 mit": 46, "forrás 2 ki": 46, "forrás 2 mit": 46,
+    "forrás 3 ki": 46, "forrás 3 mit": 46, "forrás 4 ki": 46, "forrás 4 mit": 46, "jelmagyarázat": 40
+  },
+  "data": {
+    "hadjárat éve":           {"unit": "", "min": 880, "max": 900},
+    "besenyő támadás éve":    {"unit": "", "min": 880, "max": 900},
+    "honfoglalás éve":        {"unit": "", "min": 880, "max": 905},
+    "Dunántúl éve":           {"unit": "", "min": 890, "max": 910},
+    "morva bukás éve":        {"unit": "", "min": 895, "max": 910},
+    "pozsonyi csata éve":     {"unit": "", "min": 900, "max": 915},
+    "első nyugati kalandozás": {"unit": "", "min": 830, "max": 895},
+    "Konstantin műve":        {"unit": "", "min": 940, "max": 960},
+    "Anonymus műve":          {"unit": "", "min": 1150, "max": 1250},
+    "Julianus útja kezdete":  {"unit": "", "min": 1230, "max": 1240},
+    "Julianus találkozása":   {"unit": "", "min": 1230, "max": 1240},
+    "Riccardus jelentése":    {"unit": "", "min": 1230, "max": 1240}
+  }
+}
+</script>
+</head>
+<body>
+<script src="08-vandorlas.content.js"></script>
+<script src="vandorlas-map.js"></script>
+<script src="../../shared/lesson.js"></script>
+<script>
+(function () {
+  'use strict';
+  const U = Lesson.U, F = Lesson.FONTS, D2R = Math.PI / 180;
+  const MAP = window.VANDORLAS_MAP;
+
+  /* ── Színek (világos téma, lásd SZERZODES.md §6) ─────────────── */
+  const INK = '#1c2440', MUT = '#565d72', RED = '#c8401c', RED_D = '#9c2f12', TEAL = '#0a6f86', CARD = '#fffaf1';
+  const C = {
+    sea: '#bcd3e2', seaDeep: '#a9c6da', land: '#f5eee0', coast: '#2f5f8a', river: '#1b5a94', lake: '#bcd3e2',
+    red: RED, gold: '#b8860b', ochre: '#8a6400', ochreBg: '#f6e7bf', slate: '#3d5a80', brown: '#6a4a1f',
+    bes: '#4b3f72', neigh: '#5a4a36', seaInk: '#174a7a', amber: '#9a6a00',
+  };
+  const HALO = 'rgba(245,238,224,.9)', HALO_SEA = 'rgba(188,211,226,.85)';
+
+  /* ── Vetület: Lambert-féle szögtartó kúpvetület ─────────── */
+  const P1 = 44 * D2R, P2 = 58 * D2R, LAM0 = 42 * D2R, PHI0 = 50 * D2R;
+  const tn = (p) => Math.tan(Math.PI / 4 + p / 2);
+  const PN = Math.log(Math.cos(P1) / Math.cos(P2)) / Math.log(tn(P2) / tn(P1));
+  const PF = Math.cos(P1) * Math.pow(tn(P1), PN) / PN;
+  const RHO0 = PF / Math.pow(tn(PHI0), PN);
+  function proj(lon, lat) {
+    const rho = PF / Math.pow(tn(lat * D2R), PN), th = PN * (lon * D2R - LAM0);
+    return [1000 * rho * Math.sin(th), -1000 * (RHO0 - rho * Math.cos(th))];
+  }
+  const KM_PER_UNIT = 6.371;
+  function northRot(lon, lat) { const a = proj(lon, lat), b = proj(lon, lat + .5); return -Math.atan2(b[0] - a[0], -(b[1] - a[1])); }
+
+  /* ── Görbék ─────────────────────────────────────────────── */
+  function spline(pts, per, closed) {            // Catmull–Rom mintavételezés
+    const out = [], n = pts.length, g = (i) => closed ? pts[(i + n) % n] : pts[U.clamp(i, 0, n - 1)];
+    const segs = closed ? n : n - 1;
+    for (let i = 0; i < segs; i++) {
+      const p0 = g(i - 1), p1 = g(i), p2 = g(i + 1), p3 = g(i + 2);
+      for (let s = 0; s < per; s++) {
+        const t = s / per, t2 = t * t, t3 = t2 * t;
+        out.push([
+          .5 * (2 * p1[0] + (-p0[0] + p2[0]) * t + (2 * p0[0] - 5 * p1[0] + 4 * p2[0] - p3[0]) * t2 + (-p0[0] + 3 * p1[0] - 3 * p2[0] + p3[0]) * t3),
+          .5 * (2 * p1[1] + (-p0[1] + p2[1]) * t + (2 * p0[1] - 5 * p1[1] + 4 * p2[1] - p3[1]) * t2 + (-p0[1] + 3 * p1[1] - 3 * p2[1] + p3[1]) * t3)]);
+      }
+    }
+    if (!closed) out.push(pts[n - 1].slice(0, 2));
+    return out;
+  }
+  function haversine(a, b) {
+    const dl = (b[0] - a[0]) * D2R, dp = (b[1] - a[1]) * D2R, s = Math.sin(dp / 2) ** 2 + Math.cos(a[1] * D2R) * Math.cos(b[1] * D2R) * Math.sin(dl / 2) ** 2;
+    return 2 * 6371 * Math.asin(Math.sqrt(s));
+  }
+  /* lon/lat töréspontokból: vetített mintasor + kumulált arány */
+  function makeTrack(ll, per) {
+    const s = spline(ll, per || 14), pts = s.map((p) => proj(p[0], p[1])), cum = [0]; let km = 0;
+    for (let i = 1; i < pts.length; i++) { cum.push(cum[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1])); km += haversine(s[i - 1], s[i]); }
+    const tot = cum[cum.length - 1]; for (let i = 0; i < cum.length; i++) cum[i] /= tot;
+    return { pts, cum, km, per: per || 14 };
+  }
+  function trackAt(tr, f) {
+    f = U.clamp(f); let lo = 0, hi = tr.cum.length - 1;
+    while (hi - lo > 1) { const m = (lo + hi) >> 1; if (tr.cum[m] <= f) lo = m; else hi = m; }
+    const t = (f - tr.cum[lo]) / Math.max(1e-9, tr.cum[hi] - tr.cum[lo]), a = tr.pts[lo], b = tr.pts[hi];
+    return { x: U.lerp(a[0], b[0], t), y: U.lerp(a[1], b[1], t), i: lo, dx: b[0] - a[0], dy: b[1] - a[1] };
+  }
+
+  /* ── Térképadat → Path2D (térkép-koordinátákban) ────────── */
+  const landPath = new Path2D(), lakePath = new Path2D(), gratPath = new Path2D();
+  const riverPaths = { 1: new Path2D(), 2: new Path2D(), 3: new Path2D() };
+  const riverPts = {};
+  function addLine(path, flat, close) {
+    for (let i = 0; i < flat.length; i += 2) { const p = proj(flat[i] / 100, flat[i + 1] / 100); if (i === 0) path.moveTo(p[0], p[1]); else path.lineTo(p[0], p[1]); }
+    if (close) path.closePath();
+  }
+  MAP.land.forEach((poly) => poly.forEach((r) => addLine(landPath, r, true)));
+  MAP.lakes.forEach((r) => addLine(lakePath, r, true));
+  MAP.rivers.forEach((r) => {
+    addLine(riverPaths[r.w], r.p, false);
+    const a = riverPts[r.n] || (riverPts[r.n] = []);
+    for (let i = 0; i < r.p.length; i += 2) a.push([r.p[i] / 100, r.p[i + 1] / 100]);
+  });
+  for (let lon = 0; lon <= 90; lon += 10) for (let lat = 30; lat <= 74; lat += 1) { const p = proj(lon, lat); if (lat === 30) gratPath.moveTo(p[0], p[1]); else gratPath.lineTo(p[0], p[1]); }
+  for (let lat = 30; lat <= 70; lat += 10) for (let lon = -5; lon <= 95; lon += 1) { const p = proj(lon, lat); if (lon === -5) gratPath.moveTo(p[0], p[1]); else gratPath.lineTo(p[0], p[1]); }
+
+  /* folyónevek: a megadott ponthoz legközelebbi folyópontra kerülnek; [adatnév, hossz, szél, min. zoom] */
+  const RIVER_LABELS = [
+    ['Volga', 46.6, 51.4, 0], ['Don', 40.6, 49.9, 0], ['Dnyeper', 32.2, 50.2, 0], ['Duna', 24.4, 43.7, 0],
+    ['Káma', 53.6, 56.2, 3], ['Urál', 53.8, 51.3, 3], ['Ob', 66.5, 61.6, 2.5], ['Irtis', 71.3, 56.4, 2.5], ['Tobol', 64.6, 53.8, 3],
+    ['Dnyeszter', 28.4, 48.2, 4], ['Prut', 27.7, 47.4, 6], ['Szeret', 27.0, 46.85, 6.5], ['Tisza', 20.3, 46.3, 6], ['Duna', 18.95, 46.4, 6],
+    ['Maros', 22.6, 46.05, 8], ['Dráva', 17.6, 45.95, 8], ['Belaja', 55.9, 53.3, 4],
+  ].map((r) => {
+    let best = null, bd = 1e9;
+    (riverPts[r[0]] || []).forEach((p) => { const d = Math.hypot((p[0] - r[1]) * .62, p[1] - r[2]); if (d < bd) { bd = d; best = p; } });
+    best = best || [r[1], r[2]]; return { k: r[0] + ' folyó', m: proj(best[0], best[1]), z: r[3] };
+  });
+  const SEA_LABELS = [
+    ['fekete-tenger', 34.3, 43.3, 0], ['kaszpi-tenger', 50.7, 42.6, 0], ['balti-tenger', 19.6, 56.6, 0], ['aral-tó', 59.9, 45.0, 0], ['azovi-tenger', 36.6, 46.05, 4.4],
+  ].map((s) => ({ k: s[0], m: proj(s[1], s[2]), z: s[3] }));
+
+  /* ── Hegységek (kézzel húzott gerincvonalak) ─────────────── */
+  const RANGES = [
+    [[59.6, 51.6], [58.4, 53], [58.7, 55], [59.5, 57], [59.3, 59], [59.6, 61], [60.2, 63], [62.5, 65.2], [65.5, 67.6]],
+    [[17.2, 48.25], [18.4, 49.15], [20, 49.3], [22, 49.1], [23.2, 48.6], [24.5, 48.0], [25.3, 47.3], [25.9, 46.5], [26.2, 45.75], [25.3, 45.5], [24, 45.5], [22.8, 45.3], [22.4, 44.7]],
+    [[37.6, 44.6], [40, 43.6], [43, 43], [46, 42], [48.6, 41]],
+    [[9, 46.6], [11.5, 47], [13.5, 47.2], [15.4, 47.4]],
+    [[22.6, 43.2], [25, 42.75], [27.4, 42.8]],
+  ];
+  const PEAKS = [];
+  (function () {
+    const r = U.rng(7);
+    RANGES.forEach((ll, ri) => {
+      const tr = makeTrack(ll, 10), len = tr.cum.length, total = (function () { let s = 0; for (let i = 1; i < len; i++) s += Math.hypot(tr.pts[i][0] - tr.pts[i - 1][0], tr.pts[i][1] - tr.pts[i - 1][1]); return s; })();
+      const n = Math.max(3, Math.round(total / 5.2));
+      for (let i = 0; i <= n; i++) {
+        const q = trackAt(tr, i / n), l = Math.hypot(q.dx, q.dy) || 1, off = ((i % 2) ? 1 : -1) * (1.2 + r() * 1.3) * (ri === 0 ? 1.5 : 1);
+        PEAKS.push({ x: q.x + (-q.dy / l) * off + (r() - .5), y: q.y + (q.dx / l) * off + (r() - .5), s: .8 + r() * .45 });
+      }
+    });
+    PEAKS.sort((a, b) => a.y - b.y);
+  })();
+
+  /* ── A vándorlás útvonala (vázlatos, rekonstrukció) ───────── */
+  const ROUTE_LL = [
+    [66.5, 57.4, 'u0'], [66, 55.2, 'ug'], [62, 54.6], [59.2, 54.3], [54.8, 54.7, 'm'], [51, 53.2], [47.5, 51.2], [44, 49.8], [41, 49.2],
+    [37.8, 48.8, 'l'], [35, 48.4], [32.5, 48.0], [30, 47.6, 'e'], [27.6, 48.2], [25.2, 48.72, 'a'], [23.15, 48.78, 'v'], [22.3, 48.35], [21.3, 47.8], [20.2, 47.2, 'k'],
+  ];
+  const ROUTE = makeTrack(ROUTE_LL, 16);
+  const SF = {}; ROUTE_LL.forEach((p, i) => { if (p[2]) SF[p[2]] = ROUTE.cum[i * 16]; });
+  const ROUTE_KM = Math.round(ROUTE.km / 100) * 100;
+  /* j („utazási idő”, 0..7) → útvonal-arány */
+  const JF = [0, SF.ug, SF.m, SF.l, SF.e, SF.a, SF.k, SF.k];
+  function fracOfJ(j) { if (j <= 0) return 0; if (j >= 7) return JF[7]; const i = Math.floor(j); return U.lerp(JF[i], JF[i + 1], j - i); }
+
+  const JULIANUS = makeTrack([[18.74, 47.79], [20.5, 44.8], [23.3, 42.7], [28.98, 41.01], [33, 42.6], [36.7, 45.2], [41, 46.6], [45.6, 48.4], [46.3, 51.6], [49.1, 54.9], [53.2, 55.0]], 14);
+
+  /* ── Szállásterületek (lon/lat sokszögek, simított foltként – becsült területek) ─ */
+  function region(ll, color) {
+    const s = spline(ll, 10, true).map((p) => proj(p[0], p[1])), path = new Path2D(); let cx = 0, cy = 0, rad = 0;
+    s.forEach((p, i) => { if (i) path.lineTo(p[0], p[1]); else path.moveTo(p[0], p[1]); cx += p[0]; cy += p[1]; }); path.closePath();
+    cx /= s.length; cy /= s.length; s.forEach((p) => { rad = Math.max(rad, Math.hypot(p[0] - cx, p[1] - cy)); });
+    return { path, cx, cy, rad, color };
+  }
+  const REG = {
+    ural: region([[52, 56], [54, 60], [58, 62.5], [64, 63], [70, 61], [72, 57.5], [69, 54.5], [62, 53.5], [55, 54]], C.ochre),
+    ugor: region([[60.3, 53.3], [60.6, 56.2], [64, 57.4], [69, 57.2], [72, 55.5], [70.5, 53.3], [65, 52.5]], C.gold),
+    magna: region([[50.5, 53], [50.5, 55.5], [53, 57], [57, 56.8], [58.3, 54.8], [57.5, 52.6], [54, 52.2]], C.red),
+    levedia: region([[33.6, 47.2], [33.6, 49.8], [36.5, 51], [40.5, 50.5], [42, 48.6], [40, 47.0], [36.5, 46.6]], C.red),
+    etelkoz: region([[26.6, 45.9], [26.6, 48.3], [29, 49.5], [32.5, 49.5], [34.1, 48], [33.5, 46.7], [30.8, 46.1], [29.4, 45.5], [28, 45.4]], C.red),
+    karpat: region([[16.5, 47.9], [18, 48.6], [20.5, 48.95], [22.7, 48.55], [24.2, 47.6], [25.4, 46.6], [25.3, 45.75], [23, 45.4], [21.5, 44.9], [19.5, 45.2], [17.3, 45.9], [16.2, 46.8]], C.red),
+    kazar: region([[39.5, 45], [42.3, 48.3], [45, 50.3], [49, 49.5], [50, 46.5], [48.2, 43.2], [44.5, 42.9], [40.5, 43.6]], C.slate),
+  };
+  const ramp = (v, a, b) => U.smooth((v - a) / (b - a));
+  /* megjelenés (bloom) és halványulás j függvényében: [megj. kezd, megj. vég, halv. kezd, halv. vég, maradék] */
+  const REG_T = { ural: [-.85, -.25, 1.2, 2, .22], ugor: [.3, .9, 1.4, 2.1, .3], magna: [1.5, 2, 2.4, 3.1, .36], levedia: [2.5, 3, 3.4, 4.1, .32], etelkoz: [3.5, 4, 5.5, 6.2, .24], karpat: [5.7, 6.05, 99, 100, 1], kazar: [2.6, 3.1, 99, 100, 1] };
+
+  /* ── Állomás- és népnevek ─────────────────────────────────── */
+  const pj = (lon, lat) => proj(lon, lat);
+  /* rec: true → rekonstrukció (csak nyelvészeti/régészeti következtetés) → szaggatott keret */
+  const STATIONS = [
+    { k: 'állomás őshaza', m: pj(69.6, 60.2), js: -.5, dy: 0, dot: false, rec: true },
+    { k: 'állomás ugor', m: pj(66, 55.2), js: 1, dy: 74, rec: true },
+    { k: 'állomás magna', m: pj(54.8, 54.7), js: 2, dy: -70 },
+    { k: 'állomás levédia', m: pj(37.8, 48.8), js: 3, dy: -70 },
+    { k: 'állomás etelköz', m: pj(30, 47.6), js: 4, dy: -74 },
+    { k: 'állomás kárpát', m: pj(20.2, 47.2), js: 6, dy: 76 },
+  ];
+  const NEIGH = [
+    { k: 'kazárok', m: pj(46.3, 46.1), a: (j) => ramp(j, 2.6, 3.1), col: C.slate },
+    { k: 'volgai bolgárok', m: pj(48.4, 56.4), a: (j) => ramp(j, 1.7, 2.1) },
+    { k: 'besenyők', m: pj(53.5, 49.4), a: (j) => ramp(j, 2.6, 3.1) * (1 - ramp(j, 4.3, 4.7)), col: C.bes },
+    { k: 'besenyők', m: pj(37.6, 47.25), a: (j) => ramp(j, 4.75, 5.1), col: C.bes },
+    { k: 'bolgárok', m: pj(25.3, 43.25), a: (j) => ramp(j, 3.6, 4) },
+    { k: 'bizánc', m: pj(28.2, 41.55), a: (j) => ramp(j, 3.6, 4) },
+    { k: 'morvák', m: pj(17.75, 49.3), ov: 0, a: (j) => ramp(j, 5.3, 5.7) * (1 - ramp(j, 6.6, 6.78) * .7), strike: (j) => ramp(j, 6.62, 6.8) },
+    { k: 'frankok', m: pj(14.9, 47.3), ov: 0, a: (j) => ramp(j, 5.3, 5.7) },
+  ];
+  const CITIES = [{ k: 'kijev', m: pj(30.52, 50.45), a: (j) => ramp(j, 2.6, 3) }, { k: 'konstantinápoly', m: pj(28.98, 41.01), a: (j) => ramp(j, 3.6, 4) }];
+  const V_PASS = pj(23.15, 48.8);
+  const SETTLE = [[21.6, 48.1], [20.6, 47.6], [21.4, 47.1], [20.3, 46.4], [21.9, 46.5], [19.6, 47.2], [23.4, 47.0], [24.2, 46.4], [23.3, 46.0], [19.3, 46.2], [18.3, 47.3], [17.6, 46.7], [18.2, 46.2], [17.4, 47.6], [18.6, 48.1], [20.4, 45.6], [22.4, 47.6], [24.8, 45.9]].map((p) => { const m = pj(p[0], p[1]); return { m, d: Math.hypot(m[0] - V_PASS[0], m[1] - V_PASS[1]) }; });
+
+  /* ── Kamera lépésenként ───────────────────────────────────── */
+  const CAM_LL = [
+    [41, 52.2, 1.72], [58.2, 59.4, 3.15], [62.3, 57.8, 3.8], [58.3, 55.2, 4.4], [41.5, 49.3, 4.2],
+    [30.3, 47.5, 7], [31.3, 46.3, 4.6], [23.6, 47.3, 8.6], [20.4, 47.0, 9.6], [41, 52.2, 1.72],
+  ];
+  const CAMS = CAM_LL.map((c) => { const m = proj(c[0], c[1]); return { x: m[0], y: m[1], z: c[2], rot: northRot(c[0], c[1]) }; });
+  const CX = 680, CY = 478;
+  const cam = { x: 0, y: 0, z: 1, rot: 0, cos: 1, sin: 0 };
+  function setCam(sp) {
+    const i = U.clamp(Math.floor(sp), 0, CAMS.length - 2), t = U.inOut(U.clamp(sp - i)), a = CAMS[i], b = CAMS[i + 1];
+    /* a két nézet közti úton kicsit „felemelkedünk” */
+    const lift = 1 - .28 * Math.sin(Math.PI * t) * U.clamp(Math.hypot(b.x - a.x, b.y - a.y) / 250);
+    cam.x = U.lerp(a.x, b.x, t); cam.y = U.lerp(a.y, b.y, t); cam.z = Math.exp(U.lerp(Math.log(a.z), Math.log(b.z), t)) * lift; cam.rot = U.lerp(a.rot, b.rot, t);
+    cam.cos = Math.cos(cam.rot); cam.sin = Math.sin(cam.rot);
+  }
+  function S(m) { const dx = (m[0] - cam.x) * cam.z, dy = (m[1] - cam.y) * cam.z; return [CX + dx * cam.cos - dy * cam.sin, CY + dx * cam.sin + dy * cam.cos]; }
+  function applyCam(ctx) { ctx.translate(CX, CY); ctx.rotate(cam.rot); ctx.scale(cam.z, cam.z); ctx.translate(-cam.x, -cam.y); }
+
+  /* ── Idővonal (8 egyenlő közű pont – nem méretarányos) ─────── */
+  const TLX0 = 136, TLX1 = 1256;
+  const tlx = (v) => U.lerp(TLX0, TLX1, v / 7);
+
+  /* ── j időzítése lépésenként: [honnan, hová, kezd (s), vég (s)] ─ */
+  const JT = [[-1, -1, 0, 1], [-1, 0, .5, 3.2], [0, 1, 1.4, 6.2], [1, 2, 1.2, 6.6], [2, 3, 1.2, 7.2], [3, 4, 1.2, 6.2], [4, 5, 7, 10.5], [5, 6, 1.2, 7.6], [6, 7, .8, 10]];
+  /* záró lépés: auto-lejátszás t0-tól (zárt képlet), csúszka, Julianus-réteg és forráskártya ki/be */
+  const st9 = { auto: true, t0: 0, j: 0, slider: null, jul: 0, julP0: 0, julT0: 0, src: 1, srcP0: 1, srcT0: -9 };
+  const tog = (on, p0, t0, dur) => on ? Math.min(1, p0 + (L.st - t0) / dur) : Math.max(0, p0 - (L.st - t0) / (dur * .4));
+  const julP = () => tog(st9.jul, st9.julP0, st9.julT0, 3.2);
+  const srcP = () => tog(st9.src, st9.srcP0, st9.srcT0, .5);
+
+  /* ── Rajz-segédek ─────────────────────────────────────────── */
+  let ctx, L;
+  const lab = (k) => L.lab(k), num = (k) => L.num(k);
+  const list = (k) => lab(k).split(/\s*,\s*/);
+  const nth = (k, i) => { const a = list(k); return a[U.clamp(i, 0, a.length - 1)] || ''; };
+  /* felirat halóval; minden vászonszöveg L.tx-en át megy (QA + review mód) */
+  function TX(s, x, y, o) {
+    o = o || {}; const a = o.alpha == null ? 1 : o.alpha; if (a <= .01) return null;
+    ctx.save(); ctx.globalAlpha *= a;
+    const so = { s: o.s || 22, w: o.w || 500, f: o.f || F.B, i: o.i, a: o.a || 'center', b: o.b || 'middle', c: o.c || INK, ls: o.ls, k: o.k, qa: o.qa };
+    if (o.max) { const m = L.measure(s, so).w; if (m > o.max) so.s = so.s * o.max / m; }
+    if (o.cull) {   /* térképfelirat: ha nem fér el a látható térképen (x 24–1352, y 24–928), elmarad */
+      const m = L.measure(s, so).w, x0 = so.a === 'center' ? x - m / 2 : so.a === 'right' ? x - m : x, h = so.s;
+      if (x0 < 24 || x0 + m > 1352 || y - h < 24 || y + h > 928) { ctx.restore(); return null; }
+    }
+    if (o.halo !== false) {
+      ctx.font = `${so.i ? 'italic ' : ''}${so.w} ${so.s}px ${so.f}`; ctx.textAlign = so.a; ctx.textBaseline = so.b; ctx.letterSpacing = so.ls || '0px';
+      ctx.lineJoin = 'round'; ctx.lineWidth = o.haloW || 5; ctx.strokeStyle = o.halo || HALO; ctx.strokeText(s, x, y); ctx.letterSpacing = '0px';
+    }
+    const r = L.tx(s, x, y, so); ctx.restore(); return r;
+  }
+  function rrect(x, y, w, h, r) { ctx.beginPath(); ctx.roundRect(x, y, w, h, r); }
+  /* takarás: a kartusok téglalapjai (előző képkocka) – az alattuk lévő folyónevek elhalványulnak */
+  let occ = [], occNext = [], occT = -1;
+  const occTick = () => { if (L.t !== occT) { occ = occNext; occNext = []; occT = L.t; } };
+  const occHit = (x0, y0, x1, y1) => occ.some((r) => x0 < r[2] && x1 > r[0] && y0 < r[3] && y1 > r[1]);
+  const labelFade = {};
+  /* kartus: címke díszes kerettel. o.kind: 'src' (írott forrás, kékeszöld) · 'trad' (hagyomány, okker) · 'rec' (rekonstrukció, szaggatott) */
+  function cartouche(str, x, y, o) {
+    o = o || {}; const a = o.alpha == null ? 1 : o.alpha; if (a <= .01) return; occTick();
+    const size = o.size || 26, pop = o.pop == null ? 1 : o.pop, fo = { s: size, w: o.weight || 600, f: F.D, i: true };
+    ctx.save(); ctx.globalAlpha *= a;
+    const w = L.measure(str, fo).w + size * 1.5, h = size * 1.72;
+    if (o.clamp) x = U.clamp(x, 44 + w / 2, 1326 - w / 2);
+    if (y - h / 2 * pop < 24 || y + h / 2 * pop > 930 || x - w / 2 * pop < 24 || x + w / 2 * pop > 1352) { ctx.restore(); return; }
+    if (a > .3) occNext.push([x - w / 2 * pop - 8, y - h / 2 * pop - 6, x + w / 2 * pop + 8, y + h / 2 * pop + 6]);
+    const bd = o.border || (o.kind === 'src' ? TEAL : o.kind === 'trad' ? C.ochre : o.strong ? RED : MUT);
+    ctx.translate(x, y); ctx.scale(pop, pop);
+    ctx.shadowColor = 'rgba(70,50,20,.18)'; ctx.shadowBlur = 12; ctx.shadowOffsetY = 3;
+    rrect(-w / 2, -h / 2, w, h, 7); ctx.fillStyle = o.bg || (o.kind === 'trad' ? C.ochreBg : CARD); ctx.globalAlpha *= .97; ctx.fill(); ctx.globalAlpha /= .97; ctx.shadowColor = 'transparent';
+    ctx.lineWidth = o.strong ? 2.6 : 2; ctx.strokeStyle = bd; if (o.kind === 'rec' || o.dash) ctx.setLineDash([7, 5]); ctx.stroke(); ctx.setLineDash([]);
+    rrect(-w / 2 + 4.5, -h / 2 + 4.5, w - 9, h - 9, 4); ctx.lineWidth = 1; ctx.globalAlpha *= .45; ctx.stroke(); ctx.globalAlpha /= .45;
+    ctx.fillStyle = bd;
+    [-1, 1].forEach((s) => { ctx.beginPath(); ctx.moveTo(s * (w / 2), -5); ctx.lineTo(s * (w / 2 + 6), 0); ctx.lineTo(s * (w / 2), 5); ctx.lineTo(s * (w / 2 - 6), 0); ctx.closePath(); ctx.fill(); });
+    L.tx(str, 0, 1, Object.assign({}, fo, { a: 'center', b: 'middle', c: o.color || (o.kind === 'trad' ? '#5e4400' : o.kind === 'src' ? '#07586b' : o.strong ? RED_D : INK), k: o.k }));
+    ctx.restore();
+  }
+  /* képernyő-térbeli pontsor részleges kirajzolása (0..p) */
+  function strokeTrack(tr, f0, f1, style) {
+    if (f1 <= f0) return null; let tip = null;
+    ctx.beginPath(); const a = trackAt(tr, f0), b = trackAt(tr, f1); let s = S([a.x, a.y]); ctx.moveTo(s[0], s[1]);
+    for (let i = a.i + 1; i <= b.i; i++) { s = S(tr.pts[i]); ctx.lineTo(s[0], s[1]); }
+    tip = S([b.x, b.y]); ctx.lineTo(tip[0], tip[1]); style(); ctx.stroke(); return { tip, b };
+  }
+  function arrowHead(tip, ang, size, col) {
+    ctx.save(); ctx.translate(tip[0], tip[1]); ctx.rotate(ang); ctx.fillStyle = col; ctx.beginPath(); ctx.moveTo(size * .9, 0); ctx.lineTo(-size * .7, -size * .62); ctx.lineTo(-size * .35, 0); ctx.lineTo(-size * .7, size * .62); ctx.closePath(); ctx.fill(); ctx.restore();
+  }
+  const arrowCache = {};
+  function arrow(key, ll, p, col, w, alpha, dash) {
+    if (p <= 0 || alpha <= .01) return null; const tr = arrowCache[key] || (arrowCache[key] = makeTrack(ll, 12)); const f = U.inOut(p);
+    ctx.save(); ctx.globalAlpha *= alpha; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    strokeTrack(tr, 0, f, () => { ctx.strokeStyle = 'rgba(255,250,241,.85)'; ctx.lineWidth = w + 5; ctx.setLineDash([]); });
+    const r = strokeTrack(tr, 0, f, () => { ctx.strokeStyle = col; ctx.lineWidth = w; if (dash) { ctx.setLineDash(dash); ctx.lineDashOffset = -L.t * 26; } });
+    ctx.setLineDash([]); let tip = null;
+    if (r) { const q = trackAt(tr, Math.max(0, f - .04)), s0 = S([q.x, q.y]); tip = r.tip; arrowHead(tip, Math.atan2(tip[1] - s0[1], tip[0] - s0[0]), w * 2.6, col); }
+    ctx.restore(); return tip;
+  }
+
+  /* lovas, jurta, zászló (stilizált illusztráció) */
+  function rider(x, y, s, dir, phase, mov, flag) {
+    ctx.save(); ctx.translate(x, y - 13 * s + mov * Math.sin(phase * 2) * 1.3 * s); ctx.scale(s * dir, s);
+    ctx.fillStyle = ctx.strokeStyle = '#2a2418'; ctx.lineCap = 'round'; ctx.lineWidth = 2.1;
+    const lx = [-8, -5, 6, 9], ph = [0, 1.7, 3.3, 4.9];
+    for (let i = 0; i < 4; i++) { const a = mov * Math.sin(phase + ph[i]) * .75 + (1 - mov) * (i % 2 ? .06 : -.06); ctx.beginPath(); ctx.moveTo(lx[i], 3); ctx.lineTo(lx[i] + Math.sin(a) * 10.5, 3 + Math.cos(a) * 10.5); ctx.stroke(); }
+    ctx.beginPath(); ctx.ellipse(0, 0, 11.5, 5.4, 0, 0, U.TAU); ctx.fill();
+    const nod = Math.sin(phase * (mov > .3 ? 2 : .35)) * (mov > .3 ? .8 : 1.2);
+    ctx.beginPath(); ctx.moveTo(6, -4); ctx.lineTo(13.5, -12 + nod); ctx.lineTo(17, -9.5 + nod); ctx.lineTo(11, 1.5); ctx.closePath(); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(17.2, -11.5 + nod, 5, 2.5, .55, 0, U.TAU); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(-11, -2.5); ctx.quadraticCurveTo(-17, -3 - mov * 3, -19, 3 - mov * 4); ctx.lineWidth = 2.4; ctx.stroke();
+    ctx.lineWidth = 2.6; ctx.beginPath(); ctx.moveTo(-.5, -4); ctx.lineTo(2.5, 4); ctx.stroke();
+    ctx.lineWidth = 4.4; ctx.beginPath(); ctx.moveTo(-.8, -4.5); ctx.lineTo(.6, -14); ctx.stroke();
+    ctx.beginPath(); ctx.arc(1.1, -17.6, 3, 0, U.TAU); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(-2, -19.2); ctx.lineTo(1.6, -24.5); ctx.lineTo(4.4, -19.2); ctx.closePath(); ctx.fill();
+    if (flag) {
+      ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(4.5, -9); ctx.lineTo(4.5, -38); ctx.stroke();
+      const w = Math.sin(L.t * 5) * 2; ctx.fillStyle = RED; ctx.beginPath(); ctx.moveTo(4.5, -38); ctx.quadraticCurveTo(-4, -37 + w, -13, -34 - w); ctx.lineTo(-8, -31.5); ctx.lineTo(-13, -28 + w); ctx.quadraticCurveTo(-4, -30 - w, 4.5, -29); ctx.closePath(); ctx.fill();
+    } else { ctx.lineWidth = 1.3; ctx.beginPath(); ctx.arc(-3.5, -11, 6.5, 2.2, 4.3); ctx.stroke(); }
+    ctx.restore();
+  }
+  function yurt(x, y, s, a) {
+    if (a <= .01) return; ctx.save(); ctx.globalAlpha *= a; ctx.translate(x, y); ctx.scale(s, s);
+    ctx.beginPath(); ctx.moveTo(-13, 0); ctx.lineTo(-13, -9); ctx.quadraticCurveTo(-11, -19, 0, -21.5); ctx.quadraticCurveTo(11, -19, 13, -9); ctx.lineTo(13, 0); ctx.closePath();
+    ctx.fillStyle = CARD; ctx.fill(); ctx.strokeStyle = '#2a2418'; ctx.lineWidth = 1.8; ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(-13, -9); ctx.lineTo(13, -9); ctx.strokeStyle = RED; ctx.lineWidth = 1.8; ctx.stroke();
+    ctx.fillStyle = '#2a2418'; ctx.fillRect(-3, -8, 6, 8); ctx.fillRect(-2.5, -23, 5, 2);
+    ctx.restore();
+  }
+  function banner(x, y, s, col, a, seed) {
+    if (a <= .01) return; ctx.save(); ctx.globalAlpha *= a; ctx.translate(x, y); ctx.scale(s, s);
+    ctx.strokeStyle = '#2a2418'; ctx.lineWidth = 2; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, -40); ctx.stroke();
+    const w = Math.sin(L.t * 4.2 + seed) * 2.6; ctx.fillStyle = col; ctx.beginPath(); ctx.moveTo(0, -40); ctx.quadraticCurveTo(10, -41 + w, 24, -37 - w); ctx.lineTo(17, -32); ctx.lineTo(24, -26 + w); ctx.quadraticCurveTo(10, -29 - w, 0, -27); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = C.gold; ctx.beginPath(); ctx.arc(0, -42, 2.6, 0, U.TAU); ctx.fill(); ctx.restore();
+  }
+  function flame(x, y, s, a, seed) {
+    if (a <= .01) return; const f = .8 + .25 * Math.sin(L.t * 11 + seed) + .12 * Math.sin(L.t * 23 + seed * 3);
+    ctx.save(); ctx.globalAlpha *= a; ctx.translate(x, y); ctx.scale(s, s * f);
+    const g = ctx.createRadialGradient(0, -8, 0, 0, -8, 30); g.addColorStop(0, 'rgba(230,110,30,.35)'); g.addColorStop(1, 'rgba(230,110,30,0)'); ctx.fillStyle = g; ctx.fillRect(-30, -40, 60, 60);
+    ctx.fillStyle = '#b8321a'; ctx.beginPath(); ctx.moveTo(0, -24); ctx.quadraticCurveTo(10, -9, 6.5, 0); ctx.quadraticCurveTo(0, 4, -6.5, 0); ctx.quadraticCurveTo(-10, -9, 0, -24); ctx.fill();
+    ctx.fillStyle = '#e8a23a'; ctx.beginPath(); ctx.moveTo(0, -13); ctx.quadraticCurveTo(5, -5, 3, 0); ctx.quadraticCurveTo(0, 2, -3, 0); ctx.quadraticCurveTo(-5, -5, 0, -13); ctx.fill(); ctx.restore();
+  }
+
+  /* ── Térkép alaprétege ────────────────────────────────────── */
+  function drawBase() {
+    const g = ctx.createRadialGradient(680, 480, 200, 680, 540, 1300); g.addColorStop(0, C.sea); g.addColorStop(1, C.seaDeep);
+    ctx.fillStyle = g; ctx.fillRect(0, 0, 1920, 1080);
+    const z = cam.z; ctx.save(); applyCam(ctx); ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+    ctx.strokeStyle = 'rgba(28,36,64,.10)'; ctx.lineWidth = 1 / z; ctx.stroke(gratPath);
+    [[26, .06], [16, .07], [8, .09]].forEach((w) => { ctx.strokeStyle = `rgba(27,90,148,${w[1]})`; ctx.lineWidth = w[0] * Math.pow(z, .25) / z; ctx.stroke(landPath); });
+    ctx.fillStyle = C.land; ctx.fill(landPath, 'evenodd');
+    ctx.strokeStyle = C.coast; ctx.lineWidth = 1.6 * Math.pow(z, .2) / z; ctx.stroke(landPath);
+    for (let w = 1; w <= 3; w++) { ctx.strokeStyle = U.rgba(C.river, .55 + w * .12); ctx.lineWidth = (.6 + w * .6) * Math.pow(z, .36) / z; ctx.stroke(riverPaths[w]); }
+    ctx.fillStyle = C.lake; ctx.fill(lakePath); ctx.strokeStyle = C.coast; ctx.lineWidth = 1.1 / z; ctx.stroke(lakePath);
+    ctx.restore();
+  }
+  function drawPeaks() {
+    const sz = 6.6 * Math.pow(cam.z, .64);
+    ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+    for (let i = 0; i < PEAKS.length; i++) {
+      const p = PEAKS[i], s = S([p.x, p.y]); if (s[0] < -40 || s[0] > 1400 || s[1] < -40 || s[1] > 1120) continue;
+      const k = sz * p.s, x = s[0], y = s[1];
+      ctx.beginPath(); ctx.moveTo(x - k, y + k * .1); ctx.lineTo(x - k * .1, y - k); ctx.lineTo(x + k, y + k * .1); ctx.closePath(); ctx.fillStyle = '#e6dac2'; ctx.fill();
+      ctx.beginPath(); ctx.moveTo(x - k, y + k * .1); ctx.lineTo(x - k * .1, y - k); ctx.lineTo(x + k, y + k * .1); ctx.strokeStyle = 'rgba(70,58,40,.85)'; ctx.lineWidth = Math.max(1.2, k * .09); ctx.stroke();
+      ctx.beginPath(); for (let h = 1; h <= 3; h++) { const t = h / 4, hx = x - k * .1 + (k * 1.1) * t, hy = y - k + (k * 1.1) * t; ctx.moveTo(hx, hy); ctx.lineTo(hx - k * .32, hy + k * .42 * (1 - t * .5)); }
+      ctx.strokeStyle = 'rgba(70,58,40,.45)'; ctx.lineWidth = Math.max(.8, k * .06); ctx.stroke();
+    }
+  }
+  function drawRegion(key, j, clipCircle) {
+    const R = REG[key], T = REG_T[key], bloom = ramp(j, T[0], T[1]); if (bloom <= .005) return 0;
+    const alpha = bloom * U.lerp(1, T[4], ramp(j, T[2], T[3])), sc = U.lerp(.55, 1, U.outBack(bloom)), breathe = 1 + .012 * Math.sin(L.t * 1.3 + R.cx);
+    const xf = () => { applyCam(ctx); ctx.translate(R.cx, R.cy); ctx.scale(sc * breathe, sc * breathe); ctx.translate(-R.cx, -R.cy); };
+    ctx.save(); ctx.save(); xf();
+    if (clipCircle) { ctx.beginPath(); ctx.arc(clipCircle[0], clipCircle[1], clipCircle[2], 0, U.TAU); ctx.clip(); }
+    ctx.clip(R.path); ctx.setTransform(L.k, 0, 0, L.k, 0, 0);
+    const c = S([R.cx, R.cy]), rad = R.rad * cam.z * 1.1;
+    ctx.fillStyle = U.rgba(R.color, .13 * alpha); ctx.fillRect(c[0] - rad, c[1] - rad, rad * 2, rad * 2);
+    const g = ctx.createRadialGradient(c[0], c[1], rad * .2, c[0], c[1], rad); g.addColorStop(0, U.rgba(R.color, 0)); g.addColorStop(1, U.rgba(R.color, .16 * alpha)); ctx.fillStyle = g; ctx.fillRect(c[0] - rad, c[1] - rad, rad * 2, rad * 2);
+    ctx.beginPath(); const sp = 12, x0 = Math.floor((c[0] - rad * 2) / sp) * sp;
+    for (let x = x0; x < c[0] + rad * 2; x += sp) { ctx.moveTo(x, c[1] + rad); ctx.lineTo(x + rad * 2, c[1] - rad); }
+    ctx.strokeStyle = U.rgba(R.color, .3 * alpha); ctx.lineWidth = 1.25; ctx.stroke();
+    if (clipCircle) { /* a terjeszkedés frontvonala */
+      ctx.save(); applyCam(ctx); ctx.beginPath(); ctx.arc(clipCircle[0], clipCircle[1], clipCircle[2], 0, U.TAU); ctx.strokeStyle = U.rgba(C.gold, .8 * alpha * (clipCircle[3] || 0)); ctx.lineWidth = 3 / cam.z; ctx.stroke(); ctx.restore();
+    }
+    ctx.restore();
+    xf(); if (clipCircle) { ctx.beginPath(); ctx.arc(clipCircle[0], clipCircle[1], clipCircle[2], 0, U.TAU); ctx.clip(); }
+    ctx.strokeStyle = U.rgba(R.color, .9 * alpha); ctx.lineWidth = 2.6 / cam.z; ctx.setLineDash([9 / cam.z, 6 / cam.z]); ctx.lineDashOffset = -L.t * 5 / cam.z; ctx.stroke(R.path);
+    ctx.restore(); return alpha;
+  }
+
+  /* ── Díszek: iránytű, lépték, keret, idővonal, nyelvfa, forráskártya ───── */
+  function drawCompass() {
+    const x = 104, y = 852, r = 50, wob = (L.step - L.sp) * .9 + Math.sin(L.t * .9) * .025;
+    ctx.save(); ctx.translate(x, y);
+    ctx.beginPath(); ctx.arc(0, 0, r + 12, 0, U.TAU); ctx.fillStyle = 'rgba(255,250,241,.9)'; ctx.fill(); ctx.strokeStyle = INK; ctx.lineWidth = 1.6; ctx.stroke();
+    ctx.beginPath(); ctx.arc(0, 0, r + 7, 0, U.TAU); ctx.lineWidth = .8; ctx.stroke();
+    for (let i = 0; i < 32; i++) { const a = i / 32 * U.TAU; ctx.beginPath(); ctx.moveTo(Math.cos(a) * (r + 7), Math.sin(a) * (r + 7)); ctx.lineTo(Math.cos(a) * (r + (i % 4 ? 3 : 0)), Math.sin(a) * (r + (i % 4 ? 3 : 0))); ctx.stroke(); }
+    ctx.rotate(wob);
+    for (let i = 0; i < 8; i++) {
+      const a = i * Math.PI / 4, len = i % 2 ? r * .52 : r * .92, wd = i % 2 ? 6 : 9;
+      ctx.save(); ctx.rotate(a);
+      ctx.beginPath(); ctx.moveTo(0, -len); ctx.lineTo(wd, 0); ctx.lineTo(0, 0); ctx.closePath(); ctx.fillStyle = i === 0 ? RED : INK; ctx.fill();
+      ctx.beginPath(); ctx.moveTo(0, -len); ctx.lineTo(-wd, 0); ctx.lineTo(0, 0); ctx.closePath(); ctx.fillStyle = CARD; ctx.fill(); ctx.strokeStyle = INK; ctx.lineWidth = 1; ctx.stroke();
+      ctx.restore();
+    }
+    ctx.beginPath(); ctx.arc(0, 0, 4, 0, U.TAU); ctx.fillStyle = C.gold; ctx.fill(); ctx.stroke();
+    ctx.restore();
+    TX(lab('észak'), x, y - r - 28, { s: 24, w: 700, f: F.D, i: true, c: RED, k: 'észak' });
+    /* lépték */
+    const opts = [50, 100, 200, 500, 1000]; let km = 1000; for (const o of opts) { if (o / KM_PER_UNIT * cam.z >= 85) { km = o; break; } }
+    const len = km / KM_PER_UNIT * cam.z, sx = 186, sy = 902;
+    ctx.save(); rrect(sx - 14, sy - 42, Math.max(len, 100) + 28, 60, 6); ctx.fillStyle = 'rgba(255,250,241,.9)'; ctx.fill(); ctx.strokeStyle = 'rgba(28,36,64,.25)'; ctx.lineWidth = 1; ctx.stroke();
+    ctx.fillStyle = INK; ctx.fillRect(sx, sy, len, 5); ctx.fillStyle = CARD; ctx.fillRect(sx + len / 4, sy + 1, len / 4, 3); ctx.fillRect(sx + len * 3 / 4, sy + 1, len / 4, 3);
+    ctx.strokeStyle = INK; ctx.lineWidth = 1; ctx.strokeRect(sx, sy, len, 5); ctx.restore();
+    TX(lab('lépték').replace('#', km), sx, sy - 18, { s: 22, w: 600, f: F.M, a: 'left', c: INK, halo: false, k: 'lépték' });
+  }
+  function drawFrame() {
+    ctx.save(); ctx.strokeStyle = 'rgba(28,36,64,.55)'; ctx.lineWidth = 2.2; ctx.strokeRect(14, 14, 1892, 1052);
+    ctx.lineWidth = 1; ctx.strokeRect(21, 21, 1878, 1038); ctx.restore();
+  }
+  function drawTimeline(j) {
+    const a = U.lerp(.55, 1, ramp(j, -1, -.4)), y = 1000, v = U.clamp(j, 0, 7);
+    ctx.save();
+    ctx.shadowColor = 'rgba(70,50,20,.16)'; ctx.shadowBlur = 16; ctx.shadowOffsetY = 3;
+    rrect(44, 940, 1286, 108, 12); ctx.fillStyle = 'rgba(255,250,241,.95)'; ctx.fill(); ctx.shadowColor = 'transparent';
+    ctx.strokeStyle = 'rgba(28,36,64,.35)'; ctx.lineWidth = 1.4; ctx.stroke(); rrect(49, 945, 1276, 98, 8); ctx.lineWidth = .7; ctx.stroke();
+    ctx.globalAlpha = a;
+    ctx.strokeStyle = 'rgba(28,36,64,.4)'; ctx.lineWidth = 3; ctx.setLineDash([2, 7]); ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(TLX0, y); ctx.lineTo(TLX1, y); ctx.stroke(); ctx.setLineDash([]);
+    if (j > -.5) { ctx.strokeStyle = RED; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(TLX0, y); ctx.lineTo(tlx(v), y); ctx.stroke(); }
+    const years = list('idővonal évek'), names = list('idővonal nevek');
+    for (let i = 0; i < 8; i++) {
+      const x = tlx(i), on = j > -.5 && v >= i - .02, cur = j > -.5 && Math.abs(v - i) < .5;
+      ctx.beginPath(); ctx.arc(x, y, on ? 7 : 5.5, 0, U.TAU); ctx.fillStyle = on ? RED : CARD; ctx.fill(); ctx.strokeStyle = on ? RED_D : INK; ctx.lineWidth = 1.5; ctx.stroke();
+      TX(years[i] || '?', x, y + 28, { s: 22, w: cur ? 700 : 500, f: F.B, c: cur ? RED_D : MUT, halo: false, k: 'idővonal évek' });
+    }
+    if (j > -.5) {
+      const mx = tlx(v), pulse = .5 + .5 * Math.sin(L.t * 3.2);
+      ctx.beginPath(); ctx.arc(mx, y, 13 + pulse * 5, 0, U.TAU); ctx.strokeStyle = U.rgba(RED, .35 * (1 - pulse * .6)); ctx.lineWidth = 2; ctx.stroke();
+      ctx.save(); ctx.translate(mx, y); ctx.rotate(Math.PI / 4); ctx.fillStyle = C.gold; ctx.fillRect(-7.5, -7.5, 15, 15); ctx.strokeStyle = '#5c3a08'; ctx.lineWidth = 1.5; ctx.strokeRect(-7.5, -7.5, 15, 15); ctx.restore();
+      const i = Math.round(v), na = U.clamp(1 - Math.abs(v - i) * 2.4), nm = names[i] || '';
+      const fo = { s: 27, w: 600, f: F.D, i: true }, w = L.measure(nm, fo).w;
+      TX(nm, U.clamp(mx, 66 + w / 2, 1308 - w / 2), y - 33, Object.assign(fo, { c: RED_D, alpha: na, halo: false, k: 'idővonal nevek' }));
+    } else TX(lab('idővonal'), TLX0 - 10, y - 33, { s: 24, w: 500, f: F.D, i: true, c: MUT, a: 'left', halo: false, k: 'idővonal' });
+    ctx.restore();
+  }
+  const TREE = [
+    { id: 'u', k: 'ág uráli', x: 30, y: 178, at: .4 }, { id: 'f', k: 'ág finnugor', x: 150, y: 118, at: 1.3, p: 'u' }, { id: 's', k: 'ág szamojéd', x: 150, y: 240, at: 1.6, p: 'u' },
+    { id: 'fp', k: 'ág finn-permi', sub: 'ág finn-permi nyelvek', x: 318, y: 70, at: 2.4, p: 'f' }, { id: 'g', k: 'ág ugor', x: 318, y: 172, at: 2.7, p: 'f' },
+    { id: 'o', k: 'ág obi-ugor', sub: 'ág obi-ugor nyelvek', x: 462, y: 128, at: 3.6, p: 'g' }, { id: 'm', k: 'ág magyar', x: 462, y: 226, at: 3.9, p: 'g', hot: true }];
+  function drawTree(alpha) {
+    if (alpha <= .01) return; const X = 44, Y = 44, H = 316, inStep1 = L.step === 1, t = inStep1 ? L.st - .8 : 99, hiUgor = U.clamp(L.sp - 1.3) * 1.6;
+    const nf = (n) => n.hot ? { s: 30, w: 700, f: F.D, i: true } : { s: 25, w: 600, f: F.B };
+    const byId = {}; let W = 0;
+    TREE.forEach((n) => { byId[n.id] = n; n.w = L.measure(lab(n.k), nf(n)).w; W = Math.max(W, n.x + n.w, n.sub ? n.x + L.measure(lab(n.sub), { s: 22, f: F.D, i: true }).w : 0); });
+    const foot = lab('nyelvfa megjegyzés'), ttl = lab('nyelvcsalád cím');
+    W = Math.max(W, 30 + L.measure(foot, { s: 22, f: F.D, i: true }).w, 30 + L.measure(ttl, { s: 22, w: 600, f: F.M, ls: '2px' }).w) + 40;
+    ctx.save(); ctx.globalAlpha = alpha; ctx.translate(X, Y - (1 - alpha) * 14);
+    ctx.shadowColor = 'rgba(70,50,20,.18)'; ctx.shadowBlur = 18; ctx.shadowOffsetY = 4; rrect(0, 0, W, H, 10); ctx.fillStyle = 'rgba(255,250,241,.96)'; ctx.fill(); ctx.shadowColor = 'transparent';
+    ctx.strokeStyle = 'rgba(28,36,64,.35)'; ctx.lineWidth = 1.5; ctx.stroke(); rrect(5, 5, W - 10, H - 10, 6); ctx.lineWidth = .8; ctx.stroke();
+    TX(ttl, 30, 36, { s: 22, w: 600, f: F.M, a: 'left', c: MUT, halo: false, ls: '2px', k: 'nyelvcsalád cím' });
+    TREE.forEach((n) => {
+      if (!n.p) return; const p = byId[n.p], pr = U.inOut(U.clamp((t - n.at + .7) / .7)); if (pr <= 0) return;
+      const x0 = p.x + p.w + 8, y0 = p.y, x1 = n.x - 8, y1 = n.y, hot = (n.id === 'm' || n.id === 'o') && hiUgor > 0;
+      ctx.beginPath(); const N = 24, kmax = Math.round(N * pr);
+      for (let k = 0; k <= kmax; k++) { const s = k / N, e = U.inOut(s); const x = U.lerp(x0, x1, s), y = U.lerp(y0, y1, e); if (k) ctx.lineTo(x, y); else ctx.moveTo(x, y); }
+      ctx.strokeStyle = n.hot ? RED : (hot ? C.amber : 'rgba(28,36,64,.7)'); ctx.lineWidth = n.hot ? 3.4 : (hot ? 3 : 2.2); ctx.lineCap = 'round'; ctx.stroke();
+    });
+    TREE.forEach((n) => {
+      const a = U.clamp((t - n.at) / .5); if (a <= 0) return; const dim = (hiUgor > 0 && !['g', 'o', 'm'].includes(n.id)) ? U.lerp(1, .5, U.clamp(hiUgor)) : 1;
+      TX(lab(n.k), n.x, n.y + (1 - a) * 8, Object.assign(nf(n), { a: 'left', c: n.hot ? RED : INK, alpha: a * dim, halo: false, k: n.k }));
+      if (n.sub) TX(lab(n.sub), n.x, n.y + 27, { s: 22, w: 400, f: F.D, i: true, a: 'left', c: MUT, alpha: a * dim, halo: false, k: n.sub });
+    });
+    TX(foot, 30, H - 26, { s: 22, w: 500, f: F.D, i: true, a: 'left', c: RED_D, alpha: U.clamp((t - 4.4) / .6), halo: false, k: 'nyelvfa megjegyzés' });
+    ctx.restore();
+  }
+  /* „Honnan tudjuk?” forráskártya (záró lépés): a három réteg jelölése */
+  let srcRect = null;
+  const yrsAfter = (d) => d < 100 ? Math.round(d / 5) * 5 : Math.round(d / 50) * 50;
+  function drawSources(a) {
+    srcRect = null; if (a <= .01) return;
+    const X = 44, Y = 44, PAD = 24, RH = 66;
+    const after = (k) => lab(k).replace('#', U.fmt(yrsAfter(num(k === 'forrás 1 mit' ? 'Konstantin műve' : 'Anonymus műve') - num('honfoglalás éve'))));
+    const rows = [
+      { kind: 'src', t: 'típus írott', ki: 'forrás 1 ki', mit: 'forrás 1 mit', mitS: after('forrás 1 mit') },
+      { kind: 'src', t: 'típus írott', ki: 'forrás 2 ki', mit: 'forrás 2 mit' },
+      { kind: 'trad', t: 'típus hagyomány', ki: 'forrás 3 ki', mit: 'forrás 3 mit', mitS: after('forrás 3 mit') },
+      { kind: 'rec', t: 'típus rekonstrukció', ki: 'forrás 4 ki', mit: 'forrás 4 mit' },
+    ];
+    const tagO = { s: 22, w: 600, f: F.B }, kiO = { s: 23, w: 650, f: F.B }, mitO = { s: 22, w: 450, f: F.B };
+    let tagW = 0, txtW = 0;
+    rows.forEach((r) => { tagW = Math.max(tagW, L.measure(lab(r.t), tagO).w + 28); txtW = Math.max(txtW, L.measure(lab(r.ki), kiO).w, L.measure(r.mitS || lab(r.mit), mitO).w); });
+    const leg = lab('jelmagyarázat'); txtW = Math.max(txtW, L.measure(leg, mitO).w + 60 - tagW - 18);
+    const W = PAD + tagW + 18 + txtW + PAD, H = 64 + rows.length * RH + 48;
+    srcRect = [X, Y, X + W, Y + H];
+    ctx.save(); ctx.globalAlpha *= a; occTick(); occNext.push([X - 6, Y - 6, X + W + 6, Y + H + 6]);
+    ctx.shadowColor = 'rgba(70,50,20,.18)'; ctx.shadowBlur = 18; ctx.shadowOffsetY = 4; rrect(X, Y, W, H, 10); ctx.fillStyle = 'rgba(255,250,241,.97)'; ctx.fill(); ctx.shadowColor = 'transparent';
+    ctx.strokeStyle = 'rgba(28,36,64,.35)'; ctx.lineWidth = 1.5; ctx.stroke();
+    TX(lab('forráskártya cím'), X + PAD, Y + 36, { s: 22, w: 700, f: F.M, a: 'left', c: RED_D, ls: '3px', halo: false, k: 'forráskártya cím' });
+    rows.forEach((r, i) => {
+      const y = Y + 64 + i * RH, cy = y + RH / 2 - 4;
+      const bg = r.kind === 'trad' ? C.ochreBg : CARD, bd = r.kind === 'src' ? TEAL : r.kind === 'trad' ? C.ochre : INK;
+      ctx.save(); if (r.kind === 'rec') ctx.setLineDash([6, 4]);
+      L.pill(lab(r.t), X + PAD, cy, Object.assign({}, tagO, { bg, bd, bw: 2.2, pad: 13, r: 6, c: r.kind === 'src' ? '#07586b' : r.kind === 'trad' ? '#5e4400' : INK, k: r.t }));
+      ctx.restore();
+      const tx0 = X + PAD + tagW + 18;
+      TX(lab(r.ki), tx0, y + 20, Object.assign({}, kiO, { a: 'left', halo: false, k: r.ki }));
+      TX(r.mitS || lab(r.mit), tx0, y + 47, Object.assign({}, mitO, { a: 'left', c: MUT, halo: false, k: r.mit }));
+    });
+    /* jelmagyarázat: szaggatott folt = becsült terület */
+    const ly = Y + H - 30;
+    ctx.beginPath(); ctx.roundRect(X + PAD, ly - 13, 44, 26, 8); ctx.fillStyle = U.rgba(RED, .14); ctx.fill(); ctx.setLineDash([7, 5]); ctx.strokeStyle = U.rgba(RED, .9); ctx.lineWidth = 2.4; ctx.stroke(); ctx.setLineDash([]);
+    TX(leg, X + PAD + 60, ly, Object.assign({}, mitO, { a: 'left', c: INK, halo: false, k: 'jelmagyarázat' }));
+    ctx.restore();
+  }
+
+  /* ── A fő rajzoló ─────────────────────────────────────────── */
+  let lastFrac = 0, moving = 0, bandDir = -1, phase = 0;
+  const clouds = [0, 1, 2, 3].map((i) => ({ x: i * 520 + 100, y: 180 + (i * 337) % 700, r: 260 + i * 60, v: 9 + i * 3 }));
+
+  function currentJ() {
+    if (L.step === 9) {
+      if (st9.auto) { st9.j = 7 * U.clamp((L.st - st9.t0 - 1.6) / 15); if (st9.slider) st9.slider.set(st9.j.toFixed(2)); }
+      return st9.j;
+    }
+    const T = JT[L.step]; return U.lerp(T[0], T[1], U.inOut(L.prog(T[2], T[3])));
+  }
+  const inCorner = (p) => p[0] < 345 && p[1] > 770;
+  const inCard = (p, pad) => srcRect && p[0] > srcRect[0] - (pad || 120) && p[0] < srcRect[2] + (pad || 120) && p[1] > srcRect[1] - 30 && p[1] < srcRect[3] + 30;
+  const stepW = (i) => U.clamp(1 - Math.abs(L.sp - i) * 1.7);
+  const tr = (i, a, b) => (L.step === i ? L.prog(a, b) : 1);
+
+  function draw() {
+    ctx = L.ctx; const sp = L.sp, j = currentJ();
+    setCam(sp);
+    drawBase();
+    drawPeaks();
+
+    /* felhőárnyékok – lassú, halk mozgás */
+    clouds.forEach((c) => { const x = ((c.x + L.t * c.v) % 2400) - 400, g = ctx.createRadialGradient(x, c.y, 0, x, c.y, c.r); g.addColorStop(0, 'rgba(28,36,64,.035)'); g.addColorStop(1, 'rgba(28,36,64,0)'); ctx.fillStyle = g; ctx.fillRect(x - c.r, c.y - c.r, c.r * 2, c.r * 2); });
+
+    /* a forráskártya helye (záró lépés) – az alá eső nevek elmaradnak */
+    const w9 = U.clamp((sp - 8) * 1.5), srcA = w9 * srcP();
+    srcRect = null; if (srcA > .3) { srcRect = [44, 44, 760, 470]; }
+
+    /* szállásterületek */
+    drawRegion('kazar', j);
+    ['ural', 'ugor', 'magna', 'levedia', 'etelkoz'].forEach((k) => drawRegion(k, j));
+    const kr = U.map(j, 5.75, 6.92, 0, 100);
+    drawRegion('karpat', j, [V_PASS[0], V_PASS[1], Math.max(.01, kr), j < 6.95 ? 1 : 0]);
+    /* a besenyő támadás izzása Etelközön */
+    const w6 = stepW(6);
+    if (w6 > 0) { const f = tr(6, 4.4, 6) * w6 * (.55 + .2 * Math.sin(L.t * 6)), R = REG.etelkoz; ctx.save(); applyCam(ctx); ctx.fillStyle = `rgba(184,50,26,${.22 * f})`; ctx.fill(R.path); ctx.restore(); }
+
+    /* víz- és hegynevek */
+    SEA_LABELS.forEach((s) => { if (cam.z < s.z) return; const p = S(s.m); if (p[1] > 900 || inCorner(p) || inCard(p)) return; TX(lab(s.k), p[0], p[1], { s: 25, w: 500, f: F.D, i: true, c: C.seaInk, halo: HALO_SEA, ls: '3px', k: s.k, cull: true }); });
+    RIVER_LABELS.forEach((r) => {
+      const a = U.clamp((cam.z - r.z) * 6 + (r.z === 0 ? 1 : 0)) * (r.z === 0 && cam.z > 5.5 && r.k === 'Duna folyó' ? 0 : 1); if (a <= 0) return;
+      const p = S(r.m); if (p[0] < 30 || p[0] > 1330 || p[1] < 30 || p[1] > 915 || inCorner(p) || inCard(p, 40)) return;
+      occTick(); const nm = lab(r.k), lw = L.measure(nm, { s: 22, f: F.D, i: true }).w, key = r.k + r.m[0], hit = occHit(p[0] + 4, p[1] - 25, p[0] + 14 + lw, p[1] + 3);
+      labelFade[key] = (labelFade[key] ?? (hit ? 0 : 1)) + ((hit ? 0 : 1) - (labelFade[key] ?? 1)) * Math.min(1, L.dt * 8); if (labelFade[key] < .02) return;
+      TX(nm, p[0] + 9, p[1] - 11, { s: 22, w: 500, f: F.D, i: true, a: 'left', c: C.river, alpha: a * labelFade[key], k: r.k, cull: true });
+    });
+    [['Urál hegység', 57.1, 57.7, 2.4], ['Kárpátok', 24.3, 49.62, 2.4], ['Kaukázus', 43.4, 42.2, 1.6]].forEach((m) => {
+      if (cam.z < m[3]) return; const p = S(proj(m[1], m[2])), nm = lab(m[0]), fo = { s: 22, w: 600, ls: '5px' }, mw = L.measure(nm, fo).w;
+      occTick(); const hit = occHit(p[0] - mw / 2, p[1] - 12, p[0] + mw / 2, p[1] + 12), key = m[0];
+      labelFade[key] = (labelFade[key] ?? (hit ? 0 : 1)) + ((hit ? 0 : 1) - (labelFade[key] ?? 1)) * Math.min(1, L.dt * 8); if (labelFade[key] < .02) return;
+      TX(nm, p[0], p[1], Object.assign(fo, { c: MUT, k: m[0], cull: true, alpha: labelFade[key] }));
+    });
+
+    /* a teljes út halvány előképe (nyitó és záró lépés) */
+    const w0 = U.clamp(1 - sp * 1.5), ghost = Math.max(w0 * (L.step === 0 ? U.inOut(L.prog(1.4, 5.8)) : 1), w9);
+    if (w0 > 0 || w9 > 0) {
+      ctx.save(); ctx.lineCap = 'round'; ctx.globalAlpha = Math.max(w0, w9) * .6;
+      strokeTrack(ROUTE, 0, w9 > 0 ? 1 : ghost, () => { ctx.strokeStyle = RED; ctx.lineWidth = 3.2; ctx.setLineDash([1, 9]); }); ctx.restore();
+    }
+
+    /* megtett út */
+    const frac = fracOfJ(j);
+    if (frac > 0) {
+      ctx.save(); ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+      strokeTrack(ROUTE, 0, frac, () => { ctx.strokeStyle = 'rgba(255,250,241,.85)'; ctx.lineWidth = 9; ctx.setLineDash([]); });
+      strokeTrack(ROUTE, 0, frac, () => { ctx.strokeStyle = RED; ctx.lineWidth = 4.4; ctx.setLineDash([15, 10]); ctx.lineDashOffset = 0; });
+      ctx.restore();
+    }
+
+    /* Julianus útja (záró lépés, gombbal) – írott forrás → kékeszöld */
+    const jp = L.step === 9 ? julP() : 0;
+    if (jp > 0 && w9 > 0) {
+      const p = U.inOut(jp); ctx.save(); ctx.globalAlpha = w9 * U.clamp(jp * 6); ctx.lineCap = 'round';
+      const r = strokeTrack(JULIANUS, 0, p, () => { ctx.strokeStyle = TEAL; ctx.lineWidth = 3.6; ctx.setLineDash([3, 8]); }); ctx.setLineDash([]);
+      if (r) { ctx.beginPath(); ctx.arc(r.tip[0], r.tip[1], 7, 0, U.TAU); ctx.fillStyle = TEAL; ctx.fill(); ctx.strokeStyle = CARD; ctx.lineWidth = 2; ctx.stroke(); }
+      const s0 = S(JULIANUS.pts[0]); ctx.beginPath(); ctx.arc(s0[0], s0[1], 5, 0, U.TAU); ctx.fillStyle = TEAL; ctx.fill();
+      const lp = S(proj(36.5, 43.7)); ctx.restore();
+      cartouche(lab('julianus'), lp[0] + 120, lp[1] + 78, { size: 24, alpha: w9 * U.clamp((jp - .3) * 3), kind: 'src', k: 'julianus', clamp: true });
+    }
+
+    /* szomszéd népek, városok */
+    NEIGH.forEach((n) => {
+      const a = n.a(j) * (n.ov === 0 ? 1 - w9 : 1); if (a <= .01) return; const p = S(n.m); if (inCorner(p) || inCard(p)) return;
+      const fo = { s: 22, w: 600, f: F.B, ls: '3px' }, lines = lab(n.k).split(/\s*\|\s*/), w = Math.max(...lines.map((s) => L.measure(s, fo).w));
+      const x = U.clamp(p[0], 44 + w / 2, 1326 - w / 2); if (p[0] < -200 || p[0] > 1500 || p[1] < 30 || p[1] > 915) return;
+      /* kartus alá eső népnév elhalványul (a kartus a fontosabb) */
+      occTick(); const hh = lines.length * 27 / 2, hit = occHit(x - w / 2, p[1] - hh, x + w / 2, p[1] + hh), key = 'n' + n.k + n.m[0];
+      labelFade[key] = (labelFade[key] ?? (hit ? 0 : 1)) + ((hit ? 0 : 1) - (labelFade[key] ?? 1)) * Math.min(1, L.dt * 8); if (labelFade[key] < .02) return;
+      lines.forEach((s, i) => TX(s, x, p[1] + (i - (lines.length - 1) / 2) * 27, Object.assign({}, fo, { c: n.col || C.neigh, alpha: a * .95 * labelFade[key], k: n.k, cull: true })));
+      if (n.strike) { const s = n.strike(j); if (s > 0) { ctx.save(); ctx.globalAlpha = a * labelFade[key]; ctx.strokeStyle = RED; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(x - w / 2 - 6, p[1]); ctx.lineTo(x - w / 2 - 6 + (w + 12) * s, p[1]); ctx.stroke(); ctx.restore(); } }
+    });
+    CITIES.forEach((c) => { const a = c.a(j) * U.clamp((cam.z - 3) * 2); if (a <= .01) return; const p = S(c.m); if (p[1] > 915 || p[1] < 30 || p[0] < 30 || p[0] > 1200) return; ctx.save(); ctx.globalAlpha = a; ctx.fillStyle = INK; ctx.fillRect(p[0] - 5, p[1] - 5, 10, 10); ctx.fillStyle = CARD; ctx.fillRect(p[0] - 2, p[1] - 2, 4, 4); ctx.restore(); TX(lab(c.k), p[0] + 12, p[1], { s: 22, w: 500, a: 'left', c: INK, alpha: a, k: c.k, cull: true }); });
+
+    /* ── lépés-specifikus rétegek ── */
+    /* 3: az obi-ugorok északra húzódnak */
+    const w2 = stepW(2);
+    if (w2 > 0) {
+      const tip = arrow('obi1', [[66.3, 56.9], [67.2, 59], [66.6, 61.3]], tr(2, 5.4, 7.6), C.brown, 6, w2, [12, 9]);
+      arrow('obi2', [[63.3, 56.8], [62.6, 58.8], [63.6, 61]], tr(2, 5.9, 8.1), C.brown, 6, w2, [12, 9]);
+      if (tip) cartouche(lab('obi-ugorok'), tip[0] + 40, tip[1] - 46, { size: 24, alpha: w2 * tr(2, 7.2, 8), border: C.brown, color: '#4a3212', clamp: true, k: 'obi-ugorok' });
+    }
+    /* 7: hadjárat, besenyő támadás, bolgár ellencsapás */
+    if (w6 > 0) {
+      const t1 = arrow('hadj', [[29.6, 47.2], [28.3, 45.7], [26.9, 44.0]], tr(6, 1, 3), RED_D, 7, w6);
+      const t3 = arrow('simeon', [[26.2, 44.3], [27.6, 45.2], [28.7, 46.2]], tr(6, 5, 6.4), C.slate, 6, w6, [12, 8]);
+      arrow('bes1', [[42.5, 49.9], [38, 49.9], [33.4, 48.9]], tr(6, 3.4, 5.2), C.bes, 8, w6);
+      arrow('bes2', [[43, 48.5], [38.5, 48.1], [33.2, 47.7]], tr(6, 3.7, 5.5), C.bes, 8, w6);
+      arrow('bes3', [[41.4, 46.9], [38, 46.55], [33.4, 46.7]], tr(6, 4.0, 5.8), C.bes, 8, w6);
+      const fl = tr(6, 5.2, 6.4) * w6;
+      [[31.6, 48.6], [32.3, 47.3], [30.6, 46.7], [28.6, 48.5], [29.2, 46.4], [31, 47.7]].forEach((p, i) => { const s = S(proj(p[0], p[1])); flame(s[0], s[1], 1.25, U.clamp(fl * 6 - i * .6), i * 2.1); });
+      if (t1) { const hl = S(proj(24.7, 46.55)); cartouche(lab('hadjárat'), hl[0], hl[1], { size: 23, alpha: w6 * tr(6, 2.4, 3.2), border: RED_D, color: RED_D, clamp: true, k: 'hadjárat' }); }
+      const bl = S(proj(38.6, 50.7)); cartouche(lab('besenyő támadás'), bl[0], bl[1], { size: 25, alpha: w6 * tr(6, 4.6, 5.4), border: C.bes, color: C.bes, strong: true, clamp: true, k: 'besenyő támadás' });
+      if (t3) { const sl = S(proj(24.3, 44.7)); cartouche(lab('simeon'), sl[0], sl[1] + 6, { size: 23, alpha: w6 * tr(6, 5.9, 6.7), border: C.slate, color: '#27394b', clamp: true, k: 'simeon' }); }
+    }
+    /* 8: hágók */
+    const w7 = stepW(7);
+    if (w7 > 0) {
+      arrow('erd1', [[27.6, 47.55], [26.3, 47.25], [25.05, 47.2], [24.0, 46.9]], tr(7, 3.2, 5.6), RED_D, 6, w7, [11, 8]);
+      arrow('erd2', [[27.9, 46.35], [26.9, 46.2], [26.2, 46.1], [25.1, 46.05]], tr(7, 3.8, 6.2), RED_D, 6, w7, [11, 8]);
+      const v = S(V_PASS), pul = .5 + .5 * Math.sin(L.t * 3);
+      ctx.save(); ctx.globalAlpha = w7 * tr(7, .6, 1.4); ctx.beginPath(); ctx.arc(v[0], v[1] + 2, 20 + pul * 7, 0, U.TAU); ctx.strokeStyle = U.rgba(RED, .8 - pul * .5); ctx.lineWidth = 3; ctx.stroke(); ctx.restore();
+      const va = w7 * tr(7, .8, 1.6);
+      cartouche(lab('vereckei-hágó'), v[0] + 12, v[1] - 74, { size: 27, alpha: va, kind: 'trad', strong: true, pop: U.outBack(tr(7, .8, 1.5)), k: 'vereckei-hágó' });
+      if (va > .01) { ctx.save(); ctx.globalAlpha *= va * tr(7, 1.4, 2); const pr = L.pill(lab('verecke hagyomány'), v[0] + 12, v[1] - 128, { s: 22, w: 600, a: 'center', bg: C.ochre, c: '#fff8ee', pad: 10, k: 'verecke hagyomány' }); ctx.restore(); occTick(); occNext.push([pr.x - 6, pr.y - 6, pr.x + pr.w + 6, pr.y + pr.h + 6]); }
+      const e = S(proj(27.4, 46.95)); cartouche(lab('erdélyi hágók'), e[0] + 6, e[1], { size: 23, alpha: w7 * tr(7, 4.4, 5.2), border: RED_D, color: RED_D, clamp: true, k: 'erdélyi hágók' });
+    }
+    /* 9: a medence birtokbavétele */
+    const w8 = Math.max(stepW(8), 0);
+    if (w8 > 0 || (L.step === 9 && j > 6)) {
+      const ww = L.step === 9 ? 0 : w8;
+      SETTLE.forEach((s) => { const a = U.clamp((kr - s.d) / 6) * (L.step === 9 ? w9 : w8); if (a <= 0) return; const p = S(s.m); yurt(p[0], p[1], U.lerp(.5, 1, U.outBack(a)) * U.clamp(cam.z / 9, .32, 1.05), a); });
+      const l1 = S(proj(22.3, 46.55)), l2 = S(proj(17.75, 46.75)), pz = S(proj(17.1, 48.15));
+      cartouche(lab('alföld és erdély'), l1[0], l1[1] + 30, { size: 24, alpha: ww * ramp(j, 6.16, 6.26), clamp: true, k: 'alföld és erdély' });
+      cartouche(lab('dunántúl'), l2[0], l2[1] + 40, { size: 24, alpha: ww * ramp(j, 6.52, 6.62), clamp: true, k: 'dunántúl' });
+      const pa = ww * ramp(j, 6.84, 6.92);
+      if (pa > 0) {
+        const burst = U.outElastic(ramp(j, 6.84, 6.99)); ctx.save(); ctx.globalAlpha = pa; ctx.translate(pz[0], pz[1]); ctx.scale(burst * 1.45, burst * 1.45);
+        const g = ctx.createRadialGradient(0, 0, 0, 0, 0, 46); g.addColorStop(0, 'rgba(184,134,11,.45)'); g.addColorStop(1, 'rgba(184,134,11,0)'); ctx.fillStyle = g; ctx.fillRect(-46, -46, 92, 92);
+        ctx.lineCap = 'round';
+        [-1, 1].forEach((sg) => { ctx.save(); ctx.rotate(sg * Math.PI / 4);
+          ctx.strokeStyle = '#2a2418'; ctx.lineWidth = 4.5; ctx.beginPath(); ctx.moveTo(0, 20); ctx.lineTo(0, -24); ctx.stroke();
+          ctx.strokeStyle = '#e9dcc0'; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(0, 6); ctx.lineTo(0, -21); ctx.stroke();
+          ctx.strokeStyle = '#2a2418'; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(-8, 11); ctx.lineTo(8, 11); ctx.stroke(); ctx.restore(); });
+        ctx.restore(); cartouche(lab('pozsony'), pz[0] + 150, pz[1] - 58, { size: 26, alpha: pa, strong: true, clamp: true, k: 'pozsony' });
+      }
+    }
+
+    /* állomások */
+    STATIONS.forEach((s) => {
+      const a = ramp(j, s.js - .3, s.js - .02); if (a <= .01) return; const p = S(s.m), cur = U.clamp(1 - Math.abs(j - s.js) * 1.5) * (L.step === 9 ? .6 : 1), far = j - s.js;
+      if (p[0] < -150 || p[0] > 1500) return;
+      if (s.dot !== false) { ctx.save(); ctx.globalAlpha = a; ctx.translate(p[0], p[1]); ctx.rotate(Math.PI / 4); ctx.fillStyle = RED; ctx.fillRect(-6, -6, 12, 12); ctx.strokeStyle = CARD; ctx.lineWidth = 2; ctx.strokeRect(-6, -6, 12, 12); ctx.restore(); }
+      const y = Math.min(p[1] + s.dy * U.clamp(.6 + cam.z * .075, .8, 1.25), 905);
+      if (inCard([p[0], y], 0)) return;
+      cartouche(lab(s.k), p[0], y, { size: U.lerp(23, 29, cur), alpha: a * U.lerp(far > .6 ? .85 : 1, 1, cur), strong: cur > .5, kind: s.rec ? 'rec' : null, pop: U.lerp(.8, 1, U.outBack(a)), clamp: true, k: s.k });
+    });
+
+    /* 1: cím, kezdő- és végpont */
+    if (w0 > 0) {
+      const t = L.step === 0 ? L.st : 99, a1 = U.clamp((t - .3) / .9) * w0, a2 = U.clamp((t - 1) / .9) * w0;
+      const kO = { s: 22, w: 600, f: F.M, ls: '3px' }, tO = { s: 66, w: 600, f: F.D }, sO = { s: 33, w: 400, f: F.D, i: true };
+      const tw = Math.ceil(Math.max(L.measure(lab('cím vásznon'), tO).w, L.measure(lab('alcím'), sO).w, L.measure(lab('cím felső'), kO).w)) + 84;
+      ctx.save(); ctx.globalAlpha = a1; ctx.translate(0, (1 - U.out(a1 / Math.max(w0, .001))) * 20);
+      ctx.shadowColor = 'rgba(70,50,20,.18)'; ctx.shadowBlur = 22; ctx.shadowOffsetY = 5; rrect(52, 52, tw, 214, 12); ctx.fillStyle = 'rgba(255,250,241,.96)'; ctx.fill(); ctx.shadowColor = 'transparent';
+      ctx.strokeStyle = 'rgba(28,36,64,.35)'; ctx.lineWidth = 1.6; ctx.stroke(); rrect(58, 58, tw - 12, 202, 8); ctx.lineWidth = .8; ctx.stroke();
+      ctx.globalAlpha = 1;
+      TX(lab('cím felső'), 90, 98, Object.assign({}, kO, { a: 'left', c: RED_D, halo: false, alpha: a1, k: 'cím felső' }));
+      TX(lab('cím vásznon'), 88, 158, Object.assign({}, tO, { a: 'left', c: INK, halo: false, alpha: a1, k: 'cím vásznon' }));
+      TX(lab('alcím'), 90, 222, Object.assign({}, sO, { a: 'left', c: MUT, halo: false, alpha: a2, k: 'alcím' }));
+      ctx.restore();
+      const e0 = S(ROUTE.pts[0]), e1 = S(ROUTE.pts[ROUTE.pts.length - 1]), pul = .5 + .5 * Math.sin(L.t * 2.6);
+      [[e0, 'kezdőpont', 1.2, -62], [e1, 'végpont', 5.4, 66]].forEach((e) => {
+        const a = U.clamp((t - e[2]) / .6) * w0; if (a <= 0) return; ctx.save(); ctx.globalAlpha = a;
+        ctx.beginPath(); ctx.arc(e[0][0], e[0][1], 12 + pul * 10, 0, U.TAU); ctx.strokeStyle = U.rgba(RED, .7 - pul * .5); ctx.lineWidth = 3; ctx.stroke();
+        ctx.beginPath(); ctx.arc(e[0][0], e[0][1], 8, 0, U.TAU); ctx.fillStyle = RED; ctx.fill(); ctx.strokeStyle = CARD; ctx.lineWidth = 2.5; ctx.stroke(); ctx.restore();
+        cartouche(lab(e[1]), e[0][0], e[0][1] + e[3], { size: 27, alpha: a, strong: true, pop: U.outBack(a), clamp: true, k: e[1] });
+      });
+      const mid = trackAt(ROUTE, .5), ms = S([mid.x, mid.y]);
+      cartouche(lab('út hossza').replace('#', U.fmt(ROUTE_KM)), ms[0] + 20, ms[1] + 64, { size: 30, alpha: U.clamp((t - 5.8) / .7) * w0, border: C.amber, color: '#5c3f05', pop: U.outBack(U.clamp((t - 5.8) / .6)), k: 'út hossza' });
+    }
+
+    /* 6: a hét törzs */
+    const w5 = stepW(5);
+    if (w5 > 0) {
+      const c = S(proj(30, 47.6)), tribes = list('törzsek');
+      tribes.forEach((n, i) => {
+        const a = U.clamp((tr(5, 6.4, 10.2) * tribes.length - i) * 1.4) * w5; if (a <= 0) return;
+        const ang = -Math.PI / 2 + (i - (tribes.length - 1) / 2) * (U.TAU / 7.6), x = c[0] + Math.cos(ang) * 318, y = c[1] + 18 + Math.sin(ang) * 208 + (Math.sin(ang) > .5 ? 26 : 0);
+        banner(x, y + 4, 1.25 * U.outBack(a), i === 1 ? RED : '#8a3a1c', a, i * 1.7);
+        cartouche(n, x, y + 30, { size: 25, alpha: a, strong: i === 1, pop: U.outBack(a), clamp: true, k: 'törzsek' });
+      });
+      const ka = tr(5, 10.6, 11.4) * w5; cartouche(lab('kabarok'), c[0] + 6, c[1] + 322, { size: 24, alpha: ka, border: C.amber, color: '#5c3f05', pop: U.outBack(ka), clamp: true, k: 'kabarok' });
+    }
+
+    /* a vándorló csapat */
+    const ba = U.clamp((j - .04) * 5) * (1 - w0);
+    const sp1 = Math.abs(frac - lastFrac) / Math.max(L.dt, .001); lastFrac = frac;
+    moving += ((sp1 > .0015 ? 1 : 0) - moving) * (1 - Math.exp(-L.dt * 5)); phase += L.dt * (4 + moving * 9);
+    if (ba > .01) {
+      const q = trackAt(ROUTE, frac), h = S([q.x, q.y]), q2 = S([q.x + q.dx, q.y + q.dy]); let dx = q2[0] - h[0], dy = q2[1] - h[1]; const dl = Math.hypot(dx, dy) || 1; dx /= dl; dy /= dl;
+      if (Math.abs(dx) > .15) bandDir = dx < 0 ? -1 : 1;
+      const s = U.clamp(.78 + cam.z * .1, .95, 1.62), idle = 1 - moving, nx = -dy, ny = dx;
+      ctx.save(); ctx.globalAlpha = ba;
+      /* porfelhő menet közben, füst a táborban */
+      for (let i = 0; i < 9; i++) { const ph = (L.t * .9 + i / 9) % 1, bx = h[0] - dx * (30 + ph * 80 + i * 9) * s + nx * Math.sin(i * 2.4) * 16 * s, by = h[1] - dy * (30 + ph * 80 + i * 9) * s + ny * Math.sin(i * 2.4) * 16 * s - ph * 14; ctx.beginPath(); ctx.arc(bx, by, (5 + ph * 12) * s, 0, U.TAU); ctx.fillStyle = `rgba(150,120,80,${.3 * (1 - ph) * moving})`; ctx.fill(); }
+      const items = [];
+      const lay = [[0, 0], [-24, -11], [-28, 13], [-50, 2], [-54, -17], [-60, 19], [-80, -6], [-86, 11], [-106, 1]];
+      lay.forEach((o, i) => {
+        const ia = i / lay.length * U.TAU + .4, ix = Math.cos(ia) * (40 + (i % 3) * 9), iy = Math.sin(ia) * (22 + (i % 2) * 8) + 8;
+        const mx = dx * o[0] + nx * o[1], my = dy * o[0] + ny * o[1] * .8;
+        const x = h[0] + U.lerp(mx, ix, idle) * s, y = h[1] + U.lerp(my, iy, idle) * s;
+        const d = idle > .6 ? (ix > 0 ? -1 : 1) : bandDir; items.push({ y, f: () => rider(x, y + 8 * s, s, d, phase + i * 1.3, moving, i === 0) });
+      });
+      [[-17, -4], [17, -8], [0, 14]].forEach((o, i) => { const x = h[0] + o[0] * s, y = h[1] + o[1] * s; items.push({ y: y - 2, f: () => yurt(x, y + 6 * s, s * 1.02, U.clamp(idle * 2 - .6 - i * .15)) }); });
+      items.sort((a, b) => a.y - b.y).forEach((it) => it.f());
+      for (let i = 0; i < 5; i++) { const ph = (L.t * .22 + i / 5) % 1; ctx.beginPath(); ctx.arc(h[0] + Math.sin(ph * 5 + i) * 6 * s + ph * 10, h[1] - (18 + ph * 54) * s, (3 + ph * 8) * s, 0, U.TAU); ctx.fillStyle = `rgba(90,80,65,${.2 * (1 - ph) * U.clamp(idle * 2 - 1)})`; ctx.fill(); }
+      ctx.restore();
+    }
+
+    /* nyelvcsalád-fa (2–3. lépés) */
+    drawTree(U.clamp(Math.min(sp - .45, 2.55 - sp) * 2.2) * (L.step === 1 ? U.clamp((L.st - .5) * 1.6) : 1));
+    /* forráskártya (10. lépés) */
+    drawSources(srcA);
+
+    drawCompass();
+    drawTimeline(j);
+    drawFrame();
+  }
+
+  /* ── Lépések (cím + panelszöveg a .md-ből) ─────────────────── */
+  const sliderFmt = (v) => nth('csúszka nevek', Math.round(v));
+  const steps = [
+    { settle: 6.6 }, { settle: 5.6 }, { settle: 8.4 }, { settle: 7 }, { settle: 7.6 },
+    { settle: 11.8 }, { settle: 11 }, { settle: 8 }, { settle: 11 },
+    { settle: 17.5,
+      enter() { Object.assign(st9, { auto: true, t0: 0, j: 0, jul: 0, julP0: 0, julT0: 0, src: 1, srcP0: 1, srcT0: -9 }); },
+      controls(L) {
+        st9.slider = L.slider({ label: L.lab('csúszka'), k: 'csúszka', min: 0, max: 7, step: 0.01, value: 0, format: sliderFmt, onInput: (v) => { st9.auto = false; st9.j = v; } });
+        L.button(L.lab('lejátszás gomb'), () => { st9.auto = true; st9.t0 = L.st; st9.j = 0; }, 'lejátszás gomb');
+        L.button(L.lab('julianus gomb'), (b) => { st9.julP0 = julP(); st9.julT0 = L.st; st9.jul = st9.jul ? 0 : 1; b.classList.toggle('on', !!st9.jul); }, 'julianus gomb');
+        const sb = L.button(L.lab('források gomb'), (b) => { st9.srcP0 = srcP(); st9.srcT0 = L.st; st9.src = st9.src ? 0 : 1; b.classList.toggle('on', !!st9.src); }, 'források gomb');
+        sb.classList.add('on');
+      } },
+  ];
+
+  L = Lesson.create({
+    content: window.LESSON_CONTENT,
+    home: false,
+    steps,
+    init(Lx) { L = Lx; },
+    draw(Lx) { L = Lx; draw(); },
+  });
+})();
+</script>
+</body>
+</html>

@@ -76,13 +76,33 @@ Szabályok:
 - Számok magyarosan: tizedes**vessző** (`0,92`), valódi mínuszjel (`−4 °C`), ezres tagolás
   szóközzel (`12 000 cm³`). A mértékegységet a lecke előírja – a build szól, ha más.
 - Egy kulcs csak egyszer szerepelhet a fájlban; mindegy, melyik `##` alatt áll.
-- Lépésenként legfeljebb kb. 55 szó panelszöveg (a build figyelmeztet).
+- Lépésenként legfeljebb kb. 55 szó panelszöveg (a build figyelmeztet; a lecke ezt szigoríthatja,
+  a történelemleckékben 45 szó).
 - Feliratban a `#` jel helyére a lecke számot ír (pl. `≈ # felnőtt tömege`).
+
+### Évszám, dátum, koordináta, tartomány, becslés
+
+Történelemleckékben az `### Adatok` alatt ilyen értékek is állhatnak. Hogy melyik kulcs milyen
+fajta, azt a lecke előírja; a build szól, ha a formátum nem stimmel.
+
+| fajta | így írd | megjegyzés |
+|---|---|---|
+| évszám | `Kr. e. 753` · `Kr. u. 476` · `1241` · `i. e. 490` | 0. év nincs (Kr. e. 1 után Kr. u. 1 jön); mínuszjelet ne írj |
+| dátum | `1848. március 15.` · `1849. április` · `Kr. e. 44. március 15.` | hónap kisbetűvel, kiírva; a nap létezzen |
+| koordináta | `47,50° É, 19,04° K` · `38° 9′ É, 23° 58′ K` | É/D és K/Ny; ha a pont kiesik a lecke térképéről, a build szól |
+| tartomány | `50–70 ezer fő` · `25–28` | nagygondolatjel (–); `ezer`, `millió` megengedett |
+| becslés | `kb. 25 ezer fő` · `~ 3000 km` · `Kr. e. 2560 körül` · `50–70 ezer fő (becslés)` | a lecke „kb.”-t vagy „becslés” bélyeget mutat |
+
+A számolás a leckében helyes lesz: Kr. e. 776 és Kr. e. 753 között 23 év telt el, Kr. e. 1 és
+Kr. u. 1 között 1. A `{kulcs}` hivatkozás a szövegben így jelenik meg: „Kr. e. 753”,
+„1848. március 15.”, „kb. 50–70 ezer fő”. Bizonytalan számnál a forrást és a bizonytalanságot
+egy `<!-- -->` megjegyzésben írd mellé.
 
 ## Fejlesztőknek
 
 ```bash
 python3 tools/build_lesson.py --all                       # minden lecke újragenerálása
+python3 tools/build_lesson.py --selftest                  # a build öntesztje (tools/tests/)
 python3 tools/qa_lesson.py leckek/fizika-7-8/01-suruseg.html --back --review 6
 ```
 

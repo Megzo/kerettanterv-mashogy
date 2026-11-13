@@ -171,3 +171,51 @@ python3 tools/qa_lesson.py leckek/<…>/NN-slug.html --at 1.5,settle --back --re
 - [ ] Offline, dupla kattintással megy; a `shared/` változatlan (vagy a változás egyeztetett,
       visszafelé kompatibilis, és a `lesson.js` fejlécében dokumentált).
 - [ ] Rövid jelentés: lépések listája, ismert gyengeségek, mennyi ideig tartott.
+
+## 11. Történelem-kiegészítés (5–6. évfolyam)
+
+Történelemleckénél a fenti szabályok ezekkel együtt érvényesek. **Kötelező olvasmány:**
+`pilot/tortenelem-5-6/terv.md` 4. fejezet (szerkesztői elvek: főáram, monda, eredetkérdések,
+háborúk, határok, anakronizmus) és a saját briefed a 3. fejezetben.
+
+- **Mappa, fejléc:** `leckek/tortenelem-5-6/NN-slug.{html,md,content.js}`; metaadat-sor:
+  `tantárgy: Történelem · évfolyam: 5–6. · témakör: N. <a kerettanterv témakörének címe>`.
+- **10–12 évesek:** lépésenként **≤ 45 szó** – a spec-be írd: `"maxWords": 45`. Rövid mondatok,
+  új fogalom **félkövéren**, egy mondattal megmagyarázva.
+- **Három réteg, három jelölés** (minden leckében egységesen, a vásznon és a forráskártyán):
+  - *forrás* (kortárs vagy későbbi írott forrás, tárgyi lelet): kékeszöld `#0a6f86` folytonos
+    keret, 2,5 px;
+  - *rekonstrukció* (történészek, régészek következtetése): tinta `#1c2440` **szaggatott** keret
+    (8/6 px), 2,5 px;
+  - *monda, hagyomány*: okker kartus – keret `#8f5a0c` (5,1 : 1 a papíron), kitöltés
+    `rgba(201,150,60,.16)`, lekerekített/csigás sarok.
+  A réteg neve kis feliratként (`forrás` / `rekonstrukció` / `monda`) a keret sarkában is álljon.
+- **Bélyegek:** „vázlatos” (kézi határ, vázlatos térkép), „illusztráció” (stilizált alak, jelenet),
+  „becslés” (bizonytalan szám). `L.pill`, Bricolage 22 px, 600, betűköz 0,08 em, kisbetű, −3°-kal
+  elforgatva, háttér `#fffaf1`, keret 2 px – „vázlatos”/„illusztráció”: halvány tinta `#565d72`,
+  „becslés”: okker `#8f5a0c`. A bélyeg szövege is a `.md`-ből jön (felirat-kulcs).
+- **„Honnan tudjuk?”** – minden leckében legalább egy lépés vagy forráskártya: ki írta / mi a
+  lelet, mikor keletkezett, **hány évvel az esemény után**, résztvevő vagy kortárs volt-e.
+- **Új adattípusok** (`leckek/README.md`, a részletek a `tools/build_lesson.py` fejlécében). Spec:
+  `"data": {"Róma alapítása": {"type": "year"}, "Pest": {"type": "coord", "box": [9, 42, 30, 51]},
+  "sereg": {"type": "range", "unit": "fő"}, "forradalom": {"type": "date"}}`.
+  `L.val(k)` a magyar alakot adja („Kr. e. 753”, „kb. 50–70 ezer fő”); `L.dat(k)` a teljes objektumot:
+  évszám `{v: −753, a: −752}` (eltelt évek: `b.a − a.a`), dátum `{ymd, a}` (`a`: tört év az
+  idővonalhoz), koordináta `{lat, lon}`, tartomány `{lo, hi, v, u}`; becslésnél `est: true`
+  (→ „becslés” bélyeg vagy „kb.”). Minden évszám, dátum, helyszín és létszám, amelyet a vászon
+  mutat, `### Adatok` alatt legyen – ettől javítható a tanárnak az idővonal és a térkép.
+- **Térképadat:** `shared/tort/map-karpat.js` (1:10m), `map-mediterran.js` (1:50m), `map-vilag.js`
+  (1:110m, gömbhöz), `map-orszaghatarok.js` (mai határok – csak halvány, kikapcsolható, „mai
+  határok” feliratú réteg); vetületek és dekódolás: `shared/tort/proj.js` (`TortProj.lcc`, `ortho`,
+  `view`, `fit`, `trace`). Formátum, ajánlott vetület-paraméterek, példa: `shared/tort/README.md`.
+  A folyók és partok mai állapotúak: `modern` jelű tározót/csatornát régi korban hagyd el, a
+  szabályozás előtti vizeket „vázlatos” saját réteg mutassa. Közkincs, más térképet (atlaszlap,
+  tankönyvi kép) ne vegyél át; a „Made with Natural Earth” a `.md` megjegyzésébe kerüljön.
+- **Új közös modulok leckén belül:** a térképmotor, az időszalag, a forráskártya és a jelenet-metszet
+  (terv.md 5. fejezet) először a referencialeckében készül, a lecke `<script>`-jében **külön,
+  jól elhatárolt blokkban** (`/* ── MODUL: Térkép ── */ … /* ── MODUL VÉGE ── */`), saját
+  névtérrel (pl. `const TortMap = (() => { … })();`), a blokk elején rövid API-leírással, a
+  lecke-specifikus kódra való hivatkozás nélkül – hogy változtatás nélkül átemelhető legyen a
+  `shared/tort/` alá. A `shared/` módosítása továbbra is csak egyeztetve.
+- **Minden `.md`** végén `<!-- Vitatott / bizonytalan pontok: … -->` blokk a tanári review-hoz,
+  forrásokkal (bizonytalan számnál: honnan, mennyire bizonytalan).

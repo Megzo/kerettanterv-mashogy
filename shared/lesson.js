@@ -39,6 +39,10 @@
      L.num(k)        adat számértéke ('### Adatok', pl. 0.92)
      L.unit(k)       adat mértékegysége (pl. 'g/cm³')
      L.val(k, d)     adat magyarul formázva egységgel: '0,92 g/cm³' (d: tizedesjegyek, alap: ahogy a .md-ben)
+                     ÚJ: ha az adatnak kész szöveges alakja van (s: évszám, dátum, koordináta, tartomány,
+                     „kb.” becslés), d nélkül azt adja: 'Kr. e. 753', '1848. március 15.', 'kb. 50–70 ezer fő'
+     L.dat(k)        ÚJ: a teljes adat-objektum, pl. {t:'year', v:-753, a:-752, s:'Kr. e. 753', est:true}
+                     (a mezőket a tools/build_lesson.py fejléce írja le)
    ÚJ — vászon-szöveg (méréssel; a QA és a review mód ebből tudja, hol van felirat):
      L.tx(s, x, y, o)   kiírja s-t; o = {s: px, w: vastagság, f: család, i: dőlt, a: igazítás, b: alapvonal,
                         c: szín, ls: betűköz, max: max. szélesség (fölötte kicsinyít), k: md-kulcs(ok),
@@ -107,7 +111,9 @@
     const dat = (k) => { const v = C && C.data[k]; if (!v) { miss(k); return { v: NaN, u: '', d: 0 }; } return v; };
     L.num = (k) => dat(k).v;
     L.unit = (k) => dat(k).u;
-    L.val = (k, d) => { const v = dat(k); return U.fmt(v.v, d == null ? v.d : d) + (v.u ? (v.u === '°' ? '' : ' ') + v.u : ''); };
+    L.val = (k, d) => { const v = dat(k); if (v.s != null && d == null) return v.s;
+      return U.fmt(v.v, d == null ? v.d : d) + (v.u ? (v.u === '°' ? '' : ' ') + v.u : ''); };
+    L.dat = (k) => dat(k);
     const srcOf = (k) => (C && C.src && C.src[k]) || 0;
 
     // ── DOM váz ──
