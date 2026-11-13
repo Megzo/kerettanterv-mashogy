@@ -3,8 +3,16 @@
 Szemléletes, interaktív, animált leckék a magyar **NAT 2020 kerettantervek** témaköreihez –
 tanórai kivetítésre (16:9) és egyéni használatra.
 
-A projekt lépésenként halad; jelenleg a **0. fázisnál** tart: a hivatalos kerettantervek
-összegyűjtése és géppel olvasható, egységes Markdownra alakítása.
+**Nyitóoldal:** [`index.html`](index.html) – tantárgyak × évfolyamok, a kész leckékkel
+(a többi „hamarosan”). Letöltés után dupla kattintással is megnyílik, internet nélkül.
+
+Állapot: a kerettantervek feldolgozva (0. fázis); a pilot – **Fizika 7–8.**, 15 lecke –
+elkészült ([`leckek/fizika-7-8/`](leckek/fizika-7-8/), terv és gyártási számok:
+[`pilot/fizika-7-8/`](pilot/fizika-7-8/)).
+
+- [`leckek/`](leckek/README.md) – a leckék; mindegyik szövege egy tanár által is
+  szerkeszthető `.md`-fájlban van, a `tools/build_lesson.py` égeti be a leckébe.
+- `index.html` – generált: `python3 tools/build_index.py`.
 
 - [`kerettanterv/`](kerettanterv/README.md) – a kerettantervek tantárgyanként és kétéves
   sávonként (pl. [`fizika/7-8.md`](kerettanterv/fizika/7-8.md)), összesítő táblázat,
