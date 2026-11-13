@@ -65,3 +65,9 @@ A fő munkamenet (0. fázis + pilot-koordináció, ellenőrzés):
 | 14-uveghaz | 9 | 26 perc, ~274 ezer token | 0 JS-hiba, 0 túlcsordulás | energiamérleg utánaszámolva (238 W/m² → −18,6 °C); igaz/hamis tévhit-tábla átolvasva | CO₂-, hőmérséklet-adatok évenkénti tanári frissítésre jelölve |
 | 16-holdfazisok | 9 | 39 perc, ~339 ezer token | 0 JS-hiba, 0 túlcsordulás | 2026 fogyatkozásai (febr., márc., aug. ×2) egyeznek a valósággal | a brief 10 lépése 9-be vonva; textúrázott Hold lokálisan |
 | 04-lendulet-raketa | 9 | 34 perc, ~336 ezer token | 0 JS-hiba, 0 túlcsordulás | 4. lépés utánaszámolva (5 kg, 3 m/s → 2 kg: Δp = ±8,6 kg·m/s, csúcserő 135 N mindkettőn); rakéta: 3 km/s, 90 % → Δv = 6,9 km/s | a JetBrains Mono mínuszjele kötőjelnek látszik; szélső beállításnál a gyors kocsi kifut a képből |
+
+## Következő pilot: Történelem 5–6. – tervezés
+
+| # | Feladat | Időtartam | Token (al-ügynök) | Eredmény |
+|---|---|---|---|---|
+| T1 | Leckesor terve (`pilot/tortenelem-5-6/terv.md`) | 20 p 54 mp | 205 750 (kimenet 118 346; cache-írás 351 818; cache-olvasás 1 724 783) | 18 lecke, 7 modul, szerkesztői elvek |
