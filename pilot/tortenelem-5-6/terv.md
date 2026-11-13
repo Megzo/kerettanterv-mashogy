@@ -4,6 +4,13 @@ Forrás: [`kerettanterv/tortenelem/5-6.md`](../../kerettanterv/tortenelem/5-6.md
 általános iskola, 11 témakör, 119 óra + 17 óra mélységelvű téma). Az idézetek szó szerint
 onnan valók. A lecke-formátum: [`leckek/SZERZODES.md`](../../leckek/SZERZODES.md).
 
+> **Végleges számozás (a felhasználó jóváhagyásával, 2026-11-13).** A sorozat **20 lecke**:
+> a terv 18 leckéje, egy új görög lecke (`03-gorogok`, a tartaléklista 1. tétele) és az
+> `iskola` meglévő vándorlás-leckéje (`08-vandorlas`, világos témára és `.md`-tartalomra
+> átültetve). Ezért a leckék sorszáma eltolódott: a 2. fejezet táblázata a **végleges**
+> számozást mutatja, az utolsó oszlop pedig azt, hogy melyik (régi számú) brief tartozik hozzá.
+> A 3., 5. és 6. fejezet a **régi** számozást használja.
+
 ## 1. Bevezető
 
 A pilot **18 leckéje** az 5–6. osztályos történelem-kerettanterv mind a 11 témakörét
@@ -61,26 +68,28 @@ nincsenek ellenőrizve.
 
 ## 2. A leckék
 
-| # | slug | cím | témakör | nehézség (1–3) |
-|---|---|---|---|---|
-| 01 | `01-idoszamitas` | Melyik volt előbb: Kr. e. 776 vagy Kr. e. 753? – időszámítás és korszakok | 1 | 2 |
-| 02 | `02-nilus` | Miért épültek a piramisok a Nílus mellé? – az ókori Egyiptom | 2 | 2 |
-| 03 | `03-pannonia` | Hogyan lett Aquincumból Óbuda? – Róma, Pannónia és a hunok | 2 | 3 |
-| 04 | `04-keresztenyseg` | Hogyan terjedt el egy új hit a Római Birodalomban? – a Biblia és a kereszténység | 3 | 2 |
-| 05 | `05-var-uradalom` | Kik laktak a várban? – vár, uradalom és jobbágyfalu | 4 | 3 |
-| 06 | `06-kozepkori-varos` | Hogyan lett az inasból mester? – a középkori város és a céhek | 4 | 2 |
-| 07 | `07-honfoglalas` | Honnan tudjuk, hogyan jöttek a magyarok? – eredetmondák és honfoglalás | 5 | 3 |
-| 08 | `08-allamalapitas` | Hogyan lett a törzsekből királyság? – Géza, István és az államalapítás | 5 | 2 |
-| 09 | `09-tatarjaras` | Miért épültek kővárak a tatárjárás után? – IV. Béla és 1241–1242 | 5 | 2 |
-| 10 | `10-nandorfehervar` | Miért szól délben a harang? – Hunyadi János és Nándorfehérvár | 6 | 2 |
-| 11 | `11-felfedezesek` | Tényleg lapos Földben hittek? – Kolumbusz tévedése és a felfedezések | 7 | 3 |
-| 12 | `12-konyvnyomtatas` | Hogyan jutott el Luther gondolata mindenkihez? – nyomtatás, reformáció, anyanyelv | 7 (+4) | 2 |
-| 13 | `13-mohacs` | Hogyan szakadt három részre az ország? – Mohács, 1526 és Buda, 1541 | 8 | 3 |
-| 14 | `14-eger` | Hogyan tarthatott ki Eger? – a végvári harcok | 8 | 2 |
-| 15 | `15-mezovaros` | Hogyan jutott el a szürke marha Velencéig? – mezővárosok a hódoltság korában | 9 | 2 |
-| 16 | `16-gozgep` | Mitől lett gyár a műhelyből? – a gőzgép és az ipari forradalom | 10 | 2 |
-| 17 | `17-marcius-15` | Mi történt egyetlen nap alatt Pesten? – 1848. március 15. | 11 | 2 |
-| 18 | `18-szabadsagharc` | Hogyan fordult meg a háború 1849 tavaszán? – a szabadságharc és a kiegyezés | 11 | 3 |
+| # | slug | cím | témakör | nehézség (1–3) | brief (3. fejezet) |
+|---|---|---|---|---|---|
+| 01 | `01-idoszamitas` | Melyik volt előbb: Kr. e. 776 vagy Kr. e. 753? – időszámítás és korszakok | 1 | 2 | 01 |
+| 02 | `02-nilus` | Miért épültek a piramisok a Nílus mellé? – az ókori Egyiptom | 2 | 2 | 02 |
+| 03 | `03-gorogok` | Tényleg Athénig futott a marathóni hírnök? – hopliták, Marathón és az olimpia | 2 | 2 | új (tartalék 1.) |
+| 04 | `04-pannonia` | Hogyan lett Aquincumból Óbuda? – Róma, Pannónia és a hunok | 2 | 3 | 03 |
+| 05 | `05-keresztenyseg` | Hogyan terjedt el egy új hit a Római Birodalomban? – a Biblia és a kereszténység | 3 | 2 | 04 |
+| 06 | `06-var-uradalom` | Kik laktak a várban? – vár, uradalom és jobbágyfalu | 4 | 3 | 05 |
+| 07 | `07-kozepkori-varos` | Hogyan lett az inasból mester? – a középkori város és a céhek | 4 | 2 | 06 |
+| 08 | `08-vandorlas` | Honnan jöttünk? – a magyarok vándorlása az őshazától a Kárpát-medencéig | 5 | 1 | új (az `iskola` leckéje) |
+| 09 | `09-honfoglalas` | Honnan tudjuk, hogyan jöttek a magyarok? – eredetmondák és honfoglalás | 5 | 3 | 07 |
+| 10 | `10-allamalapitas` | Hogyan lett a törzsekből királyság? – Géza, István és az államalapítás | 5 | 2 | 08 |
+| 11 | `11-tatarjaras` | Miért épültek kővárak a tatárjárás után? – IV. Béla és 1241–1242 | 5 | 2 | 09 |
+| 12 | `12-nandorfehervar` | Miért szól délben a harang? – Hunyadi János és Nándorfehérvár | 6 | 2 | 10 |
+| 13 | `13-felfedezesek` | Tényleg lapos Földben hittek? – Kolumbusz tévedése és a felfedezések | 7 | 3 | 11 |
+| 14 | `14-konyvnyomtatas` | Hogyan jutott el Luther gondolata mindenkihez? – nyomtatás, reformáció, anyanyelv | 7 (+4) | 2 | 12 |
+| 15 | `15-mohacs` | Hogyan szakadt három részre az ország? – Mohács, 1526 és Buda, 1541 | 8 | 3 | 13 |
+| 16 | `16-eger` | Hogyan tarthatott ki Eger? – a végvári harcok | 8 | 2 | 14 |
+| 17 | `17-mezovaros` | Hogyan jutott el a szürke marha Velencéig? – mezővárosok a hódoltság korában | 9 | 2 | 15 |
+| 18 | `18-gozgep` | Mitől lett gyár a műhelyből? – a gőzgép és az ipari forradalom | 10 | 2 | 16 |
+| 19 | `19-marcius-15` | Mi történt egyetlen nap alatt Pesten? – 1848. március 15. | 11 | 2 | 17 |
+| 20 | `20-szabadsagharc` | Hogyan fordult meg a háború 1849 tavaszán? – a szabadságharc és a kiegyezés | 11 | 3 | 18 |
 
 A nehézség itt is gyártási nehézséget jelent: 1 = egy fő vizuál, kevés adat; 2 = egy közepes
 modul vagy új interakció; 3 = új modul, kényes pontosság (határok, vitatott tartalom) vagy
@@ -573,6 +582,32 @@ fejezet, 3. pont).
 - **Építőkocka:** A, E, B, C, G.
 
 ---
+
+### Új · `03-gorogok` – Tényleg Athénig futott a marathóni hírnök? – hopliták, Marathón és az olimpia
+
+- **Tanulási cél:** Az ókori Hellász városállamokból állt; Athén és Spárta másképp élt és
+  nevelt. A marathóni csata (Kr. e. 490) a perzsa háborúk része. Az olimpiai játékok
+  Kr. e. 776-tól négyévente zajlottak – a mai olimpia ennek felújítása (1896).
+- **Kerettanterv:** a 2. témakör görög tartalmai (városállam, olümpiai játékok, falanx,
+  Athén és Spárta, a marathóni csata) – a gyártó ügynök idézze szó szerint a forrásból.
+- **Tévhitek:** a marathóni futás Hérodotosznál szerepel (Pheidippidész Spártába futott
+  segítségért, kb. 240 km); az Athénig futó, majd holtan összeeső hírnök **jóval későbbi**
+  történet (Plutarkhosz, Lukianosz, Kr. u. 1–2. sz.). A görögök nem egy országban éltek.
+  Az ókori olimpián nők nem versenyezhettek; a győztes olajágkoszorút kapott.
+- **Kulcsvizuál:** az Égei-tenger térképe a városállamokkal; a falanx alakzata; Marathón–Athén
+  (kb. 40 km) és Athén–Spárta útvonal; „Honnan tudjuk?” forráskártya a két történettel és
+  az eltelt idővel.
+- **Interaktív:** időszalag Kr. e. 776-tól 1896-ig; a diák a forráskártyák között vált.
+- **Építőkocka:** A (Égei-tenger), B, C.
+
+### Új · `08-vandorlas` – Honnan jöttünk? – a magyarok vándorlása
+
+Az `../iskola/tortenelem-vandorlas.html` lecke (10 lépés: uráli őshaza → ugor kor → Magna
+Hungaria → Levédia → Etelköz → 894–895 → honfoglalás → új haza → az egész út egy csúszkán)
+átültetése: világos téma, a szöveg és az adatok `.md`-be, a mostani motorra. Tartalmi
+változtatás csak a 4. fejezet szerkesztői elvei szerint (pl. ahol a lecke forrás, rekonstrukció
+és hagyomány között nem tesz különbséget). A `09-honfoglalas` erre épít, és a forrásokra
+helyezi a hangsúlyt.
 
 ## 4. Szerkesztői elvek
 
