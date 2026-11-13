@@ -25,12 +25,13 @@ Szabály: egyszerre legfeljebb 3 al-ügynök fut.
 | N | 13-szinek lecke | 5. hullám | 29 p 31 mp | 293 084 (kimenet 143 589; cache-írás 284 790; cache-olvasás 10 190 168) | kész: 9 lépés, QA hibátlan |
 | O | 14-uveghaz lecke | 5. hullám | 25 p 54 mp | 274 046 (kimenet 123 603; cache-írás 348 111; cache-olvasás 6 562 568) | kész: 9 lépés, QA hibátlan |
 | P | 16-holdfazisok lecke | 5. hullám | 38 p 47 mp | 339 042 (kimenet 161 962; cache-írás 552 223; cache-olvasás 16 447 526) | kész: 9 lépés, QA hibátlan |
+| Q | 04-lendulet-raketa lecke | utólag (a nyitóoldal után) | 33 p 48 mp | 335 817 (kimenet 143 745; cache-írás 419 442; cache-olvasás 10 651 371) | kész: 9 lépés, QA hibátlan |
 
 A token-oszlop az al-ügynök saját fogyasztása (a koordináló fő munkamenet nélkül).
 Az első szám a Claude Code által jelentett al-ügynök-tokenszám; zárójelben az API-hívások
 összesített bontása (a cache-olvasás többszörösen számolódik, de ~10%-os áron).
 
-## Összesítés (16 al-ügynök: 1 terv + 15 lecke)
+## Összesítés (16 al-ügynök: 1 terv + 15 lecke; a 04-es lecke utólag, külön sorban)
 
 - Al-ügynök-tokenek (Claude Code által jelentett): **4 554 546** (a 15-ös lecke jelentett száma tömörítés miatt alacsony)
 - Kimeneti tokenek összesen: **2 174 626**; cache-írás: **6 921 117**
@@ -63,3 +64,4 @@ A fő munkamenet (0. fázis + pilot-koordináció, ellenőrzés):
 | 13-szinek | 9 | 29,5 perc, ~293 ezer token | 0 JS-hiba, 0 túlcsordulás | prizma-eltérítés utánaszámolva (55°, flint: 47,5° / 51,4°) | az ügynök a koordinátor briefjében hibát talált: a Rayleigh-arány 400/700 nm-re 9,4× (nem 5,5×); 450/700 nm-re 5,9× – a lecke a helyes értéket használja |
 | 14-uveghaz | 9 | 26 perc, ~274 ezer token | 0 JS-hiba, 0 túlcsordulás | energiamérleg utánaszámolva (238 W/m² → −18,6 °C); igaz/hamis tévhit-tábla átolvasva | CO₂-, hőmérséklet-adatok évenkénti tanári frissítésre jelölve |
 | 16-holdfazisok | 9 | 39 perc, ~339 ezer token | 0 JS-hiba, 0 túlcsordulás | 2026 fogyatkozásai (febr., márc., aug. ×2) egyeznek a valósággal | a brief 10 lépése 9-be vonva; textúrázott Hold lokálisan |
+| 04-lendulet-raketa | 9 | 34 perc, ~336 ezer token | 0 JS-hiba, 0 túlcsordulás | 4. lépés utánaszámolva (5 kg, 3 m/s → 2 kg: Δp = ±8,6 kg·m/s, csúcserő 135 N mindkettőn); rakéta: 3 km/s, 90 % → Δv = 6,9 km/s | a JetBrains Mono mínuszjele kötőjelnek látszik; szélső beállításnál a gyors kocsi kifut a képből |
