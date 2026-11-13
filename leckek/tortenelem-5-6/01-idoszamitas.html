@@ -1,0 +1,1160 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Melyik volt előbb: Kr. e. 776 vagy Kr. e. 753? — Történelem</title>
+<link rel="stylesheet" href="../../shared/lesson.css">
+<style>
+  .lp-text b { color: var(--ink); }
+  .lp-text > :last-child { margin-bottom: 0; }
+  .lp-text ul { margin-bottom: 10px; }
+</style>
+<!-- A lecke által várt tartalomkulcsok. A tools/build_lesson.py ez alapján ellenőrzi a .md-t. -->
+<script type="application/json" id="lesson-spec">
+{
+  "steps": 9,
+  "maxWords": 45,
+  "labels": {
+    "Kr. e.": 8, "Kr. u.": 8, "század": 12, "év sablon": 16, "évszázad": 16, "évezred": 16, "lépték": 12,
+    "réteg forrás": 16, "réteg rekonstrukció": 16, "réteg monda": 16, "bélyeg becslés": 12,
+    "hol tartunk": 20, "nagyítás csúszka": 34, "tű súgó": 24, "kezdőpont": 16,
+    "esemény születésed": 24, "esemény most": 16, "esemény piramis": 34, "esemény olimpia": 34,
+    "esemény Róma": 34, "esemény Caesar": 34, "esemény bukás": 36, "esemény írás": 34,
+    "esemény Kolumbusz": 34, "esemény Mohács": 34, "esemény forradalom": 34, "esemény 1914": 34, "esemény 1945": 36,
+    "korszak őskor": 12, "korszak ókor": 12, "korszak középkor": 12, "korszak újkor": 12, "korszak jelenkor": 12,
+    "fejléc 1": 40, "születési év csúszka": 30, "életed": 30, "idő iránya": 30,
+    "fejléc 2": 40, "életed mm": 30, "milliméteres hossz": 30,
+    "fejléc 3": 44, "vonalzó mi": 30, "vonalzó róma": 32, "római év": 16, "olvasó súgó": 24,
+    "forráskártya cím": 30, "forrás típus": 24, "forrás cím": 44, "ki írta címke": 16, "ki írta": 50,
+    "mit címke": 16, "mit": 100, "mikor címke": 16, "kortárs címke": 16, "kortárs": 60,
+    "esemény Jézus": 30, "Dionysius kezdőpontja": 30, "eltelt": 24, "történészek szerint": 30,
+    "fejléc 5": 40, "nyíl Kr. e.": 34, "nyíl Kr. u.": 34, "előbb": 24,
+    "fejléc 6": 40, "nagyítva": 16, "nulla év": 12, "nincs ilyen év": 24,
+    "fejléc 7": 40, "kerek év felirat": 34, "tű súgó egy": 34,
+    "fejléc 8": 40, "gomb magyar": 34, "gomb jelenkor": 34, "magyar középkor vége": 40, "más tankönyvben": 34,
+    "fejléc 9": 30, "játék súgó": 40, "jó helyen": 20, "eltérés": 24, "gomb megoldás": 28, "gomb újra": 20
+  },
+  "data": {
+    "most":                         {"type": "year", "min": 2020, "max": 2100},
+    "születési év":                 {"type": "year", "min": 2000, "max": 2030},
+    "Nagy piramis":                 {"type": "year", "min": -3200, "max": -2000},
+    "első olimpia":                 {"type": "year", "min": -1000, "max": -500},
+    "Róma alapítása":               {"type": "year", "min": -1000, "max": -500},
+    "Caesar halála":                {"type": "date", "min": -100, "max": -1},
+    "Nyugatrómai Birodalom bukása": {"type": "year", "min": 300, "max": 700},
+    "Dionysius táblázata":          {"type": "year", "min": 300, "max": 900},
+    "Jézus születése, legkorábban": {"type": "year", "min": -20, "max": 10},
+    "Jézus születése, legkésőbb":   {"type": "year", "min": -20, "max": 10},
+    "írás, legkorábban":            {"type": "year", "min": -4000, "max": -2500},
+    "írás, legkésőbb":              {"type": "year", "min": -4000, "max": -2500},
+    "Amerika felfedezése":          {"type": "year", "min": 1400, "max": 1600},
+    "mohácsi csata":                {"type": "year", "min": 1400, "max": 1600},
+    "pesti forradalom":             {"type": "date", "min": 1801, "max": 1900},
+    "első világháború":             {"type": "year", "min": 1900, "max": 2000},
+    "második világháború vége":     {"type": "year", "min": 1900, "max": 2000},
+    "kerek év":                     {"type": "year", "min": 1900, "max": 1900}
+  }
+}
+</script>
+</head>
+<body>
+<script src="01-idoszamitas.content.js"></script>
+<script src="../../shared/lesson.js"></script>
+<script>
+'use strict';
+
+/* ── MODUL: Időszalag (TortTimeline) ──────────────────────────────────────────────
+   B modul (pilot/tortenelem-5-6/terv.md, 5. fejezet). Referencia: 01-idoszamitas.
+   Később változtatás nélkül átemelhető: shared/tort/timeline.js. Csak a Lesson motorra épül
+   (L.ctx, L.tx, L.pill, L.measure, L.pointer, L.stage, L.toStage, L.t, L.VW).
+
+   IDŐ-KOORDINÁTA (u): folytonos, csillagászati években. Az „a” csillagászati év
+   (Kr. e. 1 = 0, Kr. e. 753 = −752, Kr. u. 476 = 476 – ez a build `L.dat(k).a` mezője) az
+   [a, a + 1) szakasz a szalagon; egy évszám-esemény a közepén áll: u = a + 0,5. Dátum: u = d.a.
+   Eltelt évek: a2 − a1 (0. év nincs: Kr. e. 1 → Kr. u. 1 = 1 év). A kezdőpont (Kr. u. 1 eleje): u = 1.
+
+   TortTimeline.Y – évszám-aritmetika (tiszta függvények; T = szövegek, lent):
+     Y.u(d)               build-adat ({t:'year'|'date', a}) → u; szám esetén csillagászati év → a + 0,5
+     Y.year(u)            u → csillagászati év (egész)        Y.num(a) → a kiírt szám (Kr. e. 753 → 753)
+     Y.astro(v), Y.hist(a)  történeti év (−753) ↔ csillagászati (−752)
+     Y.label(a, T, ad)    'Kr. e. 753' · '476' · 'Kr. u. 476' (ad = true)   Y.key(a, T, ad) → md-kulcs
+     Y.range(a0, a1, T)   'Kr. e. 7–4' · '1914–1918' · 'Kr. e. 4 – Kr. u. 30'
+     Y.elapsed(a1, a2)    a2 − a1
+     Y.formula(a1, a2)    '776 − 753 = 23' · '753 + 476 − 1 = 1228' · '2026 − 2015 = 11'
+     Y.century(a)         {n, bc}: 1801…1900 → {n: 19}; Kr. e. 776 → {n: 8, bc: true}
+     Y.centurySpan(n, bc) [a0, a1) csillagászati évek: 19 → [1801, 1901); Kr. e. 1. → [−99, 1)
+     Y.centuryLabel(a, T, short)  '19. század' · 'Kr. e. 8. század' · (short) '19.'
+     Y.centuryRule(a)     '18|48 → 18 + 1 = 19' · '19|00 → 19'
+     Y.lerpView(v0, v1, t)  két nézet ([u0, u1]) között: logaritmikus lépték, a nagyítás közben a
+                          középpont a léptékkel arányosan mozog (zoom-ki/zoom-be szép)
+   T (a lecke .md-jéből, mind {s, k}; k = md-kulcs a review módhoz):
+     {bc: 'Kr. e.', ad: 'Kr. u.', cent: 'század', years: '# év'}
+
+   const tl = TortTimeline.create(L, {x0, x1, y, h: 64, T, src, bounds: [uMin, uMax], minSpan, maxSpan,
+                                      epoch: aKezdő?, pinY?})
+     src: TortSource-példány (C modul) a kártyakeretekhez és a „becslés” bélyeghez (opcionális).
+     epoch: más kezdőpontú vonalzó (pl. Róma alapítása): a felirat n = a − epoch + 1, előtte üres.
+     tl.view(u0, u1) · tl.x(u) · tl.u(x) · tl.ppy (px/év) · tl.span() · tl.top/bot · tl.R (sorok y-ja)
+     tl.draw(d)   szalag + osztás + feliratok + sávok. d = {a, bands: [{u0, u1, col, a}], sides,
+                  origin, caption: {s, k, a, right}, cent, centHi: év, eras: [...], eraA, eraOut, ad}
+                  eras: [{u0, u1, name: {s, k}, col, fade0: [ua, ub], fade1: [ua, ub]}] (fade = elmosódó határ)
+     tl.cards(items, {pitch})   eseménykártyák a szalag fölött, vezetővonallal. item = {u, title: {s, k},
+                  date?: {s, k}, note?: {s, k, c}, layer: 'forrás' | 'rekonstrukció' | 'monda' | null,
+                  est: bool (→ „becslés” bélyeg), row: 0..2, a, hi}
+     tl.card(item, x, y) / tl.cardSize(item) / tl.cardPos(item)   egy kártya tetszőleges helyen (pl. tálcán)
+     tl.pins = [{u, col, ad?}]  húzható tűk;  tl.drawPins({a, pinY, top, bracket, caption(e), sub(e, a1, a2),
+                  label(pin, év) → [{s, k, c}, …], hint: {s, k}})
+     tl.interact({pins, pan, zoom, snap: [u…], onView(v)}) → true, ha egy tű elmozdult. Minden képkockán
+                  hívd (a nézet beállítása után); a görgő nagyít, a szalag húzása pásztáz.
+     tl.user      a felhasználó által beállított nézet ([u0, u1]) vagy null · tl.setUser(u0, u1) · tl.zoomTo(span)
+   TortTimeline.mini(L, {x, y, w, h, u0, u1, eras, win: [u0, u1], cap: {s, k}, ends: [{s, k}, {s, k}], a})
+                  kis „hol tartunk?” sáv: a teljes időszak korszakszínekkel, rajta a látható ablak.
+   ──────────────────────────────────────────────────────────────────────────────── */
+const TortTimeline = (() => {
+  const F = Lesson.FONTS, U = Lesson.U, NB = ' ', MINUS = '−', TAU = Math.PI * 2;
+  const INK = '#1c2440', MUT = '#565d72', RED = '#c8401c', CARD = '#fffaf1', OCHRE = '#8f5a0c';
+  const TF = { f: F.B, s: 22, w: 500 };
+  const STEPS = [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000];
+
+  const Y = {
+    astro: (v) => (v < 0 ? v + 1 : v),
+    hist: (a) => (a <= 0 ? a - 1 : a),
+    u: (d) => (typeof d === 'number' ? d + .5 : d.t === 'date' ? d.a : d.a + .5),
+    year: (u) => Math.floor(u),
+    num: (a) => (a <= 0 ? 1 - a : a),
+    label: (a, T, ad) => (a <= 0 ? T.bc.s + NB + (1 - a) : (ad ? T.ad.s + NB : '') + a),
+    key: (a, T, ad) => (a <= 0 ? T.bc.k : ad ? T.ad.k : null),
+    range: (a0, a1, T) => {
+      if (a0 > a1) [a0, a1] = [a1, a0];
+      if (a1 <= 0) return T.bc.s + NB + (1 - a0) + '–' + (1 - a1);
+      if (a0 >= 1) return a0 + '–' + a1;
+      return Y.label(a0, T) + ' – ' + Y.label(a1, T, true);
+    },
+    elapsed: (a1, a2) => a2 - a1,
+    formula: (a1, a2) => {
+      const lo = Math.min(a1, a2), hi = Math.max(a1, a2), e = hi - lo;
+      if (hi <= 0) return `${1 - lo} ${MINUS} ${1 - hi} = ${e}`;
+      if (lo >= 1) return `${hi} ${MINUS} ${lo} = ${e}`;
+      return `${1 - lo} + ${hi} ${MINUS} 1 = ${e}`;
+    },
+    century: (a) => (a >= 1 ? { n: Math.ceil(a / 100), bc: false } : { n: Math.ceil((1 - a) / 100), bc: true }),
+    centurySpan: (n, bc) => (bc ? [1 - 100 * n, 101 - 100 * n] : [100 * n - 99, 100 * n + 1]),
+    centuryLabel: (a, T, short) => { const c = Y.century(a); return (c.bc ? T.bc.s + NB : '') + c.n + '.' + (short ? '' : NB + T.cent.s); },
+    centuryKeys: (a, T) => (Y.century(a).bc ? [T.cent.k, T.bc.k] : [T.cent.k]),
+    centuryRule: (a) => {
+      const y = Y.num(a), n = Y.century(a).n, h = Math.floor(y / 100), t = y % 100;
+      return t === 0 ? `${h}|00 → ${n}` : `${h}|${String(t).padStart(2, '0')} → ${h} + 1 = ${n}`;
+    },
+    lerpView: (v0, v1, t) => {
+      const s0 = v0[1] - v0[0], s1 = v1[1] - v1[0], c0 = (v0[0] + v0[1]) / 2, c1 = (v1[0] + v1[1]) / 2;
+      const s = Math.exp(U.lerp(Math.log(s0), Math.log(s1), t));
+      const k = Math.abs(Math.log(s1 / s0)) > .25 ? (s - s0) / (s1 - s0) : t;
+      const m = U.lerp(c0, c1, k);
+      return [m - s / 2, m + s / 2];
+    },
+  };
+
+  function create(L, o) {
+    const T = o.T;
+    const tl = { o, T, src: o.src || null, x0: o.x0, x1: o.x1, y: o.y, h: o.h || 64, pins: [], user: null, drag: null,
+      bounds: o.bounds || [-1e6, 1e6], minSpan: o.minSpan || 4, maxSpan: o.maxSpan || 1e5, epoch: o.epoch == null ? null : o.epoch };
+    tl.top = tl.y - tl.h / 2; tl.bot = tl.y + tl.h / 2;
+    tl.R = { tick: tl.bot + 31, cent: tl.bot + 44, centH: 40, era: tl.bot + 96, eraH: 48 };
+    tl.pinY = o.pinY || tl.R.era + tl.R.eraH + 40;
+    tl.view = (u0, u1) => { tl.u0 = u0; tl.u1 = u1; tl.ppy = (tl.x1 - tl.x0) / (u1 - u0); return tl; };
+    tl.view(0, 100);
+    tl.x = (u) => tl.x0 + (u - tl.u0) * tl.ppy;
+    tl.u = (x) => tl.u0 + (x - tl.x0) / tl.ppy;
+    tl.span = () => tl.u1 - tl.u0;
+    const inView = (x, m = 0) => x >= tl.x0 - m && x <= tl.x1 + m;
+
+    /* azok a csillagászati évek, amelyek kiírt száma a lépésköz többszöröse (a szalag közepén: a + 0,5) */
+    function yearsAt(step) {
+      const out = [];
+      if (tl.epoch != null) {
+        const e = tl.epoch;
+        for (let n = Math.max(step, Math.ceil((tl.u0 - e + .5) / step) * step); e + n - .5 <= tl.u1; n += step) out.push(e + n - 1);
+        return out;
+      }
+      for (let n = Math.max(step, Math.ceil((tl.u0 - .5) / step) * step); n + .5 <= tl.u1; n += step) out.push(n);
+      for (let y = Math.max(step, Math.ceil((1.5 - tl.u1) / step) * step); 1.5 - y >= tl.u0; y += step) out.push(1 - y);
+      return out;
+    }
+    /* ad: true → „Kr. u. 5”; 'auto' (alap) → csak ha a kezdőpont látszik, és évenként/évtizedenként írunk */
+    const adOn = (a, ad, step) => a >= 1 && (ad === true || (ad !== false && step <= 10 && tl.u0 < 1 && a < 1000));
+    const tickText = (a, ad, step) => (tl.epoch != null ? { s: String(a - tl.epoch + 1), k: null } : { s: Y.label(a, T, adOn(a, ad, step)), k: Y.key(a, T, adOn(a, ad, step)) });
+    function pickStep(ad) {
+      for (const s of STEPS) {
+        if (s * tl.ppy < 34) continue;
+        const ys = yearsAt(s); let w = 0;
+        for (const a of ys) w = Math.max(w, L.measure(tickText(a, ad, s).s, TF).w);
+        if (s * tl.ppy >= w + 22) return s;
+      }
+      return 50000;
+    }
+
+    tl.draw = (d = {}) => {
+      const c = L.ctx, A = d.a == null ? 1 : d.a; if (A <= .005) return;
+      c.save(); c.globalAlpha *= A;
+      const { x0, x1, top, h, bot } = tl, W = x1 - x0, ppy = tl.ppy;
+      /* papírcsík */
+      c.save(); c.shadowColor = 'rgba(70,50,20,.16)'; c.shadowBlur = 16; c.shadowOffsetY = 4;
+      c.fillStyle = CARD; c.fillRect(x0, top, W, h); c.restore();
+      const xb = tl.epoch != null ? tl.x(tl.epoch) : tl.x(1);      // a kezdőpont előtti rész halványan
+      if (xb > x0) { c.fillStyle = tl.epoch != null ? 'rgba(28,36,64,.11)' : 'rgba(28,36,64,.07)'; c.fillRect(x0, top, Math.min(xb, x1) - x0, h); }
+      for (const b of d.bands || []) {
+        const xa = Math.max(x0, tl.x(b.u0)), xc = Math.min(x1, tl.x(b.u1)); if (xc <= xa) continue;
+        c.save(); c.globalAlpha *= b.a == null ? 1 : b.a; c.fillStyle = b.col; c.fillRect(xa, top, xc - xa, h); c.restore();
+      }
+      /* osztás: évcellák (ha egy év ≥ 14 px), különben kis jelek */
+      const step = pickStep(d.ad);
+      c.save(); c.beginPath(); c.rect(x0, top, W, h); c.clip();
+      c.strokeStyle = 'rgba(28,36,64,.30)'; c.lineWidth = 1.5; c.beginPath();
+      if (ppy >= 14) {
+        for (let a = Math.ceil(tl.u0); a <= tl.u1; a++) { const x = tl.x(a); c.moveTo(x, top); c.lineTo(x, bot); }
+      } else {
+        const minor = [step / 10, step / 5, step / 2].find((m) => m >= 1 && Number.isInteger(m) && m * ppy >= 7);
+        if (minor) for (const a of yearsAt(minor)) { const x = tl.x(a + .5); c.moveTo(x, bot - 9); c.lineTo(x, bot); }
+      }
+      c.stroke();
+      c.strokeStyle = INK; c.lineWidth = 2; c.beginPath();
+      const ys = yearsAt(step);
+      for (const a of ys) { const x = tl.x(a + .5); c.moveTo(x, bot - 15); c.lineTo(x, bot); }
+      c.stroke();
+      c.restore();
+      for (const a of ys) {
+        const x = tl.x(a + .5); if (!inView(x)) continue;
+        const t = tickText(a, d.ad, step);
+        L.tx(t.s, x, tl.R.tick, Object.assign({}, TF, { a: 'center', c: INK, k: t.k }));
+      }
+      c.strokeStyle = INK; c.lineWidth = 2.5; c.strokeRect(x0, top, W, h);
+      c.fillStyle = INK; c.beginPath(); c.moveTo(x1 + 6, top + 10); c.lineTo(x1 + 28, tl.y); c.lineTo(x1 + 6, bot - 10); c.closePath(); c.fill();
+      /* kezdőpont */
+      if (d.origin !== false && inView(xb) && (tl.epoch != null || xb > x0)) {
+        c.strokeStyle = tl.epoch != null ? OCHRE : RED; c.lineWidth = 3.5;
+        c.beginPath(); c.moveTo(xb, top - 10); c.lineTo(xb, bot + 10); c.stroke();
+      }
+      if (d.sides && tl.epoch == null) {
+        const sf = { f: F.B, s: 22, w: 700 }, lt = '← ' + T.bc.s, rt = T.ad.s + ' →';
+        const wl = L.measure(lt, sf).w, wr = L.measure(rt, sf).w;
+        if (xb - x0 > wl + 30 && xb < x1) L.tx(lt, xb - 14, tl.y + 8, Object.assign({}, sf, { a: 'right', c: MUT, k: T.bc.k }));
+        if (x1 - xb > wr + 30 && xb > x0) L.tx(rt, xb + 14, tl.y + 8, Object.assign({}, sf, { a: 'left', c: INK, k: T.ad.k }));
+      }
+      if (d.caption && (d.caption.a == null || d.caption.a > .01)) {
+        c.save(); c.globalAlpha *= d.caption.a == null ? 1 : d.caption.a;
+        L.tx(d.caption.s, d.caption.right ? x1 - 16 : x0 + 16, tl.y + 8, { f: F.B, s: 22, w: 700, a: d.caption.right ? 'right' : 'left', c: MUT, k: d.caption.k });
+        c.restore();
+      }
+      /* évszázadok sora */
+      const cf = U.clamp((ppy * 100 - 36) / 30);
+      if (d.cent > .005 && cf > 0) {
+        c.save(); c.globalAlpha *= d.cent * cf;
+        const y0 = tl.R.cent, hh = tl.R.centH, hiC = d.centHi != null ? Y.century(d.centHi) : null;
+        let a = Math.floor(tl.u0);
+        for (let g = 0; g < 400; g++) {
+          const cc = Y.century(a), sp = Y.centurySpan(cc.n, cc.bc), xa = Math.max(x0, tl.x(sp[0])), xc = Math.min(x1, tl.x(sp[1]));
+          if (xc > xa) {
+            const hi = hiC && hiC.n === cc.n && hiC.bc === cc.bc;
+            c.fillStyle = hi ? 'rgba(200,64,28,.20)' : (cc.n + (cc.bc ? 1 : 0)) % 2 ? 'rgba(28,36,64,.05)' : 'rgba(28,36,64,.12)';
+            c.fillRect(xa, y0, xc - xa, hh);
+            c.strokeStyle = 'rgba(28,36,64,.45)'; c.lineWidth = 1.5; c.beginPath();
+            if (tl.x(sp[0]) >= x0) { c.moveTo(xa, y0); c.lineTo(xa, y0 + hh); }
+            c.stroke();
+            if (hi) { c.strokeStyle = RED; c.lineWidth = 2.5; c.strokeRect(xa, y0, xc - xa, hh); }
+            const full = Y.centuryLabel(sp[0], T), short = Y.centuryLabel(sp[0], T, true), cf2 = { f: F.B, s: 22, w: hi ? 700 : 600 };
+            const s = L.measure(full, cf2).w + 16 <= xc - xa ? full : L.measure(short, cf2).w + 12 <= xc - xa ? short : null;
+            if (s) L.tx(s, (xa + xc) / 2, y0 + hh / 2 + 8, Object.assign({}, cf2, { a: 'center', c: hi ? RED : INK, k: Y.centuryKeys(sp[0], T) }));
+          }
+          if (sp[1] > tl.u1) break;
+          a = sp[1];
+        }
+        c.strokeStyle = 'rgba(28,36,64,.5)'; c.lineWidth = 1.5; c.strokeRect(x0, y0, W, hh);
+        c.restore();
+      }
+      /* korszakok sora */
+      if (d.eras && d.eraA > .005) {
+        c.save(); c.globalAlpha *= d.eraA;
+        const y0 = tl.R.era, hh = tl.R.eraH, EF = { f: F.B, s: 24, w: 700 };
+        for (const e of d.eras) {
+          const ua = e.fade0 ? e.fade0[0] : e.u0, ub = e.fade1 ? e.fade1[1] : e.u1;
+          const gx0 = tl.x(ua), gx1 = tl.x(ub), xa = Math.max(x0, gx0), xc = Math.min(x1, gx1);
+          if (xc <= xa + .5) continue;
+          const g = c.createLinearGradient(gx0, 0, gx1, 0), fa = U.rgba(e.col, .26), f0 = U.rgba(e.col, 0);
+          const fr = (u) => U.clamp((tl.x(u) - gx0) / (gx1 - gx0));
+          if (e.fade0) { g.addColorStop(0, f0); g.addColorStop(fr(e.fade0[1]), fa); } else g.addColorStop(0, fa);
+          if (e.fade1) { g.addColorStop(fr(e.fade1[0]), fa); g.addColorStop(1, f0); } else g.addColorStop(1, fa);
+          c.fillStyle = g; c.fillRect(xa, y0, xc - xa, hh);
+          if (!e.fade0 && gx0 >= x0) { c.strokeStyle = e.col; c.lineWidth = 3; c.beginPath(); c.moveTo(gx0, y0); c.lineTo(gx0, y0 + hh); c.stroke(); }
+          const sa = Math.max(x0, tl.x(e.fade0 ? e.fade0[1] : e.u0)), sb = Math.min(x1, tl.x(e.fade1 ? e.fade1[0] : e.u1));
+          const lw = L.measure(e.name.s, EF).w;
+          if (sb - sa >= lw + 16) L.tx(e.name.s, (sa + sb) / 2, y0 + hh / 2 + 9, Object.assign({}, EF, { a: 'center', c: INK, k: e.name.k }));
+          else if (d.eraOut && sb > x0 && sa < x1) {
+            const cx = U.clamp((sa + sb) / 2, x0 + lw / 2, x1 - lw / 2);
+            L.tx(e.name.s, cx, y0 - 16, Object.assign({}, EF, { a: 'center', c: INK, k: e.name.k }));
+            c.strokeStyle = U.rgba(INK, .5); c.lineWidth = 1.5; c.beginPath(); c.moveTo(cx, y0 - 12); c.lineTo((Math.max(sa, x0) + Math.min(sb, x1)) / 2, y0 + 4); c.stroke();
+          }
+        }
+        c.strokeStyle = 'rgba(28,36,64,.5)'; c.lineWidth = 1.5; c.strokeRect(x0, y0, W, hh);
+        c.restore();
+      }
+      c.restore();
+    };
+
+    /* ── eseménykártyák ── */
+    const CT = { f: F.B, s: 24, w: 650 }, CD = { f: F.M, s: 22, w: 600 }, CN = { f: F.B, s: 22, w: 700 };
+    tl.cardSize = (it) => {
+      const src = tl.src, wt = L.measure(it.title.s, CT).w, wd = it.date ? L.measure(it.date.s, CD).w : 0;
+      const ws = it.est && src ? src.stampSize('becslés').w + 14 : 0, wn = it.note ? L.measure(it.note.s, CN).w : 0;
+      return { w: Math.max(wt, wd + ws, wn) + 34, h: 52 + (it.date ? 32 : 0) + (it.note ? 32 : 0) };
+    };
+    tl.card = (it, x, y) => {
+      const c = L.ctx, src = tl.src, z = tl.cardSize(it);
+      if (src) src.frame(x, y, z.w, z.h, it.layer || null, { hi: it.hi });
+      else { c.beginPath(); c.roundRect(x, y, z.w, z.h, 10); c.fillStyle = CARD; c.fill(); c.strokeStyle = U.rgba(INK, .35); c.lineWidth = 2; c.stroke(); }
+      L.tx(it.title.s, x + 17, y + 38, Object.assign({}, CT, { c: INK, k: it.title.k }));
+      let yy = y + 38;
+      if (it.date) {
+        yy += 32; const b = L.tx(it.date.s, x + 17, yy, Object.assign({}, CD, { c: it.hi ? RED : INK, k: it.date.k }));
+        if (it.est && src) src.stamp('becslés', x + 17 + b.w + 14, yy - 7);
+      }
+      if (it.note) { yy += 32; L.tx(it.note.s, x + 17, yy, Object.assign({}, CN, { c: it.note.c || INK, k: it.note.k })); }
+      return z;
+    };
+    tl.rowBottom = (r, pitch) => tl.top - 24 - r * (pitch || 124);
+    tl.cardPos = (it, pitch) => {
+      const z = tl.cardSize(it), xe = tl.x(it.u), cx = U.clamp(xe, tl.x0 + z.w / 2, tl.x1 - z.w / 2), yb = tl.rowBottom(it.row || 0, pitch);
+      return { x: cx - z.w / 2, y: yb - z.h, w: z.w, h: z.h, xe, yb };
+    };
+    tl.cards = (items, o = {}) => {
+      const c = L.ctx;
+      for (const it of items) {
+        const A = it.a == null ? 1 : it.a; if (A <= .01) continue;
+        const p = tl.cardPos(it, o.pitch), fade = U.clamp(1 - Math.max(tl.x0 - p.xe, p.xe - tl.x1, 0) / 24);
+        if (fade <= .01) continue;
+        c.save(); c.globalAlpha *= A * fade;
+        const lx = U.clamp(p.xe, p.x + 14, p.x + p.w - 14), xe = U.clamp(p.xe, tl.x0, tl.x1);
+        c.strokeStyle = U.rgba(INK, .55); c.lineWidth = 2; c.beginPath(); c.moveTo(lx, p.yb); c.lineTo(xe, tl.top - 2); c.stroke();
+        tl.card(it, p.x, p.y);
+        const col = it.layer && tl.src ? tl.src.COL[it.layer] : INK;
+        c.beginPath(); c.arc(xe, tl.top, 6.5, 0, TAU); c.fillStyle = col; c.fill(); c.strokeStyle = CARD; c.lineWidth = 2.5; c.stroke();
+        c.restore();
+      }
+    };
+
+    /* ── tűk ── */
+    tl.pinX = (p) => tl.x(Y.year(p.u) + .5);
+    tl.drawPins = (d = {}) => {
+      const c = L.ctx, A = d.a == null ? 1 : d.a; if (A <= .01 || !tl.pins.length) return;
+      c.save(); c.globalAlpha *= A;
+      const py = d.pinY || tl.pinY, yt = (d.top != null ? d.top : tl.top) - 18;
+      const LF1 = { f: F.M, s: 24, w: 700 }, LF2 = { f: F.B, s: 22, w: 500 };
+      const P = tl.pins.map((p) => {
+        const yr = Y.year(p.u), xr = tl.pinX(p), x = U.clamp(xr, tl.x0, tl.x1);
+        const ad = p.ad != null ? p.ad : yr < 1000 && tl.u0 < 1;      // „Kr. u. 476”, ha a Kr. e. rész is látszik
+        const lines = d.label ? d.label(p, yr) : [{ s: Y.label(yr, T, ad), k: Y.key(yr, T, ad), c: p.col }, { s: Y.centuryLabel(yr, T), k: Y.centuryKeys(yr, T) }];
+        const w = Math.max(...lines.map((l, i) => L.measure(l.s, i ? LF2 : LF1).w));
+        return { p, yr, x, out: xr !== x, lines, w, cx: x };
+      });
+      if (P.length === 2) {           // feliratok szétválasztása
+        const [a, b] = P[0].x <= P[1].x ? P : [P[1], P[0]];
+        if (b.cx - a.cx < (a.w + b.w) / 2 + 18) { const m = (a.x + b.x) / 2; a.cx = m - a.w / 2 - 9; b.cx = m + b.w / 2 + 9; }
+        a.cx = Math.max(a.cx, tl.x0 + a.w / 2 - 30); b.cx = Math.min(b.cx, tl.x1 - b.w / 2 + 40);
+        if (b.cx - a.cx < (a.w + b.w) / 2 + 18) { if (a.cx <= tl.x0 + a.w / 2) b.cx = a.cx + (a.w + b.w) / 2 + 18; else a.cx = b.cx - (a.w + b.w) / 2 - 18; }
+      } else P.forEach((q) => { q.cx = U.clamp(q.cx, tl.x0 + q.w / 2 - 30, tl.x1 - q.w / 2 + 40); });
+      P.forEach((q) => { q.hx = q.x; });
+      if (P.length === 2 && Math.abs(P[0].x - P[1].x) < 42) {    // közeli tűk: a fejek széthúzva
+        const [a, b] = P[0].x <= P[1].x ? P : [P[1], P[0]], m = (a.x + b.x) / 2; a.hx = m - 21; b.hx = m + 21;
+      }
+      for (const q of P) {
+        const col = q.p.col || RED;
+        c.strokeStyle = col; c.lineWidth = 3; c.setLineDash(q.out ? [6, 5] : []);
+        c.beginPath(); c.moveTo(q.x, yt + 10); c.lineTo(q.x, py - 50); c.lineTo(q.hx, py - 16); c.stroke(); c.setLineDash([]);
+        c.fillStyle = col; c.beginPath(); c.moveTo(q.x - 9, yt); c.lineTo(q.x + 9, yt); c.lineTo(q.x, yt + 13); c.closePath(); c.fill();
+        c.beginPath(); c.arc(q.hx, py, 17, 0, TAU); c.fillStyle = col; c.fill(); c.strokeStyle = CARD; c.lineWidth = 3; c.stroke();
+        c.beginPath(); c.arc(q.hx, py, 6, 0, TAU); c.fillStyle = CARD; c.fill();
+        if (Math.abs(q.cx - q.hx) > 4) { c.strokeStyle = U.rgba(col, .7); c.lineWidth = 2; c.beginPath(); c.moveTo(q.hx, py + 18); c.lineTo(q.cx, py + 26); c.stroke(); }
+        q.lines.forEach((l, i) => L.tx(l.s, q.cx, py + 50 + i * 30, Object.assign({}, i ? LF2 : LF1, { a: 'center', c: l.c || (i ? MUT : col), k: l.k })));
+      }
+      if (d.bracket && P.length === 2) {
+        const xa = Math.min(P[0].x, P[1].x), xc = Math.max(P[0].x, P[1].x), by = py + 116;
+        const a1 = Math.min(P[0].yr, P[1].yr), a2 = Math.max(P[0].yr, P[1].yr), e = a2 - a1;
+        c.strokeStyle = INK; c.lineWidth = 2.5; c.beginPath();
+        c.moveTo(xa, by - 12); c.lineTo(xa, by); c.lineTo(xc, by); c.lineTo(xc, by - 12); c.stroke();
+        const cap = d.caption ? d.caption(e, a1, a2) : { s: T.years.s.replace('#', U.fmt(e)), k: T.years.k };
+        const sub = d.sub ? d.sub(e, a1, a2) : { s: Y.formula(a1, a2), k: null };
+        const CF = { f: F.M, s: 30, w: 700 }, SF = { f: F.M, s: 22, w: 500 };
+        const wc = Math.max(L.measure(cap.s, CF).w, sub ? L.measure(sub.s, SF).w : 0);
+        const cx = U.clamp((xa + xc) / 2, tl.x0 + wc / 2, tl.x1 - wc / 2);
+        L.tx(cap.s, cx, by + 40, Object.assign({}, CF, { a: 'center', c: INK, k: cap.k }));
+        if (sub) L.tx(sub.s, cx, by + 72, Object.assign({}, SF, { a: 'center', c: MUT, k: sub.k }));
+      }
+      if (d.hint) {
+        const hf = { f: F.D, s: 24, w: 500, i: true }, hw = L.measure(d.hint.s, hf).w, xs = P.map((q) => q.hx).sort((a, b) => a - b);
+        const free = (xa) => xa >= tl.x0 - 30 && xa + hw <= tl.x1 + 40 && xs.every((x) => x < xa - 30 || x > xa + hw + 30);
+        const cand = [xs[0] + 32, xs[0] - 32 - hw, xs[xs.length - 1] + 32, tl.x0, tl.x1 - hw].find(free);
+        if (cand != null) L.tx(d.hint.s, cand, py + 8, Object.assign({}, hf, { c: RED, k: d.hint.k }));
+      }
+      c.restore();
+    };
+
+    /* ── interakció: tűk húzása, pásztázás, görgős nagyítás ── */
+    function wire() {
+      tl._wired = true;
+      L.stage.addEventListener('wheel', (e) => {
+        if (L.t - (tl._live == null ? -9 : tl._live) > .25 || !tl._zoom) return;
+        const q = L.toStage(e);
+        if (q.x > L.VW || q.x < tl.x0 - 40 || q.y < tl.top - 420 || q.y > tl.pinY + 80) return;
+        e.preventDefault();
+        tl._wheel = { x: U.clamp(q.x, tl.x0, tl.x1), dy: (tl._wheel ? tl._wheel.dy : 0) + e.deltaY };
+      }, { passive: false });
+    }
+    tl.setUser = (u0, u1) => {
+      const [b0, b1] = tl.bounds; let s = Math.min(U.clamp(u1 - u0, tl.minSpan, tl.maxSpan), b1 - b0);
+      const m = U.clamp((u0 + u1) / 2, b0 + s / 2, b1 - s / 2);
+      tl.user = [m - s / 2, m + s / 2]; tl.view(tl.user[0], tl.user[1]);
+      if (tl._onView) tl._onView(tl.user);
+    };
+    tl.zoomAt = (u, f) => { const s0 = tl.span(), s = U.clamp(s0 * f, tl.minSpan, tl.maxSpan), k = s / s0; tl.setUser(u - (u - tl.u0) * k, u + (tl.u1 - u) * k); };
+    tl.zoomTo = (s) => { const m = (tl.u0 + tl.u1) / 2; tl.setUser(m - s / 2, m + s / 2); };
+    tl.interact = (io = {}) => {
+      if (!tl._wired) wire();
+      tl._live = L.t; tl._zoom = io.zoom !== false; tl._onView = io.onView || null;
+      const p = L.pointer, edge = p.down && !tl._pd; tl._pd = p.down;
+      const top = io.top != null ? io.top : tl.top, py = io.pinY || tl.pinY;
+      const pinAt = () => {
+        if (io.pins === false) return null;
+        let best = null, bd = 26;
+        for (const pin of tl.pins) { const dd = Math.abs(p.x - tl.pinX(pin)); if (dd < bd && p.y > top - 40 && p.y < py + 28) { bd = dd; best = pin; } }
+        return best;
+      };
+      if (edge && p.x < L.VW) {
+        const pin = pinAt();
+        if (pin) tl.drag = { pin };
+        else if (io.pan !== false && p.x > tl.x0 && p.x < tl.x1 && p.y > tl.top - 6 && p.y < (io.panBottom || tl.R.era + tl.R.eraH)) tl.drag = { pan: 1, x: p.x, v: [tl.u0, tl.u1] };
+      }
+      if (!p.down) tl.drag = null;
+      let moved = false;
+      if (tl.drag && tl.drag.pin) {
+        let u = U.clamp(tl.u(p.x), Math.max(tl.u0, tl.bounds[0]), Math.min(tl.u1, tl.bounds[1]) - 1e-6), bd = 13;
+        for (const s of io.snap || []) { const dd = Math.abs(tl.x(s) - p.x); if (dd < bd) { bd = dd; u = s; } }
+        const nu = Math.floor(u) + .5;
+        if (nu !== tl.drag.pin.u) { tl.drag.pin.u = nu; moved = true; }
+      } else if (tl.drag && tl.drag.pan) {
+        const du = (p.x - tl.drag.x) / tl.ppy; tl.setUser(tl.drag.v[0] - du, tl.drag.v[1] - du);
+      }
+      if (tl._wheel) { const w = tl._wheel; tl._wheel = null; tl.zoomAt(tl.u(w.x), Math.exp(U.clamp(w.dy, -500, 500) * .0016)); }
+      if (tl.drag) L.stage.style.cursor = 'grabbing';
+      else if (p.inside && p.x < L.VW && pinAt()) L.stage.style.cursor = 'grab';
+      return moved;
+    };
+    return tl;
+  }
+
+  function mini(L, m) {
+    const c = L.ctx, A = m.a == null ? 1 : m.a; if (A <= .01) return;
+    c.save(); c.globalAlpha *= A;
+    const h = m.h || 18, X = (u) => m.x + (u - m.u0) / (m.u1 - m.u0) * m.w;
+    if (m.cap) L.tx(m.cap.s, m.x, m.y - 14, { f: F.B, s: 22, w: 700, c: MUT, k: m.cap.k });
+    c.fillStyle = CARD; c.fillRect(m.x, m.y, m.w, h);
+    for (const e of m.eras || []) {
+      const ua = e.fade0 ? (e.fade0[0] + e.fade0[1]) / 2 : e.u0, ub = e.fade1 ? (e.fade1[0] + e.fade1[1]) / 2 : e.u1;
+      const xa = Math.max(m.x, X(ua)), xb = Math.min(m.x + m.w, X(ub));
+      if (xb > xa) { c.fillStyle = U.rgba(e.col, .45); c.fillRect(xa, m.y, xb - xa, h); }
+    }
+    c.strokeStyle = INK; c.lineWidth = 2; c.strokeRect(m.x, m.y, m.w, h);
+    const xo = X(1); if (xo > m.x && xo < m.x + m.w) { c.strokeStyle = RED; c.lineWidth = 3; c.beginPath(); c.moveTo(xo, m.y - 4); c.lineTo(xo, m.y + h + 4); c.stroke(); }
+    if (m.win) {
+      let xa = X(Math.max(m.win[0], m.u0)), xb = X(Math.min(m.win[1], m.u1));
+      if (xb - xa < 8) { const mm = (xa + xb) / 2; xa = mm - 4; xb = mm + 4; }
+      c.fillStyle = 'rgba(200,64,28,.18)'; c.fillRect(xa, m.y - 7, xb - xa, h + 14);
+      c.strokeStyle = RED; c.lineWidth = 3; c.strokeRect(xa, m.y - 7, xb - xa, h + 14);
+    }
+    if (m.ends) {
+      L.tx(m.ends[0].s, m.x, m.y + h + 30, { f: F.B, s: 22, w: 500, c: MUT, k: m.ends[0].k });
+      L.tx(m.ends[1].s, m.x + m.w, m.y + h + 30, { f: F.B, s: 22, w: 500, a: 'right', c: MUT, k: m.ends[1].k });
+    }
+    c.restore();
+  }
+
+  return { Y, create, mini };
+})();
+/* ── MODUL VÉGE: Időszalag ── */
+
+
+/* ── MODUL: Forráskártya (TortSource) ─────────────────────────────────────────────
+   C modul (terv.md, 5. fejezet): a „Honnan tudjuk?” kártya és a három réteg egységes jelölése
+   (leckek/SZERZODES.md, 11. pont). Referencia: 01-idoszamitas. Később: shared/tort/source.js.
+   Függés: Lesson motor; az évszám-aritmetikához TortTimeline.Y (a B modul) – előbb azt töltsd be.
+
+   const S = TortSource.create(L, T)   T (a .md-ből, mind {s, k}):
+       {'forrás', 'rekonstrukció', 'monda', 'becslés', 'vázlatos'?, 'illusztráció'?}
+   S.COL                      réteg → keretszín (forrás #0a6f86, rekonstrukció #1c2440, monda #8f5a0c)
+   S.frame(x, y, w, h, layer, o)   keret a réteg szerint + a réteg neve a bal felső sarokban:
+       'forrás' kékeszöld folytonos 2,5 px · 'rekonstrukció' tinta szaggatott 8/6 · 'monda' okker kartus
+       (kitöltés rgba(201,150,60,.16), csigás sarkok) · null: semleges kártya. o = {tag: false, shadow: false}
+   S.stamp(kind, x, y)        bélyeg (kind: 'becslés' | 'vázlatos' | 'illusztráció'): L.pill, −3°, (x, y) = bal közép
+   S.stampSize(kind)          {w, h}
+   S.icon(type, cx, cy, size, col)   forrástípus-ikon: 'írott' | 'krónika' | 'lelet' | 'monda' | 'kép'
+   S.wrap(s, maxW, font)      sortörés L.measure-rel → sorok tömbje
+   S.gap(ev, wr)              eltelt évek az esemény(tartomány) és a keletkezés között → {lo, hi, s: '528–531'}
+   S.card(q) → {x, y, w, h}   „Honnan tudjuk?” kártya, a magassága a tartalomhoz igazodik:
+       q = {x, y, w, a, layer, icon, type: {s, k}, title: {s, k},
+            rows: [{l: {s, k}, v: {s, k}, c?}],                         // „Ki írta?”, „Mikor?” …
+            line: {T,                                                   // mini időszalag (TortTimeline T)
+                   ev: {a0, a1, name: {s, k}, sub?: {s, k}, layer, est, dateK},  // az esemény (csillagászati évek)
+                   wr: {a, name?: {s, k}, dateK},                       // a forrás keletkezése
+                   mark?: {a, name: {s, k}},                           // pl. egy számított kezdőpont
+                   gap: {s: '# évvel később', k}}}
+   ──────────────────────────────────────────────────────────────────────────────── */
+const TortSource = (() => {
+  const F = Lesson.FONTS, U = Lesson.U, TAU = Math.PI * 2;
+  const INK = '#1c2440', MUT = '#565d72', RED = '#c8401c', TEAL = '#0a6f86', OCHRE = '#8f5a0c', CARD = '#fffaf1', OCHRE_BG = 'rgba(201,150,60,.16)';
+  const COL = { 'forrás': TEAL, 'rekonstrukció': INK, 'monda': OCHRE };
+  const TAG = { f: F.B, s: 22, w: 700 };
+  const STF = { f: F.B, s: 22, w: 600, ls: '1.76px' };
+
+  function create(L, T) {
+    const S = { T, COL, STF };
+    S.frame = (x, y, w, h, layer, o = {}) => {
+      const c = L.ctx, r = layer === 'monda' ? 18 : 10;
+      c.save();
+      if (o.shadow !== false) { c.shadowColor = 'rgba(70,50,20,.16)'; c.shadowBlur = 14; c.shadowOffsetY = 3; }
+      c.beginPath(); c.roundRect(x, y, w, h, r); c.fillStyle = CARD; c.fill();
+      c.shadowColor = 'transparent';
+      if (layer === 'monda') { c.fillStyle = OCHRE_BG; c.fill(); }
+      c.lineWidth = layer ? 2.5 : 2; c.strokeStyle = layer ? COL[layer] : U.rgba(INK, .35);
+      if (layer === 'rekonstrukció') c.setLineDash([8, 6]);
+      c.stroke(); c.setLineDash([]);
+      if (layer === 'monda') {          // csigás sarkok
+        c.lineWidth = 2; c.strokeStyle = OCHRE;
+        [[x + 9, y + 9, 0], [x + w - 9, y + 9, 1], [x + w - 9, y + h - 9, 2], [x + 9, y + h - 9, 3]].forEach(([cx, cy, q]) => {
+          c.beginPath(); c.arc(cx, cy, 4.5, q * Math.PI / 2 + Math.PI, q * Math.PI / 2 + Math.PI * 2.4); c.stroke();
+        });
+      }
+      if (layer && o.tag !== false && T[layer]) {
+        const t = T[layer], tw = L.measure(t.s, TAG).w, tx0 = x + (layer === 'monda' ? 22 : 16);
+        c.fillStyle = CARD; c.fillRect(tx0 - 7, y - 12, tw + 14, 24);
+        if (layer === 'monda') { c.fillStyle = OCHRE_BG; c.fillRect(tx0 - 7, y - 12, tw + 14, 24); }
+        L.tx(t.s, tx0, y + 1, Object.assign({}, TAG, { b: 'middle', c: COL[layer], k: t.k }));
+      }
+      c.restore();
+    };
+    S.stampSize = (kind) => { const m = L.measure(T[kind].s, STF); return { w: m.w + 18, h: 22 * 1.3 + 9 * .8 }; };
+    S.stamp = (kind, x, y) => {
+      const c = L.ctx, col = kind === 'becslés' ? OCHRE : MUT;
+      c.save(); c.translate(x, y); c.rotate(-3 * Math.PI / 180);
+      const b = L.pill(T[kind].s, 0, 0, Object.assign({}, STF, { bg: CARD, bd: col, bw: 2, c: col, pad: 9, r: 6, k: T[kind].k }));
+      c.restore(); return b;
+    };
+    S.icon = (type, cx, cy, s, col) => {
+      const c = L.ctx; c.save(); c.translate(cx, cy); c.lineWidth = 2.5; c.strokeStyle = col; c.lineJoin = 'round'; c.lineCap = 'round';
+      const w = s * .62, h = s * .8;
+      if (type === 'írott') {          // lap behajtott sarokkal, sorokkal
+        const f = s * .17;
+        c.beginPath(); c.moveTo(-w / 2, -h / 2); c.lineTo(w / 2 - f, -h / 2); c.lineTo(w / 2, -h / 2 + f); c.lineTo(w / 2, h / 2); c.lineTo(-w / 2, h / 2); c.closePath();
+        c.fillStyle = '#f4e9d0'; c.fill(); c.stroke();
+        c.beginPath(); c.moveTo(w / 2 - f, -h / 2); c.lineTo(w / 2 - f, -h / 2 + f); c.lineTo(w / 2, -h / 2 + f); c.stroke();
+        c.lineWidth = 2; for (let i = 0; i < 4; i++) { const yy = -h / 2 + s * .3 + i * s * .12; c.beginPath(); c.moveTo(-w / 2 + s * .1, yy); c.lineTo(w / 2 - s * .1 - (i === 3 ? s * .14 : 0), yy); c.stroke(); }
+      } else if (type === 'krónika') { // nyitott könyv
+        c.beginPath(); c.moveTo(0, -h * .32); c.quadraticCurveTo(-w * .4, -h * .48, -w * .85, -h * .36); c.lineTo(-w * .85, h * .4); c.quadraticCurveTo(-w * .4, h * .28, 0, h * .44);
+        c.quadraticCurveTo(w * .4, h * .28, w * .85, h * .4); c.lineTo(w * .85, -h * .36); c.quadraticCurveTo(w * .4, -h * .48, 0, -h * .32); c.closePath();
+        c.fillStyle = '#f4e9d0'; c.fill(); c.stroke(); c.beginPath(); c.moveTo(0, -h * .32); c.lineTo(0, h * .44); c.stroke();
+      } else if (type === 'lelet') {   // korsó
+        c.beginPath(); c.moveTo(-w * .18, -h / 2); c.lineTo(w * .18, -h / 2); c.quadraticCurveTo(w * .12, -h * .25, w * .45, 0); c.quadraticCurveTo(w * .5, h * .35, w * .15, h / 2);
+        c.lineTo(-w * .15, h / 2); c.quadraticCurveTo(-w * .5, h * .35, -w * .45, 0); c.quadraticCurveTo(-w * .12, -h * .25, -w * .18, -h / 2); c.closePath();
+        c.fillStyle = '#e8c9a0'; c.fill(); c.stroke();
+      } else if (type === 'monda') {   // beszédbuborék
+        c.beginPath(); c.roundRect(-w * .7, -h * .42, w * 1.4, h * .66, 12); c.moveTo(-w * .2, h * .24); c.lineTo(-w * .4, h * .5); c.lineTo(w * .05, h * .24);
+        c.fillStyle = OCHRE_BG; c.fill(); c.stroke();
+        c.fillStyle = col; [-1, 0, 1].forEach((i) => { c.beginPath(); c.arc(i * w * .32, -h * .09, 3.5, 0, TAU); c.fill(); });
+      } else {                         // 'kép': keret hegyekkel
+        c.beginPath(); c.rect(-w * .7, -h * .42, w * 1.4, h * .84); c.fillStyle = '#f4e9d0'; c.fill(); c.stroke();
+        c.beginPath(); c.moveTo(-w * .6, h * .32); c.lineTo(-w * .15, -h * .08); c.lineTo(w * .1, h * .14); c.lineTo(w * .3, -h * .02); c.lineTo(w * .6, h * .32); c.stroke();
+      }
+      c.restore();
+    };
+    S.wrap = (s, maxW, f) => {
+      const out = []; let line = '';
+      for (const word of String(s).split(' ')) {
+        const t = line ? line + ' ' + word : word;
+        if (line && L.measure(t, f).w > maxW) { out.push(line); line = word; } else line = t;
+      }
+      if (line) out.push(line);
+      return out;
+    };
+    S.gap = (ev, wr) => {
+      const lo = wr.a - Math.max(ev.a0, ev.a1 == null ? ev.a0 : ev.a1), hi = wr.a - Math.min(ev.a0, ev.a1 == null ? ev.a0 : ev.a1);
+      return { lo, hi, s: lo === hi ? U.fmt(lo) : U.fmt(lo) + '–' + U.fmt(hi) };
+    };
+    S.card = (q) => {
+      const c = L.ctx, A = q.a == null ? 1 : q.a; if (A <= .01) return null;
+      const Yt = TortTimeline.Y, pad = 30, x = q.x, y = q.y, w = q.w, col = COL[q.layer] || INK;
+      const LF = { f: F.B, s: 22, w: 700 }, VF = { f: F.B, s: 26, w: 500 };
+      const lw = Math.max(...q.rows.map((r) => L.measure(r.l.s, LF).w)) + 26, vw = w - pad * 2 - lw;
+      const rows = q.rows.map((r) => ({ r, lines: S.wrap(r.v.s, vw, VF) }));
+      const head = 116, lineH = 34, gapR = 18, hLine = q.line ? 226 : 0;
+      const h = head + 26 + rows.reduce((s, r) => s + r.lines.length * lineH + gapR, 0) + hLine;
+      c.save(); c.globalAlpha *= A;
+      S.frame(x, y, w, h, q.layer);
+      S.icon(q.icon, x + pad + 30, y + pad + 34, 62, col);
+      L.tx(q.type.s, x + pad + 84, y + pad + 22, Object.assign({}, LF, { c: col, k: q.type.k }));
+      L.tx(q.title.s, x + pad + 84, y + pad + 64, { f: F.D, s: 36, w: 560, c: INK, k: q.title.k, max: w - pad * 2 - 84 });
+      let yy = y + head + 26;
+      for (const { r, lines } of rows) {
+        L.tx(r.l.s, x + pad, yy, Object.assign({}, LF, { c: MUT, k: r.l.k }));
+        lines.forEach((ln, i) => L.tx(ln, x + pad + lw, yy + i * lineH, Object.assign({}, VF, { c: r.c || INK, k: r.v.k })));
+        yy += lines.length * lineH + gapR;
+      }
+      if (q.line) {
+        c.strokeStyle = U.rgba(INK, .16); c.lineWidth = 2; c.beginPath(); c.moveTo(x + pad, yy - 10); c.lineTo(x + w - pad, yy - 10); c.stroke();
+        drawLine(q.line, x + pad + 10, yy, w - pad * 2 - 20);
+      }
+      c.restore();
+      return { x, y, w, h };
+    };
+    function drawLine(Ln, lx, ly, lw) {
+      const c = L.ctx, Yt = TortTimeline.Y, T2 = Ln.T, ev = Ln.ev, wr = Ln.wr;
+      const us = [ev.a0, ev.a1 + 1, wr.a + .5].concat(Ln.mark ? [Ln.mark.a] : []);
+      let lo = Math.min(...us), hi = Math.max(...us); const pd = (hi - lo) * .1; lo -= pd; hi += pd;
+      const X = (u) => lx + (u - lo) / (hi - lo) * lw, yl = ly + 112;
+      const xa = X(ev.a0), xb = Math.max(X(ev.a1 + 1), xa + 16), xm = (xa + xb) / 2, xw = X(wr.a + .5);
+      /* eltelt idő: zárójel az esemény és a keletkezés között */
+      const g = S.gap(ev, wr), gs = Ln.gap.s.replace('#', g.s), by = ly + 48;
+      c.strokeStyle = RED; c.lineWidth = 2.5; c.beginPath(); c.moveTo(xm, by + 12); c.lineTo(xm, by); c.lineTo(xw, by); c.lineTo(xw, by + 12); c.stroke();
+      L.tx(gs, (xm + xw) / 2, by - 14, { f: F.M, s: 26, w: 700, a: 'center', c: RED, k: [Ln.gap.k, ev.dateK, wr.dateK].flat().filter(Boolean) });
+      /* tengely */
+      c.strokeStyle = INK; c.lineWidth = 2.5; c.beginPath(); c.moveTo(lx, yl); c.lineTo(lx + lw, yl); c.stroke();
+      c.fillStyle = INK; c.beginPath(); c.moveTo(lx + lw + 4, yl - 8); c.lineTo(lx + lw + 18, yl); c.lineTo(lx + lw + 4, yl + 8); c.closePath(); c.fill();
+      /* az esemény (tartomány, a rétege szerint) */
+      c.beginPath(); c.roundRect(xa, yl - 15, xb - xa, 30, 6); c.fillStyle = 'rgba(28,36,64,.10)'; c.fill();
+      c.strokeStyle = COL[ev.layer] || INK; c.lineWidth = 2.5; if (ev.layer === 'rekonstrukció') c.setLineDash([8, 6]); c.stroke(); c.setLineDash([]);
+      const nm = L.tx(ev.name.s, lx, yl + 44, { f: F.B, s: 22, w: 700, c: INK, k: ev.name.k });
+      const ds = ev.a1 != null && ev.a1 !== ev.a0 ? Yt.range(ev.a0, ev.a1, T2) : Yt.label(ev.a0, T2);
+      const db = L.tx(ds, lx, yl + 74, { f: F.M, s: 22, w: 600, c: INK, k: ev.dateK });
+      if (ev.est) S.stamp('becslés', lx + db.w + 14, yl + 67);
+      if (ev.sub) L.tx(ev.sub.s, lx, yl + 104, { f: F.D, s: 22, w: 500, i: true, c: MUT, k: ev.sub.k });
+      /* számított kezdőpont */
+      if (Ln.mark) {
+        const xk = X(Ln.mark.a);
+        c.strokeStyle = RED; c.lineWidth = 3.5; c.beginPath(); c.moveTo(xk, yl - 20); c.lineTo(xk, yl + 20); c.stroke();
+        L.tx(Ln.mark.name.s + ': ' + Yt.label(Ln.mark.a, T2, true), xk + 12, yl - 26, { f: F.B, s: 22, w: 600, c: RED, k: [Ln.mark.name.k, T2.ad.k] });
+      }
+      /* a forrás keletkezése */
+      c.beginPath(); c.arc(xw, yl, 10, 0, TAU); c.fillStyle = TEAL; c.fill(); c.strokeStyle = CARD; c.lineWidth = 3; c.stroke();
+      const ws = Yt.label(wr.a, T2), wf = { f: F.M, s: 22, w: 700 }, ww = L.measure(ws, wf).w;
+      L.tx(ws, Math.min(xw, lx + lw - ww / 2), yl + 44, Object.assign({}, wf, { a: 'center', c: TEAL, k: wr.dateK }));
+      if (wr.name) { const nf = { f: F.B, s: 22, w: 600 }, nw = L.measure(wr.name.s, nf).w; L.tx(wr.name.s, Math.min(xw, lx + lw - nw / 2), yl + 74, Object.assign({}, nf, { a: 'center', c: TEAL, k: wr.name.k })); }
+    }
+    return S;
+  }
+  return { create, COL };
+})();
+/* ── MODUL VÉGE: Forráskártya ── */
+
+
+/* ════════════════════════════════════════════════════════════════════════════════
+   A lecke: 01-idoszamitas
+   ════════════════════════════════════════════════════════════════════════════════ */
+(function () {
+const U = Lesson.U, { clamp, lerp, smooth, out, inOut } = U, fmt = U.fmt, F = Lesson.FONTS, TAU = Math.PI * 2;
+const Yr = TortTimeline.Y;
+const INK = '#1c2440', MUT = '#565d72', RED = '#c8401c', TEAL = '#0a6f86', GOOD = '#1d7a45', BAD = '#b3261e',
+  CARD = '#fffaf1', OCHRE = '#8f5a0c', BLUE = '#1b5a94';
+let L, c, GA = 1;
+const al = (a = 1) => { c.globalAlpha = GA * clamp(a); };
+const lab = (k) => L.lab(k), K = (k) => ({ s: L.lab(k), k });
+const tpl = (k, ...v) => { let s = lab(k); for (const x of v) s = s.replace('#', x); return s; };
+const Ya = (k) => L.dat(k).a, Yu = (k) => Yr.u(L.dat(k));
+const V = (k) => ({ s: L.val(k), k });
+const pr = (st, a, b) => clamp((st - a) / (b - a));
+
+/* ── geometria (egy helyen: rajz és számolás is ebből) ── */
+const TLG = { x0: 70, x1: 1290, y: 600, h: 64 };
+const MINI = { x: 900, y: 150, w: 400 };
+let tl, tlR, tlL6, tlL7, SRC, T;
+const S = { birth: 2015, pins: [], pinUser: false, zoomSl: null };
+const S8 = { hu: 0, huFrom: 0, huT0: -9, mod: 0, modFrom: 0, modT0: -9 };
+const S9 = { cards: [], drag: null, pd: false };
+
+/* ── háttér ── */
+function background() {
+  c.globalAlpha = 1;
+  const g = c.createRadialGradient(680, 480, 100, 680, 540, 1300); g.addColorStop(0, '#fbf6ec'); g.addColorStop(1, '#efe6d6');
+  c.fillStyle = g; c.fillRect(0, 0, 1920, 1080);
+  c.strokeStyle = 'rgba(28,36,64,.045)'; c.lineWidth = 1; c.beginPath();
+  for (let x = 0; x <= 1920; x += 40) { c.moveTo(x + .5, 0); c.lineTo(x + .5, 1080); }
+  for (let y = 0; y <= 1080; y += 40) { c.moveTo(0, y + .5); c.lineTo(1920, y + .5); }
+  c.stroke();
+}
+function header(k, st, s) {
+  al(out(clamp(st / .5)));
+  L.tx(s || lab(k), 60, 100, { f: F.D, s: 46, w: 560, c: INK, k, max: 1240 });
+}
+function arrow(x0, y0, x1, y1, col, w = 3) {
+  c.strokeStyle = col; c.lineWidth = w; c.beginPath(); c.moveTo(x0, y0); c.lineTo(x1, y1); c.stroke();
+  const a = Math.atan2(y1 - y0, x1 - x0); c.fillStyle = col; c.beginPath();
+  c.moveTo(x1 + Math.cos(a) * 4, y1 + Math.sin(a) * 4); c.lineTo(x1 - Math.cos(a - .45) * 18, y1 - Math.sin(a - .45) * 18); c.lineTo(x1 - Math.cos(a + .45) * 18, y1 - Math.sin(a + .45) * 18); c.closePath(); c.fill();
+}
+
+/* ── korszakok (a gombok a 8. lépésben a határokat tolják) ── */
+const tog = (from, to, t0, st) => lerp(from, to, inOut(clamp((st - t0) / .8)));
+const huK = () => (L.step === 7 ? tog(S8.huFrom, S8.hu, S8.huT0, L.st) : 0);
+const modK = () => (L.step === 7 ? tog(S8.modFrom, S8.mod, S8.modT0, L.st) : 0);
+function eras() {
+  const w0 = Ya('írás, legkorábban') + .5, w1 = Ya('írás, legkésőbb') + .5;
+  const b1 = Yu('Nyugatrómai Birodalom bukása'), b2 = lerp(Yu('Amerika felfedezése'), Yu('mohácsi csata'), huK());
+  const b3 = lerp(Yu('első világháború'), Yu('második világháború vége'), modK()), end = Ya('most') + 1;
+  return [
+    { u0: -1e5, u1: w1, fade1: [w0, w1], name: K('korszak őskor'), col: '#7a6a55' },
+    { u0: w0, u1: b1, fade0: [w0, w1], name: K('korszak ókor'), col: RED },
+    { u0: b1, u1: b2, name: K('korszak középkor'), col: TEAL },
+    { u0: b2, u1: b3, name: K('korszak újkor'), col: GOOD },
+    { u0: b3, u1: end, name: K('korszak jelenkor'), col: '#6a4c93' },
+  ];
+}
+
+/* ── eseménykártyák (a szöveg és az évszám a .md-ből) ── */
+const ITEM = {
+  szül: () => ({ u: S.birth + .5, title: K('esemény születésed'), date: { s: String(S.birth), k: 'születési év' } }),
+  most: () => ({ u: Yu('most'), title: K('esemény most'), date: V('most') }),
+  élet: () => ({ u: S.birth + .5, title: { s: tpl('életed mm', mmText(Ya('most') - S.birth)), k: ['életed mm', 'születési év', 'most'] } }),
+  piramis: () => ({ u: Yu('Nagy piramis'), title: K('esemény piramis'), date: V('Nagy piramis'), layer: 'rekonstrukció', est: !!L.dat('Nagy piramis').est }),
+  olimpia: () => ({ u: Yu('első olimpia'), title: K('esemény olimpia'), date: V('első olimpia'), layer: 'monda' }),
+  róma: () => ({ u: Yu('Róma alapítása'), title: K('esemény Róma'), date: V('Róma alapítása'), layer: 'monda' }),
+  caesar: () => ({ u: Yu('Caesar halála'), title: K('esemény Caesar'), date: V('Caesar halála'), layer: 'forrás' }),
+  kezdő: () => ({ u: 1, title: K('kezdőpont'), date: { s: Yr.label(1, T, true), k: 'Kr. u.' } }),
+  bukás: () => ({ u: Yu('Nyugatrómai Birodalom bukása'), title: K('esemény bukás'), date: V('Nyugatrómai Birodalom bukása'), layer: 'forrás' }),
+  írás: () => ({ u: (Ya('írás, legkorábban') + Ya('írás, legkésőbb')) / 2 + .5, title: K('esemény írás'),
+    date: { s: Yr.range(Ya('írás, legkorábban'), Ya('írás, legkésőbb'), T), k: ['írás, legkorábban', 'írás, legkésőbb'] }, layer: 'rekonstrukció', est: true }),
+  kolumbusz: () => ({ u: Yu('Amerika felfedezése'), title: K('esemény Kolumbusz'), date: V('Amerika felfedezése'), layer: 'forrás' }),
+  mohács: () => ({ u: Yu('mohácsi csata'), title: K('esemény Mohács'), date: V('mohácsi csata'), layer: 'forrás' }),
+  forradalom: () => ({ u: Yu('pesti forradalom'), title: K('esemény forradalom'), date: V('pesti forradalom'), layer: 'forrás' }),
+  vh1: () => ({ u: Yu('első világháború'), title: K('esemény 1914'), date: V('első világháború'), layer: 'forrás' }),
+  vh2: () => ({ u: Yu('második világháború vége'), title: K('esemény 1945'), date: V('második világháború vége'), layer: 'forrás' }),
+};
+const mmText = (years) => (years < 1000 ? fmt(years) + ' mm' : fmt(years / 1000, 1) + ' m');
+
+/* ── nézetek ── */
+const WIDE = () => [-3599, Ya('most') + 124];
+const lifeView = () => [S.birth - 1, Ya('most') + 2];
+const V3 = () => [-899, 650];
+const BOUNDS = () => [-4600, Ya('most') + 400];
+const ZMIN = 8, ZMAX = 6800;
+const spanToV = (s) => Math.round(1000 * Math.log(clamp(s, ZMIN, ZMAX) / ZMIN) / Math.log(ZMAX / ZMIN));
+const vToSpan = (v) => ZMIN * Math.pow(ZMAX / ZMIN, v / 1000);
+function zoomSlider(L, i) {
+  const v0 = STEP[i].view(STEP[i].settle), s0 = v0[1] - v0[0];
+  S.zoomSl = L.slider({ label: lab('nagyítás csúszka'), k: 'nagyítás csúszka', min: 0, max: 1000, step: 1, value: spanToV(s0),
+    format: (v) => tpl('év sablon', fmt(Math.round(vToSpan(v)))), onInput: (v) => { tl.zoomTo(vToSpan(v)); } });
+}
+const onView = (v) => { if (S.zoomSl) S.zoomSl.set(spanToV(v[1] - v[0])); };
+const snapAll = () => ['Nagy piramis', 'első olimpia', 'Róma alapítása', 'Caesar halála', 'Nyugatrómai Birodalom bukása', 'Amerika felfedezése',
+  'mohácsi csata', 'pesti forradalom', 'első világháború', 'második világháború vége', 'most'].map(Yu).concat([.5, 1.5]);
+const pin = (u, col, o) => Object.assign({ u: Math.floor(u) + .5, col }, o || {});
+
+/* ── léptetés: közös interakció (tűk + nagyítás) ── */
+function stdInteract(o = {}) {
+  if (tl.interact(Object.assign({ snap: snapAll(), onView }, o))) S.pinUser = true;
+}
+
+/* ════════════════ a lépések ════════════════ */
+const STEP = [
+  /* 1. A te időszalagod */
+  { settle: 3,
+    view: () => lifeView(),
+    opt: { strip: 1, scale: 1 },
+    bands: (st) => [{ u0: S.birth + .5, u1: lerp(S.birth + .5, Yu('most'), inOut(pr(st, .6, 1.6))), col: 'rgba(200,64,28,.20)' }],
+    items: (st) => [{ id: 'szül', row: 0, a: pr(st, .3, .9) }, { id: 'most', row: 0, a: pr(st, .5, 1.1) }],
+    pinsAt: () => { S.pins[0].u = S.birth + .5; S.pins[1].u = Math.floor(Yu('most')) + .5; },
+    pinA: (st) => clamp((st - 1.2) / .6),
+    pinOpt: { bracket: true, caption: (e) => ({ s: tpl('életed', e), k: ['életed', 'születési év', 'most'] }) },
+    enter() { S.pins = [pin(S.birth, RED), pin(Yu('most'), BLUE)]; },
+    controls(L) {
+      const m = Ya('most');
+      L.slider({ label: lab('születési év csúszka'), k: 'születési év csúszka', min: m - 16, max: m - 5, step: 1, value: S.birth,
+        format: (v) => String(v), onInput: (v) => { S.birth = v; } });
+    },
+    over(st) {
+      header('fejléc 1', st);
+      al(clamp((st - .8) / .6));
+      const y = 716; arrow(TLG.x0 + 160, y, TLG.x1 - 160, y, U.rgba(INK, .55), 3);
+      L.tx(lab('idő iránya'), (TLG.x0 + TLG.x1) / 2, y - 14, { f: F.D, s: 24, w: 500, i: true, a: 'center', c: MUT, k: 'idő iránya' });
+    },
+  },
+  /* 2. Ha 1 év 1 milliméter */
+  { settle: 6.2,
+    view: (st) => Yr.lerpView(lifeView(), [-3299, Ya('most') + 170], inOut(clamp((st - 1) / 3))),
+    opt: { strip: 1, scale: 1 },
+    items: (st) => [{ id: 'szül', row: 0, a: 1 - pr(st, 1, 1.6) }, { id: 'most', row: 0 }, { id: 'élet', row: 1, a: pr(st, 3.4, 4) },
+      { id: 'piramis', row: 0, a: pr(st, 4, 4.6) }],
+    pinsAt: (st) => {
+      if (S.pinUser) return;
+      const pyr = Yu('Nagy piramis'), b = S.birth + .5;
+      S.pins[0].u = Math.floor(lerp(b, pyr, inOut(clamp((st - 4.2) / 1.4)))) + .5; S.pins[1].u = Math.floor(Yu('most')) + .5;
+    },
+    pinA: (st) => 1,
+    pinOpt: { bracket: true, hint: 'tű súgó', sub: (e) => ({ s: tpl('milliméteres hossz', mmText(e)), k: 'milliméteres hossz' }) },
+    enter() { S.pins = [pin(S.birth, RED), pin(Yu('most'), BLUE)]; S.pinUser = false; },
+    controls(L) { zoomSlider(L, 1); },
+    interact() { stdInteract(); },
+    over(st) { header('fejléc 2', st); },
+  },
+  /* 3. Honnan számolunk? */
+  { settle: 4,
+    view: () => V3(),
+    opt: { strip: 1, aux: 1 },
+    items: (st) => [{ id: 'róma', row: 0, a: pr(st, 1.4, 2) }, { id: 'caesar', row: 0, a: pr(st, 2.4, 3) }, { id: 'kezdő', row: 1, a: pr(st, .4, 1) }],
+    pinsAt: () => { },
+    pinA: (st) => clamp((st - 2.6) / .6),
+    pinOpt: { pinY: 880, hint: 'olvasó súgó', label: (p, yr) => {
+      const e = Ya('Róma alapítása');
+      return [{ s: Yr.label(yr, T, true), k: Yr.key(yr, T, true), c: RED }, yr >= e ? { s: tpl('római év', yr - e + 1), k: ['római év', 'Róma alapítása'], c: OCHRE } : { s: '—', k: null }];
+    } },
+    enter() { S.pins = [pin(Yu('Caesar halála'), RED)]; },
+    interact() { stdInteract({ pinY: 880, zoom: false, pan: false, snap: [Yu('Caesar halála'), Yu('Róma alapítása'), Yu('Nyugatrómai Birodalom bukása'), .5, 1.5] }); },
+    over(st) {
+      header('fejléc 3', st);
+      const xr = tl.x(Yu('Róma alapítása')); al(pr(st, 1.8, 2.4));
+      c.strokeStyle = OCHRE; c.lineWidth = 2.5; c.setLineDash([8, 6]); c.beginPath(); c.moveTo(xr, tl.bot + 4); c.lineTo(xr, tlR.top - 4); c.stroke(); c.setLineDash([]);
+    },
+  },
+  /* 4. Honnan tudjuk? */
+  { settle: 3,
+    view: () => V3(),
+    opt: { strip: 0, aux: 0 },
+    items: () => [],
+    over(st) {
+      header('forráskártya cím', st);
+      const a = out(clamp((st - .2) / .6));
+      const ev = { a0: Ya('Jézus születése, legkorábban'), a1: Ya('Jézus születése, legkésőbb') }, wr = { a: Ya('Dionysius táblázata') };
+      const g = SRC.gap(ev, wr);
+      al(1);
+      SRC.card({ x: 90, y: 160 + (1 - a) * 30, w: 1180, a, layer: 'forrás', icon: 'írott', type: K('forrás típus'), title: K('forrás cím'),
+        rows: [
+          { l: K('ki írta címke'), v: K('ki írta') },
+          { l: K('mikor címke'), v: V('Dionysius táblázata') },
+          { l: K('mit címke'), v: K('mit') },
+          { l: K('kortárs címke'), v: { s: tpl('kortárs', g.s), k: ['kortárs', 'Jézus születése, legkorábban', 'Jézus születése, legkésőbb', 'Dionysius táblázata'] }, c: RED },
+        ],
+        line: { T, gap: K('eltelt'),
+          ev: Object.assign(ev, { name: K('esemény Jézus'), sub: K('történészek szerint'), layer: 'rekonstrukció', est: true, dateK: ['Jézus születése, legkorábban', 'Jézus születése, legkésőbb'] }),
+          wr: Object.assign(wr, { dateK: 'Dionysius táblázata' }),
+          mark: { a: 1, name: K('Dionysius kezdőpontja') } } });
+    },
+  },
+  /* 5. Kr. e.: visszafelé */
+  { settle: 5,
+    view: (st) => Yr.lerpView(V3(), [-849, 60], inOut(clamp(st / 1.2))),
+    opt: { strip: 1, scale: 1, mini: 1, sides: 1 },
+    items: (st) => [{ id: 'olimpia', row: 1, a: pr(st, .8, 1.4), note: st > 3.4 ? { s: lab('előbb'), k: 'előbb', c: GOOD } : null }, { id: 'róma', row: 0, a: pr(st, 1.2, 1.8) }],
+    pinsAt: () => { },
+    pinA: (st) => clamp((st - 2.2) / .6),
+    pinOpt: { bracket: true, hint: 'tű súgó' },
+    enter() { S.pins = [pin(Yu('első olimpia'), RED), pin(Yu('Róma alapítása'), BLUE)]; S.pinUser = false; },
+    controls(L) { zoomSlider(L, 4); },
+    interact() { stdInteract(); },
+    over(st) {
+      header('fejléc 5', st, tpl('fejléc 5', L.val('első olimpia'), L.val('Róma alapítása')));
+      const xo = tl.x(1), y = 700, a = pr(st, 1.6, 2.4);
+      al(a);
+      if (xo > tl.x0 + 80) {
+        arrow(Math.min(xo, tl.x1) - 18, y, tl.x0 + 14, y, MUT, 3);
+        L.tx(lab('nyíl Kr. e.'), (tl.x0 + Math.min(xo, tl.x1)) / 2, y + 36, { f: F.D, s: 24, w: 500, i: true, a: 'center', c: MUT, k: 'nyíl Kr. e.' });
+      }
+      if (xo < tl.x1 - 60) {
+        arrow(Math.max(xo, tl.x0) + 18, y, tl.x1 - 4, y, INK, 3);
+        L.tx(lab('nyíl Kr. u.'), tl.x1, y + 36, { f: F.D, s: 24, w: 500, i: true, a: 'right', c: INK, k: 'nyíl Kr. u.' });
+      }
+    },
+  },
+  /* 6. Nincs 0. év */
+  { settle: 5.5,
+    view: () => V3(),
+    opt: { strip: 1, sides: 1 },
+    items: (st) => [{ id: 'róma', row: 0, a: pr(st, 3, 3.6) }, { id: 'bukás', row: 0, a: pr(st, 3.2, 3.8) }],
+    pinsAt: () => { },
+    pinA: (st) => clamp((st - 3.6) / .6),
+    pinOpt: { bracket: true, hint: 'tű súgó' },
+    enter() { S.pins = [pin(Yu('Róma alapítása'), RED), pin(Yu('Nyugatrómai Birodalom bukása'), BLUE)]; S.pinUser = false; },
+    controls(L) { zoomSlider(L, 5); },
+    interact() { stdInteract(); },
+    under(st) { loupe6(st, true); },
+    over(st) { header('fejléc 6', st); loupe6(st, false); },
+  },
+  /* 7. Melyik század? */
+  { settle: 4.5,
+    view: () => [1690, 2045],
+    opt: { strip: 1, cent: 1, scale: 0, mini: 1 },
+    items: (st) => [{ id: 'forradalom', row: 0, a: pr(st, .6, 1.2) }],
+    pinsAt: () => { },
+    pinA: (st) => clamp((st - 1.2) / .6),
+    pinOpt: { hint: 'tű súgó egy' },
+    centHi: () => (S.pins[0] ? Yr.year(S.pins[0].u) : null),
+    enter() { S.pins = [pin(Yu('pesti forradalom'), RED)]; S.pinUser = false; },
+    controls(L) { zoomSlider(L, 6); },
+    interact() { stdInteract(); },
+    under(st) { loupe7(st, true); },
+    over(st, live) {
+      header('fejléc 7', st); loupe7(st, false);
+      if (!S.pins[0]) return;
+      al(clamp((st - 1.6) / .6));
+      const yr = Yr.year(S.pins[0].u), x = U.clamp(tl.pinX(S.pins[0]), tl.x0 + 160, tl.x1 - 160);
+      L.tx(Yr.centuryRule(yr), x, tl.pinY + 128, { f: F.M, s: 28, w: 700, a: 'center', c: RED });
+    },
+  },
+  /* 8. A nagy korszakok */
+  { settle: 6,
+    view: (st) => Yr.lerpView(WIDE(), [200, 2120], inOut(clamp((st - 2.6) / 1.8))),
+    opt: { strip: 1, eras: 1, scale: 1, mini: 1, eraOut: 1 },
+    miniA: (st) => pr(st, 4, 4.6),
+    pitch: 120,
+    items: (st) => [
+      { id: 'írás', row: 0, a: pr(st, .6, 1.2) }, { id: 'bukás', row: 0, a: pr(st, 1, 1.6) },
+      { id: 'kolumbusz', row: 0, a: pr(st, 4.2, 4.8) }, { id: 'mohács', row: 1, a: pr(st, 4.4, 5) * huK() },
+      { id: 'vh1', row: 2, a: pr(st, 4.6, 5.2) * (1 - modK()) }, { id: 'vh2', row: 2, a: pr(st, 4.6, 5.2) * modK() }],
+    enter() { Object.assign(S8, { hu: 0, huFrom: 0, huT0: -9, mod: 0, modFrom: 0, modT0: -9 }); },
+    controls(L) {
+      const t = (key) => (b) => { const st = L.st; if (key === 'hu') { S8.huFrom = huK(); S8.hu = S8.hu ? 0 : 1; S8.huT0 = st; b.classList.toggle('on', !!S8.hu); }
+        else { S8.modFrom = modK(); S8.mod = S8.mod ? 0 : 1; S8.modT0 = st; b.classList.toggle('on', !!S8.mod); } };
+      L.button(lab('gomb magyar'), t('hu'), 'gomb magyar');
+      L.button(lab('gomb jelenkor'), t('mod'), 'gomb jelenkor');
+    },
+    interact() { tl.interact({ pins: false, onView: null }); },
+    over(st) {
+      header('fejléc 8', st);
+      const a = pr(st, 4.8, 5.4); if (a <= 0) return;
+      al(a);
+      const y0 = tl.R.era, y1 = y0 + tl.R.eraH, bx = [[Yu('mohácsi csata'), 'magyar középkor vége', 832], [Yu('második világháború vége'), 'más tankönyvben', 872]];
+      for (const [u, k, ly] of bx) {
+        const x = tl.x(u); if (x < tl.x0 || x > tl.x1) continue;
+        c.strokeStyle = INK; c.lineWidth = 2.5; c.setLineDash([7, 5]); c.beginPath(); c.moveTo(x, y0 - 4); c.lineTo(x, ly - 26); c.stroke(); c.setLineDash([]);
+        const f = { f: F.B, s: 22, w: 600 }, w = L.measure(lab(k), f).w, cx = U.clamp(x, tl.x0 + w / 2, tl.x1 - w / 2);
+        L.tx(lab(k), cx, ly, Object.assign({}, f, { a: 'center', c: INK, k: [k] }));
+      }
+    },
+  },
+  /* 9. Összefoglaló */
+  { settle: 3,
+    view: () => WIDE(),
+    opt: { strip: 1, eras: 1, scale: 0, sides: 1, eraOut: 1 },
+    items: () => [],
+    pitch: 132,
+    enter() { resetGame(); },
+    controls(L) {
+      L.button(lab('gomb megoldás'), () => { S9.cards.forEach((q) => { if (!q.placed) place(q, Yr.u(L.dat(q.k)), trayPos(q)); }); }, 'gomb megoldás');
+      L.button(lab('gomb újra'), () => resetGame(), 'gomb újra');
+    },
+    interact() { game(); },
+    over(st) {
+      header('fejléc 9', st);
+      al(clamp((st - .6) / .6));
+      if (S9.cards.some((q) => !q.placed)) L.tx(lab('játék súgó'), (TLG.x0 + TLG.x1) / 2, 812, { f: F.D, s: 24, w: 500, i: true, a: 'center', c: RED, k: 'játék súgó' });
+      drawGame(st);
+    },
+  },
+];
+
+/* ── 6. lépés: nagyító a kezdőpontnál ── */
+const LP6 = { x: 428, y: 140, w: 700, h: 300 };
+function loupe6(st, under) {
+  const a = out(clamp((st - .2) / .6)); if (a <= 0) return;
+  const B = LP6, xo = tl.x(1);
+  al(a);
+  if (under) {           // összekötő vonalak a fő szalag kezdőpontjához
+    c.strokeStyle = U.rgba(INK, .4); c.lineWidth = 2; c.setLineDash([6, 6]); c.beginPath();
+    c.moveTo(B.x, B.y + B.h); c.lineTo(tl.x(-2), tl.top); c.moveTo(B.x + B.w, B.y + B.h); c.lineTo(tl.x(4), tl.top); c.stroke(); c.setLineDash([]);
+    return;
+  }
+  c.save(); c.shadowColor = 'rgba(70,50,20,.16)'; c.shadowBlur = 16; c.shadowOffsetY = 4;
+  c.beginPath(); c.roundRect(B.x, B.y, B.w, B.h, 18); c.fillStyle = 'rgba(255,250,241,.96)'; c.fill(); c.restore();
+  c.strokeStyle = U.rgba(INK, .5); c.lineWidth = 2; c.stroke();
+  L.tx(lab('nagyítva'), B.x + 18, B.y + 36, { f: F.B, s: 22, w: 700, c: MUT, k: 'nagyítva' });
+  tlL6.view(-2, 4);
+  c.globalAlpha = GA * a; tlL6.draw({ ad: true, sides: false });
+  // „0. év?” szellemcella a varratnál, áthúzva
+  const xs = tlL6.x(1), cw = tlL6.ppy * .84, gy = tlL6.top - 80, gh = 58;
+  const pg = out(clamp((st - .8) / .5)), px = clamp((st - 1.8) / .5), pf = lerp(1, .75, clamp((st - 3) / .6));
+  al(a * pg * pf);
+  c.beginPath(); c.roundRect(xs - cw / 2, gy, cw, gh, 8); c.fillStyle = 'rgba(179,38,30,.06)'; c.fill();
+  c.strokeStyle = BAD; c.lineWidth = 2.5; c.setLineDash([7, 5]); c.stroke(); c.setLineDash([]);
+  L.tx(lab('nulla év'), xs, gy + gh / 2 + 8, { f: F.B, s: 24, w: 700, a: 'center', c: BAD, k: 'nulla év' });
+  c.strokeStyle = U.rgba(INK, .35); c.lineWidth = 2; c.beginPath(); c.moveTo(xs, gy + gh); c.lineTo(xs, tlL6.top - 12); c.stroke();
+  if (px > 0) {
+    al(a * pg * px);
+    c.strokeStyle = U.rgba(BAD, .8); c.lineWidth = 3.5; c.lineCap = 'round'; c.beginPath();
+    c.moveTo(xs - cw * .42 * px, gy + 6); c.lineTo(xs + cw * .42 * px, gy + gh - 6); c.moveTo(xs + cw * .42 * px, gy + 6); c.lineTo(xs - cw * .42 * px, gy + gh - 6); c.stroke(); c.lineCap = 'butt';
+    al(a * px);
+    L.pill(lab('nincs ilyen év'), xs + cw / 2 + 18, gy + gh / 2, { f: F.B, s: 24, w: 700, c: '#ffffff', bg: BAD, k: 'nincs ilyen év' });
+  }
+  // Kr. e. 1 → Kr. u. 1 = 1 év
+  const pb = clamp((st - 2.4) / .5);
+  if (pb > 0) {
+    al(a * pb);
+    const xa = tlL6.x(.5), xb = tlL6.x(1.5), by = tlL6.R.tick + 22;
+    c.strokeStyle = RED; c.lineWidth = 2.5; c.beginPath(); c.moveTo(xa, by - 10); c.lineTo(xa, by); c.lineTo(xb, by); c.lineTo(xb, by - 10); c.stroke();
+    L.tx(tpl('év sablon', Yr.formula(0, 1)), (xa + xb) / 2, by + 34, { f: F.M, s: 22, w: 700, a: 'center', c: RED, k: 'év sablon' });
+  }
+}
+/* ── 7. lépés: nagyító a 19. és a 20. század határán ── */
+const LP7 = { x: 90, y: 150, w: 640, h: 268 };
+function loupe7(st, under) {
+  const a = out(clamp((st - .3) / .6)); if (a <= 0) return;
+  const B = LP7, r = Ya('kerek év');
+  al(a);
+  if (under) {
+    c.strokeStyle = U.rgba(INK, .4); c.lineWidth = 2; c.setLineDash([6, 6]); c.beginPath();
+    c.moveTo(B.x, B.y + B.h); c.lineTo(tl.x(r - 3), tl.top); c.moveTo(B.x + B.w, B.y + B.h); c.lineTo(tl.x(r + 4), tl.top); c.stroke(); c.setLineDash([]);
+    return;
+  }
+  c.save(); c.shadowColor = 'rgba(70,50,20,.16)'; c.shadowBlur = 16; c.shadowOffsetY = 4;
+  c.beginPath(); c.roundRect(B.x, B.y, B.w, B.h, 18); c.fillStyle = 'rgba(255,250,241,.96)'; c.fill(); c.restore();
+  c.strokeStyle = U.rgba(INK, .5); c.lineWidth = 2; c.stroke();
+  L.tx(lab('nagyítva'), B.x + 18, B.y + 34, { f: F.B, s: 22, w: 700, c: MUT, k: 'nagyítva' });
+  tlL7.view(r - 3, r + 4);
+  c.globalAlpha = GA * a;
+  const p = clamp((st - 1) / .6);
+  tlL7.draw({ cent: 1, centHi: r, bands: [{ u0: r, u1: r + 1, col: 'rgba(200,64,28,.22)', a: p }] });
+  al(a * p);
+  L.pill(lab('kerek év felirat'), tlL7.x(r + .5), tlL7.top - 30, { f: F.B, s: 24, w: 700, a: 'center', c: '#ffffff', bg: RED, k: ['kerek év felirat', 'kerek év'] });
+}
+
+/* ── 9. lépés: „Tedd a helyére!” ── */
+const GAME = [['forradalom', 'pesti forradalom', 1], ['piramis', 'Nagy piramis', 0], ['bukás', 'Nyugatrómai Birodalom bukása', 0], ['olimpia', 'első olimpia', 1]];
+function resetGame() { S9.cards = GAME.map(([id, k, row], i) => ({ id, k, row, i, placed: false })); S9.drag = null; }
+function trayPos(q) {
+  const z = tl.cardSize(ITEM[q.id]()), cx = q.i % 2 ? 985 : 375, cy = q.i < 2 ? 870 : 975;
+  return { x: cx - z.w / 2, y: cy - z.h / 2, w: z.w, h: z.h };
+}
+function place(q, guess, from) { q.placed = true; q.guess = guess; q.from = { x: from.x, y: from.y }; q.t0 = L.st; }
+function gameItem(q) {
+  const it = Object.assign(ITEM[q.id](), { row: q.row });
+  if (q.placed) {
+    const err = Math.abs(Yr.year(q.guess) - Yr.year(it.u)), ok = err <= Math.max(10, 14 / tl.ppy);
+    it.note = ok ? { s: lab('jó helyen'), k: 'jó helyen', c: GOOD } : { s: tpl('eltérés', fmt(err)), k: 'eltérés', c: BAD };
+  }
+  return it;
+}
+function game() {
+  const p = L.pointer, edge = p.down && !S9.pd; S9.pd = p.down;
+  if (edge && p.x < L.VW && !S9.drag) {
+    for (const q of S9.cards) { if (q.placed) continue; const b = trayPos(q); if (p.x > b.x && p.x < b.x + b.w && p.y > b.y && p.y < b.y + b.h) { S9.drag = { q, dx: p.x - b.x, dy: p.y - b.y }; break; } }
+  }
+  if (S9.drag && !p.down) {
+    const d = S9.drag, b = trayPos(d.q), x = p.x - d.dx, y = p.y - d.dy;
+    if (p.y < tl.R.era + tl.R.eraH + 10 && p.y > 120) place(d.q, tl.u(U.clamp(x + b.w / 2, tl.x0, tl.x1)), { x, y });
+    S9.drag = null;
+  }
+  const over = S9.cards.some((q) => { if (q.placed) return false; const b = trayPos(q); return p.x > b.x && p.x < b.x + b.w && p.y > b.y && p.y < b.y + b.h; });
+  L.stage.style.cursor = S9.drag ? 'grabbing' : over ? 'grab' : '';
+}
+function drawGame(st) {
+  const p = L.pointer;
+  for (const q of S9.cards) {
+    const it = gameItem(q);
+    if (!q.placed) {
+      const b = trayPos(q), dr = S9.drag && S9.drag.q === q;
+      c.save(); if (dr) c.globalAlpha *= .92;
+      tl.card(it, dr ? p.x - S9.drag.dx : b.x, dr ? p.y - S9.drag.dy : b.y); c.restore();
+      continue;
+    }
+    const k = inOut(clamp((L.st - q.t0) / .7)), to = tl.cardPos(it, 132);
+    const xg = tl.x(q.guess), xt = tl.x(it.u);
+    c.save(); c.globalAlpha *= clamp((L.st - q.t0) / .3);   // tipp → valódi hely a szalagon
+    c.strokeStyle = it.note.c; c.lineWidth = 3; c.setLineDash([5, 5]); c.beginPath(); c.moveTo(xg, tl.bot + 8); c.lineTo(xt, tl.bot + 8); c.stroke(); c.setLineDash([]);
+    c.beginPath(); c.arc(xg, tl.bot + 8, 7, 0, TAU); c.fillStyle = CARD; c.fill(); c.strokeStyle = it.note.c; c.lineWidth = 3; c.stroke();
+    c.restore();
+    if (k < 1) { tl.card(it, lerp(q.from.x, to.x, k), lerp(q.from.y, to.y, k)); continue; }
+    tl.cards([it], { pitch: 132 });
+  }
+}
+
+/* ════════════════ rajzolás ════════════════ */
+const sT = new Array(STEP.length).fill(0), lastV = [];
+const num0 = (o, k) => (o && o[k]) || 0;
+L = Lesson.create({
+  content: window.LESSON_CONTENT,
+  home: false,
+  steps: STEP.map((s) => ({ settle: s.settle, controls: s.controls,
+    enter(L) { tl.user = null; S.pinUser = false; S.pins = []; if (s.enter) s.enter(L); },
+    leave() { S.zoomSl = null; } })),
+  init(Lx) {
+    L = Lx; c = L.ctx;
+    T = { bc: K('Kr. e.'), ad: K('Kr. u.'), cent: K('század'), years: K('év sablon') };
+    SRC = TortSource.create(L, { 'forrás': K('réteg forrás'), 'rekonstrukció': K('réteg rekonstrukció'), 'monda': K('réteg monda'), 'becslés': K('bélyeg becslés') });
+    tl = TortTimeline.create(L, Object.assign({ T, src: SRC, bounds: BOUNDS(), minSpan: ZMIN, maxSpan: ZMAX }, TLG));
+    tlR = TortTimeline.create(L, { x0: TLG.x0, x1: TLG.x1, y: 744, h: 56, T, epoch: Ya('Róma alapítása') });
+    tlL6 = TortTimeline.create(L, { x0: LP6.x + 20, x1: LP6.x + LP6.w - 20, y: LP6.y + 160, h: 64, T });
+    tlL7 = TortTimeline.create(L, { x0: LP7.x + 20, x1: LP7.x + LP7.w - 20, y: LP7.y + 120, h: 56, T });
+    S.birth = Ya('születési év');
+    L.timeline = tl;   // QA-hoz (Playwright-tesztek olvassák)
+    resetGame();
+  },
+  draw(Lx) {
+    L = Lx; c = L.ctx; GA = 1; background(); L.stage.style.cursor = '';
+    const i = L.step, Si = STEP[i]; sT[i] = L.st;
+    const p = L.prevStep == null || L.prevStep < 0 ? i : L.prevStep, Sp = STEP[p];
+    const k = p === i ? 1 : smooth(clamp(1 - Math.abs(L.sp - i)));
+    /* nézet: a felhasználóé, vagy a lépés zárt képletű kamerája; lépésváltáskor átmenet */
+    const cur = tl.user || Si.view(L.st);
+    let v = cur;
+    if (k < 1) v = Yr.lerpView(lastV[p] || Sp.view(Sp.settle), cur, k); else lastV[i] = cur.slice();
+    tl.view(v[0], v[1]);
+    const O = {};
+    for (const key of ['strip', 'cent', 'eras', 'scale', 'mini', 'aux', 'sides', 'eraOut']) O[key] = lerp(num0(Sp.opt, key), num0(Si.opt, key), k);
+    tl.pins = Si.pinA ? S.pins : [];
+    if (Si.pinsAt) Si.pinsAt(L.st);
+    if (k > .97 && Si.interact) Si.interact();
+    v = [tl.u0, tl.u1];
+    /* jelenet-rétegek a szalag alatt */
+    for (let j = 0; j < STEP.length; j++) { const w = clamp(1 - Math.abs(L.sp - j) * 2); if (w > .005 && STEP[j].under) { GA = w; STEP[j].under(sT[j], j === i); } }
+    GA = 1; c.globalAlpha = 1;
+    /* fő időszalag */
+    const E = eras();
+    tl.draw({ a: O.strip, sides: O.sides > .5, cent: O.cent, centHi: Si.centHi ? Si.centHi() : null, eras: E, eraA: O.eras, eraOut: O.eraOut > .5,
+      bands: Si.bands ? Si.bands(L.st).map((b) => Object.assign(b, { a: k })) : [],
+      caption: O.aux > .01 ? Object.assign(K('vonalzó mi'), { a: O.aux, right: true }) : null });
+    /* Róma alapításától számoló vonalzó (3. lépés) */
+    if (O.aux > .01) {
+      tlR.view(v[0], v[1]); c.globalAlpha = 1;
+      tlR.draw({ a: O.aux * clamp((L.step === 2 ? L.st : 9) / .8), caption: Object.assign(K('vonalzó róma'), { right: true }) });
+    }
+    /* eseménykártyák: az előző lépéséi elhalványulnak, az újak beúsznak */
+    const its = new Map();
+    const add = (S0, st, f) => { if (!S0.items) return; for (const q of S0.items(st)) { const a = (q.a == null ? 1 : q.a) * f; const o = its.get(q.id); if (!o || o.a < a) its.set(q.id, Object.assign(ITEM[q.id](), q, { a, note: q.note || undefined })); } };
+    if (k < 1) add(Sp, sT[p], (1 - k) * Math.min(1, num0(Sp.opt, 'strip') * 4));
+    add(Si, L.st, k * Math.min(1, num0(Si.opt, 'strip') * 4));
+    c.globalAlpha = 1; tl.cards([...its.values()], { pitch: Si.pitch });
+    /* tűk */
+    if (Si.pinA && S.pins.length) {
+      const po = Object.assign({}, Si.pinOpt, { a: k * Si.pinA(L.st) });
+      if (po.hint) po.hint = K(po.hint);
+      c.globalAlpha = 1; tl.drawPins(po);
+    }
+    /* lépték és „hol tartunk?” */
+    if (O.scale > .01) { GA = O.scale; scaleLegend(); }
+    const ma = O.mini * (Si.miniA ? lerp(1, Si.miniA(L.st), k) : 1);
+    if (ma > .01) {
+      c.globalAlpha = 1;
+      TortTimeline.mini(L, { x: MINI.x, y: MINI.y, w: MINI.w, u0: -3999, u1: Ya('most') + 1, eras: E, win: v, a: ma, cap: K('hol tartunk'),
+        ends: [{ s: Yr.label(-3999, T), k: 'Kr. e.' }, V('most')] });
+    }
+    /* jelenet-rétegek a szalag fölött */
+    for (let j = 0; j < STEP.length; j++) { const w = clamp(1 - Math.abs(L.sp - j) * 2); if (w > .005 && STEP[j].over) { GA = w; STEP[j].over(sT[j], j === i); } }
+    c.globalAlpha = 1;
+  },
+});
+function scaleLegend() {
+  const NICE = [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000], n = NICE.find((q) => q * tl.ppy >= 70) || 5000, len = n * tl.ppy, x = 60, y = 168;
+  al(1);
+  const t = L.tx(lab('lépték'), x, y + 8, { f: F.B, s: 22, w: 600, c: MUT, k: 'lépték' });
+  const bx = x + t.w + 14;
+  c.strokeStyle = INK; c.lineWidth = 3; c.beginPath(); c.moveTo(bx, y - 8); c.lineTo(bx, y + 8); c.moveTo(bx, y); c.lineTo(bx + len, y); c.moveTo(bx + len, y - 8); c.lineTo(bx + len, y + 8); c.stroke();
+  let s = '= ' + tpl('év sablon', fmt(n)); const ks = ['év sablon'];
+  if (n === 100) { s += ' = ' + lab('évszázad'); ks.push('évszázad'); } else if (n === 1000) { s += ' = ' + lab('évezred'); ks.push('évezred'); }
+  L.tx(s, bx + len + 14, y + 8, { f: F.B, s: 22, w: 600, c: INK, k: ks });
+}
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1563 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kik laktak a várban? — Történelem</title>
+<link rel="stylesheet" href="../../shared/lesson.css">
+<style>
+  .lp-text b { color: var(--ink); }
+  .lp-text > :last-child { margin-bottom: 0; }
+</style>
+<!-- A lecke által várt tartalomkulcsok; a tools/build_lesson.py ez alapján ellenőrzi a .md-t.
+     labels: felirat → max. karakterszám (null = 32) · data: adat → típus/egység, értelmes tartomány -->
+<script type="application/json" id="lesson-spec">
+{
+  "steps": 9,
+  "maxWords": 45,
+  "labels": {
+    "illusztráció bélyeg": 16, "becslés bélyeg": 12, "réteg forrás": 14, "réteg rekonstrukció": 16, "réteg monda": 12,
+    "kattints": 30,
+    "pont vár": 22, "pont vár szöveg": 90, "pont falu": 22, "pont falu szöveg": 90, "pont templom": 22, "pont templom szöveg": 90,
+    "pont malom": 22, "pont malom szöveg": 90, "pont erdő": 22, "pont erdő szöveg": 90, "pont földek": 22, "pont földek szöveg": 90,
+    "pont rét": 22, "pont rét szöveg": 90,
+    "jelenet cím": 28, "nyíl szolgáltatás": 30, "nyíl védelem": 30,
+    "vár metszet cím": 28, "várlakók": 44, "tévhit vár": 28,
+    "pont őrség": 22, "pont őrség szöveg": 90, "pont istálló": 22, "pont istálló szöveg": 90, "pont ciszterna": 22, "pont ciszterna szöveg": 90,
+    "pont konyha": 22, "pont konyha szöveg": 90, "pont kamra": 22, "pont kamra szöveg": 90, "pont terem": 22, "pont terem szöveg": 90,
+    "pont várnagy": 22, "pont várnagy szöveg": 90, "pont kápolna": 22, "pont kápolna szöveg": 90,
+    "telek cím": 28,
+    "pont ház": 22, "pont ház szöveg": 90, "pont kert": 22, "pont kert szöveg": 90, "pont ól": 22, "pont ól szöveg": 90,
+    "pont csűr": 22, "pont csűr szöveg": 90, "pont kút": 22, "pont kút szöveg": 90, "pont szerszám": 22, "pont szerszám szöveg": 90,
+    "összevetés cím": 30, "összevetés rabszolga": 12, "összevetés jobbágy": 12,
+    "összevetés sor 1": 30, "összevetés sor 2": 30, "összevetés sor 3": 30, "összevetés sor 4": 30,
+    "nyomás cím": 28, "növény őszi": 32, "növény tavaszi": 32, "növény ugar": 32,
+    "kétnyomásos gomb": 20, "háromnyomásos gomb": 20, "következő év gomb": 22, "kétnyomásos": 16, "háromnyomásos": 16,
+    "bevetett rész": 20, "év számláló": 10, "több föld": 32, "család csíkjai": 24,
+    "évszak csúszka": 16, "hónapok": 140, "hónap rövid": 90, "naptár cím": 24,
+    "munka szántás": 48, "munka kaszálás": 48, "munka aratás": 48, "munka őszi vetés": 48, "munka tél": 48,
+    "szolgáltatás György": 48, "szolgáltatás tized": 48, "szolgáltatás Mihály": 48, "szolgáltatás karácsony": 48,
+    "jelmagyarázat munka": 14, "jelmagyarázat szolgáltatás": 16,
+    "termés cím": 34, "termés csúszka": 28, "termés minősége": 60,
+    "tized": 30, "kilenced": 30, "vetőmag": 30, "család része": 30, "zsák": 12,
+    "más tartozás cím": 20, "földbér": 34, "ajándék": 34,
+    "robot cím": 40, "robot 14": 20, "robot 1514": 20, "robot 1767 igás": 28, "robot 1767 gyalog": 28, "nap": 10,
+    "akkor most csúszka": 20, "akkor": 24, "most": 24, "napszak csúszka": 16,
+    "napirend akkor cím": 30, "napirend most cím": 30, "napirend akkor": 200, "napirend most": 200, "éppen": 44,
+    "élettartam cím": 28, "élettartam akkor": 44, "élettartam felnőtt": 44, "élettartam ma": 44, "év egység": 6,
+    "visegrád cím": 20, "akkor gomb": 16, "ma gomb": 16,
+    "pont fellegvár": 22, "pont fellegvár szöveg": 90, "pont salamon": 22, "pont salamon szöveg": 90, "pont palota": 22, "pont palota szöveg": 90,
+    "idő fellegvár": 30, "idő udvar": 30, "idő találkozó": 30, "idő oláh": 30, "idő ásatás": 30,
+    "oláh cím": 40, "oláh szöveg 1": 40, "oláh szöveg 2": 44, "ásatás cím": 30, "ásatás szöveg": 44,
+    "rekonstrukció felirat": 40, "monda szöveg 1": 40, "monda szöveg 2": 40, "monda szöveg 3": 44,
+    "összefoglaló forrás": 30, "összefoglaló lelet": 30, "összefoglaló rajz": 20
+  },
+  "data": {
+    "várlakók száma":         {"type": "range", "unit": "fő", "min": 5, "max": 200},
+    "1351-es törvény":        {"type": "year", "min": 1300, "max": 1400},
+    "nyomások száma régen":   {"unit": "", "min": 2, "max": 4},
+    "nyomások száma később":  {"unit": "", "min": 2, "max": 4},
+    "tized osztója":          {"unit": "", "min": 5, "max": 20},
+    "kilenced osztója":       {"unit": "", "min": 5, "max": 20},
+    "vetőmag mennyisége":     {"unit": "zsák", "min": 5, "max": 60},
+    "hozam":                  {"unit": "", "min": 2, "max": 8},
+    "robot a 14. században":  {"type": "range", "unit": "nap", "min": 0, "max": 60},
+    "robot törvény éve":      {"type": "year", "min": 1500, "max": 1600},
+    "robot 1514 után":        {"unit": "nap", "min": 10, "max": 200},
+    "úrbéri rendelet éve":    {"type": "year", "min": 1700, "max": 1800},
+    "robot 1767 után igás":   {"unit": "nap", "min": 10, "max": 200},
+    "robot 1767 után gyalog": {"unit": "nap", "min": 10, "max": 250},
+    "várható élettartam akkor": {"unit": "év", "min": 15, "max": 50},
+    "felnőttek élettartama":  {"type": "range", "unit": "év", "min": 30, "max": 80},
+    "várható élettartam ma":  {"unit": "év", "min": 60, "max": 90},
+    "Fellegvár építése":      {"type": "year", "min": 1200, "max": 1300},
+    "udvar Visegrádra":       {"type": "year", "min": 1300, "max": 1350},
+    "királytalálkozó":        {"type": "year", "min": 1300, "max": 1400},
+    "Mátyás halála":          {"type": "year", "min": 1450, "max": 1500},
+    "Oláh Miklós műve":       {"type": "year", "min": 1500, "max": 1600},
+    "palota szobái":          {"unit": "", "min": 10, "max": 1000},
+    "ásatás kezdete":         {"type": "year", "min": 1800, "max": 2000}
+  }
+}
+</script>
+</head>
+<body>
+<script src="06-var-uradalom.content.js"></script>
+<script src="../../shared/lesson.js"></script>
+<script>
+(function () {
+'use strict';
+
+/* ── MODUL: Jelenet-metszet (TortScene) ───────────────────────────────────────────────
+   Zoomolható, rétegzett, saját rajzú jelenet (vár, falu, város, mezőváros, gyár, folyóvölgy).
+   Csak a Lesson-motort használja (L.tx, L.pill, L.measure, L.lab, L.pointer, L.stage) –
+   a leckétől független, változtatás nélkül átemelhető a shared/tort/ alá.
+
+   const sc = TortScene.create({
+     L,                                    // a lecke-motor
+     frame: [36, 36, 1308, 1008], r: 22,   // a képkeret a színpadon (ebbe vág), sarok-sugár
+     views: { név: {x, y, z} },            // nézet: a keret közepére kerülő világpont + nagyítás
+     layers: [{
+       id, draw(c, S),                     // rajzoló (S lent)
+       z: [be0, be1, ki0, ki1],            // opcionális: nagyítás szerinti be- és kiúszás (log-skálán)
+       era: 'then' | 'now',                // opcionális: csak az „akkor” / csak a „most” képen
+       box: [x, y, w], res: [w, h],        // opcionális: részletréteg saját koordinátákkal (res),
+     }],                                   //   a világ [x, y, w, w·h/w] téglalapjába illesztve
+     hotspots: [{ id, layer, x, y, k, info, dx, dy }],  // k: címke-, info: magyarázat-kulcs (.md);
+                                           //   dx/dy: a címke eltolása px-ben (alap: jobbra)
+     stampK: 'illusztráció bélyeg',        // a bélyeg felirat-kulcsa (null: nincs bélyeg)
+     sky: (S) => {…}                       // opcionális: saját égbolt; alap: TortScene.sky gradiens
+   });
+   sc.view(név | {x, y, z})       → {x, y, z}
+   sc.camAt(a, b, u)              → {x, y, z} zárt képletű kameraút (u ∈ 0..1, log-zoom,
+                                    a nagyítás „fix pontja” helyben marad – nincs kilengés)
+   sc.render(c, o)                o = {cam, season 0..1 (jan. 1. = 0), hour 0..24, now 0..1 (akkor → most
+                                    áttűnés), split (képernyő-x: balra „akkor”, jobbra „most”), t, veil (papír-fátyol 0..1),
+                                    sun (nap/hold a keret felső sávjában a napszak szerint)}
+   sc.markers(c, o)               kattintható pontok + címkék; o = {ids, alpha, sel, t, labels, pulse}
+   sc.card(c, id, o)              magyarázó kártya a kiválasztott ponthoz; o = {x, y, w, alpha}
+   sc.decor(c, alpha)             keret + „illusztráció” bélyeg
+   sc.attach(onPick)              kattintás → onPick(id | null) (csak a keretben, az utolsó markers() pontjai)
+   sc.toScreen(x, y, layerId?)    → [sx, sy];  sc.lastCam: az utolsó render kamerája
+   S (a rétegrajzolónak): {c, season, hour, now, t, z, px (képernyő-px / egység), lw(px), a, al(x), nat, sky, sc}
+   TortScene.nature(season)  → {grass, leaf, bare, snow, green}  évszakos színek
+   TortScene.sky(hour)       → {top, bottom, day, dusk, sun: {u, e}}  napszak
+   TortScene.kf(keys, s, cyclic) kulcskocka-interpoláció (szín vagy szám) · TortScene.mix(a, b, t) · rgba(h, a)
+   TortScene.draw: path, smooth, fs, band, house, tree, conifer, figure, animal, crenel, stones, smoke, wave
+   ─────────────────────────────────────────────────────────────────────────────────── */
+const TortScene = (() => {
+  const TAU = Math.PI * 2, INK = '#1c2440', MUT = '#565d72', CARD = '#fffaf1', ACC = '#c8401c';
+  const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+  const lerp = (a, b, t) => a + (b - a) * t;
+  const smooth = (t) => { t = clamp(t); return t * t * (3 - 2 * t); };
+  const hex = (h) => { const n = parseInt(h.slice(1), 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; };
+  const mix = (a, b, t) => { const A = hex(a), B = hex(b); return '#' + A.map((v, i) => Math.round(lerp(v, B[i], clamp(t))).toString(16).padStart(2, '0')).join(''); };
+  const rgba = (h, a) => { const c = hex(h); return `rgba(${c[0]},${c[1]},${c[2]},${a})`; };
+  /* kulcskockák: [[s, érték], …] növekvő s szerint; érték szám vagy '#rrggbb'; cyclic: az év körbeér */
+  function kf(keys, s, cyclic) {
+    const n = keys.length, isC = typeof keys[0][1] === 'string';
+    const blend = (a, b, t) => isC ? mix(a, b, t) : lerp(a, b, t);
+    if (cyclic) s = ((s % 1) + 1) % 1;
+    if (s <= keys[0][0]) return cyclic ? blend(keys[n - 1][1], keys[0][1], (s + 1 - keys[n - 1][0]) / (1 + keys[0][0] - keys[n - 1][0])) : keys[0][1];
+    for (let i = 0; i < n - 1; i++) if (s <= keys[i + 1][0]) return blend(keys[i][1], keys[i + 1][1], smooth((s - keys[i][0]) / (keys[i + 1][0] - keys[i][0])));
+    return cyclic ? blend(keys[n - 1][1], keys[0][1], (s - keys[n - 1][0]) / (1 + keys[0][0] - keys[n - 1][0])) : keys[n - 1][1];
+  }
+  /* évszak (0 = jan. 1., 0,5 ≈ júl. 1.) → a természet színei */
+  function nature(s) {
+    return {
+      grass: kf([[.02, '#c8c4a6'], [.2, '#bcc495'], [.32, '#a8c574'], [.45, '#a2bd68'], [.6, '#b4bb6e'], [.76, '#bfb175'], [.9, '#c4bd9c']], s, true),
+      leaf: kf([[.25, '#a7c777'], [.36, '#84b05a'], [.55, '#6c9748'], [.68, '#8a9846'], [.78, '#c3843a'], [.86, '#ad7643']], s, true),
+      bare: kf([[.08, 1], [.24, 1], [.33, 0], [.8, 0], [.9, 1]], s, true),
+      snow: kf([[.05, 1], [.12, .85], [.17, 0], [.91, 0], [.97, .85]], s, true),
+      green: kf([[.05, 0], [.3, .7], [.45, 1], [.65, .7], [.85, .2]], s, true),
+      s,
+    };
+  }
+  /* napszak (0–24 óra) → égbolt; nyári nappal kb. 4:45–20:30 */
+  function sky(h) {
+    const day = smooth((h - 4) / 1.6) * smooth((21.2 - h) / 1.6);
+    const dusk = Math.max(Math.exp(-Math.pow((h - 5.2) / 1.1, 2)), Math.exp(-Math.pow((h - 20.2) / 1.1, 2)));
+    const u = (h - 4.8) / (20.4 - 4.8);
+    return {
+      day, dusk, sun: { u, e: Math.sin(Math.PI * clamp(u)) },
+      top: mix(mix('#8d98b6', '#c7dbe5', day), '#d9b9a4', dusk * .45),
+      bottom: mix(mix('#b3bacb', '#f2efe3', day), '#efcda6', dusk * .7),
+    };
+  }
+
+  /* ── rajzoló primitívek (egységekben; lw: vonalvastagság egységben) ── */
+  const D = {};
+  D.path = (c, p, close) => { c.beginPath(); p.forEach((q, i) => i ? c.lineTo(q[0], q[1]) : c.moveTo(q[0], q[1])); if (close) c.closePath(); };
+  const mid = (a, b) => [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
+  D.smooth = (c, p, close) => {
+    c.beginPath(); const n = p.length;
+    if (close) {
+      const m0 = mid(p[n - 1], p[0]); c.moveTo(m0[0], m0[1]);
+      for (let i = 0; i < n; i++) { const m = mid(p[i], p[(i + 1) % n]); c.quadraticCurveTo(p[i][0], p[i][1], m[0], m[1]); }
+      c.closePath();
+    } else {
+      c.moveTo(p[0][0], p[0][1]);
+      for (let i = 1; i < n - 1; i++) { const m = mid(p[i], p[i + 1]); c.quadraticCurveTo(p[i][0], p[i][1], m[0], m[1]); }
+      c.lineTo(p[n - 1][0], p[n - 1][1]);
+    }
+  };
+  D.fs = (c, fill, stroke, lw) => { if (fill) { c.fillStyle = fill; c.fill(); } if (stroke && lw > 0) { c.strokeStyle = stroke; c.lineWidth = lw; c.stroke(); } };
+  /* sáv egy középvonal körül (folyó, út): w(i) szélesség → zárt pontsor */
+  D.band = (p, w) => {
+    const L1 = [], R1 = [];
+    p.forEach((q, i) => {
+      const a = p[Math.max(0, i - 1)], b = p[Math.min(p.length - 1, i + 1)], dx = b[0] - a[0], dy = b[1] - a[1], l = Math.hypot(dx, dy) || 1;
+      const ww = (typeof w === 'function' ? w(i / (p.length - 1)) : w) / 2;
+      L1.push([q[0] - dy / l * ww, q[1] + dx / l * ww]); R1.push([q[0] + dy / l * ww, q[1] - dx / l * ww]);
+    });
+    return { left: L1, right: R1, poly: L1.concat(R1.reverse()) };
+  };
+  /* ház: (x, y) a homlokzat alja középen; o: wall, roof, lw, tile, snow, door, win */
+  D.house = (c, x, y, w, h, o = {}) => {
+    const lw = o.lw || 1, ink = o.ink || INK, rh = o.roofH || h * .95, ov = w * .07;
+    c.beginPath(); c.rect(x - w / 2, y - h, w, h); D.fs(c, o.wall || '#efe4cc', ink, lw);
+    if (o.door !== false) { c.beginPath(); c.rect(x + w * (o.doorX == null ? .18 : o.doorX) - w * .08, y - h * .66, w * .16, h * .66); D.fs(c, o.doorC || '#8a5a33', ink, lw * .8); }
+    const nw = o.win == null ? 1 : o.win;
+    for (let i = 0; i < nw; i++) { const wx = x - w * .3 + i * w * .26; c.beginPath(); c.rect(wx - w * .055, y - h * .74, w * .11, h * .28); D.fs(c, o.winC || '#59607a', ink, lw * .7); }
+    c.beginPath(); c.moveTo(x - w / 2 - ov, y - h); c.lineTo(x - w * .3, y - h - rh); c.lineTo(x + w * .3, y - h - rh); c.lineTo(x + w / 2 + ov, y - h); c.closePath();
+    D.fs(c, o.roof || '#c4a062', ink, lw);
+    c.save(); c.clip(); c.strokeStyle = rgba(ink, .28); c.lineWidth = lw * .6; c.beginPath();
+    if (o.tile) { for (let k = 1; k < 4; k++) { const yy = y - h - rh * k / 4; c.moveTo(x - w, yy); c.lineTo(x + w, yy); } }
+    else { for (let k = -6; k <= 6; k++) { c.moveTo(x + k * w * .09, y - h - rh); c.lineTo(x + k * w * .12, y - h); } }
+    c.stroke();
+    if (o.snow > .02) { c.fillStyle = `rgba(250,250,247,${.92 * o.snow})`; c.fillRect(x - w, y - h - rh - 2, w * 2, rh * .62); }
+    c.restore();
+  };
+  /* lombos fa: (x, y) a törzs alja; s ≈ a magasság / 30 */
+  D.tree = (c, x, y, s, nat, o = {}) => {
+    const lw = o.lw || 1, ink = o.ink || INK, bare = nat ? nat.bare : 0, seed = o.seed || 0, a0 = c.globalAlpha;
+    c.beginPath(); c.moveTo(x - s * 1.3, y); c.lineTo(x - s * .7, y - s * 12); c.lineTo(x + s * .7, y - s * 12); c.lineTo(x + s * 1.3, y); c.closePath();
+    D.fs(c, '#7d5a3a', ink, lw);
+    if (bare > .02) {
+      c.globalAlpha = a0 * bare; c.strokeStyle = '#6b4f36'; c.lineWidth = lw * 1.4; c.beginPath();
+      [[-7, -22], [6, -24], [0, -28], [-3, -18], [4, -17]].forEach((b, i) => { c.moveTo(x, y - s * (9 + i)); c.lineTo(x + b[0] * s, y + b[1] * s); });
+      c.stroke(); c.globalAlpha = a0;
+    }
+    if (bare < .98) {
+      c.globalAlpha = a0 * (1 - bare * .9);
+      const cx = x, cy = y - s * 19, pts = [];
+      for (let k = 0; k < 11; k++) { const an = k / 11 * TAU, r = s * 9.5 * (1 + .14 * Math.sin(k * 2.7 + seed * 1.9)); pts.push([cx + Math.cos(an) * r, cy + Math.sin(an) * r * .88]); }
+      D.smooth(c, pts, true); D.fs(c, o.leaf || (nat ? nat.leaf : '#6c9748'), ink, lw);
+      c.beginPath(); c.ellipse(cx - s * 3, cy - s * 3.5, s * 3.6, s * 2.6, -.4, 0, TAU); c.fillStyle = 'rgba(255,255,230,.22)'; c.fill();
+      c.globalAlpha = a0;
+    }
+    if (nat && nat.snow > .05) { c.globalAlpha = a0 * nat.snow; c.beginPath(); c.ellipse(x, y - s * 26, s * 6, s * 2.2, 0, 0, TAU); c.fillStyle = '#fbfbf8'; c.fill(); c.globalAlpha = a0; }
+  };
+  D.conifer = (c, x, y, s, nat, o = {}) => {
+    const lw = o.lw || 1, ink = o.ink || INK;
+    c.beginPath(); c.rect(x - s, y - s * 5, s * 2, s * 5); D.fs(c, '#7d5a3a', ink, lw);
+    for (let k = 0; k < 3; k++) { const yy = y - s * (5 + k * 7), ww = s * (9 - k * 2.2); D.path(c, [[x - ww, yy], [x, yy - s * 11], [x + ww, yy]], true); D.fs(c, o.leaf || '#4f7a4c', ink, lw); }
+    if (nat && nat.snow > .05) { const a0 = c.globalAlpha; c.globalAlpha = a0 * nat.snow; D.path(c, [[x - s * 3, y - s * 21], [x, y - s * 27], [x + s * 3, y - s * 21]], true); c.fillStyle = '#fbfbf8'; c.fill(); c.globalAlpha = a0; }
+  };
+  /* stilizált emberalak: (x, y) a talp; s ≈ magasság / 34. o: coat, hat, pose ('stand'|'walk'|'work'|'sit'), t (fázis), dir, tool, lw */
+  D.figure = (c, x, y, s, o = {}) => {
+    const lw = o.lw || 1, ink = o.ink || INK, ph = o.t || 0, dir = o.dir || 1, pose = o.pose || 'stand';
+    const sw = pose === 'walk' ? Math.sin(ph) : 0, bend = pose === 'work' ? .45 + .25 * Math.sin(ph) : 0, sit = pose === 'sit';
+    const hip = [x, y - (sit ? 9 : 13) * s], sh = [x + dir * bend * 7 * s, y - (sit ? 22 : 26) * s + bend * 5 * s], head = [sh[0] + dir * bend * 3 * s, sh[1] - 5.6 * s];
+    c.lineCap = 'round'; c.strokeStyle = ink; c.lineWidth = lw * 2.4;
+    c.beginPath();
+    if (sit) { c.moveTo(hip[0], hip[1]); c.lineTo(hip[0] + dir * 7 * s, hip[1]); c.lineTo(hip[0] + dir * 7 * s, y); }
+    else { c.moveTo(hip[0] - 2 * s, hip[1]); c.lineTo(x - 2.5 * s + sw * 3.5 * s, y); c.moveTo(hip[0] + 2 * s, hip[1]); c.lineTo(x + 2.5 * s - sw * 3.5 * s, y); }
+    c.stroke();
+    c.beginPath(); c.moveTo(sh[0] - 4.6 * s, sh[1]); c.lineTo(sh[0] + 4.6 * s, sh[1]); c.lineTo(hip[0] + 6.6 * s, hip[1] + 2.5 * s); c.lineTo(hip[0] - 6.6 * s, hip[1] + 2.5 * s); c.closePath();
+    D.fs(c, o.coat || '#9a6b43', ink, lw);
+    if (o.belt) { c.beginPath(); c.moveTo(hip[0] - 5.6 * s, hip[1] - 2 * s); c.lineTo(hip[0] + 5.6 * s, hip[1] - 2 * s); c.strokeStyle = o.belt; c.lineWidth = lw * 1.6; c.stroke(); }
+    const arm = o.arm == null ? (pose === 'work' ? .9 + .4 * Math.sin(ph) : .25 + sw * .2) : o.arm;
+    const hand = [sh[0] + dir * Math.sin(arm) * 9 * s, sh[1] + Math.cos(arm) * 9 * s];
+    c.beginPath(); c.moveTo(sh[0] + dir * 3 * s, sh[1] + 1 * s); c.lineTo(hand[0], hand[1]); c.strokeStyle = ink; c.lineWidth = lw * 2.2; c.stroke();
+    const t = o.tool;
+    if (t) {
+      c.lineWidth = lw * 1.5; c.strokeStyle = '#5a4126'; c.beginPath();
+      if (t === 'spear') { c.moveTo(hand[0], hand[1] + 12 * s); c.lineTo(hand[0], hand[1] - 22 * s); c.stroke(); D.path(c, [[hand[0] - 1.6 * s, hand[1] - 21 * s], [hand[0], hand[1] - 27 * s], [hand[0] + 1.6 * s, hand[1] - 21 * s]], true); D.fs(c, '#9aa0aa', ink, lw * .7); }
+      else if (t === 'bow') { c.strokeStyle = '#6b4a2a'; c.arc(hand[0] + dir * 2 * s, hand[1] - 3 * s, 9 * s, -1.2, 1.2); c.stroke(); }
+      else if (t === 'sickle') { c.moveTo(hand[0], hand[1]); c.lineTo(hand[0] + dir * 3 * s, hand[1] + 2 * s); c.stroke(); c.beginPath(); c.arc(hand[0] + dir * 6 * s, hand[1], 3.5 * s, Math.PI, TAU); c.strokeStyle = '#8a8f99'; c.stroke(); }
+      else if (t === 'scythe') { c.moveTo(hand[0] - dir * 4 * s, hand[1] - 10 * s); c.lineTo(hand[0] + dir * 3 * s, hand[1] + 10 * s); c.stroke(); c.beginPath(); c.moveTo(hand[0] + dir * 3 * s, hand[1] + 10 * s); c.quadraticCurveTo(hand[0] + dir * 10 * s, hand[1] + 9 * s, hand[0] + dir * 15 * s, hand[1] + 12 * s); c.strokeStyle = '#8a8f99'; c.stroke(); }
+      else if (t === 'staff' || t === 'stick') { c.moveTo(hand[0], hand[1] - (t === 'staff' ? 8 : 2) * s); c.lineTo(hand[0] + dir * 2 * s, y); c.stroke(); }
+      else if (t === 'hammer') { c.moveTo(hand[0], hand[1]); c.lineTo(hand[0] + dir * 2 * s, hand[1] - 7 * s); c.stroke(); c.beginPath(); c.rect(hand[0] + dir * 2 * s - 2.5 * s, hand[1] - 9 * s, 5 * s, 3 * s); D.fs(c, '#6a6f78', ink, lw * .6); }
+      else if (t === 'ladle') { c.moveTo(hand[0], hand[1]); c.lineTo(hand[0] + dir * 5 * s, hand[1] + 7 * s); c.stroke(); }
+      else if (t === 'bucket') { c.beginPath(); c.moveTo(hand[0] - 3 * s, hand[1]); c.lineTo(hand[0] + 3 * s, hand[1]); c.lineTo(hand[0] + 2.4 * s, hand[1] + 5 * s); c.lineTo(hand[0] - 2.4 * s, hand[1] + 5 * s); c.closePath(); D.fs(c, '#8a6a45', ink, lw * .7); }
+      else if (t === 'keys') { c.arc(hand[0], hand[1] + 2 * s, 1.8 * s, 0, TAU); c.strokeStyle = '#a9862e'; c.stroke(); }
+      else if (t === 'book') { c.beginPath(); c.rect(hand[0] - 3 * s, hand[1] - 2 * s, 6 * s, 4 * s); D.fs(c, '#7a2d2d', ink, lw * .6); }
+      else if (t === 'seed') { c.moveTo(hand[0], hand[1]); for (let i = 0; i < 4; i++) { const q = (ph * .5 + i * .25) % 1; c.moveTo(hand[0] + dir * q * 8 * s, hand[1] + q * q * 12 * s); c.arc(hand[0] + dir * q * 8 * s, hand[1] + q * q * 12 * s, .7 * s, 0, TAU); } c.fillStyle = '#b08a3a'; c.fill(); }
+    }
+    c.beginPath(); c.arc(head[0], head[1], 4.3 * s, 0, TAU); D.fs(c, o.skin || '#e6c3a0', ink, lw);
+    const hat = o.hat;
+    if (hat === 'cap' || hat === 'hood') { c.beginPath(); c.arc(head[0], head[1] - .6 * s, 4.6 * s, Math.PI * 1.05, Math.PI * 1.95); c.closePath(); D.fs(c, o.hatC || (hat === 'hood' ? '#6b5a48' : '#7a3b2a'), ink, lw * .8); }
+    else if (hat === 'kerchief') { c.beginPath(); c.arc(head[0], head[1], 4.8 * s, Math.PI * .9, Math.PI * 2.1); c.lineTo(head[0] - dir * 5 * s, head[1] + 3 * s); c.closePath(); D.fs(c, o.hatC || '#f1ead8', ink, lw * .8); }
+    else if (hat === 'helmet') { c.beginPath(); c.arc(head[0], head[1] - .5 * s, 4.7 * s, Math.PI, TAU); c.lineTo(head[0] + 6.5 * s, head[1] - .3 * s); c.lineTo(head[0] - 6.5 * s, head[1] - .3 * s); c.closePath(); D.fs(c, '#9aa0aa', ink, lw * .8); }
+    else if (hat === 'brim') { c.beginPath(); c.ellipse(head[0], head[1] - 3 * s, 6.5 * s, 1.6 * s, 0, 0, TAU); D.fs(c, o.hatC || '#c9a65a', ink, lw * .7); c.beginPath(); c.arc(head[0], head[1] - 3.2 * s, 3.6 * s, Math.PI, TAU); D.fs(c, o.hatC || '#c9a65a', ink, lw * .7); }
+    else if (hat === 'hair') { c.beginPath(); c.arc(head[0], head[1] - .5 * s, 4.5 * s, Math.PI * 1.0, Math.PI * 2.0); D.fs(c, o.hatC || '#5a3d26', null, 0); }
+  };
+  /* állat oldalnézetben: (x, y) a talp közepe; s ≈ hossz / 24 */
+  D.animal = (c, x, y, s, kind, o = {}) => {
+    const lw = (o.lw || 1) / s, ink = o.ink || INK, dir = o.dir || 1, ph = o.t || 0;
+    c.save(); c.translate(x, y); c.scale(dir * s, s); c.lineWidth = lw; c.strokeStyle = ink; c.lineCap = 'round';
+    const legs = (pts, h, col) => { c.beginPath(); pts.forEach((p, i) => { const sw = Math.sin(ph + i * 1.7) * (o.walk ? 1.6 : 0); c.moveTo(p, -h); c.lineTo(p + sw, 0); }); c.strokeStyle = col || ink; c.lineWidth = lw * 2.2; c.stroke(); c.lineWidth = lw; c.strokeStyle = ink; };
+    if (kind === 'ox' || kind === 'cow') {
+      legs([-8, -5, 6, 9], 6); c.beginPath(); c.ellipse(0, -9.5, 12, 5.8, 0, 0, TAU); D.fs(c, o.col || (kind === 'ox' ? '#b8a283' : '#a8774f'), ink, lw);
+      c.beginPath(); c.ellipse(13, -12, 4.2, 3.4, .3, 0, TAU); D.fs(c, o.col || (kind === 'ox' ? '#b8a283' : '#a8774f'), ink, lw);
+      if (kind === 'ox') { c.beginPath(); c.moveTo(11, -14.5); c.quadraticCurveTo(9, -20, 6, -19); c.moveTo(14, -15); c.quadraticCurveTo(17, -20, 20, -19); c.strokeStyle = '#efe6d0'; c.lineWidth = lw * 1.6; c.stroke(); }
+    } else if (kind === 'horse') {
+      legs([-8, -5, 6, 9], 9, '#4a3020'); c.beginPath(); c.ellipse(0, -13, 11, 5.2, 0, 0, TAU); D.fs(c, o.col || '#8a5a36', ink, lw);
+      D.path(c, [[7, -16], [12, -25], [16, -24], [12, -14]], true); D.fs(c, o.col || '#8a5a36', ink, lw);
+      c.beginPath(); c.ellipse(16, -24, 4, 2.4, .5, 0, TAU); D.fs(c, o.col || '#8a5a36', ink, lw);
+      c.beginPath(); c.moveTo(-11, -14); c.quadraticCurveTo(-15, -10, -14, -5); c.strokeStyle = '#3d2818'; c.lineWidth = lw * 2.2; c.stroke();
+    } else if (kind === 'sheep') {
+      legs([-5, -2, 3, 6], 4, '#3a3a3a'); const p = []; for (let k = 0; k < 10; k++) { const a = k / 10 * TAU, r = 1 + .12 * Math.sin(k * 3); p.push([Math.cos(a) * 9 * r, -8 + Math.sin(a) * 5.5 * r]); }
+      D.smooth(c, p, true); D.fs(c, '#f2ede1', ink, lw); c.beginPath(); c.ellipse(10, -9.5, 3.2, 2.6, .2, 0, TAU); D.fs(c, '#4a4440', ink, lw);
+    } else if (kind === 'goose') {
+      c.beginPath(); c.moveTo(-1, -1); c.lineTo(-1, 0); c.moveTo(2, -1); c.lineTo(2, 0); c.strokeStyle = '#d98a2a'; c.lineWidth = lw * 1.6; c.stroke(); c.lineWidth = lw; c.strokeStyle = ink;
+      c.beginPath(); c.ellipse(0, -4.5, 6, 3.6, -.15, 0, TAU); D.fs(c, '#faf7ef', ink, lw);
+      c.beginPath(); c.moveTo(4, -6); c.quadraticCurveTo(7, -9, 6, -12); c.strokeStyle = '#faf7ef'; c.lineWidth = lw * 3; c.stroke(); c.strokeStyle = ink; c.lineWidth = lw;
+      c.beginPath(); c.arc(6.2, -12.4, 1.8, 0, TAU); D.fs(c, '#faf7ef', ink, lw); D.path(c, [[7.6, -12.8], [10, -12.2], [7.8, -11.6]], true); D.fs(c, '#d98a2a', null, 0);
+    } else if (kind === 'pig') {
+      legs([-5, -2, 3, 6], 3); c.beginPath(); c.ellipse(0, -6.5, 9, 4.6, 0, 0, TAU); D.fs(c, '#e7b3a2', ink, lw); c.beginPath(); c.ellipse(9.5, -7, 2, 2.4, 0, 0, TAU); D.fs(c, '#e7b3a2', ink, lw);
+    } else if (kind === 'hen') {
+      c.beginPath(); c.ellipse(0, -3.4, 3.6, 2.8, 0, 0, TAU); D.fs(c, '#b0703a', ink, lw); c.beginPath(); c.arc(3, -6, 1.5, 0, TAU); D.fs(c, '#b0703a', ink, lw);
+    }
+    c.restore();
+  };
+  /* pártázat egy fal tetején: x0..x1, y = a fal felső éle */
+  D.crenel = (c, x0, x1, y, h, n, fill, lw, ink) => {
+    const w = (x1 - x0) / (n * 2 - 1);
+    for (let i = 0; i < n; i++) { c.beginPath(); c.rect(x0 + i * 2 * w, y - h, w, h + .5); D.fs(c, fill, ink || INK, lw); }
+  };
+  /* kőfal-textúra egy téglalapon */
+  D.stones = (c, x, y, w, h, sz, lw, col) => {
+    c.save(); c.beginPath(); c.rect(x, y, w, h); c.clip(); c.strokeStyle = col || 'rgba(28,36,64,.22)'; c.lineWidth = lw; c.beginPath();
+    for (let r = 0, yy = y + sz; yy < y + h; r++, yy += sz) { c.moveTo(x, yy); c.lineTo(x + w, yy); for (let xx = x + (r % 2 ? sz : sz * .5); xx < x + w; xx += sz * 1.6) { c.moveTo(xx, yy); c.lineTo(xx, yy - sz); } }
+    c.stroke(); c.restore();
+  };
+  /* füst: zárt képlet t-ből */
+  D.smoke = (c, x, y, s, t, a) => {
+    const a0 = c.globalAlpha;
+    for (let i = 0; i < 5; i++) { const q = (t * .25 + i / 5) % 1; c.globalAlpha = a0 * a * (1 - q) * .55; c.beginPath(); c.arc(x + Math.sin(q * 5 + i) * 3 * s + q * 8 * s, y - q * 34 * s, (2 + q * 6) * s, 0, TAU); c.fillStyle = '#a9a7a2'; c.fill(); }
+    c.globalAlpha = a0;
+  };
+  /* hullámvonalak víz fölött */
+  D.wave = (c, x0, x1, y, amp, t, lw, col) => {
+    c.beginPath(); for (let x = x0; x <= x1; x += 4) { const yy = y + Math.sin(x * .09 + t * 1.6) * amp; if (x === x0) c.moveTo(x, yy); else c.lineTo(x, yy); }
+    c.strokeStyle = col || 'rgba(255,255,255,.55)'; c.lineWidth = lw; c.stroke();
+  };
+
+  function create(cfg) {
+    const L = cfg.L, F = L.fonts;
+    const fr = cfg.frame || [36, 36, 1308, 1008], R = cfg.r == null ? 22 : cfg.r;
+    const fc = [fr[0] + fr[2] / 2, fr[1] + fr[3] / 2];
+    const layerById = {}; (cfg.layers || []).forEach((l) => { layerById[l.id] = l; });
+    const hsById = {}; (cfg.hotspots || []).forEach((h) => { hsById[h.id] = h; });
+    const sc = { cfg, frame: fr, layers: cfg.layers || [], hotspots: cfg.hotspots || [], lastCam: null, vis: [] };
+    sc.view = (v) => typeof v === 'string' ? cfg.views[v] : v;
+    sc.camAt = (a, b, u) => {
+      a = sc.view(a); b = sc.view(b); u = clamp(u);
+      const z = Math.exp(lerp(Math.log(a.z), Math.log(b.z), u));
+      const f = Math.abs(a.z - b.z) < 1e-6 ? u : (1 / a.z - 1 / z) / (1 / a.z - 1 / b.z);
+      return { x: lerp(a.x, b.x, f), y: lerp(a.y, b.y, f), z };
+    };
+    const cam = () => sc.lastCam || cfg.views[Object.keys(cfg.views)[0]];
+    const scaleOf = (l) => l && l.box ? l.box[2] / l.res[0] : 1;
+    sc.toScreen = (x, y, lid) => {
+      const k = cam(), l = lid ? layerById[lid] : null;
+      if (l && l.box) { x = l.box[0] + x * scaleOf(l); y = l.box[1] + y * scaleOf(l); }
+      return [fc[0] + (x - k.x) * k.z, fc[1] + (y - k.y) * k.z];
+    };
+    const zVis = (l, z) => {
+      if (!l.z) return 1; const [a0, a1, b0, b1] = l.z, lz = Math.log(z);
+      const fin = a1 > a0 ? smooth((lz - Math.log(Math.max(a0, 1e-3))) / (Math.log(a1) - Math.log(Math.max(a0, 1e-3)))) : 1;
+      const fout = b1 && b1 > b0 ? 1 - smooth((lz - Math.log(b0)) / (Math.log(b1) - Math.log(b0))) : 1;
+      return fin * fout;
+    };
+    sc.layerAlpha = (id, z) => zVis(layerById[id], z == null ? cam().z : z);
+    function pass(c, o, now) {
+      const k = o.cam, sk = sky(o.hour == null ? 12 : o.hour), nat = nature(o.season == null ? .5 : o.season);
+      const g = c.createLinearGradient(0, fr[1], 0, fr[1] + fr[3] * .45); g.addColorStop(0, sk.top); g.addColorStop(1, sk.bottom);
+      c.fillStyle = g; c.fillRect(fr[0], fr[1], fr[2], fr[3]);
+      if (o.sun) {
+        const u = sk.sun.u, x = fr[0] + 90 + clamp(u) * (fr[2] - 180), y = fr[1] + 150 - sk.sun.e * 90;
+        if (u > -.02 && u < 1.02) { c.beginPath(); c.arc(x, y, 26, 0, TAU); c.fillStyle = rgba('#f2b43c', clamp(sk.day * 1.4)); c.fill(); c.strokeStyle = rgba('#a8641a', clamp(sk.day * 1.4)); c.lineWidth = 2.5; c.stroke(); }
+        if (sk.day < .6) { const mu = ((o.hour + 24 - 20.5) % 24) / 8.5, mx = fr[0] + 90 + clamp(mu) * (fr[2] - 180), my = fr[1] + 150 - Math.sin(Math.PI * clamp(mu)) * 90;
+          c.save(); c.globalAlpha *= 1 - sk.day / .6; c.beginPath(); c.arc(mx, my, 22, 0, TAU); c.fillStyle = '#f4f1e4'; c.fill(); c.strokeStyle = MUT; c.lineWidth = 2; c.stroke();
+          c.beginPath(); c.arc(mx + 9, my - 5, 19, 0, TAU); c.fillStyle = sk.top; c.fill(); c.restore(); }
+      }
+      for (const l of sc.layers) {
+        let a = zVis(l, k.z); if (l.era === 'then') a *= 1 - now; else if (l.era === 'now') a *= now;
+        if (a < .004) continue;
+        c.save(); c.translate(fc[0], fc[1]); c.scale(k.z, k.z); c.translate(-k.x, -k.y);
+        const s = scaleOf(l); if (l.box) { c.translate(l.box[0], l.box[1]); c.scale(s, s); }
+        const base = c.globalAlpha; c.globalAlpha = base * a;
+        const S = { c, season: o.season == null ? .5 : o.season, hour: o.hour == null ? 12 : o.hour, now, t: o.t || 0, z: k.z, px: k.z * s, a: base * a, nat, sky: sk, sc };
+        S.lw = (p) => p / S.px; S.al = (x) => { c.globalAlpha = S.a * clamp(x); };
+        l.draw(c, S);
+        c.restore();
+      }
+      if (sk.day < .999) { c.save(); c.globalCompositeOperation = 'multiply'; c.fillStyle = rgba('#5f6c9a', (1 - sk.day) * .42); c.fillRect(fr[0], fr[1], fr[2], fr[3]); c.restore(); }
+      if (sk.dusk > .02) { c.save(); c.globalCompositeOperation = 'multiply'; c.fillStyle = rgba('#f3c79a', sk.dusk * .25); c.fillRect(fr[0], fr[1], fr[2], fr[3]); c.restore(); }
+    }
+    sc.render = (c, o) => {
+      sc.lastCam = o.cam; sc.vis = [];
+      c.save(); c.beginPath(); c.roundRect(fr[0], fr[1], fr[2], fr[3], R); c.clip();
+      if (o.split != null) {
+        const sx = clamp(o.split, fr[0], fr[0] + fr[2]);
+        c.save(); c.beginPath(); c.rect(fr[0], fr[1], sx - fr[0], fr[3]); c.clip(); pass(c, o, 0); c.restore();
+        c.save(); c.beginPath(); c.rect(sx, fr[1], fr[0] + fr[2] - sx, fr[3]); c.clip(); pass(c, o, 1); c.restore();
+        c.strokeStyle = CARD; c.lineWidth = 7; c.beginPath(); c.moveTo(sx, fr[1]); c.lineTo(sx, fr[1] + fr[3]); c.stroke();
+        c.strokeStyle = INK; c.lineWidth = 2.5; c.stroke();
+        c.beginPath(); c.arc(sx, fc[1], 22, 0, TAU); D.fs(c, CARD, INK, 2.5);
+        c.beginPath(); c.moveTo(sx - 6, fc[1] - 8); c.lineTo(sx - 13, fc[1]); c.lineTo(sx - 6, fc[1] + 8); c.moveTo(sx + 6, fc[1] - 8); c.lineTo(sx + 13, fc[1]); c.lineTo(sx + 6, fc[1] + 8); c.strokeStyle = INK; c.lineWidth = 2.5; c.stroke();
+      } else pass(c, o, o.now || 0);
+      if (o.veil) { c.fillStyle = `rgba(247,241,230,${o.veil})`; c.fillRect(fr[0], fr[1], fr[2], fr[3]); }
+      c.restore();
+    };
+    sc.decor = (c, alpha = 1) => {
+      c.save(); c.globalAlpha *= alpha;
+      c.beginPath(); c.roundRect(fr[0], fr[1], fr[2], fr[3], R); c.strokeStyle = INK; c.lineWidth = 2.5; c.stroke();
+      if (cfg.stampK) stamp(c, L.lab(cfg.stampK), fr[0] + fr[2] - 24, fr[1] + 40, cfg.stampK, MUT, 'right');
+      c.restore();
+    };
+    /* bélyeg (§11): Bricolage 22 px 600, betűköz .08 em, −3°, háttér #fffaf1, 2 px keret */
+    function stamp(c, s, x, y, k, col, a) {
+      c.save(); c.translate(x, y); c.rotate(-3 * Math.PI / 180);
+      L.pill(s, 0, 0, { s: 22, w: 600, ls: '1.76px', c: col, bg: CARD, bd: col, bw: 2, r: 6, pad: 10, a: a || 'left', k });
+      c.restore();
+    }
+    sc.stamp = stamp;
+    /* kattintható pontok */
+    sc.markers = (c, o) => {
+      const al = o.alpha == null ? 1 : o.alpha, p = L.pointer; if (al < .02) return [];
+      const out = []; let hov = null;
+      (o.ids || []).forEach((id) => {
+        const h = hsById[id]; if (!h) return;
+        const la = h.layer ? zVis(layerById[h.layer], cam().z) : 1; if (la * al < .05) return;
+        const [x, y] = sc.toScreen(h.x, h.y, h.layer);
+        if (x < fr[0] || x > fr[0] + fr[2] || y < fr[1] || y > fr[1] + fr[3]) return;
+        const on = o.sel === id, hv = p.inside && Math.hypot(p.x - x, p.y - y) < 24;
+        if (hv) hov = id;
+        out.push({ id, x, y, a: la * al });
+        c.save(); c.globalAlpha *= la * al;
+        if (o.pulse !== false && !on) { const q = ((o.t || 0) * .7 + (h.x * .013) % 1) % 1; c.beginPath(); c.arc(x, y, 14 + q * 16, 0, TAU); c.strokeStyle = rgba(ACC, .55 * (1 - q)); c.lineWidth = 3; c.stroke(); }
+        c.beginPath(); c.arc(x, y, hv || on ? 17 : 14, 0, TAU); D.fs(c, on ? ACC : CARD, INK, 2.5);
+        c.beginPath(); c.arc(x, y, 5, 0, TAU); c.fillStyle = on ? CARD : ACC; c.fill();
+        if (o.labels !== false) {
+          const dx = h.dx == null ? 26 : h.dx, dy = h.dy || 0, far = Math.hypot(dx, dy) > 40;
+          const lab = L.lab(h.k), m = L.measure(lab, { s: 22, w: 600 }), pw = m.w + 20;
+          const ax = dx >= 0 ? 'left' : 'right';
+          if (far) { c.beginPath(); c.moveTo(x, y); c.lineTo(x + dx, y + dy); c.setLineDash([5, 4]); c.strokeStyle = rgba(INK, .6); c.lineWidth = 2; c.stroke(); c.setLineDash([]); }
+          L.pill(lab, x + dx + (Math.abs(dx) < 2 ? -pw / 2 : 0), y + dy, { s: 22, w: 600, a: Math.abs(dx) < 2 ? 'left' : ax, bg: on ? ACC : 'rgba(255,250,241,.95)', bd: on ? ACC : rgba(INK, .4), c: on ? CARD : INK, pad: 10, k: h.k });
+        }
+        c.restore();
+      });
+      sc.vis = out; sc.hover = hov;
+      if (L.stage) L.stage.style.cursor = hov ? 'pointer' : '';
+      return out;
+    };
+    sc.pick = (x, y) => {
+      let best = null, bd = 30;
+      sc.vis.forEach((v) => { const d = Math.hypot(v.x - x, v.y - y); if (d < bd && v.a > .3) { bd = d; best = v.id; } });
+      return best;
+    };
+    sc.attach = (fn) => {
+      L.stage.addEventListener('click', (e) => {
+        const p = L.toStage(e); if (p.x < fr[0] || p.x > fr[0] + fr[2] || p.y < fr[1] || p.y > fr[1] + fr[3]) return;
+        fn(sc.pick(p.x, p.y));
+      });
+    };
+    /* szöveg tördelése szélességre (L.measure) */
+    sc.wrap = (s, o, w) => {
+      const words = String(s).split(/\s+/), lines = []; let cur = '';
+      words.forEach((wd) => { const t = cur ? cur + ' ' + wd : wd; if (L.measure(t, o).w > w && cur) { lines.push(cur); cur = wd; } else cur = t; });
+      if (cur) lines.push(cur); return lines;
+    };
+    /* magyarázó kártya a ponthoz: cím + tördelt szöveg; o = {x, y (bal felső), w, alpha} */
+    sc.card = (c, id, o) => {
+      const h = hsById[id]; if (!h || (o.alpha != null && o.alpha < .02)) return null;
+      const w = o.w || 470, pad = 20, tO = { s: 30, w: 600, f: F.D }, bO = { s: 23, w: 400 };
+      const lines = h.info ? sc.wrap(L.lab(h.info), bO, w - pad * 2) : [];
+      const hh = pad + 32 + lines.length * 31 + pad - 4;
+      let x = o.x, y = o.y; if (o.from === 'bottom') y -= hh;
+      c.save(); c.globalAlpha *= o.alpha == null ? 1 : o.alpha;
+      c.shadowColor = 'rgba(70,50,20,.2)'; c.shadowBlur = 18; c.shadowOffsetY = 4;
+      c.beginPath(); c.roundRect(x, y, w, hh, 14); c.fillStyle = CARD; c.fill(); c.shadowColor = 'transparent';
+      c.strokeStyle = ACC; c.lineWidth = 2.5; c.stroke();
+      L.tx(L.lab(h.k), x + pad, y + pad + 24, Object.assign({ c: ACC, k: h.k }, tO));
+      lines.forEach((ln, i) => L.tx(ln, x + pad, y + pad + 32 + 26 + i * 31, Object.assign({ c: INK, k: h.info }, bO)));
+      c.restore();
+      return { x, y, w, h: hh };
+    };
+    return sc;
+  }
+  return { create, nature, sky, kf, mix, rgba, draw: D };
+})();
+/* ── MODUL VÉGE ──────────────────────────────────────────────────────────────────────── */
+
+
+/* ════════════════════════ A lecke ════════════════════════ */
+const U = Lesson.U, F = Lesson.FONTS, { clamp, lerp, smooth, inOut, out, outBack, TAU } = U;
+const D = TortScene.draw, mix = TortScene.mix, rgba = TortScene.rgba, kf = TortScene.kf;
+const INK = '#1c2440', MUT = '#565d72', RED = '#c8401c', TEAL = '#0a6f86', GOOD = '#1d7a45', BAD = '#b3261e',
+  OCHRE = '#8f5a0c', CARD = '#fffaf1';
+const C = {
+  far1: '#b4c0ae', far2: '#a3b39b', farBank: '#c3c99d', water: '#8db9d6', waterD: '#1b5a94', stone: '#d8cfbd', stoneD: '#b9ae99',
+  rock: '#b7ab96', thatch: '#c4a062', tile: '#bf6a45', plaster: '#efe4cc', wood: '#8a5a33', road: '#d8c59c', forest: '#62874f',
+  church: '#ece3cf', purple: '#6b4a8c', brown: '#8a6a3a',
+};
+let L, c;
+const lab = (k) => L.lab(k), num = (k) => L.num(k), val = (k) => L.val(k);
+const list = (k, sep) => lab(k).split(sep || /\s*,\s*/);
+const T = (k, x, y, o = {}) => L.tx(lab(k), x, y, Object.assign({ k }, o));
+const rr = (x, y, w, h, r) => { c.beginPath(); c.roundRect(x, y, w, h, r); };
+const ga = (a) => { c.globalAlpha = clamp(a); };
+const MONTHS_LEN = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+/* „április 24.” / „augusztus” → évtört (0 = jan. 1.) – a hónapnevek a „hónapok” feliratból */
+function yearFrac(s) {
+  const ms = list('hónapok'), m = s.trim().match(/^([a-zéáíóöőúüű]+)(?:\s+(\d{1,2})\.)?/i);
+  if (!m) return 0; const mi = ms.indexOf(m[1].toLowerCase()); if (mi < 0) return 0;
+  const d = m[2] ? +m[2] - .5 : MONTHS_LEN[mi] / 2; let doy = d; for (let i = 0; i < mi; i++) doy += MONTHS_LEN[i];
+  return doy / 365;
+}
+
+/* ════════ A JELENET: uradalom (világ ≈ képernyő px az áttekintő nézetben) ════════ */
+const FRAME = [36, 36, 1308, 1008];
+const RIVER = [[340, 470], [560, 452], [820, 428], [1080, 404], [1330, 404], [1540, 440], [1740, 520], [1980, 650]];
+const HILL = [[-60, 700], [-20, 600], [40, 520], [95, 420], [150, 330], [182, 268], [215, 252], [300, 247], [385, 252], [420, 272],
+  [470, 330], [520, 405], [565, 485], [596, 560], [606, 630], [580, 700]];
+const STREAM = [[1270, 1110], [1170, 980], [1095, 860], [1052, 760], [1046, 690], [1072, 600], [1100, 520], [1118, 450]];
+const CASTLE_ROAD = [[192, 250], [150, 300], [210, 352], [160, 420], [300, 470], [470, 560], [600, 650], [650, 688]];
+const FLD = { cx: 760, cy: 722, r1: 232, r2: 600, ry: .46, a0: 20 * Math.PI / 180, a1: 160 * Math.PI / 180, gap: 1.4 * Math.PI / 180, strips: 7 };
+const FAMILY_STRIP = 3;                     // a kiemelt család csíkja nyomásonként (index)
+const NORTH_ROW = [626, 670, 812, 846, 880, 924, 968, 1008];       // házak (x), alap y = 676 (a templom 740-nél)
+const SOUTH_ROW = [614, 658, 702, 746, 790, 834, 878, 922, 966];    // alap y = 752
+const ROW_Y = [676, 752], STREET = [[560, 700], [760, 712], [1030, 702]];
+const PLOT = { box: [860, 640, 84], res: [1000, 600] };             // a nagyított telek (északi sor, 880-as ház)
+const CUT = { box: [170, 128, 236], res: [1000, 540] };             // a vár metszete
+
+/* ── a nyomások mértana: ugyanez a sokszög rajzol ÉS számol területet ── */
+function ell(t, r) { return [FLD.cx + Math.cos(t) * r, FLD.cy + Math.sin(t) * r * FLD.ry]; }
+function sectorPoly(t0, t1, r1, r2) {
+  const p = [], n = Math.max(4, Math.ceil((t1 - t0) / (2 * Math.PI / 180)));
+  for (let i = 0; i <= n; i++) p.push(ell(lerp(t0, t1, i / n), r2));
+  for (let i = n; i >= 0; i--) p.push(ell(lerp(t0, t1, i / n), r1));
+  return p;
+}
+function area(p) { let s = 0; for (let i = 0; i < p.length; i++) { const a = p[i], b = p[(i + 1) % p.length]; s += a[0] * b[1] - b[0] * a[1]; } return Math.abs(s) / 2; }
+function centroid(p) { let x = 0, y = 0; p.forEach((q) => { x += q[0]; y += q[1]; }); return [x / p.length, y / p.length]; }
+const LAYOUT = {};
+function layout(n) {
+  if (LAYOUT[n]) return LAYOUT[n];
+  const secs = [];
+  for (let k = 0; k < n; k++) {
+    const t0 = lerp(FLD.a0, FLD.a1, k / n) + FLD.gap / 2, t1 = lerp(FLD.a0, FLD.a1, (k + 1) / n) - FLD.gap / 2;
+    const poly = sectorPoly(t0, t1, FLD.r1, FLD.r2), strips = [];
+    for (let j = 0; j < FLD.strips; j++) strips.push(sectorPoly(lerp(t0, t1, j / FLD.strips), lerp(t0, t1, (j + 1) / FLD.strips), FLD.r1 + 4, FLD.r2 - 4));
+    const tm = (t0 + t1) / 2;
+    secs.push({ k, t0, t1, poly, strips, area: area(poly), c: ell(tm, (FLD.r1 + FLD.r2) / 2), tm });
+  }
+  return (LAYOUT[n] = { n, secs, total: secs.reduce((s, q) => s + q.area, 0) });
+}
+const CROPS = ['osz', 'tav', 'ugar'];
+function cropOf(n, k, yr) { if (n === 2) return (k + yr) % 2 ? 'ugar' : 'osz'; return CROPS[(k + yr) % n === 0 ? 0 : (k + yr) % n === 1 ? 1 : 2]; }
+function sownShare(n, yr) { const Lo = layout(n); return Lo.secs.reduce((s, q) => s + (cropOf(n, q.k, yr) === 'ugar' ? 0 : q.area), 0) / Lo.total; }
+const CROP_KF = {
+  osz: [[.02, '#b5bf91'], [.2, '#a8c27b'], [.32, '#8db45d'], [.42, '#a5b85a'], [.47, '#cdb550'], [.5, '#dab64b'], [.545, '#dab64b'], [.565, '#ddcc9d'], [.98, '#d4c59c']],
+  tav: [[.02, '#d4c59c'], [.19, '#d4c59c'], [.23, '#a5845f'], [.31, '#a28962'], [.38, '#a9c47b'], [.48, '#93b85f'], [.56, '#b8bb5c'], [.6, '#d4b553'], [.64, '#d4b553'], [.665, '#ddcc9d'], [.98, '#d4c59c']],
+  ugar: [[.02, '#c4c59b'], [.3, '#afc282'], [.42, '#b2c07d'], [.46, '#ad9066'], [.6, '#b6a57c'], [.7, '#ae9e76'], [.74, '#a5845f'], [.8, '#9d8b5f'], [.9, '#a9b584'], [.98, '#b4be90']],
+};
+const cropCol = (cr, s) => kf(CROP_KF[cr], s);
+
+/* ── jelenet-rétegek ── */
+function drawBase(c, S) {
+  const lw = S.lw, nat = S.nat;
+  /* távoli hegyek */
+  D.smooth(c, [[-600, 520], [-600, 250], [-200, 215], [100, 238], [380, 196], [640, 232], [900, 192], [1180, 226], [1460, 200], [1760, 236], [2500, 220], [2500, 520]], true);
+  D.fs(c, mix(C.far1, '#e9ecef', .25), rgba(INK, .35), lw(1.5));
+  D.smooth(c, [[-600, 520], [-600, 300], [-100, 280], [300, 262], [700, 285], [1000, 262], [1300, 290], [1650, 270], [2500, 300], [2500, 520]], true);
+  D.fs(c, mix(C.far2, nat.grass, .15), rgba(INK, .4), lw(1.5));
+  /* túlpart */
+  c.beginPath(); c.moveTo(-600, 340); c.lineTo(2500, 340); c.lineTo(2500, 700); c.lineTo(-600, 700); c.closePath();
+  const fb = mix(C.farBank, nat.grass, .5); c.fillStyle = fb; c.fill();
+  c.strokeStyle = rgba(INK, .3); c.lineWidth = lw(1.2); c.beginPath(); c.moveTo(-600, 340); for (let x = -600; x <= 2500; x += 60) c.lineTo(x, 338 + Math.sin(x * .02) * 4); c.stroke();
+  for (let i = 0; i < 46; i++) { const x = -100 + i * 37 + Math.sin(i * 7.3) * 10, y = 352 + (i % 3) * 9; D.tree(c, x, y, .75, nat, { lw: lw(.9), seed: i }); }
+  /* a túlparti falu (akkor) / kisváros (most) */
+  const nh = S.now > .5 ? 9 : 5;
+  for (let i = 0; i < nh; i++) { const x = 1210 + i * 22, y = 384 + (i % 2) * 6; D.house(c, x, y, 16, 7, { lw: lw(.9), roof: S.now > .5 ? C.tile : C.thatch, tile: S.now > .5, door: false, win: 0, snow: nat.snow }); }
+  if (S.now <= .5) { c.beginPath(); c.rect(1262, 366, 6, 18); D.fs(c, C.church, INK, lw(.9)); D.path(c, [[1260, 366], [1265, 354], [1270, 366]], true); D.fs(c, C.tile, INK, lw(.9)); }
+  /* folyó */
+  const rb = D.band(RIVER, (u) => 44 + u * 24);
+  D.smooth(c, rb.poly, true);
+  const g = c.createLinearGradient(0, 390, 0, 480); g.addColorStop(0, '#9cc3dc'); g.addColorStop(1, '#7fb0d2');
+  c.fillStyle = g; c.fill(); c.strokeStyle = C.waterD; c.lineWidth = lw(2); c.stroke();
+  c.save(); D.smooth(c, rb.poly, true); c.clip();
+  for (let i = 0; i < 9; i++) { const x0 = 420 + i * 170, y0 = 434 - i * 2 + (i % 2) * 8; c.beginPath(); c.moveTo(x0, y0); c.lineTo(x0 + 50, y0 - 3); c.strokeStyle = 'rgba(255,255,255,.6)'; c.lineWidth = lw(2); c.stroke(); }
+  c.restore();
+  /* hajó: akkor fahajó, most uszály */
+  const bx = 900 + ((S.t * 6) % 300), by = 418;
+  if (S.now < .5) { D.path(c, [[bx - 18, by], [bx + 18, by], [bx + 13, by + 6], [bx - 13, by + 6]], true); D.fs(c, C.wood, INK, lw(1)); D.figure(c, bx - 4, by, .32, { lw: lw(.8), tool: 'staff', coat: '#7b5a3f' }); }
+  else { D.path(c, [[bx - 34, by], [bx + 30, by], [bx + 26, by + 7], [bx - 30, by + 7]], true); D.fs(c, '#5d6b7e', INK, lw(1)); c.beginPath(); c.rect(bx + 14, by - 9, 12, 9); D.fs(c, '#e9e4d8', INK, lw(1)); }
+  /* innenső part */
+  const land = rb.left.slice(); land.push([2500, 900], [2500, 1600], [-600, 1600], [-600, 520], [rb.left[0][0], rb.left[0][1]]);
+  D.path(c, land, true); c.fillStyle = nat.grass; c.fill();
+  c.strokeStyle = C.waterD; c.lineWidth = lw(2); D.smooth(c, rb.left, false); c.stroke();
+  /* rét (a folyó és a falu között) */
+  D.smooth(c, [[640, 500], [820, 478], [1010, 470], [1080, 520], [1060, 600], [900, 640], [720, 630], [640, 580]], true);
+  c.fillStyle = mix(nat.grass, '#93bd62', .45 * (1 - nat.snow)); c.fill();
+  if (S.now > .5) { // futballpálya a réten
+    c.beginPath(); c.rect(880, 520, 120, 60); c.fillStyle = mix('#8fbf60', nat.grass, .3); c.fill(); c.strokeStyle = 'rgba(255,255,255,.9)'; c.lineWidth = lw(1.5); c.stroke();
+    c.beginPath(); c.moveTo(940, 520); c.lineTo(940, 580); c.stroke(); c.beginPath(); c.arc(940, 550, 10, 0, TAU); c.stroke();
+  }
+  /* patak */
+  c.strokeStyle = '#6fa6cc'; c.lineWidth = lw(7); c.lineCap = 'round'; D.smooth(c, STREAM, false); c.stroke();
+  c.strokeStyle = C.waterD; c.lineWidth = lw(1.6); c.stroke();
+  /* utak */
+  c.strokeStyle = S.now > .5 ? '#9a9a96' : C.road; c.lineWidth = lw(S.now > .5 ? 9 : 7); D.smooth(c, STREET, false); c.stroke();
+  c.strokeStyle = C.road; c.lineWidth = lw(5); D.smooth(c, CASTLE_ROAD, false); c.stroke();
+  c.strokeStyle = rgba(INK, .35); c.lineWidth = lw(1); c.setLineDash([lw(6), lw(5)]); c.stroke(); c.setLineDash([]);
+  if (nat.snow > .02) { S.al(nat.snow * .85); c.fillStyle = '#f7f7f2'; D.path(c, land, true); c.fill(); S.al(1); }
+}
+function drawHill(c, S) {
+  const lw = S.lw, nat = S.nat;
+  D.smooth(c, HILL, true);
+  const g = c.createLinearGradient(0, 240, 0, 700); g.addColorStop(0, mix('#a9b08f', nat.grass, .3)); g.addColorStop(1, mix('#8ea377', nat.grass, .4));
+  c.fillStyle = g; c.fill(); c.strokeStyle = rgba(INK, .55); c.lineWidth = lw(2); c.stroke();
+  D.smooth(c, [[176, 262], [206, 247], [262, 240], [330, 243], [398, 248], [424, 270], [404, 286], [360, 278], [320, 292], [270, 280], [222, 290], [190, 282]], true); D.fs(c, C.rock, rgba(INK, .5), lw(1.5));
+  c.strokeStyle = rgba(INK, .3); c.lineWidth = lw(1.2); c.beginPath(); [[214, 262, 232, 276], [286, 258, 300, 274], [356, 262, 372, 272], [392, 262, 404, 276]].forEach((q) => { c.moveTo(q[0], q[1]); c.lineTo(q[2], q[3]); }); c.stroke();
+  const r = U.rng(11);
+  for (let i = 0; i < 70; i++) {
+    const x = 40 + r() * 600, y = 300 + r() * 380;
+    const yl = hillTop(x); if (y < yl + 22 || y > 690 || x > 560 || (x > 160 && x < 430 && y < 320)) continue;
+    D.tree(c, x, y, .9 + r() * .3, nat, { lw: lw(.9), seed: i, leaf: mix(nat.leaf, '#4f7a46', .3) });
+  }
+  c.strokeStyle = C.road; c.lineWidth = lw(5); c.lineCap = 'round'; D.smooth(c, CASTLE_ROAD.slice(0, 5), false); c.stroke();
+  if (nat.snow > .02) { S.al(nat.snow * .8); D.smooth(c, HILL, true); c.fillStyle = '#f5f5f0'; c.fill(); S.al(1); }
+}
+function hillTop(x) { for (let i = 1; i < HILL.length; i++) { const a = HILL[i - 1], b = HILL[i]; if ((x - a[0]) * (x - b[0]) <= 0 && a[1] < 650) return lerp(a[1], b[1], (x - a[0]) / ((b[0] - a[0]) || 1)); } return 700; }
+/* a vár külső képe; ruin = 0 (ép) … 1 (rom) */
+function castleShape(c, S, ruin) {
+  const lw = S.lw(1.6), st = mix(C.stone, '#c9c2b2', ruin), snow = S.nat.snow;
+  const jag = (x0, x1, y, amp) => { const p = []; for (let x = x0; x <= x1 + .01; x += (x1 - x0) / 6) p.push([x, y + (ruin > .5 ? Math.abs(Math.sin(x * 1.7)) * amp : 0)]); return p; };
+  /* hátsó palota */
+  c.beginPath(); c.rect(262, 196, 61, 34); D.fs(c, mix(C.plaster, st, ruin), INK, lw);
+  if (ruin < .5) { D.path(c, [[258, 196], [270, 180], [315, 180], [327, 196]], true); D.fs(c, C.tile, INK, lw); }
+  /* öregtorony */
+  const kt = ruin > .5 ? 150 : 133;
+  D.path(c, [[325, 250]].concat(jag(325, 372, kt, 10)).concat([[372, 250]]), true); D.fs(c, st, INK, lw);
+  D.stones(c, 325, kt, 47, 250 - kt, 7, S.lw(.6));
+  if (ruin < .5) { D.path(c, [[322, 133], [348, 104], [375, 133]], true); D.fs(c, C.tile, INK, lw); }
+  for (let i = 0; i < 3; i++) { c.beginPath(); c.rect(342 + (i % 2) * 8, 150 + i * 26, 5, 9); c.fillStyle = '#3b3f52'; c.fill(); }
+  /* kapu-torony */
+  D.path(c, [[186, 250]].concat(jag(186, 214, 186, 8)).concat([[214, 250]]), true); D.fs(c, st, INK, lw);
+  if (ruin < .5) { D.path(c, [[183, 186], [200, 168], [217, 186]], true); D.fs(c, C.tile, INK, lw); }
+  c.beginPath(); c.moveTo(194, 250); c.lineTo(194, 232); c.arc(200, 232, 6, Math.PI, 0); c.lineTo(206, 250); D.fs(c, '#3b3f52', INK, S.lw(1));
+  /* elülső fal (ép: pártázattal) */
+  D.path(c, [[214, 252]].concat(jag(214, 325, 212, 12)).concat([[325, 252]]), true); D.fs(c, st, INK, lw);
+  if (ruin < .5) D.crenel(c, 214, 325, 212, 6, 8, st, S.lw(1.2));
+  D.path(c, [[372, 252]].concat(jag(372, 398, 208, 8)).concat([[398, 252]]), true); D.fs(c, st, INK, lw);
+  if (ruin < .5) { D.crenel(c, 372, 398, 208, 6, 3, st, S.lw(1.2)); }
+  D.stones(c, 214, 212, 111, 40, 7, S.lw(.6));
+  if (ruin > .5) { for (let i = 0; i < 6; i++) { const x = 220 + i * 30; c.beginPath(); c.arc(x, 214 + (i % 2) * 6, 4, 0, TAU); c.fillStyle = '#7d9a5a'; c.fill(); } }
+  if (snow > .02) { S.al(snow * .9); c.fillStyle = '#fbfbf8'; c.fillRect(214, 205, 111, 4); c.fillRect(372, 203, 26, 4); if (ruin < .5) { D.path(c, [[330, 128], [348, 108], [366, 128]], true); c.fill(); } S.al(1); }
+}
+function drawCastle(c, S) { castleShape(c, S, 0); }
+function drawCastleNow(c, S) { castleShape(c, S, 1); }
+function drawForest(c, S) {
+  const r = U.rng(5), nat = S.nat, lw = S.lw(.9);
+  const pts = [];
+  for (let i = 0; i < 80; i++) { const x = 1080 + r() * 300, y = 440 + r() * 210; if (y > 470 + (x - 1080) * .1 + (x > 1250 ? 0 : 0) && !(x < 1140 && y > 600)) pts.push([x, y, i]); }
+  for (let i = 0; i < 40; i++) { const x = -60 + i * 36 + r() * 20, y = 1010 + r() * 30; pts.push([x, y, 100 + i]); }
+  pts.sort((a, b) => a[1] - b[1]).forEach((p) => {
+    if (p[2] % 4 === 0) D.conifer(c, p[0], p[1], .9, nat, { lw });
+    else D.tree(c, p[0], p[1], 1.05, nat, { lw, seed: p[2] });
+  });
+}
+function drawFields(c, S, opt = {}) {
+  const lw = S.lw, s = S.season, n = opt.n || 3, yr = opt.yr || 0, alpha = opt.alpha == null ? 1 : opt.alpha;
+  if (alpha < .01) return;
+  S.al(alpha);
+  const Lo = layout(n);
+  Lo.secs.forEach((q) => {
+    const cr = opt.cropAt ? opt.cropAt(q.k) : cropOf(n, q.k, yr);
+    const col = typeof cr === 'string' ? cropCol(cr, s) : mix(cropCol(cr[0], s), cropCol(cr[1], s), cr[2]);
+    D.path(c, q.poly, true); c.fillStyle = col; c.fill();
+    c.save(); c.clip();
+    q.strips.forEach((sp, j) => {
+      D.path(c, sp, true); c.strokeStyle = rgba(INK, .32); c.lineWidth = lw(1); c.stroke();
+      const t0 = lerp(q.t0, q.t1, j / FLD.strips), t1 = lerp(q.t0, q.t1, (j + 1) / FLD.strips);
+      c.beginPath(); for (let k = 1; k < 3; k++) { const tt = lerp(t0, t1, k / 3), a = ell(tt, FLD.r1 + 10), b = ell(tt, FLD.r2 - 10); c.moveTo(a[0], a[1]); c.lineTo(b[0], b[1]); }
+      c.strokeStyle = rgba(INK, .12); c.lineWidth = lw(1); c.stroke();
+    });
+    if (S.nat.snow > .02) { S.al(alpha * S.nat.snow * .88); c.fillStyle = '#f7f7f2'; c.fillRect(-1000, -1000, 4000, 4000); S.al(alpha); }
+    c.restore();
+    D.path(c, q.poly, true); c.strokeStyle = rgba(INK, .65); c.lineWidth = lw(2); c.stroke();
+    if (opt.family) { D.path(c, q.strips[FAMILY_STRIP], true); c.strokeStyle = RED; c.lineWidth = lw(3.5); c.stroke(); c.fillStyle = rgba(RED, .14); c.fill(); }
+  });
+  S.al(1);
+}
+function drawFieldsThen(c, S) {
+  const o = FIELD_OPT(), f = o.fade;
+  if (f && f.fn < 1 && f.nPrev !== f.n) { drawFields(c, S, { n: f.nPrev, yr: f.yrPrev, family: true }); drawFields(c, S, Object.assign({}, o, { alpha: smooth(f.fn) })); }
+  else drawFields(c, S, o);
+}
+function drawFieldsNow(c, S) {
+  const lw = S.lw, s = S.season;
+  [[FLD.a0, (FLD.a0 + FLD.a1) / 2, 'osz'], [(FLD.a0 + FLD.a1) / 2, FLD.a1, 'tav']].forEach((f) => {
+    const p = sectorPoly(f[0] + .01, f[1] - .01, FLD.r1, FLD.r2); D.path(c, p, true); c.fillStyle = cropCol(f[2], s); c.fill();
+    c.save(); c.clip(); c.beginPath(); for (let k = 0; k < 40; k++) { const tt = lerp(f[0], f[1], k / 40), a = ell(tt, FLD.r1), b = ell(tt, FLD.r2); c.moveTo(a[0], a[1]); c.lineTo(b[0], b[1]); }
+    c.strokeStyle = rgba(INK, .1); c.lineWidth = lw(1); c.stroke();
+    if (S.nat.snow > .02) { S.al(S.nat.snow * .88); c.fillStyle = '#f7f7f2'; c.fillRect(-1000, -1000, 4000, 4000); S.al(1); }
+    c.restore(); D.path(c, p, true); c.strokeStyle = rgba(INK, .6); c.lineWidth = lw(2); c.stroke();
+  });
+  /* traktor */
+  const tt = (S.t * .015) % 1, p = ell(lerp(FLD.a0 + .3, FLD.a1 - .3, tt), 420);
+  c.beginPath(); c.rect(p[0] - 12, p[1] - 14, 18, 10); D.fs(c, '#c8401c', INK, lw(1.2)); c.beginPath(); c.rect(p[0] - 4, p[1] - 22, 10, 9); D.fs(c, '#e9e4d8', INK, lw(1.2));
+  c.beginPath(); c.arc(p[0] - 8, p[1] - 3, 6, 0, TAU); D.fs(c, '#3b3f52', INK, lw(1)); c.beginPath(); c.arc(p[0] + 6, p[1] - 2, 4, 0, TAU); D.fs(c, '#3b3f52', INK, lw(1));
+}
+function drawVillage(c, S) {
+  const lw = S.lw, nat = S.nat;
+  /* kertek a házak mögött */
+  NORTH_ROW.forEach((x, i) => { c.beginPath(); c.rect(x - 18, 640, 36, 30); c.fillStyle = mix(nat.grass, '#9db86a', .5 * (1 - nat.snow)); c.fill(); c.strokeStyle = rgba(INK, .25); c.lineWidth = lw(1); c.stroke(); });
+  /* templom */
+  const cx = 742;
+  c.beginPath(); c.rect(cx - 22, 646, 44, 30); D.fs(c, C.church, INK, lw(1.4));
+  D.path(c, [[cx - 25, 646], [cx - 14, 630], [cx + 14, 630], [cx + 25, 646]], true); D.fs(c, C.tile, INK, lw(1.4));
+  c.beginPath(); c.rect(cx - 36, 612, 16, 64); D.fs(c, C.church, INK, lw(1.4));
+  D.path(c, [[cx - 38, 612], [cx - 28, 588], [cx - 18, 612]], true); D.fs(c, C.tile, INK, lw(1.4));
+  c.beginPath(); c.moveTo(cx - 28, 588); c.lineTo(cx - 28, 578); c.moveTo(cx - 32, 582); c.lineTo(cx - 24, 582); c.strokeStyle = INK; c.lineWidth = lw(1.4); c.stroke();
+  c.beginPath(); c.arc(cx - 28, 624, 3, 0, TAU); D.fs(c, '#3b3f52', null, 0);
+  [cx - 10, cx + 4].forEach((x) => { c.beginPath(); c.moveTo(x, 668); c.lineTo(x, 656); c.arc(x + 2.5, 656, 2.5, Math.PI, 0); c.lineTo(x + 5, 668); D.fs(c, '#3b3f52', null, 0); });
+  const house = (x, y, i, flip) => {
+    if (S.now > .5) D.house(c, x, y, 30, 13, { lw: lw(1.1), roof: C.tile, tile: true, wall: '#f3ede0', win: 2, snow: nat.snow, doorX: -.05 });
+    else D.house(c, x, y, 28, 11, { lw: lw(1.1), roof: C.thatch, win: 1, snow: nat.snow, doorX: flip ? -.2 : .18 });
+  };
+  NORTH_ROW.forEach((x, i) => house(x, ROW_Y[0], i));
+  SOUTH_ROW.forEach((x, i) => house(x, ROW_Y[1], i, true));
+  /* sövénykerítések */
+  c.strokeStyle = rgba(INK, .4); c.lineWidth = lw(1); c.beginPath();
+  NORTH_ROW.concat([cx]).forEach((x) => { c.moveTo(x - 20, 678); c.lineTo(x + 20, 678); });
+  c.stroke();
+  /* malom a patakon */
+  const mx = 1050, my = 700;
+  if (S.now < .5) {
+    c.beginPath(); c.rect(mx - 4, my - 24, 26, 24); D.fs(c, C.plaster, INK, lw(1.2)); D.path(c, [[mx - 7, my - 24], [mx + 9, my - 38], [mx + 25, my - 24]], true); D.fs(c, C.thatch, INK, lw(1.2));
+    const a = S.t * 1.2; c.save(); c.translate(mx - 10, my - 8); c.rotate(a); c.beginPath(); c.arc(0, 0, 11, 0, TAU); D.fs(c, '#9a7448', INK, lw(1.2));
+    c.beginPath(); for (let k = 0; k < 8; k++) { const q = k / 8 * TAU; c.moveTo(0, 0); c.lineTo(Math.cos(q) * 13, Math.sin(q) * 13); } c.strokeStyle = INK; c.lineWidth = lw(1); c.stroke(); c.restore();
+  } else {
+    c.beginPath(); c.rect(mx - 4, my - 10, 22, 10); D.fs(c, '#cfc6b4', INK, lw(1.2));
+  }
+  if (S.now > .5) {
+    /* iskola + villanyoszlopok + busz */
+    c.beginPath(); c.rect(1100, 690, 60, 26); D.fs(c, '#f2e8d2', INK, lw(1.3)); D.path(c, [[1096, 690], [1130, 674], [1164, 690]], true); D.fs(c, C.tile, INK, lw(1.3));
+    for (let i = 0; i < 4; i++) { c.beginPath(); c.rect(1106 + i * 13, 698, 8, 9); D.fs(c, '#59607a', INK, lw(.8)); }
+    c.strokeStyle = INK; c.lineWidth = lw(1.2); c.beginPath(); for (let i = 0; i < 6; i++) { const x = 600 + i * 90; c.moveTo(x, 702); c.lineTo(x, 680); c.moveTo(x - 4, 683); c.lineTo(x + 4, 683); } c.stroke();
+    c.beginPath(); c.moveTo(600, 683); for (let i = 1; i < 6; i++) c.quadraticCurveTo(600 + i * 90 - 45, 688, 600 + i * 90, 683); c.strokeStyle = rgba(INK, .5); c.lineWidth = lw(.8); c.stroke();
+    const bx = 620 + ((S.t * 22) % 420); c.beginPath(); c.roundRect(bx, 698, 30, 11, 2); D.fs(c, '#e0b23a', INK, lw(1)); c.beginPath(); c.rect(bx + 3, 700, 22, 4); D.fs(c, '#59607a', null, 0);
+  }
+  /* füst télen */
+  if (nat.snow > .1 && S.now < .5) NORTH_ROW.forEach((x, i) => { if (i % 2 === 0) D.smoke(c, x, ROW_Y[0] - 22, .7, S.t + i, nat.snow); });
+}
+/* élet a jelenetben: évszaktól függő munkák (akkor) */
+function drawLifeThen(c, S) {
+  const s = S.season, lw = S.lw(1), t = S.t, n = FIELD_OPT().n || 3, yr = FIELD_OPT().yr || 0, Lo = layout(n);
+  const win = (a, b, f = .02) => smooth((s - a) / f) * smooth((b - s) / f);
+  const sec = (cr) => Lo.secs.find((q) => cropOf(n, q.k, yr) === cr) || Lo.secs[0];
+  /* legelő jószág a réten és az ugaron */
+  const graze = win(.27, .82, .03);
+  if (graze > .01) {
+    S.al(graze);
+    [[700, 560, 'cow', 1], [760, 590, 'cow', -1], [820, 540, 'ox', 1], [980, 560, 'cow', -1]].forEach((a, i) => D.animal(c, a[0] + Math.sin(t * .2 + i) * 4, a[1], .7, a[2], { lw, dir: a[3] }));
+    const u = sec('ugar'); for (let i = 0; i < 7; i++) { const p = ell(u.tm + (i - 3) * .05, 330 + (i % 3) * 70); D.animal(c, p[0] + Math.sin(t * .3 + i) * 3, p[1], .6, 'sheep', { lw, dir: i % 2 ? 1 : -1 }); }
+    for (let i = 0; i < 6; i++) D.animal(c, 670 + i * 14 + Math.sin(t * .5 + i) * 3, 618 + (i % 2) * 6, .7, 'goose', { lw, dir: 1 });
+    D.figure(c, 660, 626, .45, { lw, tool: 'stick', coat: '#a5773f', hat: 'hair', pose: 'stand' });
+    S.al(1);
+  }
+  /* tavaszi szántás-vetés (márc.–ápr.) a tavaszi gabona tábláján; őszi szántás (szept.–okt.) az ugaron */
+  [[.19, .31, 'tav'], [.70, .80, 'ugar']].forEach((w) => {
+    const a = win(w[0], w[1]); if (a < .01) return; S.al(a);
+    const q = sec(w[2]), u = (s - w[0]) / (w[1] - w[0]), p = ell(lerp(q.t1 - .04, q.t0 + .04, u), 420);
+    D.animal(c, p[0] - 30, p[1], .75, 'ox', { lw, dir: -1, walk: true, t: t * 4 }); D.animal(c, p[0] - 30, p[1] + 10, .75, 'ox', { lw, dir: -1, walk: true, t: t * 4 + 1 });
+    c.beginPath(); c.moveTo(p[0] - 18, p[1] - 6); c.lineTo(p[0] + 4, p[1] - 2); c.lineTo(p[0] + 10, p[1] + 2); c.strokeStyle = '#5a4126'; c.lineWidth = lw * 2; c.stroke();
+    D.figure(c, p[0] + 16, p[1] + 4, .55, { lw, pose: 'walk', t: t * 4, dir: -1, coat: '#8c6a48', hat: 'cap' });
+    const p2 = ell(lerp(q.t1 - .02, q.t0 + .1, u), 300); D.figure(c, p2[0], p2[1], .55, { lw, pose: 'walk', t: t * 3, dir: -1, coat: '#a5773f', hat: 'brim', tool: 'seed' });
+    S.al(1);
+  });
+  /* kaszálás a réten (jún.) + szénaboglyák (jún.–febr.) */
+  const hay = win(.43, .5); if (hay > .01) { S.al(hay); [[880, 590], [930, 600]].forEach((p, i) => D.figure(c, p[0], p[1], .55, { lw, pose: 'work', t: t * 3 + i, tool: 'scythe', coat: '#f0e8d4', hat: 'brim' })); S.al(1); }
+  const stacks = s > .46 || s < .15 ? 1 : 0; if (stacks) { [[960, 520], [1010, 545], [720, 520]].forEach((p) => { c.beginPath(); c.moveTo(p[0] - 12, p[1]); c.quadraticCurveTo(p[0] - 10, p[1] - 22, p[0], p[1] - 24); c.quadraticCurveTo(p[0] + 10, p[1] - 22, p[0] + 12, p[1]); c.closePath(); D.fs(c, '#cdb46a', INK, lw); }); }
+  /* aratás: őszi gabona (júl.), tavaszi (aug.) – kévék a tarlón */
+  [[.49, .56, 'osz'], [.59, .66, 'tav']].forEach((w) => {
+    const q = sec(w[2]), a = win(w[0], w[1]);
+    if (a > .01) { S.al(a); const u = (s - w[0]) / (w[1] - w[0]); for (let i = 0; i < 4; i++) { const p = ell(lerp(q.t0 + .08, q.t1 - .08, U.clamp(u * 1.1 - i * .05)), 360 + i * 40); D.figure(c, p[0], p[1], .55, { lw, pose: 'work', t: t * 3 + i, tool: 'sickle', coat: i % 2 ? '#f0e8d4' : '#c9a56b', hat: i % 2 ? 'kerchief' : 'brim' }); } S.al(1); }
+    const k = smooth((s - w[0] - .02) / .02) * (1 - smooth((s - w[1] - .06) / .03));
+    if (k > .01) { S.al(k); for (let i = 0; i < 9; i++) { const p = ell(lerp(q.t0 + .05, q.t1 - .05, (i % 3) / 2), 300 + Math.floor(i / 3) * 90); c.beginPath(); c.moveTo(p[0] - 8, p[1]); c.lineTo(p[0], p[1] - 20); c.lineTo(p[0] + 8, p[1]); c.closePath(); D.fs(c, '#c29a3e', INK, lw * 1.2); } S.al(1); }
+  });
+  /* tél: fahordás */
+  const wi = Math.max(win(-.1, .14), win(.9, 1.1)); if (wi > .01) { S.al(wi); const x = 640 + ((t * 10) % 300); D.figure(c, x, 708, .55, { lw, pose: 'walk', t: t * 3, coat: '#7b5a3f', hat: 'hood', tool: 'stick' }); S.al(1); }
+}
+function drawLifeNow(c, S) {
+  const lw = S.lw(1), t = S.t;
+  D.figure(c, 905 + Math.sin(t) * 20, 552, .45, { lw, pose: 'walk', t: t * 5, coat: '#2f6fb0', hat: 'hair' });
+  D.figure(c, 965 - Math.sin(t) * 18, 560, .45, { lw, pose: 'walk', t: t * 5 + 1, coat: '#c8401c', hat: 'hair' });
+  c.beginPath(); c.arc(935 + Math.sin(t * 1.3) * 30, 556, 3, 0, TAU); D.fs(c, '#ffffff', INK, lw);
+}
+
+/* ── a vár metszete (részletréteg, 1000 × 540 egység) ── */
+function drawCutaway(c, S) {
+  const lw = S.lw, nat = S.nat, t = S.t, W = 1000;
+  const g = c.createLinearGradient(0, -400, 0, 430); g.addColorStop(0, S.sky.top); g.addColorStop(1, S.sky.bottom);
+  c.fillStyle = g; c.fillRect(-900, -900, 2800, 1330);
+  /* szikla a vár alatt */
+  D.path(c, [[-900, 430], [1900, 430], [1900, 1400], [-900, 1400]], true); D.fs(c, '#b9ad97', null, 0);
+  const r = U.rng(3); c.strokeStyle = rgba(INK, .18); c.lineWidth = lw(1.2); c.beginPath();
+  for (let i = 0; i < 60; i++) { const x = -800 + r() * 2600, y = 450 + r() * 700; c.moveTo(x, y); c.lineTo(x + 30 + r() * 40, y + 8 - r() * 16); } c.stroke();
+  D.path(c, [[-900, 430], [1900, 430]]); c.strokeStyle = INK; c.lineWidth = lw(2.5); c.stroke();
+  /* ciszterna (metszetben) */
+  D.smooth(c, [[195, 440], [305, 440], [300, 520], [250, 532], [200, 520]], true); D.fs(c, '#8fbcd9', C.waterD, lw(2));
+  D.wave(c, 205, 295, 470, 2, t, lw(1.5), 'rgba(255,255,255,.7)');
+  c.beginPath(); c.rect(238, 405, 24, 25); D.fs(c, C.stone, INK, lw(2)); c.beginPath(); c.moveTo(250, 380); c.lineTo(250, 405); c.moveTo(232, 380); c.lineTo(268, 380); c.strokeStyle = C.wood; c.lineWidth = lw(3); c.stroke();
+  /* metszeti fal: kitöltés + sraffozás */
+  const cutWall = (x, y, w, h) => { c.beginPath(); c.rect(x, y, w, h); D.fs(c, '#cdbfa4', INK, lw(2.5)); c.save(); c.clip(); c.beginPath(); for (let k = -h; k < w; k += 14) { c.moveTo(x + k, y + h); c.lineTo(x + k + h, y); } c.strokeStyle = rgba(INK, .25); c.lineWidth = lw(1.2); c.stroke(); c.restore(); };
+  const room = (x, y, w, h, col) => { c.beginPath(); c.rect(x, y, w, h); D.fs(c, col || '#efe4cc', null, 0); D.stones(c, x, y, w, h, 22, lw(1), 'rgba(28,36,64,.09)'); };
+  const floor = (x, y, w) => { c.beginPath(); c.rect(x, y - 8, w, 8); D.fs(c, '#a47a4c', INK, lw(2)); };
+  /* bal oldali fal + kaputorony */
+  cutWall(20, 230, 60, 200); D.crenel(c, 20, 80, 230, 18, 3, '#cdbfa4', lw(2));
+  room(80, 180, 90, 250, '#e7dcc4'); cutWall(80, 160, 14, 270); cutWall(156, 160, 14, 270);
+  c.beginPath(); c.moveTo(94, 160); c.lineTo(125, 105); c.lineTo(156, 160); c.closePath(); D.fs(c, C.tile, INK, lw(2.5));
+  c.beginPath(); c.moveTo(100, 430); c.lineTo(100, 360); c.arc(125, 360, 25, Math.PI, 0); c.lineTo(150, 430); D.fs(c, '#4a4f60', INK, lw(2));
+  c.strokeStyle = '#2b2f3c'; c.lineWidth = lw(2); c.beginPath(); for (let k = 0; k < 5; k++) { c.moveTo(104 + k * 10, 345); c.lineTo(104 + k * 10, 380); } c.stroke();
+  floor(94, 300, 62);
+  D.figure(c, 50, 230, 1.6, { lw: lw(2), tool: 'spear', coat: '#6b7a8c', hat: 'helmet', dir: 1 });
+  D.figure(c, 125, 300, 1.5, { lw: lw(2), tool: 'bow', coat: '#6b7a8c', hat: 'helmet', dir: -1, arm: 1.3 });
+  /* udvar: kovács, istálló */
+  c.beginPath(); c.rect(170, 418, 220, 12); D.fs(c, '#cbb78f', null, 0);
+  c.beginPath(); c.rect(176, 392, 26, 26); D.fs(c, '#8f877a', INK, lw(2)); const fl = .6 + .4 * Math.sin(t * 9);
+  c.beginPath(); c.arc(189, 390, 8 + fl * 3, Math.PI, 0); c.fillStyle = `rgba(230,120,40,${.8})`; c.fill();
+  c.beginPath(); c.rect(212, 410, 18, 8); D.fs(c, '#4a4f60', INK, lw(1.5));
+  D.figure(c, 214, 430, 1.4, { lw: lw(2), tool: 'hammer', coat: '#5d4a3a', pose: 'work', t: t * 5, dir: -1, hat: 'cap' });
+  D.path(c, [[272, 340], [392, 318], [392, 430], [272, 430]], true); D.fs(c, '#c9a774', INK, lw(2));
+  D.path(c, [[262, 342], [392, 316], [392, 326], [262, 352]], true); D.fs(c, C.thatch, INK, lw(2));
+  D.animal(c, 338, 430, 2.6, 'horse', { lw: lw(2), dir: -1 });
+  /* palota-szárny: konyha, kamra, fölötte a terem */
+  cutWall(390, 160, 12, 270); cutWall(640, 160, 12, 270);
+  room(402, 330, 118, 100, '#eadfc6'); room(520, 330, 120, 100, '#e3d6ba'); room(402, 222, 238, 100, '#f1e7d0');
+  c.beginPath(); c.moveTo(520, 330); c.lineTo(520, 430); c.strokeStyle = INK; c.lineWidth = lw(3); c.stroke();
+  floor(402, 330, 238); floor(402, 222, 238);
+  c.beginPath(); c.moveTo(384, 214); c.lineTo(521, 150); c.lineTo(658, 214); c.closePath(); D.fs(c, C.tile, INK, lw(2.5));
+  c.save(); c.clip(); c.strokeStyle = rgba(INK, .25); c.lineWidth = lw(1.2); c.beginPath(); for (let k = 0; k < 6; k++) { c.moveTo(380, 160 + k * 11); c.lineTo(660, 160 + k * 11); } c.stroke(); c.restore();
+  /* konyha */
+  c.beginPath(); c.rect(410, 380, 46, 50); D.fs(c, '#a39784', INK, lw(2)); c.beginPath(); c.arc(433, 392, 12 + fl * 2, Math.PI, 0); c.fillStyle = 'rgba(230,120,40,.85)'; c.fill();
+  c.beginPath(); c.arc(433, 372, 11, 0, Math.PI); D.fs(c, '#3b3f52', INK, lw(1.5)); D.smoke(c, 433, 355, 1.4, t, .7);
+  D.figure(c, 482, 430, 1.4, { lw: lw(2), tool: 'ladle', coat: '#f0e8d4', pose: 'work', t: t * 2, dir: -1, hat: 'kerchief' });
+  /* kamra: zsákok, hordók */
+  for (let i = 0; i < 4; i++) { const x = 534 + i * 22, y = 430; c.beginPath(); c.moveTo(x - 9, y); c.quadraticCurveTo(x - 11, y - 26, x, y - 30); c.quadraticCurveTo(x + 11, y - 26, x + 9, y); c.closePath(); D.fs(c, '#d9c493', INK, lw(1.6)); }
+  for (let i = 0; i < 2; i++) { const x = 560 + i * 34; c.beginPath(); c.ellipse(x, 384, 14, 18, 0, 0, TAU); D.fs(c, '#a06c3c', INK, lw(1.6)); c.beginPath(); c.moveTo(x - 14, 378); c.lineTo(x + 14, 378); c.moveTo(x - 14, 390); c.lineTo(x + 14, 390); c.strokeStyle = INK; c.lineWidth = lw(1.2); c.stroke(); }
+  c.beginPath(); c.rect(608, 396, 26, 34); D.fs(c, '#d9c493', INK, lw(1.6));
+  /* terem: hosszú asztal, kandalló, üres karosszék */
+  c.beginPath(); c.rect(414, 250, 34, 64); D.fs(c, '#d2c4a8', INK, lw(2)); c.beginPath(); c.rect(420, 286, 22, 28); D.fs(c, '#4a3a30', null, 0); c.beginPath(); c.arc(431, 308, 6, Math.PI, 0); c.fillStyle = 'rgba(230,120,40,.8)'; c.fill();
+  c.beginPath(); c.rect(470, 288, 120, 8); D.fs(c, '#8a5a33', INK, lw(1.8)); c.beginPath(); c.moveTo(478, 296); c.lineTo(478, 314); c.moveTo(582, 296); c.lineTo(582, 314); c.strokeStyle = INK; c.lineWidth = lw(3); c.stroke();
+  c.beginPath(); c.rect(600, 270, 22, 44); D.fs(c, '#7a2d2d', INK, lw(1.8)); c.beginPath(); c.rect(596, 296, 30, 6); D.fs(c, '#8a5a33', INK, lw(1.5));
+  c.beginPath(); c.rect(500, 236, 70, 40); D.fs(c, '#8f3a2a', INK, lw(1.5)); c.strokeStyle = '#d9b44a'; c.lineWidth = lw(2); c.beginPath(); c.moveTo(510, 246); c.lineTo(560, 266); c.moveTo(560, 246); c.lineTo(510, 266); c.stroke();
+  D.figure(c, 470, 322, 1.3, { lw: lw(2), coat: '#3f6a8a', dir: 1, hat: 'kerchief', arm: .4 });
+  /* öregtorony: őrség, várnagy, kápolna, fegyverraktár */
+  cutWall(652, 40, 14, 390); cutWall(846, 40, 14, 390);
+  room(666, 60, 180, 370, '#ebe0c8');
+  D.crenel(c, 652, 860, 40, 20, 5, '#cdbfa4', lw(2));
+  floor(666, 170, 180); floor(666, 300, 180); floor(666, 62, 180);
+  D.figure(c, 760, 54, 1.5, { lw: lw(2), tool: 'spear', coat: '#6b7a8c', hat: 'helmet', dir: -1 });
+  /* várnagy szobája */
+  c.beginPath(); c.rect(690, 130, 60, 22); D.fs(c, '#8f3a2a', INK, lw(1.6)); c.beginPath(); c.rect(780, 136, 46, 26); D.fs(c, '#8a5a33', INK, lw(1.6));
+  D.figure(c, 760, 162, 1.45, { lw: lw(2), tool: 'keys', coat: '#3d5a80', hat: 'cap', hatC: '#2b3550', belt: '#d9b44a', dir: -1, arm: .6 });
+  c.beginPath(); c.rect(820, 84, 14, 30); D.fs(c, '#59607a', INK, lw(1.4));
+  /* kápolna */
+  c.beginPath(); c.rect(810, 244, 30, 48); D.fs(c, '#e9dfc9', INK, lw(1.5)); c.beginPath(); c.moveTo(825, 192); c.lineTo(825, 236); c.moveTo(813, 204); c.lineTo(837, 204); c.strokeStyle = '#a9862e'; c.lineWidth = lw(4); c.stroke();
+  c.beginPath(); c.moveTo(690, 290); c.lineTo(690, 214); c.arc(702, 214, 12, Math.PI, 0); c.lineTo(714, 290); D.fs(c, '#9cc0d8', INK, lw(1.6));
+  D.figure(c, 770, 292, 1.45, { lw: lw(2), tool: 'book', coat: '#2d2d34', dir: 1, hat: 'hood', hatC: '#2d2d34', arm: .9 });
+  /* fegyverraktár */
+  c.strokeStyle = '#5a4126'; c.lineWidth = lw(3); c.beginPath(); for (let k = 0; k < 5; k++) { c.moveTo(690 + k * 14, 430); c.lineTo(694 + k * 14, 330); } c.stroke();
+  for (let k = 0; k < 3; k++) { c.beginPath(); c.moveTo(770 + k * 26, 360); c.lineTo(790 + k * 26, 360); c.lineTo(788 + k * 26, 392); c.lineTo(780 + k * 26, 402); c.lineTo(772 + k * 26, 392); c.closePath(); D.fs(c, k % 2 ? '#c8401c' : '#3d5a80', INK, lw(1.6)); }
+  /* jobb oldali fal */
+  cutWall(860, 210, 100, 220); D.crenel(c, 860, 960, 210, 18, 4, '#cdbfa4', lw(2));
+  D.figure(c, 920, 210, 1.5, { lw: lw(2), tool: 'spear', coat: '#6b7a8c', hat: 'helmet', dir: 1 });
+  if (nat.snow > .05) { S.al(nat.snow); c.fillStyle = '#fbfbf8'; c.fillRect(-900, 424, 2800, 8); S.al(1); }
+}
+
+/* ── a jobbágytelek (részletréteg, 1000 × 600 egység) ── */
+function drawPlot(c, S) {
+  const lw = S.lw, nat = S.nat, t = S.t;
+  c.fillStyle = nat.grass; c.fillRect(-900, -900, 2900, 2400);
+  /* utca elöl */
+  c.beginPath(); c.rect(-900, 540, 2900, 150); c.fillStyle = mix(C.road, '#cdb88c', .3); c.fill();
+  c.strokeStyle = rgba(INK, .3); c.lineWidth = lw(1.5); c.beginPath(); c.moveTo(-900, 540); c.lineTo(2000, 540); c.moveTo(-900, 690); c.lineTo(2000, 690); c.stroke();
+  /* szomszédok (vázlatosan) */
+  [-520, 1520].forEach((x0) => {
+    c.beginPath(); c.rect(x0 + 60, 120, 350, 100); c.fillStyle = mix(nat.grass, '#9db86a', .5); c.fill();
+    D.house(c, x0 + 230, 430, 330, 100, { lw: lw(2), roof: C.thatch, win: 2, snow: nat.snow });
+  });
+  /* sövénykerítés */
+  const hedge = (x0, y0, x1, y1) => { c.strokeStyle = '#7a5a36'; c.lineWidth = lw(3); c.beginPath(); c.moveTo(x0, y0); c.lineTo(x1, y1); c.stroke(); const n = Math.hypot(x1 - x0, y1 - y0) / 18; c.lineWidth = lw(2); c.beginPath(); for (let i = 0; i <= n; i++) { const x = lerp(x0, x1, i / n), y = lerp(y0, y1, i / n); c.moveTo(x, y + 10); c.lineTo(x, y - 18); } c.stroke(); };
+  hedge(20, 520, 440, 520); hedge(530, 520, 980, 520); hedge(20, 40, 20, 520); hedge(980, 40, 980, 520); hedge(20, 40, 980, 40);
+  /* kert */
+  c.beginPath(); c.rect(50, 70, 380, 150); D.fs(c, mix('#a6875c', nat.grass, .45 + .4 * nat.snow), rgba(INK, .3), lw(1.5));
+  for (let k = 0; k < 6; k++) { c.beginPath(); c.moveTo(70, 90 + k * 22); c.lineTo(300, 90 + k * 22); c.strokeStyle = mix('#5d8a3c', '#a6875c', 1 - nat.green); c.lineWidth = lw(7); c.setLineDash([lw(10), lw(6)]); c.stroke(); c.setLineDash([]); }
+  D.tree(c, 360, 200, 3.4, nat, { lw: lw(2), seed: 3 }); D.tree(c, 400, 120, 2.8, nat, { lw: lw(2), seed: 7 });
+  /* udvar */
+  c.beginPath(); c.rect(30, 240, 940, 280); c.fillStyle = mix('#d8c79e', nat.grass, .35); c.fill();
+  /* ház (hosszú ház, nádtető) */
+  D.house(c, 230, 440, 330, 120, { lw: lw(2.5), roof: C.thatch, win: 2, snow: nat.snow, doorX: .05, roofH: 105 });
+  c.beginPath(); c.moveTo(230 - 165 + 330 * .4, 440); c.lineTo(230 - 165 + 330 * .4, 320); c.strokeStyle = rgba(INK, .35); c.lineWidth = lw(1.5); c.setLineDash([lw(6), lw(5)]); c.stroke(); c.setLineDash([]);
+  if (nat.snow > .1) D.smoke(c, 300, 225, 3, t, nat.snow);
+  /* istálló + ól */
+  c.beginPath(); c.rect(470, 280, 180, 100); D.fs(c, '#d6b98a', INK, lw(2.5)); c.beginPath(); c.rect(490, 300, 140, 80); D.fs(c, '#6e5a44', INK, lw(1.5));
+  D.path(c, [[458, 282], [560, 226], [662, 282]], true); D.fs(c, C.thatch, INK, lw(2.5));
+  D.animal(c, 528, 378, 3, 'ox', { lw: lw(2), dir: 1 }); D.animal(c, 598, 378, 2.6, 'cow', { lw: lw(2), dir: -1 });
+  c.beginPath(); c.rect(665, 340, 60, 40); D.fs(c, '#b79a6c', INK, lw(2)); D.animal(c, 700, 394, 2.2, 'pig', { lw: lw(2), dir: -1 });
+  /* csűr */
+  c.beginPath(); c.rect(700, 120, 250, 140); D.fs(c, '#c79f6a', INK, lw(2.5)); D.stones(c, 700, 120, 250, 140, 18, lw(1), 'rgba(28,36,64,.12)');
+  D.path(c, [[688, 122], [825, 50], [962, 122]], true); D.fs(c, C.thatch, INK, lw(2.5));
+  c.beginPath(); c.rect(790, 170, 70, 90); D.fs(c, '#6e5434', INK, lw(2));
+  /* szerszámok: eke, kasza, borona */
+  c.strokeStyle = '#5a4126'; c.lineWidth = lw(4); c.lineCap = 'round';
+  c.beginPath(); c.moveTo(840, 340); c.lineTo(930, 300); c.moveTo(880, 320); c.lineTo(900, 352); c.stroke();
+  D.path(c, [[893, 350], [912, 356], [898, 362]], true); D.fs(c, '#8a8f99', INK, lw(1.5));
+  c.beginPath(); c.moveTo(956, 380); c.lineTo(944, 270); c.stroke(); c.beginPath(); c.moveTo(944, 270); c.quadraticCurveTo(925, 268, 912, 282); c.strokeStyle = '#8a8f99'; c.lineWidth = lw(3); c.stroke();
+  c.beginPath(); c.rect(840, 400, 70, 40); c.strokeStyle = '#5a4126'; c.lineWidth = lw(3); c.stroke(); c.beginPath(); for (let k = 1; k < 4; k++) { c.moveTo(840 + k * 17.5, 400); c.lineTo(840 + k * 17.5, 440); } c.stroke();
+  /* kút */
+  c.beginPath(); c.ellipse(520, 455, 26, 10, 0, 0, TAU); D.fs(c, '#7aa9c9', INK, lw(2)); c.beginPath(); c.rect(494, 455, 52, 26); D.fs(c, C.stone, INK, lw(2));
+  c.strokeStyle = C.wood; c.lineWidth = lw(4); c.beginPath(); c.moveTo(500, 455); c.lineTo(500, 400); c.moveTo(540, 455); c.lineTo(540, 400); c.moveTo(494, 400); c.lineTo(546, 400); c.stroke();
+  /* emberek, aprójószág */
+  D.figure(c, 600, 500, 2.2, { lw: lw(2.2), tool: 'bucket', coat: '#a5773f', hat: 'hair', pose: 'walk', t: t * 3, dir: -1 });
+  D.figure(c, 170, 505, 2.6, { lw: lw(2.2), coat: '#efe7d6', hat: 'kerchief', dir: 1, arm: .5 });
+  D.figure(c, 780, 500, 2.7, { lw: lw(2.2), coat: '#8c6a48', hat: 'brim', dir: -1, tool: 'staff' });
+  for (let i = 0; i < 5; i++) D.animal(c, 330 + i * 24 + Math.sin(t + i) * 4, 480 + (i % 2) * 12, 1.8, 'hen', { lw: lw(1.6), dir: i % 2 ? 1 : -1 });
+  for (let i = 0; i < 4; i++) D.animal(c, 680 + i * 30 + Math.sin(t * .7 + i) * 5, 470 + (i % 2) * 14, 2.3, 'goose', { lw: lw(1.6), dir: -1 });
+  if (nat.snow > .05) { S.al(nat.snow * .85); c.fillStyle = '#f7f7f2'; c.fillRect(30, 240, 940, 280); S.al(1); }
+}
+
+/* ════════ A JELENET: Visegrád ════════ */
+function vHill(c, S) {
+  const lw = S.lw, nat = S.nat;
+  D.smooth(c, [[-600, 900], [-600, 470], [-200, 440], [150, 380], [400, 360], [620, 390], [800, 330], [930, 272], [1010, 258], [1100, 272], [1250, 330], [1420, 360], [1700, 380], [2500, 430], [2500, 900]], true);
+  const g = c.createLinearGradient(0, 250, 0, 800); g.addColorStop(0, mix('#93a77c', nat.grass, .3)); g.addColorStop(1, mix('#7f9a6a', nat.grass, .3));
+  c.fillStyle = g; c.fill(); c.strokeStyle = rgba(INK, .55); c.lineWidth = lw(2); c.stroke();
+  const r = U.rng(21);
+  for (let i = 0; i < 150; i++) { const x = -100 + r() * 1700, y = 330 + r() * 360; if (y < vRidge(x) + 25 || (x > 150 && x < 720 && y > 480) || (x > 880 && x < 1130 && y < 330)) continue; D.tree(c, x, y, 1 + r() * .4, nat, { lw: lw(.9), seed: i, leaf: mix(nat.leaf, '#4f7a46', .35) }); }
+}
+function vRidge(x) { const p = [[-200, 440], [150, 380], [400, 360], [620, 390], [800, 330], [930, 272], [1010, 258], [1100, 272], [1250, 330], [1420, 360], [1700, 380]]; for (let i = 1; i < p.length; i++) if (x <= p[i][0]) return lerp(p[i - 1][1], p[i][1], (x - p[i - 1][0]) / (p[i][0] - p[i - 1][0])); return 400; }
+function vRiver(c, S) {
+  const lw = S.lw;
+  c.beginPath(); c.rect(-600, 770, 3200, 40); c.fillStyle = C.road; c.fill();
+  const g = c.createLinearGradient(0, 810, 0, 1100); g.addColorStop(0, '#8fbbd7'); g.addColorStop(1, '#73a6cc');
+  c.beginPath(); c.rect(-600, 810, 3200, 600); c.fillStyle = g; c.fill();
+  c.beginPath(); c.moveTo(-600, 810); c.lineTo(2600, 810); c.strokeStyle = C.waterD; c.lineWidth = lw(2.2); c.stroke();
+  for (let i = 0; i < 6; i++) D.wave(c, -100 + i * 60, 1500, 850 + i * 34, 3, S.t + i, lw(1.6), 'rgba(255,255,255,.5)');
+  const bx = 300 + ((S.t * 8) % 900);
+  if (S.now < .5) { D.path(c, [[bx - 40, 880], [bx + 40, 880], [bx + 30, 896], [bx - 30, 896]], true); D.fs(c, C.wood, INK, lw(1.6)); c.beginPath(); c.moveTo(bx, 880); c.lineTo(bx, 830); c.strokeStyle = INK; c.lineWidth = lw(2); c.stroke(); D.path(c, [[bx + 2, 834], [bx + 30, 860], [bx + 2, 870]], true); D.fs(c, '#efe4cc', INK, lw(1.4)); }
+  else { D.path(c, [[bx - 60, 880], [bx + 56, 880], [bx + 46, 898], [bx - 52, 898]], true); D.fs(c, '#f1ece0', INK, lw(1.6)); c.beginPath(); c.rect(bx - 30, 864, 56, 16); D.fs(c, '#3d5a80', INK, lw(1.4)); for (let k = 0; k < 4; k++) { c.beginPath(); c.rect(bx - 26 + k * 13, 868, 8, 7); D.fs(c, '#cfe3ef', null, 0); } }
+}
+function vTown(c, S) {
+  const lw = S.lw, nat = S.nat, now = S.now > .5;
+  [760, 800, 840, 880, 960, 1000, 1220, 1260, 1300, 60, 100, 140].forEach((x, i) => D.house(c, x, 770 - (i % 2) * 6, 34, 20, { lw: lw(1.3), roof: now ? C.tile : (i % 3 ? C.thatch : C.tile), tile: now || !(i % 3), wall: now ? '#f3ede0' : C.plaster, win: now ? 2 : 1, snow: nat.snow }));
+  if (now) { const bx = 200 + ((S.t * 30) % 900); c.beginPath(); c.roundRect(bx, 778, 34, 12, 3); D.fs(c, '#3d5a80', INK, lw(1.2)); c.beginPath(); c.arc(bx + 8, 791, 4, 0, TAU); c.arc(bx + 26, 791, 4, 0, TAU); c.fillStyle = INK; c.fill(); }
+}
+/* palota: ruin = 0 (rekonstrukció) … 1 (mai romok, részben újjáépítve) */
+function vPalace(c, S) {
+  const lw = S.lw(1.6), ruin = S.now;
+  const terr = [[160, 700, 560, 30], [210, 640, 470, 26], [260, 590, 380, 24]];
+  terr.forEach((t2) => { c.beginPath(); c.rect(t2[0], t2[1], t2[2], t2[3]); D.fs(c, mix('#d8cfbd', '#cfc6b2', ruin), INK, lw); D.stones(c, t2[0], t2[1], t2[2], t2[3], 9, S.lw(.6)); });
+  const bld = (x, y, w, h, roof) => {
+    if (ruin < .5) {
+      c.beginPath(); c.rect(x, y - h, w, h); D.fs(c, C.plaster, INK, lw);
+      for (let k = 0; k < Math.floor(w / 22); k++) { c.beginPath(); c.moveTo(x + 10 + k * 22, y - 6); c.lineTo(x + 10 + k * 22, y - h * .6); c.arc(x + 15 + k * 22, y - h * .6, 5, Math.PI, 0); c.lineTo(x + 20 + k * 22, y - 6); D.fs(c, '#59607a', INK, S.lw(.8)); }
+      if (roof) { D.path(c, [[x - 6, y - h], [x + 12, y - h - roof], [x + w - 12, y - h - roof], [x + w + 6, y - h]], true); D.fs(c, C.tile, INK, lw); }
+    } else {
+      const p = [[x, y]]; for (let k = 0; k <= 8; k++) p.push([x + w * k / 8, y - h * (.25 + .35 * Math.abs(Math.sin(k * 2.3 + x)))]); p.push([x + w, y]);
+      D.path(c, p, true); D.fs(c, '#d6ccb8', INK, lw); D.stones(c, x, y - h, w, h, 8, S.lw(.6));
+    }
+  };
+  bld(180, 700, 160, 52, 26); bld(360, 700, 150, 60, 30); bld(530, 700, 170, 48, 24);
+  bld(230, 640, 120, 40, 22); bld(500, 640, 160, 44, 22);
+  /* kápolna (gótikus) */
+  if (ruin < .5) { c.beginPath(); c.rect(300, 590, 70, 50); D.fs(c, C.church, INK, lw); D.path(c, [[295, 590], [335, 548], [375, 590]], true); D.fs(c, C.tile, INK, lw); c.beginPath(); c.moveTo(335, 548); c.lineTo(335, 520); c.strokeStyle = INK; c.lineWidth = lw; c.stroke(); }
+  else { c.beginPath(); c.rect(300, 616, 70, 24); D.fs(c, '#d6ccb8', INK, lw); }
+  /* Herkules-kút az udvaron */
+  c.beginPath(); c.rect(410, 624, 34, 16); D.fs(c, '#b65e4a', INK, lw); c.beginPath(); c.rect(422, 604, 10, 20); D.fs(c, '#b65e4a', INK, lw);
+  if (ruin > .5) { /* részben újjáépített szárny, világosabb kő */ c.beginPath(); c.rect(370, 650, 120, 50); D.fs(c, '#eee6d4', INK, lw); for (let k = 0; k < 5; k++) { c.beginPath(); c.moveTo(380 + k * 22, 696); c.lineTo(380 + k * 22, 668); c.arc(385 + k * 22, 668, 5, Math.PI, 0); c.lineTo(390 + k * 22, 696); D.fs(c, '#59607a', INK, S.lw(.8)); } }
+}
+function vCastles(c, S) {
+  const lw = S.lw(1.6), ruin = S.now, st = C.stone;
+  /* fal a Fellegvártól az alsóvárig */
+  c.strokeStyle = INK; c.lineWidth = S.lw(13); c.lineCap = 'round'; D.smooth(c, [[1040, 300], [1070, 400], [1095, 500], [1110, 600], [1150, 720], [1190, 800]], false); c.stroke();
+  c.strokeStyle = st; c.lineWidth = S.lw(8); c.stroke();
+  /* Fellegvár */
+  const jag = (x0, x1, y, a) => { const p = []; for (let k = 0; k <= 6; k++) p.push([x0 + (x1 - x0) * k / 6, y + (ruin > .5 ? Math.abs(Math.sin(k * 1.9 + x0)) * a : 0)]); return p; };
+  D.path(c, [[900, 300]].concat(jag(900, 1120, 240, 10)).concat([[1120, 300]]), true); D.fs(c, st, INK, lw); D.stones(c, 900, 240, 220, 60, 8, S.lw(.6));
+  if (ruin < .5) D.crenel(c, 900, 1120, 240, 7, 13, st, S.lw(1.2));
+  [[910, 190, 34], [1060, 175, 44], [985, 205, 30]].forEach((tw) => {
+    D.path(c, [[tw[0], 300]].concat(jag(tw[0], tw[0] + tw[2], tw[1], 8)).concat([[tw[0] + tw[2], 300]]), true); D.fs(c, st, INK, lw); D.stones(c, tw[0], tw[1], tw[2], 300 - tw[1], 8, S.lw(.6));
+    if (ruin < .5) { D.path(c, [[tw[0] - 3, tw[1]], [tw[0] + tw[2] / 2, tw[1] - 28], [tw[0] + tw[2] + 3, tw[1]]], true); D.fs(c, C.tile, INK, lw); }
+    c.beginPath(); c.rect(tw[0] + tw[2] / 2 - 3, tw[1] + 20, 6, 10); c.fillStyle = '#3b3f52'; c.fill();
+  });
+  /* Salamon-torony (hatszögletű lakótorony) + alsóvár */
+  D.path(c, [[1040, 760], [1040, 690], [1200, 690], [1200, 760]], true); D.fs(c, st, INK, lw); if (ruin < .5) D.crenel(c, 1040, 1200, 690, 6, 9, st, S.lw(1.2));
+  const tx = 1095, ty = 690, tw = 58, th = 150;
+  c.beginPath(); c.rect(tx, ty - th, tw, th); D.fs(c, st, INK, lw); c.beginPath(); c.rect(tx + tw * .62, ty - th, tw * .38, th); D.fs(c, C.stoneD, INK, lw); D.stones(c, tx, ty - th, tw, th, 8, S.lw(.6));
+  if (ruin < .5) { D.path(c, [[tx - 4, ty - th], [tx + tw / 2, ty - th - 36], [tx + tw + 4, ty - th]], true); D.fs(c, C.tile, INK, lw); }
+  else D.crenel(c, tx, tx + tw, ty - th, 6, 4, st, S.lw(1.2));
+  for (let k = 0; k < 3; k++) { c.beginPath(); c.rect(tx + 14, ty - th + 24 + k * 38, 7, 12); c.fillStyle = '#3b3f52'; c.fill(); }
+  /* vízibástya a parton */
+  c.beginPath(); c.rect(1170, 740, 46, 70); D.fs(c, st, INK, lw); if (ruin < .5) D.crenel(c, 1170, 1216, 740, 6, 3, st, S.lw(1.2));
+}
+
+/* ════════ jelenet-objektumok ════════ */
+let SCN_A, SCN_B;
+let FIELD_OPT = () => ({ n: 3, yr: 0 });
+function buildScenes() {
+  SCN_A = TortScene.create({
+    L, frame: FRAME, stampK: 'illusztráció bélyeg',
+    views: {
+      attekintes: { x: 690, y: 540, z: 1 },
+      var: { x: 288, y: 195, z: 4.95 },
+      telek: { x: 902, y: 676, z: 12.9 },
+      foldek: { x: 760, y: 742, z: 1.12 },
+      ev: { x: 830, y: 640, z: 1.04 },
+      most: { x: 720, y: 600, z: 1.08 },
+    },
+    layers: [
+      { id: 'alap', draw: drawBase },
+      { id: 'domb', draw: drawHill },
+      { id: 'vár', draw: drawCastle, era: 'then' },
+      { id: 'vár ma', draw: drawCastleNow, era: 'now' },
+      { id: 'erdő', draw: drawForest },
+      { id: 'földek', draw: drawFieldsThen, era: 'then' },
+      { id: 'földek ma', draw: drawFieldsNow, era: 'now' },
+      { id: 'falu', draw: drawVillage },
+      { id: 'élet', draw: drawLifeThen, era: 'then', z: [0, 0, 2.2, 3] },
+      { id: 'élet ma', draw: drawLifeNow, era: 'now' },
+      { id: 'metszet', draw: drawCutaway, box: CUT.box, res: CUT.res, z: [2.5, 3.7] },
+      { id: 'telek', draw: drawPlot, box: PLOT.box, res: PLOT.res, z: [4.6, 7.2] },
+    ],
+    hotspots: [
+      { id: 'vár', x: 300, y: 150, k: 'pont vár', info: 'pont vár szöveg', dx: 26, dy: -26 },
+      { id: 'templom', x: 714, y: 600, k: 'pont templom', info: 'pont templom szöveg', dx: -26, dy: -22 },
+      { id: 'falu', x: 878, y: 738, k: 'pont falu', info: 'pont falu szöveg', dx: 26, dy: 22 },
+      { id: 'malom', x: 1048, y: 676, k: 'pont malom', info: 'pont malom szöveg', dx: 26, dy: 10 },
+      { id: 'erdő', x: 1230, y: 520, k: 'pont erdő', info: 'pont erdő szöveg', dx: -26, dy: -40 },
+      { id: 'rét', x: 980, y: 500, k: 'pont rét', info: 'pont rét szöveg', dx: 0, dy: -44 },
+      { id: 'földek', x: 760, y: 905, k: 'pont földek', info: 'pont földek szöveg', dx: 26, dy: 0 },
+      { id: 'őrség', layer: 'metszet', x: 50, y: 175, k: 'pont őrség', info: 'pont őrség szöveg', dx: 0, dy: -50 },
+      { id: 'istálló', layer: 'metszet', x: 330, y: 370, k: 'pont istálló', info: 'pont istálló szöveg', dx: -20, dy: -60 },
+      { id: 'ciszterna', layer: 'metszet', x: 250, y: 485, k: 'pont ciszterna', info: 'pont ciszterna szöveg', dx: 26, dy: 34 },
+      { id: 'konyha', layer: 'metszet', x: 440, y: 400, k: 'pont konyha', info: 'pont konyha szöveg', dx: -12, dy: 74 },
+      { id: 'kamra', layer: 'metszet', x: 575, y: 360, k: 'pont kamra', info: 'pont kamra szöveg', dx: 12, dy: 108 },
+      { id: 'terem', layer: 'metszet', x: 540, y: 255, k: 'pont terem', info: 'pont terem szöveg', dx: -40, dy: -110 },
+      { id: 'várnagy', layer: 'metszet', x: 740, y: 110, k: 'pont várnagy', info: 'pont várnagy szöveg', dx: 236, dy: 0 },
+      { id: 'kápolna', layer: 'metszet', x: 740, y: 240, k: 'pont kápolna', info: 'pont kápolna szöveg', dx: 150, dy: 0 },
+      { id: 'ház', layer: 'telek', x: 120, y: 380, k: 'pont ház', info: 'pont ház szöveg', dx: 0, dy: -60 },
+      { id: 'kert', layer: 'telek', x: 200, y: 140, k: 'pont kert', info: 'pont kert szöveg', dx: 26, dy: 0 },
+      { id: 'ól', layer: 'telek', x: 560, y: 330, k: 'pont ól', info: 'pont ól szöveg', dx: 26, dy: -44 },
+      { id: 'csűr', layer: 'telek', x: 760, y: 150, k: 'pont csűr', info: 'pont csűr szöveg', dx: 26, dy: -30 },
+      { id: 'kút', layer: 'telek', x: 520, y: 430, k: 'pont kút', info: 'pont kút szöveg', dx: 26, dy: 34 },
+      { id: 'szerszám', layer: 'telek', x: 880, y: 330, k: 'pont szerszám', info: 'pont szerszám szöveg', dx: 0, dy: -52 },
+    ],
+  });
+  SCN_B = TortScene.create({
+    L, frame: FRAME, stampK: 'illusztráció bélyeg',
+    views: { attekintes: { x: 690, y: 512, z: 1 } },
+    layers: [
+      { id: 'hegy', draw: vHill },
+      { id: 'várak', draw: vCastles },
+      { id: 'palota', draw: vPalace },
+      { id: 'város', draw: vTown },
+      { id: 'folyó', draw: vRiver },
+    ],
+    hotspots: [
+      { id: 'fellegvár', x: 1010, y: 214, k: 'pont fellegvár', info: 'pont fellegvár szöveg', dx: -26, dy: 0 },
+      { id: 'salamon', x: 1124, y: 610, k: 'pont salamon', info: 'pont salamon szöveg', dx: 26, dy: -10 },
+      { id: 'palota', x: 600, y: 566, k: 'pont palota', info: 'pont palota szöveg', dx: 26, dy: -34 },
+    ],
+  });
+  [SCN_A, SCN_B].forEach((sc, i) => sc.attach((id) => { const s = STEPS[L.step]; if (!s || s.scene !== i || !s.hot) return; if (id && s.hot.includes(id)) { st.sel = st.sel === id ? null : id; st.selT = L.st; } }));
+}
+
+/* ════════ lépések, állapot ════════ */
+const st = { sel: null, selT: 0 };
+const STEPS = [
+  { scene: 0, view: 'attekintes', settle: 6, hot: ['vár', 'templom', 'falu', 'malom', 'erdő', 'rét', 'földek'] },
+  { scene: 0, view: 'var', settle: 6.5, hot: ['őrség', 'istálló', 'ciszterna', 'konyha', 'kamra', 'terem', 'várnagy', 'kápolna'] },
+  { scene: 0, view: 'telek', settle: 6.5, hot: ['ház', 'kert', 'ól', 'csűr', 'kút', 'szerszám'] },
+  { scene: 0, view: 'foldek', settle: 7 },
+  { scene: 0, view: 'ev', settle: 8.5 },
+  { scene: 0, view: 'attekintes', settle: 6.5 },
+  { scene: 0, view: 'most', settle: 6 },
+  { scene: 1, view: 'attekintes', settle: 6.5, hot: ['fellegvár', 'salamon', 'palota'] },
+  { scene: 0, view: 'attekintes', settle: 4, hot: ['vár', 'templom', 'falu', 'malom', 'erdő', 'rét', 'földek'] },
+];
+const sT = new Array(STEPS.length).fill(0);
+const S4 = { user: false, n: 3, nPrev: 2, tn: 2.6, yr: 0, yrPrev: 0, ty: -9 };
+const S5 = { user: false, s: .02, slider: null };
+const S6 = { r: 4, r0: 4, t0: -9 };
+const S7 = { split: .5, hour: 9, userH: false, sH: null };
+const S8 = { now: 0, now0: 0, t0: -9 };
+const cam = { from: null };
+
+function stepCam(i, t) {
+  const s = STEPS[i], to = SCN_A.view(s.view);
+  const prev = cam.prev;
+  const from = prev != null && STEPS[prev] && STEPS[prev].scene === 0 && prev !== i ? SCN_A.view(STEPS[prev].view) : { x: to.x, y: to.y, z: to.z * .94 };
+  const d = Math.abs(Math.log(to.z / from.z)) > 1 ? 2.8 : 2;
+  return SCN_A.camAt(from, to, inOut(t / d));
+}
+
+/* ── közös felület-elemek ── */
+function scenePill(k, alpha) {
+  if (alpha < .02) return; ga(alpha);
+  L.pill(lab(k), FRAME[0] + 22, FRAME[1] + 40, { s: 30, w: 600, f: F.D, bg: 'rgba(255,250,241,.94)', bd: rgba(INK, .4), pad: 14, r: 10, k });
+  c.globalAlpha = 1;
+}
+function card(x, y, w, h, o = {}) {
+  c.save(); c.shadowColor = 'rgba(70,50,20,.18)'; c.shadowBlur = 18; c.shadowOffsetY = 4;
+  rr(x, y, w, h, o.r || 14); c.fillStyle = o.bg || 'rgba(255,250,241,.96)'; c.fill(); c.restore();
+  rr(x, y, w, h, o.r || 14); c.strokeStyle = o.bd || rgba(INK, .3); c.lineWidth = o.bw || 1.6; if (o.dash) c.setLineDash(o.dash); c.stroke(); c.setLineDash([]);
+}
+/* a három réteg jelölése (§11): forrás – kékeszöld folytonos; rekonstrukció – szaggatott tinta; monda – okker kartus */
+function layerFrame(kind, x, y, w, h) {
+  c.save();
+  if (kind === 'monda') {
+    c.beginPath(); const r = 18; c.moveTo(x + r, y); c.lineTo(x + w - r, y); c.arc(x + w, y, r, Math.PI, Math.PI / 2, true); c.lineTo(x + w - r + r, y + h - r);
+    c.arc(x + w, y + h, r, -Math.PI / 2, Math.PI, true); c.lineTo(x + r, y + h); c.arc(x, y + h, r, 0, -Math.PI / 2, true); c.lineTo(x, y + r); c.arc(x, y, r, Math.PI / 2, 0, true); c.closePath();
+    c.fillStyle = 'rgba(255,250,241,.95)'; c.fill(); c.fillStyle = 'rgba(201,150,60,.16)'; c.fill(); c.strokeStyle = OCHRE; c.lineWidth = 2.5; c.stroke();
+  } else {
+    rr(x, y, w, h, 10); c.fillStyle = 'rgba(255,250,241,.95)'; c.fill();
+    c.strokeStyle = kind === 'forrás' ? TEAL : INK; c.lineWidth = 2.5; if (kind === 'rekonstrukció') c.setLineDash([8, 6]); c.stroke(); c.setLineDash([]);
+  }
+  c.restore();
+  const k = 'réteg ' + kind, col = kind === 'forrás' ? TEAL : kind === 'monda' ? OCHRE : INK;
+  L.pill(lab(k), x + 14, y, { s: 22, w: 600, c: col, bg: CARD, bd: col, bw: 2, pad: 8, r: 6, k });
+}
+function stampAt(k, x, y, col) { SCN_A.stamp(c, lab(k), x, y, k, col || MUT); }
+function arrowHead(x, y, ang, sz, col) { c.save(); c.translate(x, y); c.rotate(ang); D.path(c, [[0, 0], [-sz, -sz * .55], [-sz, sz * .55]], true); c.fillStyle = col; c.fill(); c.restore(); }
+function curveArrow(p0, p1, p2, f, col, w) {
+  if (f <= 0) return null;
+  const pts = []; const n = 40; for (let i = 0; i <= n * f; i++) { const u = i / n, a = (1 - u) * (1 - u), b = 2 * u * (1 - u), d = u * u; pts.push([a * p0[0] + b * p1[0] + d * p2[0], a * p0[1] + b * p1[1] + d * p2[1]]); }
+  if (pts.length < 2) return null;
+  c.lineCap = 'round'; c.strokeStyle = CARD; c.lineWidth = w + 6; D.path(c, pts); c.stroke(); c.strokeStyle = col; c.lineWidth = w; c.stroke();
+  const e = pts[pts.length - 1], q = pts[pts.length - 2]; arrowHead(e[0], e[1], Math.atan2(e[1] - q[1], e[0] - q[0]), 20, col);
+  return pts;
+}
+
+/* ── 1: uradalom – csere-nyilak ── */
+function overExchange(a, t) {
+  if (a < .02) return;
+  ga(a);
+  const f1 = U.out(clamp((t - 1.2) / 1.4)), f2 = U.out(clamp((t - 2.4) / 1.4));
+  const p1 = curveArrow([672, 612], [470, 330], [345, 232], f1, OCHRE, 5);
+  const p2 = curveArrow([250, 268], [330, 560], [628, 676], f2, TEAL, 5);
+  if (p1) { for (let i = 0; i < 3; i++) { const q = ((t * .35 + i / 3) % 1) * f1, k = Math.floor(q * (p1.length - 1)), p = p1[k]; c.beginPath(); c.moveTo(p[0] - 7, p[1] + 6); c.quadraticCurveTo(p[0] - 8, p[1] - 9, p[0], p[1] - 11); c.quadraticCurveTo(p[0] + 8, p[1] - 9, p[0] + 7, p[1] + 6); c.closePath(); D.fs(c, '#d9c493', INK, 1.6); } }
+  ga(a * clamp((t - 2.0) / .6)); L.pill(lab('nyíl szolgáltatás'), 470, 362, { s: 23, w: 600, a: 'left', bg: CARD, bd: OCHRE, bw: 2.5, c: '#6b4409', pad: 12, k: 'nyíl szolgáltatás' });
+  ga(a * clamp((t - 3.2) / .6)); L.pill(lab('nyíl védelem'), 240, 500, { s: 23, w: 600, a: 'left', bg: CARD, bd: TEAL, bw: 2.5, c: '#075566', pad: 12, k: 'nyíl védelem' });
+  c.globalAlpha = 1;
+}
+
+/* ── 2: a vár lakói ── */
+function overCastle(a, t) {
+  if (a < .02) return;
+  ga(a * clamp((t - 2.6) / .6));
+  const y = 900;
+  const p = L.pill(lab('várlakók'), 70, y, { s: 26, w: 600, bg: CARD, bd: INK, bw: 2, pad: 14, r: 10, k: 'várlakók' });
+  if (L.dat('várlakók száma').est) stampAt('becslés bélyeg', p.x + p.w + 16, y - 2, OCHRE);
+  ga(a * clamp((t - 3.4) / .6));
+  const tw = L.measure(lab('tévhit vár'), { s: 26, w: 600, f: F.D, i: true }).w, x2 = FRAME[0] + FRAME[2] - 60 - tw - 28;
+  const q = L.pill(lab('tévhit vár'), x2, y, { s: 26, w: 600, f: F.D, i: true, bg: CARD, bd: BAD, bw: 2.5, c: BAD, pad: 14, r: 10, k: 'tévhit vár' });
+  const sk = clamp((t - 4.0) / .5); if (sk > 0) { c.strokeStyle = BAD; c.lineWidth = 4; c.lineCap = 'round'; c.beginPath(); c.moveTo(q.x + 8, q.y + q.h / 2); c.lineTo(q.x + 8 + (q.w - 16) * sk, q.y + q.h / 2); c.stroke(); }
+  c.globalAlpha = 1;
+}
+
+/* ── 3: rabszolga vagy jobbágy ── */
+function overCompare(a, t) {
+  if (a < .02) return;
+  const x = 60, y = 640, w = 560, rowH = 58, rows = 4, h = 108 + rows * rowH;
+  ga(a * clamp((t - 2.4) / .6)); card(x, y, w, h);
+  T('összevetés cím', x + 24, y + 48, { s: 32, w: 600, f: F.D });
+  const cx1 = x + w - 168, cx2 = x + w - 62;
+  T('összevetés rabszolga', cx1, y + 88, { s: 22, w: 600, a: 'center', c: MUT });
+  T('összevetés jobbágy', cx2, y + 88, { s: 22, w: 700, a: 'center', c: GOOD });
+  for (let i = 0; i < rows; i++) {
+    const ry = y + 106 + i * rowH, ra = clamp((t - 2.9 - i * .45) / .4);
+    c.globalAlpha = a * ra;
+    c.strokeStyle = rgba(INK, .14); c.lineWidth = 1.2; c.beginPath(); c.moveTo(x + 20, ry); c.lineTo(x + w - 20, ry); c.stroke();
+    L.tx(lab('összevetés sor ' + (i + 1)), x + 24, ry + 38, { s: 23, w: 500, k: 'összevetés sor ' + (i + 1), max: cx1 - 54 - x - 24 });
+    /* ✗ a rabszolgánál, ✓ a jobbágynál (rajzolt jel, nem szöveg) */
+    c.lineCap = 'round'; c.lineWidth = 4.5; c.strokeStyle = BAD; c.beginPath(); c.moveTo(cx1 - 10, ry + 20); c.lineTo(cx1 + 10, ry + 40); c.moveTo(cx1 + 10, ry + 20); c.lineTo(cx1 - 10, ry + 40); c.stroke();
+    c.strokeStyle = GOOD; c.beginPath(); c.moveTo(cx2 - 12, ry + 30); c.lineTo(cx2 - 3, ry + 40); c.lineTo(cx2 + 13, ry + 18); c.stroke();
+  }
+  c.globalAlpha = 1;
+}
+
+/* ── 4: két vagy három nyomás ── */
+function s4State(t) {
+  const n = S4.user ? S4.n : (t < S4.tn ? num('nyomások száma régen') : num('nyomások száma később'));
+  const nPrev = S4.user ? S4.nPrev : num('nyomások száma régen');
+  const tSwitch = S4.user ? S4.tn : S4.tn;
+  const fn = clamp((t - tSwitch) / .8);
+  return { n, nPrev, fn: n === nPrev ? 1 : fn, yr: S4.yr, yrPrev: S4.yrPrev, fy: clamp((t - S4.ty) / .9) };
+}
+function fieldOpt4(t) {
+  const s = s4State(t);
+  return { n: s.n, yr: s.yr, cropAt: (k) => { const a = cropOf(s.n, k, s.yrPrev), b = cropOf(s.n, k, s.yr); return s.fy >= 1 || a === b ? b : [a, b, smooth(s.fy)]; }, family: true, fade: s };
+}
+function overFields(a, t) {
+  if (a < .02) return;
+  const s = s4State(t), n2 = num('nyomások száma régen'), n3 = num('nyomások száma később');
+  /* a táblák felirata: növény a tábla közepén */
+  const Lo = layout(s.n);
+  Lo.secs.forEach((q) => {
+    const cr = cropOf(s.n, q.k, s.yr), p = SCN_A.toScreen(q.c[0], q.c[1] + 18);
+    const k = cr === 'osz' ? 'növény őszi' : cr === 'tav' ? 'növény tavaszi' : 'növény ugar';
+    const fs = lab(k).split(':');
+    ga(a * s.fn * clamp((t - 1) / .6));
+    L.pill(fs[0], p[0], p[1] - 20, { s: 24, w: 700, a: 'center', bg: 'rgba(255,250,241,.94)', bd: cr === 'ugar' ? rgba(INK, .5) : OCHRE, bw: 2, pad: 10, k });
+    if (fs[1]) L.pill(fs[1].trim(), p[0], p[1] + 20, { s: 22, w: 500, a: 'center', bg: 'rgba(255,250,241,.88)', pad: 8, k });
+  });
+  /* a család csíkja */
+  ga(a * clamp((t - 1.6) / .6));
+  const fq = Lo.secs[Math.floor(Lo.secs.length / 2)].strips[FAMILY_STRIP], fc = centroid(fq), fp = SCN_A.toScreen(fc[0], fc[1] + 95);
+  L.pill(lab('család csíkjai'), fp[0], Math.min(fp[1] + 26, 1006), { s: 22, w: 600, a: 'center', c: RED, bg: CARD, bd: RED, bw: 2, pad: 9, k: 'család csíkjai' });
+  /* bevetett rész: két oszlop */
+  const x = 64, y = 92, w = 560, h = 268;
+  ga(a * clamp((t - .4) / .6)); card(x, y, w, h);
+  T('nyomás cím', x + 24, y + 46, { s: 30, w: 600, f: F.D });
+  L.tx(lab('év számláló').replace('#', s.yr + 1), x + w - 24, y + 46, { s: 24, w: 700, f: F.M, a: 'right', c: TEAL, k: 'év számláló' });
+  const bars = [[n2, 'kétnyomásos'], [n3, 'háromnyomásos']];
+  bars.forEach((b, i) => {
+    const sh = sownShare(b[0], s.yr), by = y + 92 + i * 74, bw = 290, bx0 = x + 236, cur = b[0] === s.n;
+    c.globalAlpha = a * (cur ? 1 : .45);
+    T(b[1], x + 24, by + 26, { s: 24, w: cur ? 700 : 500 });
+    rr(bx0, by + 4, bw, 30, 8); c.fillStyle = 'rgba(28,36,64,.08)'; c.fill(); c.strokeStyle = rgba(INK, .35); c.lineWidth = 1.5; c.stroke();
+    rr(bx0, by + 4, bw * sh, 30, 8); c.fillStyle = cur ? '#d6b04a' : '#c8b57a'; c.fill(); c.strokeStyle = OCHRE; c.lineWidth = 2; c.stroke();
+    L.tx(U.fmt(sh * 100) + ' %', bx0 + bw * sh - 10, by + 27, { s: 24, w: 700, f: F.M, a: 'right', c: INK, k: b[1] });
+  });
+  c.globalAlpha = a;
+  T('bevetett rész', x + 236, y + 92 - 10, { s: 22, w: 500, c: MUT });
+  const gain = sownShare(n3, 0) / sownShare(n2, 0) - 1;
+  ga(a * clamp((t - S4.tn - .8) / .6) * (S4.user && s.n !== n3 ? .35 : 1));
+  L.pill(lab('több föld').replace('#', U.fmt(gain * 100)), x + 24, y + h - 26, { s: 24, w: 700, bg: GOOD, c: CARD, pad: 12, k: 'több föld' });
+  c.globalAlpha = 1;
+}
+
+/* ── 5: egy év a faluban ── */
+const EVENTS = [
+  ['munka szántás', 'munka'], ['szolgáltatás György', 'szolg'], ['munka kaszálás', 'munka'], ['munka aratás', 'munka'], ['szolgáltatás tized', 'szolg'],
+  ['szolgáltatás Mihály', 'szolg'], ['munka őszi vetés', 'munka'], ['szolgáltatás karácsony', 'szolg'], ['munka tél', 'munka'],
+];
+function evParts(k) { const s = lab(k).split('|'); return { f: yearFrac(s[0]), date: s[0].trim(), text: (s[1] || '').trim() }; }
+function season5(t) { return S5.user ? S5.s : lerp(.02, .52, inOut(clamp((t - .6) / 6.8))); }
+function overYear(a, t) {
+  if (a < .02) return;
+  const s = season5(t), cx = 252, cy = 352, R = 132;
+  ga(a); c.beginPath(); c.arc(cx, cy, R + 52, 0, TAU); c.fillStyle = 'rgba(255,250,241,.95)'; c.fill(); c.strokeStyle = rgba(INK, .3); c.lineWidth = 1.6; c.stroke();
+  /* évszakgyűrű */
+  const seg = [['#cfd8e0', 0, .16], ['#bcd59a', .16, .41], ['#e2c76a', .41, .66], ['#d9a36a', .66, .91], ['#cfd8e0', .91, 1]];
+  seg.forEach((q) => { c.beginPath(); c.arc(cx, cy, R, -Math.PI / 2 + q[1] * TAU, -Math.PI / 2 + q[2] * TAU); c.strokeStyle = q[0]; c.lineWidth = 26; c.stroke(); });
+  c.beginPath(); c.arc(cx, cy, R + 13, 0, TAU); c.arc(cx, cy, R - 13, 0, TAU, true); c.strokeStyle = rgba(INK, .4); c.lineWidth = 1.4; c.stroke();
+  const mr = list('hónap rövid');
+  for (let m = 0; m < 12; m++) {
+    const f = MONTHS_LEN.slice(0, m).reduce((x, y) => x + y, 0) / 365, an = -Math.PI / 2 + f * TAU;
+    c.beginPath(); c.moveTo(cx + Math.cos(an) * (R - 13), cy + Math.sin(an) * (R - 13)); c.lineTo(cx + Math.cos(an) * (R + 13), cy + Math.sin(an) * (R + 13)); c.strokeStyle = rgba(INK, .5); c.lineWidth = 1.4; c.stroke();
+    if (m % 3 === 0) { const am = an + (MONTHS_LEN[m] / 365) * Math.PI; L.tx(mr[m], cx + Math.cos(am) * (R - 44), cy + Math.sin(am) * (R - 44) + 8, { s: 22, w: 600, a: 'center', c: MUT, k: 'hónap rövid' }); }
+  }
+  /* események */
+  let near = null, nd = 1;
+  EVENTS.forEach((e) => {
+    const p = evParts(e[0]), an = -Math.PI / 2 + p.f * TAU, d = Math.min(Math.abs(p.f - s), 1 - Math.abs(p.f - s));
+    const x = cx + Math.cos(an) * R, y = cy + Math.sin(an) * R, on = d < .045;
+    if (d < nd) { nd = d; near = { e, p }; }
+    c.beginPath();
+    if (e[1] === 'szolg') { c.save(); c.translate(x, y); c.rotate(Math.PI / 4); c.rect(-9, -9, 18, 18); c.restore(); D.fs(c, on ? RED : CARD, RED, 3); }
+    else { c.arc(x, y, 9, 0, TAU); D.fs(c, on ? TEAL : CARD, TEAL, 3); }
+  });
+  /* mutató */
+  const an = -Math.PI / 2 + s * TAU;
+  c.beginPath(); c.moveTo(cx, cy); c.lineTo(cx + Math.cos(an) * (R - 74), cy + Math.sin(an) * (R - 74)); c.strokeStyle = INK; c.lineWidth = 4; c.lineCap = 'round'; c.stroke();
+  c.beginPath(); c.arc(cx, cy, 8, 0, TAU); c.fillStyle = INK; c.fill();
+  T('naptár cím', cx, cy - R - 64, { s: 24, w: 700, a: 'center', f: F.D, i: true, c: INK });
+  /* jelmagyarázat */
+  const ly = cy + R + 74;
+  c.beginPath(); c.arc(cx - 128, ly - 8, 8, 0, TAU); D.fs(c, CARD, TEAL, 3); T('jelmagyarázat munka', cx - 112, ly, { s: 22, w: 500, c: TEAL });
+  c.save(); c.translate(cx + 12, ly - 8); c.rotate(Math.PI / 4); c.beginPath(); c.rect(-7, -7, 14, 14); c.restore(); D.fs(c, CARD, RED, 3); T('jelmagyarázat szolgáltatás', cx + 30, ly, { s: 22, w: 500, c: RED });
+  /* az aktuális (legközelebbi) esemény kártyája */
+  if (near && nd < .06) {
+    const k = near.e[0], col = near.e[1] === 'szolg' ? RED : TEAL, x = 64, y = 1000;
+    c.globalAlpha = a * clamp(1 - (nd - .03) / .03);
+    const p1 = L.pill(near.p.date, x, y, { s: 24, w: 700, f: F.M, bg: col, c: CARD, pad: 12, r: 8, k });
+    L.pill(near.p.text, p1.x + p1.w + 10, y, { s: 26, w: 600, bg: CARD, bd: col, bw: 2.5, pad: 14, r: 10, k });
+  }
+  c.globalAlpha = 1;
+}
+
+/* ── 6: beszolgáltatás ── */
+function ratio6(t) { const u = clamp((t - S6.t0) / .6); return lerp(S6.r0, S6.r, inOut(u)); }
+function overDues(a, t) {
+  if (a < .02) return;
+  const seed = num('vetőmag mennyisége'), r = ratio6(t), H = seed * r, tz = H / num('tized osztója'), kz = (H - tz) / num('kilenced osztója'), fam = Math.max(0, H - tz - kz - seed);
+  const x = 64, y = 116, w = 1244, h = 410, k = 7.4, bx = x + 28, by = y + 82, bh = 64;
+  ga(a); card(x, y, w, h);
+  L.tx(lab('termés cím').replace('#', U.fmt(H)), x + 28, y + 52, { s: 34, w: 600, f: F.D, k: 'termés cím' });
+  /* a sáv hossza ∝ zsákok száma (k px / zsák); a vetőmag állandó, a család része zsugorodik */
+  const segs = [[tz, '#7a5aa0', 'tized', '#5e4285'], [kz, RED, 'kilenced', '#a8331a'], [seed, '#9a7448', 'vetőmag', '#6e5230'], [fam, GOOD, 'család része', GOOD]];
+  let xx = bx, lxx = x + 28;
+  segs.forEach((g, i) => {
+    const gr = U.out(clamp((t - .8 - i * .6) / .6)), ww = g[0] * k * gr;
+    c.globalAlpha = a;
+    if (ww > .5) {
+      rr(xx, by, ww, bh, 6); c.fillStyle = g[1]; c.fill(); c.strokeStyle = CARD; c.lineWidth = 3; c.stroke();
+      c.save(); rr(xx, by, ww, bh, 6); c.clip();
+      for (let j = 0; j < Math.round(g[0] / 5); j++) { const sx = xx + 18 + j * 37, sy = by + bh / 2 + 15; c.beginPath(); c.moveTo(sx - 10, sy); c.quadraticCurveTo(sx - 12, sy - 26, sx, sy - 30); c.quadraticCurveTo(sx + 12, sy - 26, sx + 10, sy); c.closePath(); c.fillStyle = 'rgba(255,250,241,.33)'; c.fill(); }
+      c.restore();
+    }
+    /* jelmagyarázat: négy oszlop, a sáv színeivel */
+    const lx = lxx, ly = by + bh + 58; lxx += 34 + Math.max(L.measure(lab(g[2]), { s: 23, w: 600 }).w, 120) + 44;
+    c.globalAlpha = a * clamp((t - 1.1 - i * .6) / .5);
+    rr(lx, ly - 21, 24, 24, 5); c.fillStyle = g[1]; c.fill();
+    T(g[2], lx + 34, ly, { s: 23, w: 600, c: g[3] });
+    L.tx(lab('zsák').replace('#', U.fmt(g[0])), lx + 34, ly + 40, { s: 28, w: 700, f: F.M, c: INK, k: 'zsák' });
+    xx += ww;
+  });
+  /* más tartozások */
+  c.globalAlpha = a * clamp((t - 3.4) / .6);
+  const oy = y + h - 40;
+  T('más tartozás cím', x + 28, oy + 8, { s: 24, w: 700 });
+  const m1 = L.measure(lab('más tartozás cím'), { s: 24, w: 700 }).w;
+  const p1 = L.pill(lab('földbér'), x + 44 + m1, oy, { s: 22, w: 500, bg: CARD, bd: rgba(INK, .35), pad: 10, k: 'földbér' });
+  L.pill(lab('ajándék'), p1.x + p1.w + 12, oy, { s: 22, w: 500, bg: CARD, bd: rgba(INK, .35), pad: 10, k: 'ajándék' });
+  /* robot: a tévhit cáfolata */
+  const ry = y + h + 24, rh = 306;
+  c.globalAlpha = a * clamp((t - 4) / .6); card(x, ry, w, rh);
+  T('robot cím', x + 28, ry + 46, { s: 28, w: 600, f: F.D });
+  const r14 = L.dat('robot a 14. században'), rows = [
+    ['robot 14', r14.lo, r14.hi], ['robot 1514', num('robot 1514 után')], ['robot 1767 igás', num('robot 1767 után igás')], ['robot 1767 gyalog', num('robot 1767 után gyalog')]];
+  const ax = x + 330, aw = 760, max = 110, px = (v) => ax + aw * v / max;
+  rows.forEach((q, i) => {
+    const yy = ry + 80 + i * 52, gr = U.out(clamp((t - 4.4 - i * .35) / .6));
+    c.globalAlpha = a * clamp((t - 4.2 - i * .35) / .4);
+    T(q[0], ax - 18, yy + 25, { s: 22, w: 600, a: 'right', c: i === 0 ? INK : MUT });
+    if (q[2] != null) { /* bizonytalan tartomány: halvány rész + szaggatott szél */
+      rr(px(0), yy + 6, (px(q[2]) - px(0)) * gr, 28, 6); c.fillStyle = rgba(GOOD, .25); c.fill();
+      rr(px(0), yy + 6, (px(q[1]) - px(0)) * gr, 28, 6); c.fillStyle = GOOD; c.fill();
+      c.setLineDash([6, 4]); rr(px(0), yy + 6, (px(q[2]) - px(0)) * gr, 28, 6); c.strokeStyle = GOOD; c.lineWidth = 2; c.stroke(); c.setLineDash([]);
+    } else { rr(px(0), yy + 6, (px(q[1]) - px(0)) * gr, 28, 6); c.fillStyle = i === 1 ? '#b0703a' : BAD; c.fill(); }
+    const vtxt = q[2] != null ? L.val('robot a 14. században') : lab('nap').replace('#', U.fmt(q[1])), vx = px(q[2] != null ? q[2] : q[1]) + 14;
+    L.tx(vtxt, (vx - px(0)) * gr + px(0), yy + 27, { s: 22, w: 700, f: F.M, c: INK, k: q[2] != null ? 'robot a 14. században' : 'nap' });
+    if (q[2] != null && r14.est && gr > .9) { const m = L.measure(vtxt, { s: 22, w: 700, f: F.M }).w; stampAt('becslés bélyeg', vx + m + 16, yy + 20, OCHRE); }
+  });
+  c.globalAlpha = 1;
+}
+
+/* ── 7: akkor és most ── */
+function parseDay(k) { return lab(k).split(/\s*;\s*/).map((s) => { const m = s.match(/^(\d+(?:,\d+)?)\s*[–-]\s*(\d+(?:,\d+)?)\s+(.+)$/); return m ? { a: +m[1].replace(',', '.'), b: +m[2].replace(',', '.'), s: m[3] } : null; }).filter(Boolean); }
+function hour7(t) { return S7.userH ? S7.hour : lerp(5.5, 9.5, inOut(clamp((t - .6) / 4.4))); }
+const ACT_COL = { alvás: '#8d98b6', iskola: '#3d6fa0', ebéd: '#d9a640', vacsora: '#d9a640', reggeli: '#d9a640' };
+function actCol(s, i, then) { const k = Object.keys(ACT_COL).find((q) => s.startsWith(q)); return k ? ACT_COL[k] : (then ? ['#8fae5a', '#b0703a', '#a3b85a', '#c2925a'][i % 4] : ['#5aa08f', '#b07aa8', '#7fae5a', '#c2925a'][i % 4]); }
+function overNow(a, t) {
+  if (a < .02) return;
+  const h = hour7(t), x = 64, w = 1244, y = 812, bh = 34, ax = x + 24, aw = w - 48;
+  /* „akkor” / „most” címke a csík két oldalán */
+  const sx = FRAME[0] + FRAME[2] * S7.split;
+  const pO = { s: 24, w: 700, bg: CARD, bd: INK, bw: 2, pad: 12 }, wA = L.measure(lab('akkor'), pO).w + 24, wM = L.measure(lab('most'), pO).w + 24, py = 540 - 64;
+  ga(a * clamp((sx - 36 - FRAME[0] - 16 - wA) / 30)); L.pill(lab('akkor'), sx - 36, py, Object.assign({ a: 'right', k: 'akkor' }, pO));
+  ga(a * clamp((FRAME[0] + FRAME[2] - 16 - sx - 36 - wM) / 30)); L.pill(lab('most'), sx + 36, py, Object.assign({ a: 'left', k: 'most' }, pO));
+  ga(a);
+  /* napirendek */
+  c.globalAlpha = a * clamp((t - .4) / .6); card(x, y - 20, w, 1044 - 18 - (y - 20));
+  const days = [['napirend akkor', 'napirend akkor cím', true], ['napirend most', 'napirend most cím', false]].map((q, j) => ({ q, j, yy: y + 34 + j * 92, segs: parseDay(q[0]) }));
+  days.forEach((d) => d.segs.forEach((g, i) => { rr(ax + aw * g.a / 24 + 1, d.yy, aw * (g.b - g.a) / 24 - 2, bh, 6); c.fillStyle = actCol(g.s, i, d.q[2]); c.fill(); }));
+  /* óra-tengely és mutató (a feliratok alatt) */
+  for (let k = 0; k <= 24; k += 6) { const xx = ax + aw * k / 24; L.tx(String(k), xx, y + 34 + 92 + bh + 28, { s: 22, w: 500, f: F.M, a: 'center', c: MUT }); }
+  const hx = ax + aw * h / 24;
+  c.strokeStyle = RED; c.lineWidth = 3.5; c.beginPath(); c.moveTo(hx, y + 26); c.lineTo(hx, y + 34 + 92 + bh + 6); c.stroke();
+  arrowHead(hx, y + 26, Math.PI / 2, 14, RED);
+  days.forEach((d) => {
+    const { q, j, yy, segs } = d;
+    T(q[1], ax, yy - 10, { s: 22, w: 700, c: j ? TEAL : OCHRE });
+    const curr = segs.find((g) => h >= g.a && h < g.b) || segs[0], et = lab('éppen').replace('#', curr.s);
+    const tw = L.measure(et, { s: 22, w: 600 }).w;
+    L.pill(et, x + w - 30 - tw - 20, yy - 16, { s: 22, w: 600, bg: CARD, bd: j ? TEAL : OCHRE, bw: 2, pad: 10, k: q[0] });
+  });
+  /* élettartam-kártya */
+  const lx = 820, ly = 120, lw2 = 486, lh = 250;
+  c.globalAlpha = a * clamp((t - 1.6) / .6); card(lx, ly, lw2, lh);
+  T('élettartam cím', lx + 22, ly + 42, { s: 28, w: 600, f: F.D });
+  const rows = [['élettartam akkor', num('várható élettartam akkor'), null, OCHRE], ['élettartam felnőtt', L.dat('felnőttek élettartama').lo, L.dat('felnőttek élettartama').hi, OCHRE], ['élettartam ma', num('várható élettartam ma'), null, TEAL]];
+  rows.forEach((q, i) => {
+    const yy = ly + 74 + i * 58, bw = (lw2 - 44) / 90, gr = U.out(clamp((t - 2 - i * .5) / .6));
+    T(q[0], lx + 22, yy + 4, { s: 22, w: 500, c: INK, max: lw2 - 44 });
+    rr(lx + 22, yy + 14, bw * (q[2] || q[1]) * gr, 18, 5); c.fillStyle = rgba(q[3], q[2] ? .3 : .85); c.fill();
+    if (q[2]) { rr(lx + 22, yy + 14, bw * q[1] * gr, 18, 5); c.fillStyle = rgba(q[3], .85); c.fill(); }
+  });
+  stampAt('becslés bélyeg', lx + lw2 - 20 - L.measure(lab('becslés bélyeg'), { s: 22, w: 600, ls: '1.76px' }).w - 20, ly + 36, OCHRE);
+  c.globalAlpha = 1;
+}
+
+/* ── 8: Visegrád ── */
+function now8(t) { return lerp(S8.now0, S8.now, inOut(clamp((t - S8.t0) / 1))); }
+function overVisegrad(a, t) {
+  if (a < .02) return;
+  const nw = now8(t), P = (x, y) => SCN_B.toScreen(x, y);
+  /* idővonal (1200–2000, arányos) – a címkék két sorban, ütközés esetén jobbra tolva, vezetővonallal */
+  const x0 = 96, x1 = 1096, y = 112, y0 = 1200, y1 = 2000, X = (v) => lerp(x0, x1, (v - y0) / (y1 - y0));
+  ga(a * clamp((t - .3) / .6)); card(64, 60, 1070, 124);
+  c.strokeStyle = INK; c.lineWidth = 3; c.beginPath(); c.moveTo(x0, y + 26); c.lineTo(x1, y + 26); c.stroke();
+  for (let v = y0; v <= y1; v += 100) { c.beginPath(); c.moveTo(X(v), y + 20); c.lineTo(X(v), y + 32); c.stroke(); }
+  const ev = [['idő fellegvár', 'Fellegvár építése', 0], ['idő udvar', 'udvar Visegrádra', 1], ['idő találkozó', 'királytalálkozó', 0], ['idő oláh', 'Oláh Miklós műve', 1], ['idő ásatás', 'ásatás kezdete', 0]];
+  const right = [-1e9, -1e9];
+  ev.forEach((e, i) => {
+    const xx = X(L.dat(e[1]).a), ea = clamp((t - .6 - i * .3) / .5), row = e[2], s = lab(e[0]), m = L.measure(s, { s: 22, w: 600 }).w;
+    let lx = Math.max(xx - 10, right[row] + 16); lx = Math.min(lx, 1120 - m); right[row] = lx + m;
+    const ly = row ? y + 64 : y - 6;
+    c.globalAlpha = a * ea;
+    if (Math.abs(lx - (xx - 10)) > 4) { c.strokeStyle = rgba(INK, .5); c.lineWidth = 1.5; c.setLineDash([4, 3]); c.beginPath(); c.moveTo(xx, y + 26 + (row ? 8 : -8)); c.lineTo(lx + 6, row ? ly - 20 : ly + 6); c.stroke(); c.setLineDash([]); }
+    c.beginPath(); c.arc(xx, y + 26, 7, 0, TAU); D.fs(c, e[1] === 'Oláh Miklós műve' ? TEAL : RED, CARD, 2);
+    L.tx(s, lx, ly, { s: 22, w: 600, c: INK, k: e[0] });
+  });
+  /* rekonstrukció-keret a palota körül (akkor) */
+  const r0 = P(150, 498), r1 = P(742, 752);
+  c.globalAlpha = a * (1 - nw) * clamp((t - 1.6) / .6);
+  c.strokeStyle = INK; c.lineWidth = 2.5; c.setLineDash([8, 6]); rr(r0[0], r0[1], r1[0] - r0[0], r1[1] - r0[1], 12); c.stroke(); c.setLineDash([]);
+  L.pill(lab('rekonstrukció felirat'), r0[0] + 16, r0[1], { s: 22, w: 600, bg: CARD, bd: INK, bw: 2, pad: 9, r: 6, k: 'rekonstrukció felirat' });
+  /* monda: Salamon-torony */
+  c.globalAlpha = a * clamp((t - 2.4) / .6);
+  const tw = P(1094, 600), mw = 420, mh = 146, mx = tw[0] - 26 - mw, my = tw[1] - 250;
+  c.strokeStyle = OCHRE; c.lineWidth = 2; c.setLineDash([5, 4]); c.beginPath(); c.moveTo(mx + mw, my + mh * .75); c.lineTo(tw[0], tw[1]); c.stroke(); c.setLineDash([]);
+  layerFrame('monda', mx, my, mw, mh);
+  T('monda szöveg 1', mx + 20, my + 48, { s: 22, w: 500, c: '#5a3a08', max: mw - 40 });
+  T('monda szöveg 2', mx + 20, my + 82, { s: 24, w: 700, c: '#5a3a08', max: mw - 40 });
+  T('monda szöveg 3', mx + 20, my + 120, { s: 22, w: 500, i: true, f: F.D, c: INK, max: mw - 40 });
+  /* források alul */
+  const fy = 852, fh = 158;
+  c.globalAlpha = a * clamp((t - 3.2) / .6);
+  layerFrame('forrás', 64, fy, 600, fh);
+  L.tx(lab('oláh cím'), 84, fy + 50, { s: 26, w: 600, f: F.D, k: 'oláh cím', max: 560 });
+  T('oláh szöveg 1', 84, fy + 90, { s: 23, w: 500, max: 560 });
+  L.tx(lab('oláh szöveg 2').replace('#', U.fmt(L.dat('Oláh Miklós műve').a - L.dat('Mátyás halála').a)), 84, fy + 124, { s: 23, w: 500, k: 'oláh szöveg 2', max: 560 });
+  c.globalAlpha = a * clamp((t - 3.8) / .6) * (.8 + .2 * nw);
+  layerFrame('forrás', 700, fy, 608, fh);
+  T('ásatás cím', 720, fy + 50, { s: 26, w: 600, f: F.D, max: 560 });
+  T('ásatás szöveg', 720, fy + 90, { s: 23, w: 500, max: 560 });
+  c.globalAlpha = 1;
+}
+
+/* ── 9: összefoglalás ── */
+function overSummary(a, t) {
+  if (a < .02) return;
+  overExchange(a, 9);
+  const y = 990;
+  ga(a * clamp((t - 1) / .6));
+  const chip = (kind, k, x) => {
+    const col = kind === 'forrás' ? TEAL : INK, m = L.measure(lab(k), { s: 22, w: 600 }).w, m0 = L.measure(lab('réteg ' + kind), { s: 22, w: 700 }).w, w = m + m0 + 46;
+    rr(x, y - 22, w, 44, 10); c.fillStyle = 'rgba(255,250,241,.96)'; c.fill(); c.strokeStyle = col; c.lineWidth = 2.5; if (kind === 'rekonstrukció') c.setLineDash([8, 6]); c.stroke(); c.setLineDash([]);
+    L.tx(lab('réteg ' + kind), x + 14, y + 8, { s: 22, w: 700, c: col, k: 'réteg ' + kind });
+    L.tx(lab(k), x + 32 + m0, y + 8, { s: 22, w: 600, c: INK, k });
+    return x + w + 14;
+  };
+  let x = 64; x = chip('forrás', 'összefoglaló forrás', x); x = chip('forrás', 'összefoglaló lelet', x); chip('rekonstrukció', 'összefoglaló rajz', x);
+  c.globalAlpha = 1;
+}
+
+/* ════════ rajz ════════ */
+function background() {
+  c.globalAlpha = 1;
+  const g = c.createRadialGradient(680, 480, 100, 680, 540, 1300); g.addColorStop(0, '#fbf6ec'); g.addColorStop(1, '#efe6d6');
+  c.fillStyle = g; c.fillRect(0, 0, 1920, 1080);
+  c.strokeStyle = 'rgba(28,36,64,.045)'; c.lineWidth = 1; c.beginPath();
+  for (let x = 0; x <= 1920; x += 40) { c.moveTo(x + .5, 0); c.lineTo(x + .5, 1080); }
+  for (let y = 0; y <= 1080; y += 40) { c.moveTo(0, y + .5); c.lineTo(1920, y + .5); }
+  c.stroke();
+}
+const stepW = (i) => clamp(1 - Math.abs(L.sp - i) * 2);
+function draw() {
+  background();
+  if (L.step >= 0) sT[L.step] = L.st;
+  const t = L.t, cur = L.step;
+  /* melyik jelenet: a B (Visegrád) súlya, az A alatta teljes fedéssel */
+  const wB = Math.max(0, ...STEPS.map((s, i) => s.scene === 1 ? stepW(i) : 0));
+  /* az A jelenet paraméterei az aktuális (vagy legközelebbi A) lépésből */
+  let ia = cur; if (STEPS[ia].scene !== 0) ia = L.sp < cur ? cur - 1 : cur + 1; ia = clamp(ia, 0, STEPS.length - 1);
+  const ta = ia === cur ? L.st : STEPS[ia].settle;
+  if (wB < .999) {
+    const camA = ia === cur ? stepCam(ia, ta) : SCN_A.view(STEPS[ia].view);
+    let season = .5, hour = 12, split = null, veil = 0;
+    FIELD_OPT = () => ({ n: 3, yr: 0 });
+    if (ia === 3) FIELD_OPT = () => fieldOpt4(ta);
+    if (ia === 4) season = season5(ta);
+    if (ia === 6) { split = FRAME[0] + FRAME[2] * S7.split; hour = hour7(ta); }
+    const w5 = stepW(5); veil = .55 * w5;
+    SCN_A.render(c, { cam: camA, season, hour, split, t, veil, sun: ia === 6 });
+  }
+  if (wB > .001) { c.save(); c.globalAlpha = wB; SCN_B.render(c, { cam: SCN_B.view('attekintes'), season: .5, hour: 12, now: now8(sT[7]), t }); c.restore(); }
+
+  /* lépésenkénti rétegek */
+  scenePill('jelenet cím', stepW(0));
+  overExchange(stepW(0), sT[0]);
+  scenePill('vár metszet cím', stepW(1) * clamp((sT[1] - 2) / .6));
+  overCastle(stepW(1), sT[1]);
+  scenePill('telek cím', stepW(2) * clamp((sT[2] - 2.4) / .6));
+  overCompare(stepW(2), sT[2]);
+  overFields(stepW(3), sT[3]);
+  overYear(stepW(4), sT[4]);
+  overDues(stepW(5), sT[5]);
+  overNow(stepW(6), sT[6]);
+  scenePill('visegrád cím', 0);
+  overVisegrad(stepW(7), sT[7]);
+  overSummary(stepW(8), sT[8]);
+
+  /* kattintható pontok (az aktuális lépésé) */
+  const s = STEPS[cur], sc = s.scene === 0 ? SCN_A : SCN_B;
+  if (s.hot) {
+    const tm = cur === 1 ? 2.8 : cur === 2 ? 3 : .8, ma = stepW(cur) * clamp((L.st - tm) / .6);
+    SCN_A.vis = []; SCN_B.vis = [];
+    sc.markers(c, { ids: s.hot, alpha: ma, sel: st.sel, t, pulse: cur !== 8 });
+    if (st.sel && cur !== 8) {
+      const pos = { 0: [64, 1010, 'bottom'], 1: [64, 140], 2: [64, 120], 7: [64, 196] }[cur] || [64, 140];
+      sc.card(c, st.sel, { x: pos[0], y: pos[1], from: pos[2], w: 480, alpha: ma * clamp((L.st - st.selT) / .3) });
+    }
+    if (cur === 0) { ga(ma * clamp((L.st - 4) / .6)); L.pill(lab('kattints'), FRAME[0] + FRAME[2] - 24, FRAME[1] + FRAME[3] - 40, { s: 22, w: 600, a: 'right', bg: RED, c: CARD, pad: 12, k: 'kattints' }); c.globalAlpha = 1; }
+  } else if (L.stage) L.stage.style.cursor = '';
+
+  /* keret + illusztráció-bélyeg */
+  (wB > .5 ? SCN_B : SCN_A).decor(c, 1);
+  c.globalAlpha = 1;
+}
+
+/* ════════ a lecke ════════ */
+const steps = STEPS.map((s, i) => ({
+  settle: s.settle,
+  enter(Lx) { st.sel = null; cam.prev = Lx.prevStep; if (i === 3) Object.assign(S4, { user: false, yr: 0, yrPrev: 0, ty: -9, tn: 2.6, n: num('nyomások száma később'), nPrev: num('nyomások száma régen') });
+    if (i === 4) { S5.user = false; }
+    if (i === 5) { const r = num('hozam'); Object.assign(S6, { r, r0: r, t0: -9 }); }
+    if (i === 6) { S7.userH = false; S7.split = .5; }
+    if (i === 7) Object.assign(S8, { now: 0, now0: 0, t0: -9 }); },
+}));
+steps[3].controls = (L) => {
+  const b2 = L.button(lab('kétnyomásos gomb'), () => setN(num('nyomások száma régen')), 'kétnyomásos gomb');
+  const b3 = L.button(lab('háromnyomásos gomb'), () => setN(num('nyomások száma később')), 'háromnyomásos gomb');
+  L.button(lab('következő év gomb'), () => { const s = s4State(L.st); S4.user = true; S4.n = s.n; S4.nPrev = s.n; S4.yrPrev = S4.yr; S4.yr = (S4.yr + 1) % 6; S4.ty = L.st; }, 'következő év gomb');
+  function setN(n) { const s = s4State(L.st); S4.user = true; S4.nPrev = s.n; S4.n = n; S4.tn = L.st; S4.yrPrev = S4.yr; b2.classList.toggle('on', n === num('nyomások száma régen')); b3.classList.toggle('on', n === num('nyomások száma később')); }
+};
+steps[4].controls = (L) => {
+  const ms = list('hónapok');
+  S5.slider = L.slider({ label: lab('évszak csúszka'), k: 'évszak csúszka', min: 0, max: .999, step: .001, value: .02,
+    format: (v) => { let d = v * 365, m = 0; while (m < 11 && d >= MONTHS_LEN[m]) { d -= MONTHS_LEN[m]; m++; } return ms[m]; },
+    onInput: (v) => { S5.user = true; S5.s = v; } });
+};
+steps[5].controls = (L) => {
+  const q = list('termés minősége');
+  L.slider({ label: lab('termés csúszka'), k: 'termés csúszka', min: 2, max: 6, step: .5, value: num('hozam'),
+    format: (v) => q[Math.round((v - 2) / 4 * (q.length - 1))], onInput: (v) => { S6.r0 = ratio6(L.st); S6.r = v; S6.t0 = L.st; if (L.st < 4) L.st = 4; } });
+};
+steps[6].controls = (L) => {
+  L.slider({ label: lab('akkor most csúszka'), k: 'akkor most csúszka', min: .1, max: .9, step: .01, value: .5, format: (v) => (v < .3 ? lab('akkor') : v > .7 ? lab('most') : '↔').split(':')[0], onInput: (v) => { S7.split = v; } });
+  S7.sH = L.slider({ label: lab('napszak csúszka'), k: 'napszak csúszka', min: 0, max: 23.75, step: .25, value: 5.5,
+    format: (v) => Math.floor(v) + ':' + String(Math.round((v % 1) * 60)).padStart(2, '0'), onInput: (v) => { S7.userH = true; S7.hour = v; } });
+};
+steps[7].controls = (L) => {
+  const b1 = L.button(lab('akkor gomb'), () => setNow(0), 'akkor gomb'), b2 = L.button(lab('ma gomb'), () => setNow(1), 'ma gomb');
+  b1.classList.add('on');
+  function setNow(v) { S8.now0 = now8(L.st); S8.now = v; S8.t0 = L.st; b1.classList.toggle('on', !v); b2.classList.toggle('on', !!v); }
+};
+
+L = Lesson.create({
+  content: window.LESSON_CONTENT,
+  home: false,
+  steps,
+  init(Lx) { L = Lx; c = L.ctx; buildScenes(); },
+  draw(Lx) {
+    L = Lx; c = L.ctx;
+    if (L.step === 4 && S5.slider && !S5.user) S5.slider.set(season5(L.st));
+    if (L.step === 6 && S7.sH && !S7.userH) S7.sH.set(hour7(L.st));
+    draw();
+  },
+});
+})();
+</script>
+</body>
+</html>
