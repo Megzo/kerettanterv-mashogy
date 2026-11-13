@@ -28,6 +28,15 @@ Szabály: egyszerre legfeljebb 3 al-ügynök fut. A token-oszlop az al-ügynök 
 | T19 | 14-konyvnyomtatas | 5. kör | 35 p 17 mp | 150 698 (kimenet 168 278; cache-írás 711 059; cache-olvasás 10 773 431) | kész: 9 lépés, QA hibátlan; 4 modult változtatás nélkül vett át |
 | T20 | 05-keresztenyseg | 5. kör | 33 p 59 mp | 95 120 a jelentés szerint (a naplóból: kimenet 177 570; cache-írás 886 921; cache-olvasás 10 887 558) | kész: 9 lépés, QA hibátlan; 4 modult változtatás nélkül vett át |
 | T21 | 19-marcius-15 | 5. kör | 34 p 17 mp | 166 568 (kimenet 168 895; cache-írás 1 002 758; cache-olvasás 11 229 676) | kész: 9 lépés, QA hibátlan; 5 modult változtatás nélkül vett át |
+| T22 | 20-szabadsagharc | 5. kör | 33 p 16 mp | 104 278 a jelentés szerint (a naplóból: kimenet 155 930; cache-írás 655 235; cache-olvasás 11 216 174) | kész: 9 lépés, QA hibátlan; 5 modult változtatás nélkül vett át |
+
+## Összesítés
+
+- 22 al-ügynök (1 terv, 1 előkészítés, 1 átültetés, 19 új lecke); egyszerre legfeljebb 3.
+- Kimeneti tokenek összesen: **3 756 890**; al-ügynök-munkaidő: **13,2 óra**.
+- Egy új lecke átlagosan: **~38 perc**, **~181 ezer** kimeneti token (a fizikánál ~31 perc, ~141 ezer).
+- A közös modulok (térkép, idővonal, forráskártya, jelenet, kártyák, csatatér, családfa, fóliák, földgömb) a referencialeckék után változtatás nélkül öröklődtek; a későbbi leckék 4–6 modult vettek át.
+- Koordinátori hibák, amelyeket az ügynökök kijavítottak: a nándorfehérvári hajócsata napja (júl. 14., nem 4.), Drégely eleste (júl. 9., nem aug. 9.).
 
 ## Leckék
 
@@ -52,3 +61,4 @@ Szabály: egyszerre legfeljebb 3 al-ügynök fut. A token-oszlop az al-ügynök 
 | 14-konyvnyomtatas | 9 | 35 perc, kimenet ~168 ezer | 0 JS-hiba, 0 túlcsordulás | adatok: Gutenberg-Biblia 1454–55, 1282 oldal, kb. 180 példány / 49 maradt, Hess András 1473, nyomdák évszámai (Velence 1469, Párizs 1470, Westminster 1476…), Luther levele 1517. okt. 31. | a másoló/prés sebessége becslés; az 5. lépés ívei vázlatosak; Vizsoly és Sárospatak jele majdnem összeér |
 | 05-keresztenyseg | 9 | 34 perc, kimenet ~178 ezer | 0 JS-hiba, 0 túlcsordulás | az 1., 3. és 7. lépés szövege átolvasva: leíró keret („a Héber Biblia szerint”, „a keresztények hite szerint”); dátumok (Pilátus 26–36, kereszthalál kb. 30–33, Pál levelei kb. 50–60, evangéliumok kb. 70–100, Tacitus kb. 116, 313, 380) | a gyülekezetek terjedése és Pál útjai vázlatosak; a bibliai történetek „hagyomány” jelölést kaptak (nem „monda”) – tiszteletteljesebb, a szerződésbe érdemes felvenni |
 | 19-marcius-15 | 9 | 34 perc, kimenet ~169 ezer | 0 JS-hiba, 0 túlcsordulás | az 1848-as forradalmak dátumai (Palermo jan. 12., Párizs febr. 22., Kossuth pozsonyi beszéde márc. 3., Bécs márc. 13., Berlin és Milánó márc. 18.); az 5. lépés szövege (a lépcsőn szavalás későbbi hagyomány) átolvasva | a nap órái becslések; Pest–Buda térképe vázlatos, a menet útvonala rekonstrukció; Kossuth szerepe egyszerűsített |
+| 20-szabadsagharc | 9 | 33 perc, kimenet ~156 ezer | 0 JS-hiba, 0 túlcsordulás | a 6. lépés („Áruló volt Görgei?” – Kossuth vidini levele és Görgei könyve, mindkettő résztvevő, nem pártatlan) és a 8. lépés (kiegyezés, mindkét fél érdekei) szövege átolvasva | **történész-review**: létszámok, a vidini levél dátuma, a zsidó hitközségekre kirótt hadisarc (2,3 → 1 millió Ft), a vértanúk származása, Világos/Szőlős; a tavaszi hadjárat végállapota Pest–Budánál zsúfolt |
