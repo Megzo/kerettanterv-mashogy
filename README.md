@@ -3,12 +3,17 @@
 Szemléletes, interaktív, animált leckék a magyar **NAT 2020 kerettantervek** témaköreihez –
 tanórai kivetítésre (16:9) és egyéni használatra.
 
-**Nyitóoldal:** [`index.html`](index.html) – tantárgyak × évfolyamok, a kész leckékkel
-(a többi „hamarosan”). Letöltés után dupla kattintással is megnyílik, internet nélkül.
+## ▶ [A leckék megnyitása: megzo.github.io/kerettanterv-mashogy](https://megzo.github.io/kerettanterv-mashogy/)
 
-Állapot: a kerettantervek feldolgozva (0. fázis); a pilot – **Fizika 7–8.**, 15 lecke –
-elkészült ([`leckek/fizika-7-8/`](leckek/fizika-7-8/), terv és gyártási számok:
-[`pilot/fizika-7-8/`](pilot/fizika-7-8/)).
+A nyitóoldal tantárgyak × évfolyamok szerint mutatja a kész leckéket (a többi „hamarosan”).
+Letöltés után a repó [`index.html`](index.html)-je dupla kattintással is megnyílik, internet nélkül.
+
+Állapot: a kerettantervek feldolgozva (0. fázis). Kész sorozatok:
+
+- **Fizika 7–8.**, 16 lecke – [`leckek/fizika-7-8/`](leckek/fizika-7-8/), terv és gyártási
+  számok: [`pilot/fizika-7-8/`](pilot/fizika-7-8/)
+- **Történelem 5–6.**, 20 lecke – [`leckek/tortenelem-5-6/`](leckek/tortenelem-5-6/), terv és
+  gyártási számok: [`pilot/tortenelem-5-6/`](pilot/tortenelem-5-6/)
 
 - [`leckek/`](leckek/README.md) – a leckék; mindegyik szövege egy tanár által is
   szerkeszthető `.md`-fájlban van, a `tools/build_lesson.py` égeti be a leckébe.
