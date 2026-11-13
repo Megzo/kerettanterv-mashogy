@@ -6,13 +6,14 @@ Források:
   leckek/<mappa>/NN-slug.md          – kész leckék (1. sor: cím, 2. sor: tantárgy/évfolyam/témakör)
   pilot/<mappa>/terv.md              – tervezett leckék („## 2. A leckék” táblázat)
 
-Ami a tervben szerepel, de még nincs .html-je, az „hamarosan” (szürke).
+Ami a tervben szerepel, de még nincs commitolt .html-je, az „hamarosan” (szürke).
+Ezért: előbb a leckét commitold, utána futtasd ezt (és commitold az index.html-t).
 A kimenet egyetlen, önálló HTML-fájl (az adatok beágyazva), így file://-ról és
 GitHub Pages-ről is működik.
 
     python3 tools/build_index.py
 """
-import html, json, re
+import html, json, re, subprocess
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -61,9 +62,19 @@ def topics():
 HEAD_RE = re.compile(r"tantárgy:\s*(.+?)\s*·\s*évfolyam:\s*([\d–-]+)\.?\s*·\s*témakör:\s*(\d+)")
 
 
+def tracked():
+    """A gitben követett fájlok: csak a commitolt lecke számít késznek (a félkész, épp gyártott nem)."""
+    try:
+        out = subprocess.run(["git", "ls-files", "leckek"], cwd=ROOT, capture_output=True, text=True, check=True)
+        return set(out.stdout.split())
+    except (OSError, subprocess.CalledProcessError):
+        return None
+
+
 def lessons():
     """Kész leckék a .md fejlécéből + tervezettek a terv.md-ből."""
     found = {}
+    git = tracked()
     for md in sorted((ROOT / "leckek").glob("*/[0-9][0-9]-*.md")):
         lines = md.read_text(encoding="utf-8").splitlines()
         m = HEAD_RE.search(lines[1] if len(lines) > 1 else "")
@@ -74,7 +85,8 @@ def lessons():
             "tantargy": m.group(1), "evfolyam": m.group(2).replace("-", "–"),
             "temakor": int(m.group(3)), "cim": lines[0].lstrip("# ").strip(),
             "lepes": sum(1 for l in lines if re.match(r"## \d+\.", l)),
-            "url": page.relative_to(ROOT).as_posix() if page.exists() else None,
+            "url": page.relative_to(ROOT).as_posix()
+                   if page.exists() and (git is None or page.relative_to(ROOT).as_posix() in git) else None,
             "md": REPO + md.relative_to(ROOT).as_posix(),
         }
     planned = []
