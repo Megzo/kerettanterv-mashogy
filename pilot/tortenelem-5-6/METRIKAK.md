@@ -16,6 +16,7 @@ Szabály: egyszerre legfeljebb 3 al-ügynök fut. A token-oszlop az al-ügynök 
 | T7 | 07-kozepkori-varos (+ kártyajáték-modul: TortCards) | 2. kör | 34 p 58 mp | 115 831 a jelentés szerint (a naplóból: kimenet 166 465; cache-írás 626 866; cache-olvasás 11 825 220) | kész: 9 lépés, QA hibátlan; 3 modult változtatás nélkül vett át |
 | T8 | 18-gozgep | 2. kör | 41 p 48 mp | 186 241 (kimenet 195 348; cache-írás 1 165 947; cache-olvasás 11 702 786) | kész: 9 lépés, QA hibátlan; párhuzamosan saját TortCards-t írt (a 07-esé a referencia) |
 | T9 | 09-honfoglalas (+ térképfólia-modul: TortFoils) | 2. kör | 40 p 29 mp | 185 100 (kimenet 187 800; cache-írás 719 793; cache-olvasás 12 080 231) | kész: 9 lépés, QA hibátlan; 3 modult változtatás nélkül vett át |
+| T10 | 02-nilus | 2. kör | 37 p 31 mp | 163 524 (kimenet 184 976; cache-írás 792 441; cache-olvasás 11 541 825) | kész: 9 lépés, QA hibátlan; 5 modult változtatás nélkül vett át |
 
 ## Leckék
 
@@ -28,3 +29,4 @@ Szabály: egyszerre legfeljebb 3 al-ügynök fut. A token-oszlop az al-ügynök 
 | 07-kozepkori-varos | 9 | 35 perc, kimenet ~166 ezer | 0 JS-hiba, 0 túlcsordulás | adatok: Pest 1244, Buda 1247 k., Budai jogkönyv 1405–1421, népesség-becslések; 7. lépés képernyőképe átnézve | Buda alaprajza sematikus; Kassa 1307 (első céhlevél) és a kapu-/piacidők ellenőrizendők |
 | 18-gozgep | 9 | 42 perc, kimenet ~195 ezer | 0 JS-hiba, 0 túlcsordulás | évszámok: Newcomen 1712, Watt 1769/1781, jenny 1764 k., mule 1779, gyári törvény 1833 (9 év alatt tilos, 9–13: 9 óra + 2 óra iskola), Pest–Vác 1846. júl. 15.; 2. lépés képe átnézve | Watt gépe egyszerűsített rajz; a tanú (Bentley) adatai ellenőrizendők |
 | 09-honfoglalas | 9 | 40 perc, kimenet ~188 ezer | 0 JS-hiba, 0 túlcsordulás | 4. lépés (894–907 csúszka) és 5. lépés (három fólia) képe átnézve; forrásdátumok (Fuldai 894, Konstantin kb. 950, Anonymus kb. 1200, Kézai 1282–85, Képes krónika kb. 1358, Feszty 1894) | **történész-review**: Képes krónika „Erdély” útvonal, Brezalauspurc = Pozsony, Lehel kürtje kora, a honfoglalók száma (100–500 ezer); a régészeti fólia „rekonstrukció” jelölést kapott (a lelet maga „forrás” lenne); a fólia-nézetben a Duna halvány |
+| 02-nilus | 9 | 38 perc, kimenet ~185 ezer | 0 JS-hiba, 0 túlcsordulás | Plinius áradási skálája (12–16 könyök, max. 18), rosette-i kő (Kr. e. 196 / 1799 / 1822), utolsó hieroglifás felirat 394, Kheopsz 146,6 m; 1. lépés képe átnézve | a delta ágai és a memphisi völgysáv kézi rajz („vázlatos”); 8. lépésben a tű vonala keresztezi a sávfeliratokat |
