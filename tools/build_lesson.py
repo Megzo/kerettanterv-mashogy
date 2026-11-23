@@ -82,7 +82,8 @@ Jelölés a szövegben (panel, lépéscím, felirat) – a részletek a leckek/R
      F_fel, x_1, H_2O (alsó index: számjegyek VAGY betűk), [[x/2]] álló tört, {1; 2; 3} halmaz
      (nem adatkulcs, mert van benne „;”), \\{ \\} \\/ \\^ \\_ \\` szó szerint.
   a `…` képletben: * → ·, - → −, <= >= != ~= → ≤ ≥ ≠ ≈, -> |-> => <=> → ↦ ⇒ ⇔, +- → ±,
-     pi inf → π ∞, NN ZZ QQ RR → ℕ ℤ ℚ ℝ, √(…) / gyök(…), a latin betűk dőltek (sin, lg… állók).
+     pi inf → π ∞, NN ZZ QQ RR → ℕ ℤ ℚ ℝ, √(…) / gyök(…), a latin betűk és a görög kisbetűk
+     dőltek (sin, lg…, a π és a görög nagybetűk – Δ, Σ, Ω – állók).
   "math": true – 3/4 álló tört, 2 1/3 vegyes szám, √(…) a szövegben is; a `képlet:` sor egésze
      képlet, (a) / (b) emeletes tört; figyelmeztet: 3*4, 5 - 3, 3.14, 30', (3, 2), cm2.
   "chem": true – H2O, CO2, Ca(OH)2 → alsó index; ₂ ⁺ (Unicode) → <sub>/<sup>; -> → →.
@@ -1034,6 +1035,15 @@ CHEM_PART = re.compile(r"([A-Z][a-z]?|[()])(\d*)")
 FRAC_RE = re.compile(r"(\d+)/(\d+)(?![0-9/]|,\d)")
 EXP_RE = re.compile(r"\^([−-]?)(\d+(?:,\d+)?|[A-Za-zα-ω])")
 CHARGE_RE = re.compile(r"\^(\d*[+\-−])(?![\w(])")
+# képletben a görög kisbetű változó → dőlt (mint a latin); a nagybetű (Δ, Σ, Ω) és a π álló
+GREEK = re.compile("[Α-Ωα-ωϑϕϵ]")
+MATH_WORD = re.compile("[A-Za-zÀ-ÖØ-öø-ž]+")
+PRIMES = re.compile("[′″‴]*")  # a változó vesszője vele együtt dőlt: γ′, f″
+
+
+def is_var(t):
+    """Egy betűs változó: latin vagy görög kisbetű (nem π) → dőlt."""
+    return bool(IS_LET.fullmatch(t) and not re.fullmatch("[Α-Ωπ]", t) or re.fullmatch("[ϑϕϵ]", t))
 
 
 def match_close(s, i, op="(", cl=")"):
@@ -1123,7 +1133,7 @@ class Mx:
                 if m:
                     sign, tok = m.groups()
                     inner = ["−"] if sign else []
-                    if math and IS_LET.match(tok):
+                    if math and is_var(tok):
                         inner.append(["i", tok])
                     else:
                         self.push(inner, tok)
@@ -1136,7 +1146,7 @@ class Mx:
                 m = re.compile(r"\d+|[" + LET + r"]+").match(s, i + 1)
                 if m:
                     t = m.group(0)
-                    out.append(["sub", [["i", t]] if math and len(t) == 1 and IS_LET.match(t) else [t]])
+                    out.append(["sub", [["i", t]] if math and len(t) == 1 and is_var(t) else [t]])
                     i = m.end(); continue
             if (math or self.frac) and (c == "√" or math and s.startswith("gyök(", i)):
                 k = i + (1 if c == "√" else 4)
@@ -1147,7 +1157,7 @@ class Mx:
                 m = re.compile(r"\d+(?:,\d+)?|[A-Za-zα-ω]").match(s, k) if c == "√" else None
                 if m:
                     t = m.group(0)
-                    out.append(["sqrt", [["i", t]] if math and not t[0].isdigit() else [t]]); i = m.end(); continue
+                    out.append(["sqrt", [["i", t]] if math and is_var(t) else [t]]); i = m.end(); continue
             if (math or self.frac) and c.isdigit() and not (IS_WORD.match(prev) or prev and prev in ",./"):
                 m = FRAC_RE.match(s, i)
                 if m and not (i + len(m.group(0)) < n and IS_LET.match(s[i + len(m.group(0))])):
@@ -1211,7 +1221,12 @@ class Mx:
                 if c == ")":
                     self.errors.append("páratlan zárójel a képletben: fölösleges „)”")
                     P(out, ")"); i += 1; continue
-                m = re.compile(f"[{LET}]+").match(s, i)
+                if GREEK.fullmatch(c):
+                    if not is_var(c):
+                        P(out, c); i += 1; continue
+                    t = c + PRIMES.match(s, i + 1).group(0)
+                    out.append(["i", t]); i += len(t); continue
+                m = MATH_WORD.match(s, i)
                 if m:
                     w = m.group(0)
                     if w in NAMED:
@@ -1219,8 +1234,9 @@ class Mx:
                     elif not re.fullmatch(r"[A-Za-z]+", w) or w in FUNCS:
                         P(out, w)
                     else:
+                        w += PRIMES.match(s, m.end()).group(0)
                         out.append(["i", w])
-                    i = m.end(); continue
+                    i = m.start() + len(w); continue
             P(out, c); i += 1
         return out
 

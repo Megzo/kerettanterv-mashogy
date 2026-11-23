@@ -244,7 +244,8 @@ A *(5–6)* / *(9–10)* jelű pont csak arra a sávra vonatkozik.
   hatvány 1 szónak számít, a `képlet:` sor 3-nak.
 - **Jelölés a `.md`-ben (egységes, mindkét sávban):** képlet `` `…` `` között vagy `képlet:` sorban
   (`*` → ·, `-` → −, `<=` `>=` `!=` `~=` `|->` `=>` `<=>` `+-` → ≤ ≥ ≠ ≈ ↦ ⇒ ⇔ ±, `pi` → π,
-  `NN ZZ QQ RR` → ℕ ℤ ℚ ℝ, `√(…)`/`gyök(…)`, a betűk dőltek, `sin lg log max…` állók);
+  `NN ZZ QQ RR` → ℕ ℤ ℚ ℝ, `√(…)`/`gyök(…)`, a betűk – a görög kisbetűk (α, β, γ′) is – dőltek,
+  `sin lg log max…`, a π és a görög nagybetűk (Δ, Σ, Ω) állók);
   kitevő `2^3`, `10^-3`, `2^(n+1)`; index `x_1`, `D_f`; tört a szövegben is `3/4` (álló), vegyes
   szám `2 1/3`, emeletes tört `[[a + b/2]]` vagy a `képlet:` sorban `(a + b) / (2a)`; halmaz
   `{1; 2; 3}`, pont `A(2; −3)`, intervallum `[a; b]`, `]a; b[` – pontosvesszővel, mert a vessző

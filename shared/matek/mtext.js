@@ -42,6 +42,8 @@
   // ── elemző (a tools/build_lesson.py Mx osztályának tükörképe) ──
   const LET = 'A-Za-zÀ-ÖØ-öø-žΑ-Ωα-ω';
   const IS_LET = new RegExp('^[' + LET + ']$'), IS_WORD = new RegExp('^[' + LET + '0-9_]$');
+  // képletben a görög kisbetű változó → dőlt (mint a latin); a nagybetű (Δ, Σ, Ω) és a π álló
+  const GREEK = /^[Α-Ωα-ωϑϕϵ]$/, isVar = (t) => IS_LET.test(t) && !/^[Α-Ωπ]$/.test(t) || /^[ϑϕϵ]$/.test(t);
   const ELEMENTS = new Set(('H He Li Be B C N O F Ne Na Mg Al Si P S Cl Ar K Ca Sc Ti V Cr Mn Fe Co Ni Cu Zn Ga Ge As Se ' +
     'Br Kr Rb Sr Y Zr Nb Mo Tc Ru Rh Pd Ag Cd In Sn Sb Te I Xe Cs Ba La Ce Pr Nd Pm Sm Eu Gd Tb Dy Ho Er Tm Yb ' +
     'Lu Hf Ta W Re Os Ir Pt Au Hg Tl Pb Bi Po At Rn Fr Ra Ac Th Pa U Np Pu Am Cm Bk Cf Es Fm Md No Lr Rf Db Sg ' +
@@ -57,8 +59,8 @@
   const R = (src) => new RegExp(src, 'y');
   const FRAC_RE = R('(\\d+)/(\\d+)(?![0-9/]|,\\d)'), EXP_RE = R('\\^([−-]?)(\\d+(?:,\\d+)?|[A-Za-zα-ω])');
   const CHARGE_RE = R('\\^(\\d*[+\\-−])(?![\\w(])'), CHEM_RE = R('(?:[A-Z][a-z]?\\d*|\\((?:[A-Z][a-z]?\\d*)+\\)\\d*)+');
-  const SUBRUN = R('\\d+|[' + LET + ']+'), SQRT_TOK = R('\\d+(?:,\\d+)?|[A-Za-zα-ω]'), WORD = R('[' + LET + ']+');
-  const SUBD = R('[₀₁₂₃₄₅₆₇₈₉]+'), SUPD = R('[⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻]+'), BIGSLASH = R('\\s*/\\s*\\(');
+  const SUBRUN = R('\\d+|[' + LET + ']+'), SQRT_TOK = R('\\d+(?:,\\d+)?|[A-Za-zα-ω]'), WORD = R('[A-Za-zÀ-ÖØ-öø-ž]+');
+  const SUBD = R('[₀₁₂₃₄₅₆₇₈₉]+'), SUPD = R('[⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻]+'), BIGSLASH = R('\\s*/\\s*\\('), PRIMES = R('[′″‴]+');
 
   function matchClose(s, i) {
     let depth = 0;
@@ -107,7 +109,7 @@
         if ((m = at(CHARGE_RE, s, i))) { out.push(['sup', [m[1].replace('-', '−')]]); i += m[0].length; continue; }
         if ((m = at(EXP_RE, s, i))) {
           const inner = m[1] ? ['−'] : [];
-          if (math && IS_LET.test(m[2])) inner.push(['i', m[2]]); else push(inner, m[2]);
+          if (math && isVar(m[2])) inner.push(['i', m[2]]); else push(inner, m[2]);
           out.push(['sup', inner]); i += m[0].length; continue;
         }
       }
@@ -115,13 +117,13 @@
         if (s[i + 1] === '(') { const j = matchClose(s, i + 1); if (j > 0) { out.push(['sub', this.seq(s.slice(i + 2, j), math, false)]); i = j + 1; continue; } }
         if ((m = at(SUBRUN, s, i + 1))) {
           const t = m[0];
-          out.push(['sub', math && t.length === 1 && IS_LET.test(t) ? [['i', t]] : [t]]); i = i + 1 + t.length; continue;
+          out.push(['sub', math && t.length === 1 && isVar(t) ? [['i', t]] : [t]]); i = i + 1 + t.length; continue;
         }
       }
       if ((math || this.frac) && (c === '√' || math && s.startsWith('gyök(', i))) {
         const k = i + (c === '√' ? 1 : 4);
         if (k < n && s[k] === '(') { const j = matchClose(s, k); if (j > 0) { out.push(['sqrt', this.seq(s.slice(k + 1, j), true, false)]); i = j + 1; continue; } }
-        if (c === '√' && (m = at(SQRT_TOK, s, k))) { out.push(['sqrt', math && !isDigit(m[0][0]) ? [['i', m[0]]] : [m[0]]]); i = k + m[0].length; continue; }
+        if (c === '√' && (m = at(SQRT_TOK, s, k))) { out.push(['sqrt', math && isVar(m[0]) ? [['i', m[0]]] : [m[0]]]); i = k + m[0].length; continue; }
       }
       if ((math || this.frac) && isDigit(c) && !(IS_WORD.test(prev) || (prev && ',./'.includes(prev)))) {
         m = at(FRAC_RE, s, i);
@@ -171,11 +173,16 @@
           push(out, '('); for (const x of inner) push(out, x); push(out, ')'); i = j + 1; continue;
         }
         if (c === ')') { this.errors.push('páratlan zárójel'); push(out, ')'); i++; continue; }
+        if (GREEK.test(c)) {
+          if (!isVar(c)) { push(out, c); i++; continue; }
+          const pr = at(PRIMES, s, i + 1), t = c + (pr ? pr[0] : '');
+          out.push(['i', t]); i += t.length; continue;
+        }
         if ((m = at(WORD, s, i))) {
           const w = m[0];
           if (NAMED[w]) push(out, NAMED[w]);
           else if (!/^[A-Za-z]+$/.test(w) || FUNCS.has(w)) push(out, w);
-          else out.push(['i', w]);
+          else { const pr = at(PRIMES, s, i + w.length); out.push(['i', w + (pr ? pr[0] : '')]); i += pr ? pr[0].length : 0; }
           i += w.length; continue;
         }
       }
