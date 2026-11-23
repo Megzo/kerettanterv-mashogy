@@ -11,7 +11,7 @@ Történelem-kiegészítés).
 | `map-mediterran.js` | `TORT_MAP_MEDITERRAN` | 10° Ny – 50° K, 20–56° É | NE 1:50m (tájnevek 1:10m), q = 100 | ~49 KB |
 | `map-vilag.js` | `TORT_MAP_VILAG` | az egész Föld | NE 1:110m szárazföld + nagy tavak, q = 100 | ~39 KB |
 | `map-orszaghatarok.js` | `TORT_MAP_HATAROK` | 12° Ny – 50° K, 20–60° É | NE 1:50m mai szárazföldi országhatárok, q = 100 | ~16 KB |
-| `proj.js` | `TortProj` | – | vetületek, dekódolás, útvonal-rajzolás | ~10 KB |
+| `proj.js` | `TortProj` | – | vetületek (Lambert, ortografikus, Equal Earth), dekódolás, útvonal-rajzolás | ~14 KB |
 
 ## Formátum
 
@@ -51,10 +51,28 @@ a Kaszpi-tenger lyukak). Dekódolás: `TortProj.unpack(M)` → fokos `Float64Arr
 ## Vetület-segéd (`proj.js`)
 
 A teljes API a fájl tetején. Röviden: `lcc({lon0, lat0, lat1, lat2})` Lambert-féle szögtartó
-kúpvetület, `ortho({lon0, lat0})` ortografikus gömb; `view(proj, {lon, lat, s, x, y})`
+kúpvetület, `ortho({lon0, lat0})` ortografikus gömb, `equalEarth({lon0})` egyenlő területű világvetület,
+`outline(ctx, V)` a vetület körvonala (gömbkorong / Equal Earth-perem); `view(proj, {lon, lat, s, x, y})`
 képernyőre képez (s = px / Föld-sugár; kamera-animációhoz két view-paraméter között
 interpolálj, `s`-t logaritmikusan), `fit(proj, bbox, rect)` kitöltő nézetet számol,
 `trace(ctx, V, pts, opts)` útvonalat rajzol, `gc()` főkör, `dist()` km.
+
+**Equal Earth** (`equalEarth({lon0})`, egyenlő területű világvetület – tematikus térképhez, ahol a terület
+számít; a földrajzi adatok: `shared/foldrajz/`). A teljes világ kitöltő nézete:
+`fit(proj, [lon0 − 180, −90, lon0 + 180, 90], rect)` (a bbox a középmeridiánhoz igazodjon). A térkép széle a
+`lon0 ± 180°` délkör: a `trace` a varraton átnyúló gyűrűt mindkét oldalon megrajzolja, ezért rajzolás előtt
+vágj a térkép körvonalára (`outline`); a nyitott vonalat a varratnál megszakítja. Az `edge` opcióval hívott
+`trace` a régi (varrat-kezelés nélküli) úton fut.
+
+```js
+const pr = P.equalEarth({ lon0: 10 }), V = P.view(pr, P.fit(pr, [-170, -90, 190, 90], [20, 40, 1320, 1000]));
+c.save(); c.beginPath(); P.outline(c, V); c.fillStyle = '#dbe9f3'; c.fill(); c.clip();   // óceán + vágás
+for (const k of FOLD_ORSZAGOK.countries) { c.beginPath(); for (const r of k.p) P.trace(c, V, P.decode(r, 100), { close: true }); c.fill('evenodd'); }
+c.restore();
+```
+
+`outline(ctx, V)` gömbön (`ortho`) a korong útvonala. Visszafelé kompatibilis bővítés: a meglévő vetületek
+és a `trace` viselkedése nem változott.
 
 Ajánlott paraméterek: Kárpát-medence `{lon0: 19.5, lat0: 47, lat1: 45, lat2: 49}`; Földközi-tenger
 `{lon0: 20, lat0: 38, lat1: 30, lat2: 46}`; Egyiptom `{lon0: 31, lat0: 27, lat1: 23, lat2: 31}`.
