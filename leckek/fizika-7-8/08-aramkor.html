@@ -351,7 +351,7 @@ function scene1(st, cur) {
   // gyapjú
   al(p0); rr(WOOL.x0, WOOL.y0, WOOL.x1 - WOOL.x0, WOOL.y1 - WOOL.y0, 26); c.fillStyle = '#ddb48a'; c.fill();
   c.save(); rr(WOOL.x0, WOOL.y0, WOOL.x1 - WOOL.x0, WOOL.y1 - WOOL.y0, 26); c.clip();
-  c.strokeStyle = 'rgba(122,74,40,.35)'; c.lineWidth = 2.5;
+  c.strokeStyle = 'rgba(122,74,40,.35)'; c.lineWidth = 2.5; c.lineJoin = 'miter';   // ne a korábbi jelenetből szivárogjon
   for (let y = WOOL.y0 + 14; y < WOOL.y1; y += 26) for (let x = WOOL.x0 + 8; x < WOOL.x1; x += 24) { c.beginPath(); c.moveTo(x, y - 7); c.lineTo(x + 6, y + 7); c.lineTo(x + 12, y - 7); c.stroke(); }
   c.restore();
   rr(WOOL.x0, WOOL.y0, WOOL.x1 - WOOL.x0, WOOL.y1 - WOOL.y0, 26); c.strokeStyle = '#6e4220'; c.lineWidth = 3; c.stroke();
@@ -360,7 +360,7 @@ function scene1(st, cur) {
   const bx = B.x, by = B.y;
   al(p0); c.beginPath(); c.moveTo(bx, by + B1.ry + 14); c.bezierCurveTo(bx + 24, by + B1.ry + 40, bx - 24, by + B1.ry + 60, bx + 6, by + B1.ry + 92);
   c.strokeStyle = MUT; c.lineWidth = 2.5; c.stroke();
-  c.beginPath(); c.moveTo(bx, by + B1.ry - 4); c.lineTo(bx - 12, by + B1.ry + 16); c.lineTo(bx + 12, by + B1.ry + 16); c.closePath(); c.fillStyle = '#d9a21b'; c.fill(); c.strokeStyle = '#7a5a08'; c.lineWidth = 2.5; c.stroke();
+  c.beginPath(); c.moveTo(bx, by + B1.ry - 4); c.lineTo(bx - 12, by + B1.ry + 16); c.lineTo(bx + 12, by + B1.ry + 16); c.closePath(); c.fillStyle = '#d9a21b'; c.fill(); c.strokeStyle = '#7a5a08'; c.lineWidth = 2.5; c.lineJoin = 'miter'; c.stroke();
   const g = c.createRadialGradient(bx - 50, by - 70, 20, bx, by, 220); g.addColorStop(0, '#fbe08a'); g.addColorStop(1, '#efb92e');
   c.beginPath(); c.ellipse(bx, by, B1.rx, B1.ry, 0, 0, TAU); c.fillStyle = g; c.fill(); c.strokeStyle = '#7a5a08'; c.lineWidth = 3; c.stroke();
   c.beginPath(); c.ellipse(bx + 70, by - 110, 18, 36, .5, 0, TAU); c.fillStyle = 'rgba(255,255,255,.6)'; c.fill();
@@ -789,7 +789,7 @@ L = Lesson.create({
       } },
     { settle: 4 },
   ],
-  init(Lx) { L = Lx; c = L.ctx; dragInit(); },
+  init(Lx) { L = Lx; c = L.ctx; dragInit(); L.steps.forEach((s) => s.enter && s.enter(L)); },   // minden jelenet állapota legyen kész (átugró áttűnésnél a köztesek is rajzolódnak)
   draw(Lx) {
     L = Lx; c = L.ctx; GA = 1; background(); DR.h = null;
     const sp = L.sp;
