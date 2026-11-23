@@ -61,6 +61,9 @@ A sóban ezek **ionok**: elektromos töltésű atomok (később tanuljuk). Két 
 - kloridion sugara: 0,181 nm
 - nátriumion jele: Na^+
 - kloridion jele: Cl^-
+<!-- A csúszka „× N” értéke a kiinduló képhez (1 mm ≈ 420 képpont, a vetítővásznon kb. 10–20 cm)
+     viszonyított nagyítás, nem a valódi méretarány. Ökölnyi (~10 cm) részecskéhez valójában
+     kb. 10 cm / 0,28 nm ≈ 350 milliószoros nagyítás kell – TANÁRI ELLENŐRZÉS: így beszéljük meg? -->
 - hajszál vastagsága: 70 µm
 - baktérium hossza: 2 µm
 - vírus átmérője: 100 nm
