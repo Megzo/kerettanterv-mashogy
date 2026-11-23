@@ -1,0 +1,1377 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Miért zöld a sáska a fűben? – változatosság, kiválasztódás, véletlen — Biológia</title>
+<link rel="stylesheet" href="../../shared/lesson.css">
+<style>
+  .lp-text b { color: var(--ink); }
+  .lp-btn.on { background: var(--ink, #1c2440); color: #fffaf1; }
+</style>
+<!-- A lecke által várt tartalomkulcsok. A tools/build_lesson.py ez alapján ellenőrzi a .md-t. -->
+<script type="application/json" id="lesson-spec">
+{
+ "steps": 9,
+ "labels": {
+  "zöld": null, "barna": null, "átmeneti": null, "színskála": null, "sáskák tengely": null, "nemzedék tengely": null, "átlagszín tengely": null,
+  "modell bélyeg": null, "honnan tudjuk": null, "újra gomb": null, "kihaltak": null,
+  "kérdés 1": 50, "szülő": null, "utódai": 40, "változatos": 40,
+  "kérdés 2": 50, "felnőttek": null, "utódok": null, "felnő": null, "véletlen pusztulás": 40, "minden utód": null, "felnőtt utód": null,
+  "kérdés 3": 50, "gébics": null, "túlélési esély": null, "túlélte": null, "elpusztult": null, "megette": null, "ragadozás csúszka": null, "megmaradt": null,
+  "kérdés 4": 50, "nemzedék felirat": null, "új nemzedék gomb": null, "tíz nemzedék gomb": null, "fű csúszka": null, "átlag vonal": null, "fű vonal": null, "rátermettség": 40,
+  "kérdés 5": 50, "aszály gomb": null, "eső gomb": null, "aszály": null, "eső": null,
+  "lepke cím": 40, "lepke 1": 60, "lepke 2": 60, "lepke 3": 60, "világos kéreg": null, "kormos kéreg": null,
+  "kérdés 6": 50, "kicsi gomb": null, "nagy gomb": null, "madár gomb": null, "populáció": null, "madár van": null, "madár nincs": null,
+  "futások": 50, "végén": 50, "futás 1": null,
+  "kérdés 7": 50, "tévhit": null, "valóság": null, "tévhit cím": 40, "valóság cím": 40, "t1": 30, "t2": 30, "t3": 30, "nem így": null,
+  "1. nemzedék": null, "2. nemzedék": null, "3. nemzedék": null, "ugyanaz marad": 60, "Lamarck könyv": 50, "Darwin könyv": 50, "elmélet": 80,
+  "kérdés 8": 50, "antibiotikum": null, "nincs antibiotikum": null, "adag csúszka": null, "hossz csúszka": null, "újra adag gomb": null,
+  "baktériumok": null, "idő tengely": null, "darab tengely": null, "log skála": 50, "ellenállóság tengely": 50, "osztály tengely": 40,
+  "elpusztul": null, "túléli": null, "adag jel": null, "mind elpusztult": 50, "visszanőtt": 50, "kóli": 70, "Fleming": 70, "millió": 12, "milliárd": 12,
+  "egység": 12, "óra": 12, "érzékeny": null, "ellenálló": null, "pötty": 50,
+  "összegzés cím": null, "ö1": 40, "ö2": 40, "ö3": 40, "ö4": 40
+ },
+ "data": {
+  "sáskák száma": {"unit": "", "min": 20, "max": 80, "int": true},
+  "utódok egyedenként": {"unit": "", "min": 2, "max": 8, "int": true},
+  "peték száma": {"type": "range", "unit": "", "min": 10, "max": 1000},
+  "kezdő átlagszín": {"unit": "", "min": 0, "max": 100},
+  "kezdő színszórás": {"unit": "", "min": 5, "max": 30},
+  "öröklődési eltérés": {"unit": "", "min": 1, "max": 15},
+  "zöld fű színe": {"unit": "", "min": 0, "max": 40},
+  "száraz fű színe": {"unit": "", "min": 60, "max": 100},
+  "ragadozás erőssége": {"unit": "%", "min": 0, "max": 90},
+  "aszály nemzedéke": {"unit": "", "min": 1, "max": 20, "int": true},
+  "első sötét lepke": {"type": "year", "min": 1800, "max": 1900},
+  "sötét lepkék aránya": {"unit": "%", "min": 50, "max": 100},
+  "sötét lepkék éve": {"type": "year", "min": 1850, "max": 1950},
+  "tiszta levegő törvény": {"type": "year", "min": 1900, "max": 2000},
+  "kis populáció": {"unit": "", "min": 5, "max": 50, "int": true},
+  "nagy populáció": {"unit": "", "min": 200, "max": 1000, "int": true},
+  "futások száma": {"unit": "", "min": 3, "max": 12, "int": true},
+  "Lamarck könyve": {"type": "year", "min": 1700, "max": 1900},
+  "Darwin könyve": {"type": "year", "min": 1800, "max": 1900},
+  "osztódási idő": {"unit": "perc", "min": 10, "max": 60},
+  "számolt idő": {"unit": "óra", "min": 1, "max": 24},
+  "kezdő baktériumok": {"unit": "", "min": 1000, "max": 1e8},
+  "eltartóképesség a csészében": {"unit": "", "min": 1e7, "max": 1e11},
+  "ellenállók ritkulása": {"unit": "", "min": 2, "max": 100},
+  "antibiotikum kezdete": {"unit": "óra", "min": 0, "max": 6},
+  "kezelés hossza": {"unit": "óra", "min": 1, "max": 12, "int": true},
+  "adag": {"unit": "egység", "min": 1, "max": 64},
+  "penicillin felfedezése": {"type": "year", "min": 1900, "max": 1950},
+  "Fleming figyelmeztetése": {"type": "year", "min": 1900, "max": 1960}
+ }
+}
+</script>
+</head>
+<body>
+<script src="03-szelekcio.content.js"></script>
+<script src="../../shared/lesson.js"></script>
+<script>
+/* ══════════════════════════════════════════════════════════════════════════════════════════
+   KÖZÖS BIOLÓGIA-MODULOK (pilot/biologia-7-8/terv.md, 4. fejezet). Referencialecke: 07-populacio.
+   E · BioPop (populáció-szimuláció) és H · BioPlot (grafikon). Változtatás nélkül átemelhetők.
+   ══════════════════════════════════════════════════════════════════════════════════════════ */
+/* ── MODUL: Populáció-szimuláció (BioPop) · forrás: biologia-7-8/07-populacio, 2026-11-23 ──
+   Előre lefuttatott, determinisztikus populációmodellek: közönséges differenciálegyenletek
+   (ODE), ágensalapú (egyedi) szimuláció és rácsalapú (sejtautomata) változat, valamint
+   „sok jövő” együttes futtatás. Minden véletlen egy seedelt xorshift32-ből jön (ugyanaz, mint a
+   Lesson.U.rng), Math.random nincs. A modul a Lesson motortól is független (csak számol);
+   a rajz a lecke vagy a BioPlot dolga. Az állapot mindig az időből (t) kérdezhető le, így a
+   QA, a visszalépés és az L.st-ből számolt animáció determinisztikus.
+
+   ── Véletlen ──
+   BioPop.rng(seed) → r       r() ∈ [0, 1);  r.int(n) ∈ {0…n−1};  r.norm() standard normális;
+                              r.pick(tömb);  r.state() → állapot (szám);  r.state(s) visszaállítja
+
+   ── ODE ──
+   BioPop.EQ[név] = f(t, x, p) → dx/dt   (beépített egyenletek; x tömb, p paraméter-objektum)
+     'exponenciális'   x = [N]          p {r}                 dN = rN
+     'logisztikus'     x = [N]          p {r, K}              dN = rN(1 − N/K)
+     'lotka-volterra'  x = [N, P]       p {r, a, c, m}        dN = rN − aNP;   dP = cNP − mP
+     'lv-logisztikus'  x = [N, P]       p {r, K, a, c, m}     mint fent, a zsákmány eltartóképességgel
+     'rosenzweig'      x = [N, P]       p {r, K, a, h, c, m}  telítődő (II. típusú) zsákmányolás: aN/(1 + ahN)
+     'tápláléklánc'    x = [V, N, P]    p {g, q, b, d, a, h, c, m}   V: növényzet (0–1, a maximum aránya)
+                         dV = gV(1 − V) − qVN;  dN = N(bV − d) − aNP/(1 + ahN);  dP = cNP/(1 + ahN) − mP
+     'versengés'       x = [N1, N2]     p {r1, r2, K1, K2, a12, a21}
+     'sir'             x = [S, I, R]    p {beta, gamma}      dS = −βSI/N;  dI = βSI/N − γI;  dR = γI
+   BioPop.equil(név, p) → egyensúlyi pont (tömb), ahol zárt alakban ismert (logisztikus, lotka-volterra,
+                          lv-logisztikus, rosenzweig), különben null
+   BioPop.ode({eq: név | f: saját függvény, p, x0, T, t0 = 0, dt = 0.01, min = 0,
+               events: [{t, p: {…} (paramétercsere), x: [..] | fn(x, t) → x (állapotcsere; null elem = marad)}]})
+     → run   (RK4, fix lépés; az egész pálya előre lefut; az esemény pontosan a t időpontban hat;
+              min: alsó korlát minden komponensre – populáció nem lesz negatív)
+     run.at(t) → [x…]          lineáris interpoláció a mintákon; t a [t0, t0 + T]-be vágva
+     run.get(i, t) → x_i(t)    run.p(t) → az adott időben érvényes paraméterek
+     run.series(i, ta, tb, n = 400) → [[t, x_i]…]        (BioPlot.line-hoz)
+     run.phase(i, j, ta, tb, n = 600) → [[x_i, x_j]…]    (fázistér)
+     run.mean(i, ta, tb) · run.min(i, ta, tb) · run.max(i, ta, tb)   (trapéz-, ill. mintaérték)
+     run.peaks(i, ta, tb) → [t…] helyi maximumok (a minta-felbontásnál pontosabban, parabolával)
+     run.period(i, ta, tb) → átlagos csúcstávolság (NaN, ha < 2 csúcs)
+     run.t0, run.T, run.dt, run.n (minták száma), run.xs (Float64Array-ek komponensenként)
+
+   ── Ágensek ──
+   BioPop.agents({seed, ticks, dt = 1 (időegység / tick), snap = 25 (pillanatkép minden snap. tickben),
+                  world: {w, h, wrap = true}, max = 5000, env: {…} (JSON-másolható környezet),
+                  init(sim),                         // kezdőállapot: sim.add(kind, props) hívásokkal
+                  rules: {
+                    move(a, sim),                    // opcionális; alap: korrelált bolyongás a.v (px/tick) és
+                                                     //   a.turn (rad/tick szórás) szerint, a fal mentén visszafordul
+                    pairs: [{a: 'hiúz', b: 'nyúl', r: 20, fn(A, B, sim) → 'stop' | void}],
+                                                     // találkozás: B ≤ r távolságra A-tól (térbeli rács); 'stop':
+                                                     //   A ebben a tickben több B-t nem vizsgál
+                    agent(a, sim),                   // egyedenkénti szabály (születés: sim.add, halál: sim.kill)
+                    tick(sim),                       // globális szabály a tick végén (környezet, bevándorlás)
+                    record(sim) → {név: szám},       // tickenkénti mérőszámok
+                  }})
+     sim.run() → sim           az egész futás előre (≤ 200 ms-ra méretezd); pillanatképekkel
+     sim.at(t) → {t, tick, agents: [{id, kind, x, y, …props}]}   az x, y a két tick között interpolált;
+                               a legközelebbi pillanatképtől determinisztikusan újrafuttat (gyorsítótárral)
+     sim.count(kind, t) · sim.series(kind) → [[t, n]…] · sim.metric(név, t) · sim.mseries(név)
+     sim.extinct(kind) → az első t, amikor a létszám 0 lett (különben null) · sim.T (= ticks · dt)
+     A szabályokban: sim.add(kind, props) → a · sim.kill(a) · sim.rng · sim.tick · sim.t · sim.env ·
+       sim.n(kind) (élő létszám) · sim.near(x, y, r, kind?) → [a…] · sim.world
+     Az egyed mezői: id, kind, x, y, px, py (előző tick), h (irány), v, turn, age (tick), born (tick), dead;
+       saját mezők: számok, szövegek (a pillanatkép sekély másolat – tömböt ne tegyél bele).
+
+   ── Rács (sejtautomata) ──
+   BioPop.grid({w, h, seed, T (tickek száma), nb: 4 | 8, wrap = false, stop = true,
+                init(i, j, rng) → állapot (0–255),
+                rule(g, i, j, s, rng) → új állapot})          // szinkron frissítés, sorfolytonos sorrendben
+     → g (előre lefut; minden tick eltárolva; stop: true → leáll, ha egy tick után nem változott semmi)
+     g.at(t) → Uint8Array (w·h, a floor(t). tick)  · g.cell(i, j, t) · g.count(s, t) · g.series(s) → [[t, n]…]
+     g.end → az utolsó tick (ahol leállt)  · g.spans(test, t, dir = 'x') → igaz, ha a test(s)-nek
+     megfelelő cellák (nb-szomszédsággal) összefüggő fürtje átér a rácson (x: bal → jobb, y: fent → lent)
+     A rule-ban: g.n(i, j, s) → hány szomszéd van s állapotban (s: szám, tömb vagy függvény); g.get(i, j)
+     g.draw(c, {x, y, w, h}, cols: {állapot: szín | null}, t, {gap = 1, r = 0})
+     BioPop.spans(cells, w, h, test, nb = 4, dir = 'x')  – statikus változat (pl. perkoláció-próbához)
+
+   ── Együttes futtatás („100 jövő”) ──
+   BioPop.ensemble(make, n, seed) → E     make(seed_i, i) → tetszőleges eredmény; seed_i = seed + 7919 · i
+     E.step(ms = 8) – képkockánként hívd (legfeljebb ms ideig futtat újabb tagokat);  E.all() – szinkron
+     E.done, E.results (tömb, sorrendben), E.progress (0–1), E.n
+   ──────────────────────────────────────────────────────────────────────────────────────────── */
+const BioPop = (() => {
+  'use strict';
+  const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+
+  /* ── véletlen ── */
+  function rng(seed) {
+    let s = seed >>> 0 || 1;
+    const r = () => { s ^= s << 13; s >>>= 0; s ^= s >> 17; s ^= s << 5; s >>>= 0; return s / 4294967296; };
+    r.int = (n) => Math.floor(r() * n);
+    r.norm = () => { let u = r(); while (u <= 1e-12) u = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * r()); };
+    r.pick = (arr) => arr[Math.floor(r() * arr.length)];
+    r.state = (v) => { if (v === undefined) return s; s = v >>> 0 || 1; return s; };
+    return r;
+  }
+
+  /* ── ODE ── */
+  const EQ = {
+    'exponenciális': (t, [N], p) => [p.r * N],
+    'logisztikus': (t, [N], p) => [p.r * N * (1 - N / p.K)],
+    'lotka-volterra': (t, [N, P], p) => [p.r * N - p.a * N * P, p.c * N * P - p.m * P],
+    'lv-logisztikus': (t, [N, P], p) => [p.r * N * (1 - N / p.K) - p.a * N * P, p.c * N * P - p.m * P],
+    'rosenzweig': (t, [N, P], p) => { const f = p.a * N / (1 + p.a * p.h * N); return [p.r * N * (1 - N / p.K) - f * P, p.c / p.a * f * P - p.m * P]; },
+    'tápláléklánc': (t, [V, N, P], p) => { const D = 1 + p.a * p.h * N;
+      return [p.g * V * (1 - V) - p.q * V * N, N * (p.b * V - p.d) - p.a * N * P / D, p.c * N * P / D - p.m * P]; },
+    'versengés': (t, [A, B], p) => [p.r1 * A * (1 - (A + p.a12 * B) / p.K1), p.r2 * B * (1 - (B + p.a21 * A) / p.K2)],
+    'sir': (t, [S, I, R], p) => { const N = S + I + R || 1, f = p.beta * S * I / N; return [-f, f - p.gamma * I, p.gamma * I]; },
+  };
+  function equil(eq, p) {
+    switch (eq) {
+      case 'logisztikus': return [p.K];
+      case 'lotka-volterra': return [p.m / p.c, p.r / p.a];
+      case 'lv-logisztikus': { const N = p.m / p.c; return [N, p.r / p.a * (1 - N / p.K)]; }
+      case 'rosenzweig': { const N = p.m / (p.a * (p.c / p.a - p.m * p.h)); return [N, p.r / p.a * (1 - N / p.K) * (1 + p.a * p.h * N)]; }
+      default: return null;
+    }
+  }
+  function ode(o) {
+    const f = o.f || EQ[o.eq]; if (!f) throw new Error('BioPop.ode: ismeretlen egyenlet: ' + o.eq);
+    const dt = o.dt || .01, t0 = o.t0 || 0, T = o.T, n = Math.max(1, Math.round(T / dt)), m = o.x0.length, lo = o.min == null ? 0 : o.min;
+    const xs = Array.from({ length: m }, () => new Float64Array(n + 1));
+    const ev = (o.events || []).map((e) => Object.assign({ k: Math.round((e.t - t0) / dt) }, e)).sort((a, b) => a.k - b.k);
+    const pk = [{ k: 0, p: Object.assign({}, o.p) }];
+    let p = pk[0].p, x = o.x0.slice(), ei = 0;
+    const add = (a, b, h) => a.map((v, i) => v + b[i] * h);
+    for (let k = 0; k <= n; k++) {
+      while (ei < ev.length && ev[ei].k <= k) {
+        const e = ev[ei++];
+        if (e.p) { p = Object.assign({}, p, e.p); pk.push({ k, p }); }
+        if (e.x) { if (typeof e.x === 'function') x = e.x(x.slice(), t0 + k * dt); else x = x.map((v, i) => e.x[i] == null ? v : e.x[i]); }
+      }
+      for (let i = 0; i < m; i++) xs[i][k] = x[i];
+      if (k === n) break;
+      const t = t0 + k * dt, k1 = f(t, x, p), k2 = f(t + dt / 2, add(x, k1, dt / 2), p), k3 = f(t + dt / 2, add(x, k2, dt / 2), p), k4 = f(t + dt, add(x, k3, dt), p);
+      x = x.map((v, i) => Math.max(lo, v + dt / 6 * (k1[i] + 2 * k2[i] + 2 * k3[i] + k4[i])));
+    }
+    const kOf = (t) => clamp((t - t0) / dt, 0, n);
+    const get = (i, t) => { const u = kOf(t), k = Math.min(n - 1, Math.floor(u)), fr = u - k; return xs[i][k] + (xs[i][k + 1] - xs[i][k]) * fr; };
+    const rng2 = (ta, tb) => [ta == null ? t0 : ta, tb == null ? t0 + T : tb];
+    const run = {
+      t0, T, dt, n, xs,
+      at: (t) => xs.map((_, i) => get(i, t)),
+      get,
+      p: (t) => { const u = kOf(t); let q = pk[0].p; for (const e of pk) if (e.k <= u) q = e.p; return q; },
+      series(i, ta, tb, N = 400) { [ta, tb] = rng2(ta, tb); const out = []; for (let j = 0; j <= N; j++) { const t = ta + (tb - ta) * j / N; out.push([t, get(i, t)]); } return out; },
+      phase(i, j, ta, tb, N = 600) { [ta, tb] = rng2(ta, tb); const out = []; for (let q = 0; q <= N; q++) { const t = ta + (tb - ta) * q / N; out.push([get(i, t), get(j, t)]); } return out; },
+      mean(i, ta, tb) { [ta, tb] = rng2(ta, tb); if (tb <= ta) return get(i, ta); const N = Math.max(8, Math.ceil((tb - ta) / dt)); let s = 0;
+        for (let q = 0; q <= N; q++) s += get(i, ta + (tb - ta) * q / N) * (q === 0 || q === N ? .5 : 1); return s / N; },
+      min(i, ta, tb) { [ta, tb] = rng2(ta, tb); let v = Infinity; for (let k = Math.ceil(kOf(ta)); k <= Math.floor(kOf(tb)); k++) v = Math.min(v, xs[i][k]); return Math.min(v, get(i, ta), get(i, tb)); },
+      max(i, ta, tb) { [ta, tb] = rng2(ta, tb); let v = -Infinity; for (let k = Math.ceil(kOf(ta)); k <= Math.floor(kOf(tb)); k++) v = Math.max(v, xs[i][k]); return Math.max(v, get(i, ta), get(i, tb)); },
+      peaks(i, ta, tb) { [ta, tb] = rng2(ta, tb); const a = xs[i], out = [];
+        for (let k = Math.max(1, Math.ceil(kOf(ta))); k < Math.min(n, Math.floor(kOf(tb))); k++) if (a[k] > a[k - 1] && a[k] >= a[k + 1]) {
+          const den = a[k - 1] - 2 * a[k] + a[k + 1], off = den ? .5 * (a[k - 1] - a[k + 1]) / den : 0; out.push(t0 + (k + clamp(off, -.5, .5)) * dt); }
+        return out; },
+      period(i, ta, tb) { const q = run.peaks(i, ta, tb); return q.length < 2 ? NaN : (q[q.length - 1] - q[0]) / (q.length - 1); },
+    };
+    return run;
+  }
+
+  /* ── ágensek ── */
+  function agents(o) {
+    const W = o.world || { w: 1000, h: 600 }, wrap = W.wrap !== false, dt = o.dt || 1, ticks = o.ticks, SN = o.snap || 25, MAX = o.max || 5000;
+    const R = o.rules || {}, pairs = R.pairs || [];
+    const kinds = new Set();
+    const counts = {}, metrics = {}, snaps = [];
+    let A = [], nid = 1;
+    const sim = { world: W, rng: rng(o.seed || 1), tick: 0, t: 0, env: null, T: ticks * dt, dt, ticks };
+    const cnt = {};
+    sim.n = (k) => cnt[k] || 0;
+    sim.add = (kind, p = {}) => {
+      if (A.length >= MAX) return null;
+      const a = Object.assign({ id: nid++, kind, x: 0, y: 0, h: sim.rng() * Math.PI * 2, v: 1, turn: .3, age: 0, born: sim.tick, dead: false }, p);
+      if (a.px == null) { a.px = a.x; a.py = a.y; }
+      A.push(a); cnt[kind] = (cnt[kind] || 0) + 1; kinds.add(kind); return a;
+    };
+    sim.kill = (a) => { if (!a.dead) { a.dead = true; cnt[a.kind]--; } };
+    // térbeli rács (a pairs r-jéhez)
+    const CS = Math.max(8, ...pairs.map((q) => q.r || 10), o.cell || 0);
+    const GX = Math.max(1, Math.ceil(W.w / CS)), GY = Math.max(1, Math.ceil(W.h / CS));
+    let bucket = null;
+    function hashAll() {
+      bucket = new Array(GX * GY); for (let i = 0; i < bucket.length; i++) bucket[i] = [];
+      for (const a of A) if (!a.dead) bucket[clamp(Math.floor(a.y / CS), 0, GY - 1) * GX + clamp(Math.floor(a.x / CS), 0, GX - 1)].push(a);
+    }
+    const dxw = (d, L) => wrap ? d - L * Math.round(d / L) : d;
+    sim.near = (x, y, r, kind) => {
+      if (!bucket) hashAll();
+      const out = [], cx = Math.floor(x / CS), cy = Math.floor(y / CS), rc = Math.ceil(r / CS);
+      for (let gy = cy - rc; gy <= cy + rc; gy++) for (let gx = cx - rc; gx <= cx + rc; gx++) {
+        let ix = gx, iy = gy;
+        if (wrap) { ix = ((ix % GX) + GX) % GX; iy = ((iy % GY) + GY) % GY; } else if (ix < 0 || iy < 0 || ix >= GX || iy >= GY) continue;
+        for (const b of bucket[iy * GX + ix]) {
+          if (b.dead || (kind && b.kind !== kind)) continue;
+          const dx = dxw(b.x - x, W.w), dy = dxw(b.y - y, W.h); if (dx * dx + dy * dy <= r * r && !out.includes(b)) out.push(b);
+        }
+      }
+      out.sort((p, q) => p.id - q.id);
+      return out;
+    };
+    function move(a) {
+      a.h += a.turn * sim.rng.norm();
+      a.x += Math.cos(a.h) * a.v; a.y += Math.sin(a.h) * a.v;
+    }
+    function bound(a) {
+      if (wrap) {
+        if (a.x < 0 || a.x >= W.w) { const d = Math.floor(a.x / W.w) * W.w; a.x -= d; a.px -= d; }
+        if (a.y < 0 || a.y >= W.h) { const d = Math.floor(a.y / W.h) * W.h; a.y -= d; a.py -= d; }
+      } else {
+        if (a.x < 0) { a.x = -a.x; a.h = Math.PI - a.h; } else if (a.x > W.w) { a.x = 2 * W.w - a.x; a.h = Math.PI - a.h; }
+        if (a.y < 0) { a.y = -a.y; a.h = -a.h; } else if (a.y > W.h) { a.y = 2 * W.h - a.y; a.h = -a.h; }
+        a.x = clamp(a.x, 0, W.w); a.y = clamp(a.y, 0, W.h);
+      }
+    }
+    function step() {
+      sim.tick++; sim.t = sim.tick * dt;
+      const list = A.slice();
+      for (const a of list) { if (a.dead) continue; a.px = a.x; a.py = a.y; (R.move || move)(a, sim); bound(a); }
+      bucket = null;
+      if (pairs.length) {
+        hashAll();
+        for (const q of pairs) for (const a of list) {
+          if (a.dead || a.kind !== q.a) continue;
+          for (const b of sim.near(a.x, a.y, q.r || 10, q.b)) { if (b === a || b.dead) continue; if (q.fn(a, b, sim) === 'stop' || a.dead) break; }
+        }
+      }
+      if (R.agent) for (const a of list) { if (a.dead) continue; a.age++; R.agent(a, sim); }
+      else for (const a of list) if (!a.dead) a.age++;
+      if (R.tick) R.tick(sim);
+      A = A.filter((a) => !a.dead); bucket = null;
+    }
+    const clone = () => ({ tick: sim.tick, A: A.map((a) => Object.assign({}, a)), rs: sim.rng.state(), env: sim.env == null ? null : JSON.parse(JSON.stringify(sim.env)), nid, cnt: Object.assign({}, cnt) });
+    function restore(s) {
+      sim.tick = s.tick; sim.t = s.tick * dt; A = s.A.map((a) => Object.assign({}, a)); sim.rng.state(s.rs);
+      sim.env = s.env == null ? null : JSON.parse(JSON.stringify(s.env)); nid = s.nid; for (const k in cnt) delete cnt[k]; Object.assign(cnt, s.cnt); bucket = null;
+    }
+    function record() {
+      for (const k of kinds) { if (!counts[k]) counts[k] = new Int32Array(ticks + 1); counts[k][sim.tick] = cnt[k] || 0; }
+      if (R.record) { const r = R.record(sim); for (const k in r) { if (!metrics[k]) metrics[k] = new Float64Array(ticks + 1); metrics[k][sim.tick] = r[k]; } }
+    }
+    let cur = null;   // újrafuttatási kurzor
+    sim.run = () => {
+      A = []; nid = 1; for (const k in cnt) delete cnt[k]; sim.rng.state(o.seed || 1); sim.tick = 0; sim.t = 0;
+      sim.env = o.env == null ? null : JSON.parse(JSON.stringify(o.env));
+      if (o.init) o.init(sim);
+      for (const a of A) { a.px = a.x; a.py = a.y; }
+      snaps.length = 0; snaps.push(clone()); record();
+      while (sim.tick < ticks) { step(); record(); if (sim.tick % SN === 0) snaps.push(clone()); }
+      cur = null; return sim;
+    };
+    sim.at = (t) => {
+      const u = clamp(t / dt, 0, ticks), k = Math.min(ticks, Math.ceil(u - 1e-9)), fr = k === 0 ? 1 : 1 - (k - u);
+      if (!cur || cur.tick > k || Math.floor(k / SN) > Math.floor(cur.tick / SN) + 1) { restore(snaps[Math.min(snaps.length - 1, Math.floor(k / SN))]); }
+      else restore(cur);
+      while (sim.tick < k) step();
+      cur = clone();
+      const ag = A.map((a) => {
+        let dx = a.x - a.px, dy = a.y - a.py;
+        return Object.assign({}, a, { x: a.px + dx * fr, y: a.py + dy * fr });
+      });
+      return { t, tick: k, agents: ag };
+    };
+    sim.count = (kind, t) => { const c = counts[kind]; if (!c) return 0; const u = clamp(t / dt, 0, ticks), k = Math.floor(u); return k >= ticks ? c[ticks] : c[k] + (c[k + 1] - c[k]) * (u - k); };
+    sim.series = (kind) => { const c = counts[kind] || new Int32Array(ticks + 1), out = []; for (let k = 0; k <= ticks; k++) out.push([k * dt, c[k]]); return out; };
+    sim.metric = (nm, t) => { const c = metrics[nm]; if (!c) return NaN; const u = clamp(t / dt, 0, ticks), k = Math.floor(u); return k >= ticks ? c[ticks] : c[k] + (c[k + 1] - c[k]) * (u - k); };
+    sim.mseries = (nm) => { const c = metrics[nm], out = []; if (!c) return out; for (let k = 0; k <= ticks; k++) out.push([k * dt, c[k]]); return out; };
+    sim.extinct = (kind) => { const c = counts[kind]; if (!c) return null; for (let k = 0; k <= ticks; k++) if (c[k] === 0) return k * dt; return null; };
+    return sim;
+  }
+
+  /* ── rács ── */
+  function spans(cells, w, h, test, nb = 4, dir = 'x') {
+    const seen = new Uint8Array(w * h), q = [];
+    const D = nb === 8 ? [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]] : [[1, 0], [-1, 0], [0, 1], [0, -1]];
+    const startN = dir === 'x' ? h : w;
+    for (let s = 0; s < startN; s++) { const i = dir === 'x' ? 0 : s, j = dir === 'x' ? s : 0, id = j * w + i; if (test(cells[id])) { seen[id] = 1; q.push(id); } }
+    while (q.length) {
+      const id = q.pop(), i = id % w, j = (id - i) / w;
+      if (dir === 'x' ? i === w - 1 : j === h - 1) return true;
+      for (const [di, dj] of D) { const a = i + di, b = j + dj; if (a < 0 || b < 0 || a >= w || b >= h) continue; const k = b * w + a; if (!seen[k] && test(cells[k])) { seen[k] = 1; q.push(k); } }
+    }
+    return false;
+  }
+  function grid(o) {
+    const w = o.w, h = o.h, nb = o.nb || 4, wrap = !!o.wrap, r = rng(o.seed || 1), T = o.T || 100;
+    const D = nb === 8 ? [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]] : [[1, 0], [-1, 0], [0, 1], [0, -1]];
+    const hist = [];
+    let curA = new Uint8Array(w * h);
+    for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) curA[j * w + i] = o.init ? o.init(i, j, r) : 0;
+    hist.push(curA);
+    const g = { w, h, nb, T, rng: r };
+    const idx = (i, j) => { if (wrap) { i = ((i % w) + w) % w; j = ((j % h) + h) % h; } else if (i < 0 || j < 0 || i >= w || j >= h) return -1; return j * w + i; };
+    g.get = (i, j) => { const k = idx(i, j); return k < 0 ? -1 : curA[k]; };
+    g.n = (i, j, s) => {
+      const t = typeof s === 'function' ? s : Array.isArray(s) ? (v) => s.includes(v) : (v) => v === s; let n = 0;
+      for (const [di, dj] of D) { const k = idx(i + di, j + dj); if (k >= 0 && t(curA[k])) n++; }
+      return n;
+    };
+    for (let t = 1; t <= T; t++) {
+      const nx = new Uint8Array(w * h); let ch = false;
+      for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) { const k = j * w + i, v = o.rule(g, i, j, curA[k], r); nx[k] = v; if (v !== curA[k]) ch = true; }
+      curA = nx; hist.push(nx);
+      if (!ch && o.stop !== false) break;
+    }
+    g.end = hist.length - 1;
+    g.at = (t) => hist[clamp(Math.floor(t), 0, g.end)];
+    g.cell = (i, j, t) => g.at(t)[j * w + i];
+    const tst = (s) => typeof s === 'function' ? s : Array.isArray(s) ? (v) => s.includes(v) : (v) => v === s;
+    g.count = (s, t) => { const a = g.at(t), f = tst(s); let n = 0; for (let k = 0; k < a.length; k++) if (f(a[k])) n++; return n; };
+    g.series = (s) => { const out = []; for (let t = 0; t <= g.end; t++) out.push([t, g.count(s, t)]); return out; };
+    g.spans = (test, t, dir = 'x') => spans(g.at(t == null ? g.end : t), w, h, tst(test), nb, dir);
+    g.draw = (c, box, cols, t, op = {}) => {
+      const a = g.at(t), cw = box.w / w, chh = box.h / h, gap = op.gap == null ? 1 : op.gap;
+      for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) {
+        const col = cols[a[j * w + i]]; if (!col) continue;
+        c.fillStyle = col;
+        if (op.r) { c.beginPath(); c.roundRect(box.x + i * cw + gap / 2, box.y + j * chh + gap / 2, cw - gap, chh - gap, op.r); c.fill(); }
+        else c.fillRect(box.x + i * cw + gap / 2, box.y + j * chh + gap / 2, cw - gap, chh - gap);
+      }
+    };
+    return g;
+  }
+
+  /* ── együttes futtatás ── */
+  function ensemble(make, n, seed) {
+    const E = { n, results: [], done: n === 0, progress: n ? 0 : 1 };
+    const one = () => { const i = E.results.length; E.results.push(make((seed >>> 0) + 7919 * i, i)); E.progress = E.results.length / n; E.done = E.results.length >= n; };
+    E.step = (ms = 8) => { const t0 = (typeof performance !== 'undefined' ? performance : Date).now(); while (!E.done) { one(); if ((typeof performance !== 'undefined' ? performance : Date).now() - t0 > ms) break; } return E; };
+    E.all = () => { while (!E.done) one(); return E; };
+    return E;
+  }
+
+  return { rng, EQ, equil, ode, agents, grid, spans, ensemble };
+})();
+/* ── MODUL VÉGE ── */
+/* ── MODUL: Grafikon (BioPlot) · forrás: biologia-7-8/07-populacio, 2026-11-23 ──
+   Idősor, fázistér, oszlopdiagram, hisztogram, szórásdiagram háttérmezőkkel (Whittaker),
+   S-görbe, húzható pont; lineáris vagy logaritmikus tengely, magyar számformátum.
+   Csak a Lesson motorra épül (L.ctx, L.tx, L.measure, L.fonts, L.pointer, Lesson.U.fmt); minden
+   felirat L.tx-szel megy (QA, review mód), {s, k} párként (szöveg + .md-kulcs). A tengelyszámok
+   kódban rögzítettek (kulcs nélkül). Stílus: tengely tinta 2,5 px nyíllal, rács rgba(28,36,64,.08),
+   tengelyszám JetBrains Mono 22 px halvány tinta, tengelynév Bricolage 22 px.
+
+   const pl = BioPlot.create(L, {
+     x, y, w, h,                    // a rajzterület (a tengelyek ennek a bal és alsó szélén), logikai px
+     xa: {min, max, log: false,     // tengely: tartomány, log-lépték (tízes)
+          name: {s, k},             // tengelynév (x: a tengely jobb vége alatt; y: a tengely fölött, vízszintesen)
+          ticks: [..] | n,          // osztások: tömb vagy közelítő darabszám (alap 6; 1–2–5 lépcső)
+          fmt(v) → szöveg,          // osztásfelirat (alap: magyar szám, a lépésköznek megfelelő tizedessel)
+          labels: true},            // false → nincs osztásfelirat
+     ya: {…ugyanígy},
+     bg: [{poly: [[x, y]…], col, name: {s, k}, at: [x, y]}]   // háttérmezők adatkoordinátában (Whittaker)
+   })
+   pl.X(v) · pl.Y(v) · pl.P(x, y) → [px, py] · pl.inv(px, py) → [x, y] · pl.inside(px, py) · pl.box
+   pl.set({x, y, w, h, xa, ya})      – elhelyezés / tengely módosítása (a megadott mezők felülírják a régit)
+   pl.axes({a = 1, grid = true, frame = false, names = true, ticks = true, arrow = true, s = 22, col, gridCol})
+   pl.bgs({a = 1})                   – a háttérmezők (a nevükkel)
+   pl.line(pts, {col, w = 4, a, dash, from, upto (x-értékig, interpolálva), fill (szín a görbe alatt), base,
+                 head (nyílhegy a végén), dots (r: kör az adatpontokon), clip = true}) → az utolsó pont [px, py] | null
+   pl.bars(vals, {x0 = 0, dx = 1, bw = .8 (oszlopszélesség dx-ben), col | cols: [], a, base = 0,
+                  labels: [{s, k}] (az oszlop alatt), values: false (érték fölötte), fmt, s = 22}) → [{x, y, w, h}]
+   pl.hist(vals, {min, max, n}, o) → [db…]  – hisztogram (a pl.bars-szal; o.norm: arány darab helyett)
+   pl.point(x, y, {r = 8, col, fill, ring = true, a, label: {s, k}, side: 'right' | 'left' | 'above' | 'below',
+                   s = 24, w = 700, lc (a felirat színe)}) → [px, py]
+   pl.vline(x, {col, w = 2, dash, a, label: {s, k}, at: 'top' | 'bottom', s = 22})
+   pl.hline(y, {… at: 'right' | 'left'})
+   pl.band(x0, x1, {col, a})          – függőleges sáv (időszak kiemelése)
+   pl.text(s, x, y, o)                – L.tx adatkoordinátában (o.k: a .md-kulcs)
+   pl.arrow(pts, i, {col, size = 16}) – irány-nyílhegy a görbén az i. pontnál (fázistér)
+   pl.legend(items: [{s, k, col, dash, w}], {x, y, dir: 'down' | 'right', s = 22, gap = 28}) → {w, h}
+   pl.drag(id, get, set, {r = 30, snap(x, y) → [x, y]})
+        húzható pont: ha a gomb a get() → [x, y] pont r px-es körzetében megy le, megfogja; húzás közben
+        set(x, y)-t hívja adatkoordinátában (a dobozra vágva). Visszaad: true, amíg húzzák.
+   BioPlot.ticks(min, max, n = 6) → 1–2–5 lépcsős osztások · BioPlot.logTicks(min, max) → tízhatványok
+   BioPlot.fmt(v, step) → magyar szám a lépésközhöz illő tizedesjeggyel
+   ──────────────────────────────────────────────────────────────────────────────────────────── */
+const BioPlot = (() => {
+  'use strict';
+  const COL = { ink: '#1c2440', mut: '#565d72', grid: 'rgba(28,36,64,.08)', red: '#c8401c' };
+  const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+  const hfmt = (v, d) => (typeof Lesson !== 'undefined' && Lesson.U ? Lesson.U.fmt(v, d) : v.toFixed(d).replace('.', ',').replace('-', '−'));
+  function ticks(min, max, n = 6) {
+    const span = max - min; if (!(span > 0)) return [min];
+    const raw = span / Math.max(1, n), p = Math.pow(10, Math.floor(Math.log10(raw))), f = raw / p;
+    const st = (f < 1.5 ? 1 : f < 3.5 ? 2 : f < 7.5 ? 5 : 10) * p, out = [];
+    for (let v = Math.ceil(min / st - 1e-9) * st; v <= max + st * 1e-9; v += st) out.push(Math.abs(v) < st * 1e-9 ? 0 : v);
+    out.step = st; return out;
+  }
+  function logTicks(min, max) { const out = []; for (let e = Math.ceil(Math.log10(min) - 1e-9); e <= Math.floor(Math.log10(max) + 1e-9); e++) out.push(Math.pow(10, e)); return out; }
+  function fmt(v, step) { const d = step >= 1 || !step ? 0 : Math.min(4, Math.ceil(-Math.log10(step) - 1e-9)); return hfmt(v, d); }
+
+  function create(L, o) {
+    const pl = { L };
+    let B, XA, YA, BG;
+    pl.set = (q) => {
+      B = { x: q.x != null ? q.x : B.x, y: q.y != null ? q.y : B.y, w: q.w != null ? q.w : B.w, h: q.h != null ? q.h : B.h };
+      if (q.xa) XA = Object.assign({}, XA || {}, q.xa); if (q.ya) YA = Object.assign({}, YA || {}, q.ya);
+      if (q.bg) BG = q.bg; pl.box = B; pl.xa = XA; pl.ya = YA; return pl;
+    };
+    B = { x: o.x, y: o.y, w: o.w, h: o.h }; pl.set(o); BG = o.bg || [];
+    const sc = (a, v) => a.log ? (Math.log10(Math.max(v, 1e-300)) - Math.log10(a.min)) / (Math.log10(a.max) - Math.log10(a.min)) : (v - a.min) / (a.max - a.min);
+    const isc = (a, u) => a.log ? Math.pow(10, Math.log10(a.min) + u * (Math.log10(a.max) - Math.log10(a.min))) : a.min + u * (a.max - a.min);
+    pl.X = (v) => B.x + sc(XA, v) * B.w;
+    pl.Y = (v) => B.y + B.h - sc(YA, v) * B.h;
+    pl.P = (x, y) => [pl.X(x), pl.Y(y)];
+    pl.inv = (px, py) => [isc(XA, (px - B.x) / B.w), isc(YA, (B.y + B.h - py) / B.h)];
+    pl.inside = (px, py) => px >= B.x && px <= B.x + B.w && py >= B.y && py <= B.y + B.h;
+    const tk = (a) => Array.isArray(a.ticks) ? a.ticks : a.log ? logTicks(a.min, a.max) : ticks(a.min, a.max, a.ticks || 6);
+    const lab = (a, v, t) => a.fmt ? a.fmt(v) : a.log ? fmt(v, v) : fmt(v, t.step || (t.length > 1 ? Math.abs(t[1] - t[0]) : 1));
+    function clip(c) { c.beginPath(); c.rect(B.x - 2, B.y - 2, B.w + 4, B.h + 4); c.clip(); }
+
+    pl.axes = (q = {}) => {
+      const c = L.ctx, F = L.fonts, s = q.s || 22, col = q.col || COL.ink, a = q.a == null ? 1 : q.a;
+      c.save(); c.globalAlpha *= a; c.lineCap = 'butt'; c.setLineDash([]);
+      const tx = tk(XA), ty = tk(YA);
+      if (q.grid !== false) {
+        c.strokeStyle = q.gridCol || COL.grid; c.lineWidth = 1.5; c.beginPath();
+        for (const v of tx) { const X = Math.round(pl.X(v)) + .5; if (X > B.x + 1 && X <= B.x + B.w) { c.moveTo(X, B.y); c.lineTo(X, B.y + B.h); } }
+        for (const v of ty) { const Y = Math.round(pl.Y(v)) + .5; if (Y < B.y + B.h - 1 && Y >= B.y) { c.moveTo(B.x, Y); c.lineTo(B.x + B.w, Y); } }
+        c.stroke();
+      }
+      if (q.frame) { c.strokeStyle = 'rgba(28,36,64,.25)'; c.lineWidth = 1.5; c.strokeRect(B.x, B.y, B.w, B.h); }
+      c.strokeStyle = col; c.fillStyle = col; c.lineWidth = 2.5; c.beginPath();
+      c.moveTo(B.x, B.y + B.h); c.lineTo(B.x + B.w + (q.arrow === false ? 0 : 14), B.y + B.h);
+      c.moveTo(B.x, B.y + B.h); c.lineTo(B.x, B.y - (q.arrow === false ? 0 : 14)); c.stroke();
+      if (q.arrow !== false) {
+        c.beginPath(); c.moveTo(B.x + B.w + 24, B.y + B.h); c.lineTo(B.x + B.w + 10, B.y + B.h - 6.5); c.lineTo(B.x + B.w + 10, B.y + B.h + 6.5); c.closePath(); c.fill();
+        c.beginPath(); c.moveTo(B.x, B.y - 24); c.lineTo(B.x - 6.5, B.y - 10); c.lineTo(B.x + 6.5, B.y - 10); c.closePath(); c.fill();
+      }
+      if (q.ticks !== false) {
+        c.lineWidth = 2; c.beginPath();
+        for (const v of tx) { const X = pl.X(v); if (X >= B.x - .5 && X <= B.x + B.w + .5) { c.moveTo(X, B.y + B.h); c.lineTo(X, B.y + B.h + 7); } }
+        for (const v of ty) { const Y = pl.Y(v); if (Y >= B.y - .5 && Y <= B.y + B.h + .5) { c.moveTo(B.x, Y); c.lineTo(B.x - 7, Y); } }
+        c.stroke();
+        if (XA.labels !== false) for (const v of tx) { const X = pl.X(v); if (X >= B.x - .5 && X <= B.x + B.w + .5) L.tx(lab(XA, v, tx), X, B.y + B.h + 12, { f: F.M, s, w: 500, a: 'center', b: 'top', c: COL.mut }); }
+        if (YA.labels !== false) for (const v of ty) { const Y = pl.Y(v); if (Y >= B.y - .5 && Y <= B.y + B.h + .5) L.tx(lab(YA, v, ty), B.x - 12, Y, { f: F.M, s, w: 500, a: 'right', b: 'middle', c: COL.mut }); }
+      }
+      if (q.names !== false) {
+        if (XA.name) L.tx(XA.name.s, B.x + B.w + 4, B.y + B.h + 14 + s * 1.25, { s, w: 600, a: 'right', b: 'top', c: col, k: XA.name.k, max: XA.name.max });
+        if (YA.name) L.tx(YA.name.s, B.x + 14, B.y - 18, { s, w: 600, a: 'left', b: 'alphabetic', c: col, k: YA.name.k, max: YA.name.max });
+      }
+      c.restore();
+    };
+    pl.bgs = (q = {}) => {
+      const c = L.ctx; c.save(); c.globalAlpha *= q.a == null ? 1 : q.a; clip(c);
+      for (const g of BG) { c.beginPath(); g.poly.forEach((p, i) => { const [X, Y] = pl.P(p[0], p[1]); if (i) c.lineTo(X, Y); else c.moveTo(X, Y); }); c.closePath(); c.fillStyle = g.col; c.fill(); }
+      c.restore();
+      c.save(); c.globalAlpha *= q.a == null ? 1 : q.a;
+      for (const g of BG) if (g.name && g.at) { const [X, Y] = pl.P(g.at[0], g.at[1]); L.tx(g.name.s, X, Y, { s: 22, w: 600, a: 'center', b: 'middle', c: g.tc || COL.ink, k: g.name.k }); }
+      c.restore();
+    };
+    pl.line = (pts, q = {}) => {
+      const c = L.ctx; if (!pts || !pts.length) return null;
+      const P = [];
+      const lo = q.from == null ? -Infinity : q.from, hi = q.upto == null ? Infinity : q.upto;
+      for (let i = 0; i < pts.length; i++) {
+        const p = pts[i], x = p[0];
+        if (x < lo) { const n = pts[i + 1]; if (n && n[0] > lo) P.push([lo, p[1] + (n[1] - p[1]) * (lo - x) / (n[0] - x)]); continue; }
+        if (x > hi) { const pr = pts[i - 1]; if (pr && pr[0] < hi) P.push([hi, pr[1] + (p[1] - pr[1]) * (hi - pr[0]) / (x - pr[0])]); break; }
+        P.push(p);
+      }
+      if (q.upto != null && hi < pts[0][0]) return null;
+      if (!P.length) return null;
+      c.save(); c.globalAlpha *= q.a == null ? 1 : q.a; if (q.clip !== false) clip(c);
+      c.lineJoin = 'round'; c.lineCap = 'round';
+      const S = P.map((p) => pl.P(p[0], p[1]));
+      if (q.fill) {
+        const yb = pl.Y(q.base == null ? Math.max(YA.min, YA.log ? YA.min : 0) : q.base);
+        c.beginPath(); c.moveTo(S[0][0], yb); for (const s of S) c.lineTo(s[0], s[1]); c.lineTo(S[S.length - 1][0], yb); c.closePath(); c.fillStyle = q.fill; c.fill();
+      }
+      c.beginPath(); S.forEach((s, i) => (i ? c.lineTo(s[0], s[1]) : c.moveTo(s[0], s[1])));
+      c.strokeStyle = q.col || COL.red; c.lineWidth = q.w || 4; c.setLineDash(q.dash || []); c.stroke(); c.setLineDash([]);
+      if (q.dots) for (const s of S) { c.beginPath(); c.arc(s[0], s[1], q.dots, 0, Math.PI * 2); c.fillStyle = q.dotFill || q.col || COL.red; c.fill(); c.lineWidth = 2; c.strokeStyle = '#fffaf1'; c.stroke(); }
+      if (q.head && S.length > 1) { const n = S.length; let j = n - 2; while (j > 0 && Math.hypot(S[n - 1][0] - S[j][0], S[n - 1][1] - S[j][1]) < 8) j--; head(c, S[j], S[n - 1], q.col || COL.red, q.hs || 18); }
+      c.restore();
+      return S[S.length - 1];
+    };
+    function head(c, a, b, col, size) {
+      const an = Math.atan2(b[1] - a[1], b[0] - a[0]);
+      c.beginPath(); c.moveTo(b[0] + Math.cos(an) * size * .35, b[1] + Math.sin(an) * size * .35);
+      c.lineTo(b[0] - Math.cos(an - .45) * size, b[1] - Math.sin(an - .45) * size);
+      c.lineTo(b[0] - Math.cos(an + .45) * size, b[1] - Math.sin(an + .45) * size); c.closePath(); c.fillStyle = col; c.fill();
+    }
+    pl.arrow = (pts, i, q = {}) => {
+      const c = L.ctx, n = pts.length; if (n < 2) return; i = clamp(i, 1, n - 1);
+      const a = pl.P(pts[i - 1][0], pts[i - 1][1]), b = pl.P(pts[i][0], pts[i][1]);
+      c.save(); c.globalAlpha *= q.a == null ? 1 : q.a; head(c, a, b, q.col || COL.red, q.size || 16); c.restore();
+    };
+    pl.bars = (vals, q = {}) => {
+      const c = L.ctx, F = L.fonts, x0 = q.x0 || 0, dx = q.dx || 1, bw = q.bw || .8, base = q.base || 0, s = q.s || 22, out = [];
+      c.save(); c.globalAlpha *= q.a == null ? 1 : q.a;
+      vals.forEach((v, i) => {
+        const xa = pl.X(x0 + i * dx + dx * (1 - bw) / 2), xb = pl.X(x0 + i * dx + dx * (1 + bw) / 2);
+        const ya = pl.Y(clamp(v, YA.min, YA.max)), yb = pl.Y(clamp(base, YA.min, YA.max));
+        const r = { x: xa, y: Math.min(ya, yb), w: xb - xa, h: Math.abs(yb - ya) }; out.push(r);
+        c.fillStyle = (q.cols && q.cols[i]) || q.col || COL.red; c.fillRect(r.x, r.y, r.w, r.h);
+        if (q.values && v != null) L.tx(q.fmt ? q.fmt(v) : hfmt(v, 0), (xa + xb) / 2, r.y - 8, { f: F.M, s, w: 600, a: 'center', c: COL.ink });
+        if (q.labels && q.labels[i]) L.tx(q.labels[i].s, (xa + xb) / 2, B.y + B.h + 12, { s, w: 600, a: 'center', b: 'top', c: COL.ink, k: q.labels[i].k, max: (xb - xa) + dx * (1 - bw) * B.w / (XA.max - XA.min) - 6 });
+      });
+      c.restore(); return out;
+    };
+    pl.hist = (vals, bins, q = {}) => {
+      const n = bins.n, w = (bins.max - bins.min) / n, cnt = new Array(n).fill(0);
+      for (const v of vals) { const i = Math.floor((v - bins.min) / w); if (i >= 0 && i < n) cnt[i]++; else if (v === bins.max) cnt[n - 1]++; }
+      const show = q.norm ? cnt.map((k) => k / Math.max(1, vals.length)) : cnt;
+      pl.bars(show, Object.assign({ x0: bins.min, dx: w, bw: .9 }, q)); return cnt;
+    };
+    pl.point = (x, y, q = {}) => {
+      const c = L.ctx, [X, Y] = pl.P(x, y), r = q.r || 8, col = q.col || COL.red;
+      c.save(); c.globalAlpha *= q.a == null ? 1 : q.a;
+      c.beginPath(); c.arc(X, Y, r, 0, Math.PI * 2); c.fillStyle = q.fill || col; c.fill();
+      if (q.ring !== false) { c.lineWidth = 3; c.strokeStyle = '#fffaf1'; c.stroke(); c.beginPath(); c.arc(X, Y, r + 2, 0, Math.PI * 2); c.lineWidth = 2; c.strokeStyle = col; c.stroke(); }
+      if (q.label) {
+        const s = q.s || 24, sd = q.side || 'right', o = { s, w: q.w || 700, c: q.lc || col, k: q.label.k };
+        if (sd === 'right') L.tx(q.label.s, X + r + 10, Y, Object.assign(o, { a: 'left', b: 'middle' }));
+        else if (sd === 'left') L.tx(q.label.s, X - r - 10, Y, Object.assign(o, { a: 'right', b: 'middle' }));
+        else if (sd === 'above') L.tx(q.label.s, X, Y - r - 10, Object.assign(o, { a: 'center', b: 'alphabetic' }));
+        else L.tx(q.label.s, X, Y + r + 10, Object.assign(o, { a: 'center', b: 'top' }));
+      }
+      c.restore(); return [X, Y];
+    };
+    function rule(x1, y1, x2, y2, q) {
+      const c = L.ctx; c.save(); c.globalAlpha *= q.a == null ? 1 : q.a; c.lineCap = 'butt';
+      c.beginPath(); c.moveTo(x1, y1); c.lineTo(x2, y2); c.strokeStyle = q.col || COL.mut; c.lineWidth = q.w || 2; c.setLineDash(q.dash || []); c.stroke(); c.setLineDash([]); c.restore();
+    }
+    pl.vline = (x, q = {}) => {
+      const X = pl.X(x); if (X < B.x - 1 || X > B.x + B.w + 1) return;
+      rule(X, B.y, X, B.y + B.h, q);
+      if (q.label) { const c = L.ctx; c.save(); c.globalAlpha *= q.a == null ? 1 : q.a; L.tx(q.label.s, X + 8, q.at === 'bottom' ? B.y + B.h - 12 : B.y + (q.s || 22) + 4, { s: q.s || 22, w: 600, c: q.lc || q.col || COL.mut, k: q.label.k, a: q.align || 'left' }); c.restore(); }
+    };
+    pl.hline = (y, q = {}) => {
+      const Y = pl.Y(y); if (Y < B.y - 1 || Y > B.y + B.h + 1) return;
+      rule(B.x, Y, B.x + B.w, Y, q);
+      if (q.label) { const c = L.ctx; c.save(); c.globalAlpha *= q.a == null ? 1 : q.a; const left = q.at === 'left';
+        L.tx(q.label.s, left ? B.x + 10 : B.x + B.w - 6, Y - 9, { s: q.s || 22, w: 600, c: q.lc || q.col || COL.mut, k: q.label.k, a: left ? 'left' : 'right' }); c.restore(); }
+    };
+    pl.band = (x0, x1, q = {}) => {
+      const c = L.ctx, a = clamp(pl.X(x0), B.x, B.x + B.w), b = clamp(pl.X(x1), B.x, B.x + B.w); if (b <= a) return;
+      c.save(); c.globalAlpha *= q.a == null ? 1 : q.a; c.fillStyle = q.col || 'rgba(28,36,64,.06)'; c.fillRect(a, B.y, b - a, B.h); c.restore();
+    };
+    pl.text = (s, x, y, q = {}) => L.tx(s, pl.X(x), pl.Y(y), q);
+    pl.legend = (items, q = {}) => {
+      const c = L.ctx, s = q.s || 22, gap = q.gap || 28; let x = q.x, y = q.y, w = 0;
+      c.save(); c.globalAlpha *= q.a == null ? 1 : q.a;
+      for (const it of items) {
+        c.beginPath(); c.moveTo(x, y); c.lineTo(x + 34, y); c.strokeStyle = it.col; c.lineWidth = it.w || 4; c.lineCap = 'round'; c.setLineDash(it.dash || []); c.stroke(); c.setLineDash([]); c.lineCap = 'butt';
+        const m = L.tx(it.s, x + 44, y, { s, w: 600, b: 'middle', c: it.tc || COL.ink, k: it.k });
+        if (q.dir === 'right') { x += 44 + m.w + gap; w = x - q.x; } else { y += s * 1.5; w = Math.max(w, 44 + m.w); }
+      }
+      c.restore(); return { w, h: q.dir === 'right' ? s : y - q.y };
+    };
+    let drag = null;
+    pl.drag = (id, get, set, q = {}) => {
+      const p = L.pointer, r = q.r || 30;
+      if (!p.down) { if (drag === id) drag = null; return false; }
+      if (drag == null && p.inside) { const [gx, gy] = get(), [X, Y] = pl.P(gx, gy); if (Math.hypot(p.x - X, p.y - Y) <= r) drag = id; }
+      if (drag !== id) return false;
+      let [x, y] = pl.inv(clamp(p.x, B.x, B.x + B.w), clamp(p.y, B.y, B.y + B.h)); if (q.snap) [x, y] = q.snap(x, y);
+      set(x, y); return true;
+    };
+    return pl;
+  }
+  return { create, ticks, logTicks, fmt };
+})();
+/* ── MODUL VÉGE ── */
+</script>
+<script>
+/* ══════════════════════════════ A LECKE KÓDJA ══════════════════════════════ */
+(function () {
+'use strict';
+const U = Lesson.U, { clamp, lerp, smooth, TAU } = U, fmt = U.fmt;
+const F = Lesson.FONTS;
+const INK = '#1c2440', MUT = '#565d72', RED = '#c8401c', TEAL = '#0a6f86', GOOD = '#1d7a45', BAD = '#b3261e',
+  CARD = '#fffaf1', LINE = 'rgba(28,36,64,.16)', OCHRE = '#8f5a0c', PURP = '#7b4fa0';
+/* színskála: 0 = zöld … 1 = barna (a fű és a sáska ugyanazon a skálán) */
+const GR_G = [134, 179, 79], GR_B = [200, 164, 100];     // fű: zöld / száraz
+const HP_G = [112, 160, 58], HP_B = [176, 132, 70];      // sáska: zöld / barna (kicsit sötétebb a fűnél)
+const SENS = [222, 184, 110], RES = [123, 79, 160];      // baktérium: érzékeny / ellenálló
+const mixc = (a, b, t) => [0, 1, 2].map((i) => Math.round(a[i] + (b[i] - a[i]) * clamp(t)));
+const css = (c, a = 1) => `rgba(${c[0]},${c[1]},${c[2]},${a})`;
+const darker = (c, t = .45) => mixc(c, [28, 36, 64], t);
+let L, c, GA = 1;
+const al = (a = 1) => { c.globalAlpha = GA * clamp(a); };
+const lab = (k) => L.lab(k), num = (k) => L.num(k), dat = (k) => L.dat(k);
+const T = (k, x, y, o = {}) => L.tx(lab(k), x, y, Object.assign({ k }, o));
+const H = (k, ...v) => { let s = lab(k); for (const x of v) s = s.replace('#', x); return s; };
+const TH = (k, v, x, y, o = {}) => L.tx(H(k, ...[].concat(v)), x, y, Object.assign({ k }, o));
+const rr = (x, y, w, h, r) => { c.beginPath(); c.roundRect(x, y, w, h, r); };
+const ln = (x1, y1, x2, y2, col, w = 2, dash) => { c.beginPath(); c.moveTo(x1, y1); c.lineTo(x2, y2); c.strokeStyle = col; c.lineWidth = w; c.setLineDash(dash || []); c.stroke(); c.setLineDash([]); };
+const card = (x, y, w, h, o = {}) => { rr(x, y, w, h, o.r || 18); c.fillStyle = o.bg || CARD; c.fill(); c.strokeStyle = o.bd || LINE; c.lineWidth = o.bw || 2; c.stroke(); };
+const disc = (x, y, r, col) => { c.beginPath(); c.arc(x, y, Math.max(0, r), 0, TAU); c.fillStyle = col; c.fill(); };
+const hash = (i, j, k = 0) => { let h = (i * 374761393 + j * 668265263 + k * 1274126177) | 0; h = Math.imul(h ^ (h >>> 13), 1274126177); h ^= h >>> 16; h = Math.imul(h ^ (h >>> 15), 2246822519); h ^= h >>> 13; return (h >>> 0) / 4294967296; };
+function stamp(k, x, y, o = {}) { return L.pill(lab(k), x, y, Object.assign({ k, s: 22, w: 600, ls: '0.06em', bg: CARD, bd: MUT, c: MUT, r: 8, pad: 10 }, o)); }
+function hdr(k, x, y, col) { return L.pill(lab(k), x, y, { k, s: 22, w: 700, ls: '0.08em', bg: col, c: '#fffaf1', pad: 10, r: 8 }); }
+const big = (v) => {
+  if (v < 1) return '0';
+  if (v >= 9.95e8) return '≈ ' + fmt(v / 1e9, v >= 9.95e9 ? 0 : 1) + ' ' + lab('milliárd');
+  if (v >= 9.95e5) return '≈ ' + fmt(v / 1e6, v >= 1e7 ? 0 : 1) + ' ' + lab('millió');
+  return fmt(Math.round(v));
+};
+function background() {
+  c.globalAlpha = 1;
+  const g = c.createRadialGradient(680, 480, 100, 680, 540, 1300); g.addColorStop(0, '#fbf6ec'); g.addColorStop(1, '#efe6d6');
+  c.fillStyle = g; c.fillRect(0, 0, 1920, 1080);
+  c.strokeStyle = 'rgba(28,36,64,.045)'; c.lineWidth = 1; c.beginPath();
+  for (let x = 0; x <= 1920; x += 40) { c.moveTo(x + .5, 0); c.lineTo(x + .5, 1080); }
+  for (let y = 0; y <= 1080; y += 40) { c.moveTo(0, y + .5); c.lineTo(1920, y + .5); }
+  c.stroke();
+}
+const title = (k, o = {}) => T(k, 60, 82, Object.assign({ f: F.D, s: 42, w: 600 }, o));
+
+/* ════════════ rajzok: sáska (felülnézet), gébics, rét ════════════ */
+function hopper(x, y, s, z, ang = 0, a = 1) {
+  if (a <= .005) return;
+  const fc = mixc(HP_G, HP_B, z), dk = darker(fc, .5), wing = mixc(fc, darker(fc, .3), .6);
+  c.save(); c.globalAlpha *= clamp(a); c.translate(x, y); c.rotate(ang); c.lineJoin = 'round'; c.lineCap = 'round';
+  const lw = Math.max(1.2, s * .045);
+  // hátsó lábak (combok)
+  for (const sg of [-1, 1]) {
+    c.beginPath(); c.ellipse(-s * .16, sg * s * .14, s * .25, s * .055, sg * .32, 0, TAU); c.fillStyle = css(fc); c.fill(); c.strokeStyle = css(dk); c.lineWidth = lw; c.stroke();
+    c.beginPath(); c.moveTo(-s * .38, sg * s * .21); c.lineTo(-s * .1, sg * s * .26); c.lineWidth = lw * 1.1; c.stroke();
+    c.beginPath(); c.moveTo(s * .1, sg * s * .06); c.lineTo(s * .2, sg * s * .17); c.moveTo(s * .2, sg * s * .06); c.lineTo(s * .3, sg * s * .15); c.lineWidth = lw; c.stroke();
+  }
+  // test
+  c.beginPath(); c.ellipse(-s * .06, 0, s * .4, s * .115, 0, 0, TAU); c.fillStyle = css(fc); c.fill(); c.strokeStyle = css(dk); c.lineWidth = lw; c.stroke();
+  // szárnyak a háton
+  c.beginPath(); c.moveTo(s * .14, 0); c.quadraticCurveTo(-s * .2, s * .1, -s * .44, s * .02); c.quadraticCurveTo(-s * .2, -s * .1, s * .14, 0); c.fillStyle = css(wing); c.fill();
+  // fej + csáp
+  c.beginPath(); c.ellipse(s * .37, 0, s * .1, s * .085, 0, 0, TAU); c.fillStyle = css(fc); c.fill(); c.stroke();
+  c.beginPath(); c.moveTo(s * .44, -s * .03); c.quadraticCurveTo(s * .58, -s * .07, s * .66, -s * .15); c.moveTo(s * .44, s * .03); c.quadraticCurveTo(s * .58, s * .07, s * .66, s * .15); c.lineWidth = lw * .8; c.stroke();
+  c.restore();
+}
+function bird(x, y, s, ang = 0, flap = 0, a = 1) {   // tövisszúró gébics, felülről (stilizált)
+  c.save(); c.globalAlpha *= clamp(a); c.translate(x, y); c.rotate(ang); c.lineJoin = 'round';
+  const ol = '#3b2a22', lw = Math.max(1.5, s * .03), sp = .55 + .45 * Math.abs(Math.sin(flap));
+  // farok
+  c.beginPath(); c.moveTo(-s * .25, -s * .07); c.lineTo(-s * .62, -s * .09); c.lineTo(-s * .62, s * .09); c.lineTo(-s * .25, s * .07); c.closePath(); c.fillStyle = '#4b3d36'; c.fill(); c.strokeStyle = ol; c.lineWidth = lw; c.stroke();
+  // szárnyak
+  for (const sg of [-1, 1]) {
+    c.beginPath(); c.moveTo(s * .12, sg * s * .1); c.quadraticCurveTo(-s * .05, sg * s * (.2 + .45 * sp), -s * .4, sg * s * (.12 + .3 * sp)); c.quadraticCurveTo(-s * .2, sg * s * .08, -s * .1, sg * s * .05); c.closePath();
+    c.fillStyle = '#9a5a36'; c.fill(); c.strokeStyle = ol; c.stroke();
+  }
+  // test
+  c.beginPath(); c.ellipse(0, 0, s * .3, s * .14, 0, 0, TAU); c.fillStyle = '#a8643c'; c.fill(); c.stroke();
+  // fej: szürke, fekete szemsávval, csőr
+  c.beginPath(); c.arc(s * .3, 0, s * .12, 0, TAU); c.fillStyle = '#9aa0a8'; c.fill(); c.stroke();
+  c.beginPath(); c.ellipse(s * .33, 0, s * .045, s * .12, 0, 0, TAU); c.fillStyle = '#1c1c22'; c.fill();
+  c.beginPath(); c.moveTo(s * .41, -s * .035); c.lineTo(s * .52, 0); c.lineTo(s * .41, s * .035); c.closePath(); c.fillStyle = '#2a2a2a'; c.fill();
+  c.restore();
+}
+const BLADES = []; for (let i = 0; i < 900; i++) BLADES.push([hash(i, 11), hash(i, 12), hash(i, 13), hash(i, 14)]);
+function meadow(B, b, o = {}) {
+  const fc = mixc(GR_G, GR_B, b);
+  c.save(); rr(B.x, B.y, B.w, B.h, 18); c.fillStyle = css(fc); c.fill();
+  c.clip();
+  const n = Math.round(B.w * B.h / 420);
+  for (const [sh, col] of [[0, darker(fc, .18)], [1, mixc(fc, [255, 250, 230], .22)]]) {
+    c.beginPath();
+    for (let i = 0; i < Math.min(n, BLADES.length); i++) {
+      const q = BLADES[i]; if ((q[3] < .5 ? 0 : 1) !== sh) continue;
+      const x = B.x + q[0] * B.w, y = B.y + q[1] * B.h, an = -1.2 + q[2] * .7, l = 12 + q[3] * 12;
+      c.moveTo(x, y); c.lineTo(x + Math.cos(an) * l, y + Math.sin(an) * l);
+    }
+    c.strokeStyle = css(col); c.lineWidth = 2; c.lineCap = 'round'; c.stroke();
+  }
+  c.restore();
+  rr(B.x, B.y, B.w, B.h, 18); c.strokeStyle = 'rgba(28,36,64,.35)'; c.lineWidth = 2.5; c.stroke();
+}
+/* hely a réten: i. egyed a g. nemzedékben (stabil, a nemzedékszámból) */
+function spot(B, g, i, m = 30) { return [B.x + m + hash(g, i, 1) * (B.w - 2 * m), B.y + m + hash(g, i, 2) * (B.h - 2 * m), hash(g, i, 3) * TAU]; }
+/* színsáv a hisztogram x-tengelye alatt */
+function colorAxis(pl, o = {}) {
+  const B = pl.box, y = B.y + B.h + 12, g = c.createLinearGradient(B.x, 0, B.x + B.w, 0);
+  g.addColorStop(0, css(HP_G)); g.addColorStop(1, css(HP_B));
+  rr(B.x, y, B.w, 16, 8); c.fillStyle = g; c.fill(); c.strokeStyle = 'rgba(28,36,64,.35)'; c.lineWidth = 1.5; c.stroke();
+  T('zöld', B.x, y + 44, { s: 22, w: 700, c: css(darker(HP_G, .35)) });
+  T('barna', B.x + B.w, y + 44, { s: 22, w: 700, c: css(darker(HP_B, .35)), a: 'right' });
+  if (o.name !== false) T('színskála', B.x + B.w / 2, y + 44, { s: 22, w: 600, c: INK, a: 'center' });
+}
+function colorAxisY(pl) {   // függőleges színsáv az y-tengely mellett (0 lent = zöld, 100 fent = barna)
+  const B = pl.box, x = B.x - 26, g = c.createLinearGradient(0, B.y + B.h, 0, B.y);
+  g.addColorStop(0, css(HP_G)); g.addColorStop(1, css(HP_B));
+  rr(x, B.y, 14, B.h, 7); c.fillStyle = g; c.fill(); c.strokeStyle = 'rgba(28,36,64,.35)'; c.lineWidth = 1.5; c.stroke();
+  T('barna', x - 10, B.y + 10, { s: 22, w: 700, c: css(darker(HP_B, .35)), a: 'right', b: 'middle' });
+  T('zöld', x - 10, B.y + B.h - 8, { s: 22, w: 700, c: css(darker(HP_G, .35)), a: 'right', b: 'middle' });
+}
+const binCols = (n) => Array.from({ length: n }, (_, i) => css(mixc(HP_G, HP_B, (i + .5) / n)));
+
+/* ════════════ a modell: nemzedékek (ivartalan öröklés, madár, eltartóképesség) ════════════ */
+const D0 = .35;                        // a feltűnőség színkülönbség-léptéke (0–1 skálán): 1 − e^(−(d/D0)²)
+const WBASE = .15;                     // a ragadozás „háttér” része: a rejtőző sáskát is elkaphatja
+const survive = (z, b, s) => { const d = (z - b) / D0; return 1 - s * (WBASE + (1 - WBASE) * (1 - Math.exp(-d * d))); };
+const refl = (v) => (v < 0 ? -v : v > 1 ? 2 - v : v);
+const meanOf = (A) => { let s = 0; for (const v of A) s += v; return A.length ? s / A.length : NaN; };
+function initPop(N, seed, m, sd) {
+  const r = BioPop.rng(seed), A = new Float32Array(N);
+  for (let i = 0; i < N; i++) A[i] = clamp(refl(m + sd * r.norm()), 0, 1);
+  return A;
+}
+/* simGen({N, F, sig, s, seed, G, bg(g) → 0–1, z0, lite}) → nemzedékek [{z (felnőttek), mean, b, J, sv, keep}] */
+function simGen(o) {
+  const gens = []; let A = o.z0;
+  for (let g = 0; g <= o.G; g++) {
+    const rec = { z: A, mean: meanOf(A), b: o.bg(g) }; gens.push(rec);
+    if (g === o.G) break;
+    const r = BioPop.rng((o.seed * 7919 + g * 104729 + 13) >>> 0), n = A.length, M = n * o.F;
+    const J = new Float32Array(M), sv = new Uint8Array(M), idx = [];
+    for (let i = 0; i < n; i++) for (let k = 0; k < o.F; k++) J[i * o.F + k] = clamp(refl(A[i] + o.sig * r.norm()), 0, 1);
+    for (let j = 0; j < M; j++) if (r() < survive(J[j], rec.b, o.s)) { sv[j] = 1; idx.push(j); }
+    const m = Math.min(o.N, idx.length);
+    for (let q = 0; q < m; q++) { const p = q + r.int(idx.length - q), t = idx[q]; idx[q] = idx[p]; idx[p] = t; }
+    const keep = new Uint8Array(M), B = new Float32Array(m);
+    for (let q = 0; q < m; q++) { keep[idx[q]] = 1; B[q] = J[idx[q]]; }
+    if (!o.lite) { rec.J = J; rec.sv = sv; rec.keep = keep; }
+    A = B;
+  }
+  return gens;
+}
+const P = () => ({ N: num('sáskák száma'), F: num('utódok egyedenként'), sig: num('öröklődési eltérés') / 100, s: num('ragadozás erőssége') / 100 });
+const GREEN = () => num('zöld fű színe') / 100, BROWN = () => num('száraz fű színe') / 100;
+let BASE = { seed: 0, z0: null };
+function basePop(seed) { if (BASE.seed !== seed || !BASE.z0) BASE = { seed, z0: initPop(num('sáskák száma'), seed, num('kezdő átlagszín') / 100, num('kezdő színszórás') / 100) }; return BASE.z0; }
+function bgOf(ev, b0) { return (g) => { let b = b0; for (const e of ev) if (e.g <= g) b = e.b; return b; }; }
+function histo(vals, n = 10) { const h = new Array(n).fill(0); for (const v of vals) h[Math.min(n - 1, Math.floor(v * n))]++; return h; }
+function niceMax(h, step = 10, minv = 20) { return Math.max(minv, Math.ceil(Math.max(...h) * 1.18 / step) * step); }
+
+/* közös elrendezés */
+const MB = { x: 40, y: 112, w: 860, h: 448 };
+const RC = { x: 930, y: 112, w: 390, h: 448 };
+let PH, PH3w, PH4, PM4, PH5, PM5, PM6, P8, P8c, P9h, P9m;
+
+/* ════════════ 1. lépés: nincs két egyforma ════════════ */
+const S1 = { seed: 3 };
+function scene1(st) {
+  const z0 = basePop(S1.seed), p = P();
+  title('kérdés 1');
+  meadow(MB, GREEN());
+  for (let i = 0; i < z0.length; i++) { const [x, y, an] = spot(MB, 0, i); hopper(x, y, 44, z0[i], an, clamp((st - i * .012) / .5)); }
+  // család: egy szülő és az utódai
+  card(RC.x, RC.y, RC.w, RC.h, { r: 18 });
+  T('változatos', RC.x + 24, RC.y + 44, { s: 26, w: 700, c: INK, max: RC.w - 48 });
+  let pi = 0; for (let i = 1; i < z0.length; i++) if (Math.abs(z0[i] - .5) < Math.abs(z0[pi] - .5)) pi = i;
+  const px = RC.x + RC.w / 2, py = RC.y + 150;
+  c.save(); c.globalAlpha *= .9; disc(px, py, 64, css(GR_G, .5)); c.restore();
+  hopper(px, py, 110, z0[pi], -.15);
+  T('szülő', px + 80, py - 40, { s: 22, w: 700, c: INK });
+  const r = BioPop.rng(77), kids = []; for (let k = 0; k < 5; k++) kids.push(clamp(refl(z0[pi] + p.sig * r.norm()), 0, 1));
+  kids.forEach((z, k) => {
+    const a = clamp((st - 2 - k * .35) / .5), kx = RC.x + 50 + k * 72, ky = RC.y + 330;
+    al(a); ln(px, py + 50, kx, ky - 40, 'rgba(28,36,64,.3)', 2); disc(kx, ky, 30, css(GR_G, .45)); hopper(kx, ky, 62, z, -1.57); al(1);
+  });
+  al(clamp((st - 3.8) / .5)); T('utódai', RC.x + RC.w / 2, RC.y + 410, { s: 22, w: 600, c: MUT, a: 'center', max: RC.w - 30 }); al(1);
+  // hisztogram
+  const h = histo(z0); PH.set({ ya: { min: 0, max: niceMax(h, 5, 15) } });
+  const u = smooth((st - .8) / 1.2);
+  PH.axes(); colorAxis(PH);
+  PH.bars(h.map((v) => v * u), { x0: 0, dx: .1, bw: .9, cols: binCols(10) });
+}
+
+/* ════════════ 2. lépés: több születik, mint ahány felnő ════════════ */
+const S2 = { gens: null };
+function run2() { const p = P(); return simGen(Object.assign({}, p, { s: 0, seed: 21, G: 1, z0: basePop(S1.seed), bg: () => GREEN() })); }
+function kidPos(i, k, F) { const [x, y] = spot(MB, 0, i), an = k / F * TAU + hash(i, k, 9) * .8, rd = 30 + hash(i, k, 8) * 18;
+  return [clamp(x + Math.cos(an) * rd, MB.x + 16, MB.x + MB.w - 16), clamp(y + Math.sin(an) * rd, MB.y + 16, MB.y + MB.h - 16), hash(i, k, 7) * TAU]; }
+function scene2(st) {
+  const G = S2.gens || (S2.gens = run2()), g0 = G[0], p = P(), n = g0.z.length, M = g0.J.length;
+  title('kérdés 2');
+  meadow(MB, GREEN());
+  const aAd = 1 - smooth((st - 1.6) / .8), aKid = (j) => clamp((st - 1.2 - (j % 37) * .03) / .5);
+  const tDie = (j) => 4 + hash(j, 5) * 2.2;
+  for (let i = 0; i < n; i++) { const [x, y, an] = spot(MB, 0, i); hopper(x, y, 44, g0.z[i], an, aAd); }
+  for (let j = 0; j < M; j++) {
+    const i = Math.floor(j / p.F), k = j % p.F, [x, y, an] = kidPos(i, k, p.F);
+    let a = aKid(j);
+    if (!g0.keep[j]) { const u = clamp((st - tDie(j)) / .4); a *= 1 - u; if (u > 0 && u < 1) { c.save(); c.globalAlpha *= (1 - u) * .8; c.beginPath(); c.arc(x, y, 8 + u * 16, 0, TAU); c.strokeStyle = MUT; c.lineWidth = 2; c.stroke(); c.restore(); } }
+    hopper(x, y, 26, g0.J[j], an, a);
+  }
+  // számlálók
+  card(RC.x, RC.y, RC.w, RC.h, { r: 18 });
+  const dead = (() => { let d = 0; for (let j = 0; j < M; j++) if (!g0.keep[j] && st > tDie(j) + .2) d++; return d; })();
+  const rows = [['felnőttek', n, INK, 0], ['utódok', M, OCHRE, 1.3], ['felnő', M - dead, GOOD, 3.8]];
+  rows.forEach(([k, v, col, t], i) => {
+    al(clamp((st - t) / .5));
+    T(k, RC.x + 28, RC.y + 70 + i * 120, { s: 24, w: 600, c: MUT });
+    L.tx(fmt(v), RC.x + 28, RC.y + 122 + i * 120, { f: F.M, s: 46, w: 700, c: col });
+    al(1);
+  });
+  al(clamp((st - 6.4) / .5)); L.pill(lab('véletlen pusztulás'), RC.x + RC.w / 2, RC.y + RC.h - 40, { k: 'véletlen pusztulás', s: 22, w: 600, a: 'center', bg: CARD, bd: MUT, c: MUT, pad: 10, max: RC.w - 40 }); al(1);
+  // hisztogram: minden utód (halvány) és a felnövők
+  const hAll = histo(g0.J), keepV = []; for (let j = 0; j < M; j++) if (g0.keep[j] || st < tDie(j) + .2) keepV.push(g0.J[j]);
+  const hK = histo(keepV);
+  PH.set({ ya: { min: 0, max: niceMax(hAll, 10, 20) } }); PH.axes(); colorAxis(PH);
+  const u = smooth((st - 1.4) / 1);
+  PH.bars(hAll.map((v) => v * u), { x0: 0, dx: .1, bw: .9, cols: binCols(10), a: .28 });
+  PH.bars(hK.map((v) => v * u), { x0: 0, dx: .1, bw: .9, cols: binCols(10) });
+  PH.legend([{ s: lab('minden utód'), k: 'minden utód', col: 'rgba(150,150,110,.45)', w: 14 }, { s: lab('felnőtt utód'), k: 'felnőtt utód', col: css(mixc(HP_G, HP_B, .5)), w: 14 }], { x: PH.box.x + PH.box.w - 520, y: PH.box.y - 18, dir: 'right' });
+}
+
+/* ════════════ 3. lépés: a madár választ ════════════ */
+const S3 = { s: .6, seed: 31, gens: null, t0: 0 };
+function run3() { const p = P(); return simGen(Object.assign({}, p, { s: S3.s, seed: S3.seed, G: 1, z0: basePop(S1.seed), bg: () => GREEN() })); }
+const SW = { a: .8, d: 6.2 };   // a madár útja: ekkor indul, ennyi mp alatt ér át a réten
+function eatT(x) { return SW.a + (x - MB.x) / MB.w * SW.d; }
+function scene3(st) {
+  const G = S3.gens || (S3.gens = run3()), g0 = G[0], p = P(), n = g0.z.length, M = g0.J.length, tt = st - S3.t0;
+  title('kérdés 3');
+  meadow(MB, GREEN());
+  let alive = 0; const aliveV = [];
+  for (let j = 0; j < M; j++) {
+    const i = Math.floor(j / p.F), k = j % p.F, [x, y, an] = kidPos(i, k, p.F);
+    let a = 1;
+    if (!g0.sv[j]) {
+      const u = clamp((tt - eatT(x)) / .35); a = 1 - u;
+      if (u > 0 && u < 1) { c.save(); c.globalAlpha *= (1 - u); c.beginPath(); c.arc(x, y, 10 + u * 18, 0, TAU); c.strokeStyle = RED; c.lineWidth = 2.5; c.stroke(); c.restore(); }
+    }
+    if (a > .5) { alive++; aliveV.push(g0.J[j]); }
+    hopper(x, y, 26, g0.J[j], an, a);
+  }
+  // madár: sima pályán halad át a réten
+  const u = (tt - SW.a) / SW.d;
+  if (u > -.08 && u < 1.08) {
+    const bx = MB.x + u * MB.w, by = MB.y + MB.h * (.5 + .32 * Math.sin(u * 9.5));
+    const dy = MB.h * .32 * 9.5 / MB.w * Math.cos(u * 9.5);
+    c.save(); rr(MB.x, MB.y, MB.w, MB.h, 18); c.clip(); bird(bx, by, 96, Math.atan(dy), tt * 14); c.restore();
+  }
+  al(clamp((tt - .2) / .5)); L.pill(lab('gébics'), MB.x + 18, MB.y + 20, { k: 'gébics', s: 22, w: 600, bg: 'rgba(255,250,241,.93)', bd: MUT, c: INK, pad: 10, b: 'top' }); al(1);
+  // jobb oszlop: túlélési esély
+  card(RC.x, RC.y, RC.w, RC.h, { r: 18 });
+  T('túlélési esély', RC.x + 24, RC.y + 44, { s: 26, w: 700, c: TEAL });
+  const bx0 = RC.x + 96, bw = RC.w - 126, by0 = RC.y + 90, bh = 230;
+  ln(bx0, by0 + bh, bx0 + bw, by0 + bh, INK, 2.5); ln(bx0, by0, bx0, by0 + bh, INK, 2.5);
+  L.tx('100 %', bx0 - 8, by0, { f: F.M, s: 22, a: 'right', b: 'middle', c: MUT }); L.tx('0', bx0 - 8, by0 + bh, { f: F.M, s: 22, a: 'right', b: 'middle', c: MUT });
+  const gg = c.createLinearGradient(bx0, 0, bx0 + bw, 0); gg.addColorStop(0, css(HP_G)); gg.addColorStop(1, css(HP_B)); rr(bx0, by0 + bh + 10, bw, 14, 7); c.fillStyle = gg; c.fill();
+  const bgx = bx0 + GREEN() * bw; ln(bgx, by0, bgx, by0 + bh, css(darker(GR_G, .3)), 2, [6, 6]);
+  c.beginPath(); for (let q = 0; q <= 60; q++) { const z = q / 60, X = bx0 + z * bw, Y = by0 + bh * (1 - survive(z, GREEN(), S3.s)); if (q) c.lineTo(X, Y); else c.moveTo(X, Y); }
+  c.strokeStyle = TEAL; c.lineWidth = 4.5; c.lineJoin = 'round'; c.stroke(); c.lineJoin = 'miter';
+  T('zöld', bx0, by0 + bh + 50, { s: 22, w: 700, c: css(darker(HP_G, .35)) }); T('barna', bx0 + bw, by0 + bh + 50, { s: 22, w: 700, c: css(darker(HP_B, .35)), a: 'right' });
+  const eaten = M - alive;
+  TH('túlélte', [fmt(alive), fmt(M)], RC.x + 24, RC.y + 400, { s: 24, w: 700, c: GOOD });
+  TH('elpusztult', fmt(eaten), RC.x + 24, RC.y + 432, { s: 22, w: 600, c: BAD });
+  // hisztogram: túlélők és elpusztultak
+  const hAll = histo(g0.J), hA = histo(aliveV);
+  PH.set({ ya: { min: 0, max: niceMax(hAll, 10, 20) } }); PH.axes(); colorAxis(PH);
+  PH.bars(hAll, { x0: 0, dx: .1, bw: .9, cols: binCols(10), a: .25 });
+  PH.bars(hA, { x0: 0, dx: .1, bw: .9, cols: binCols(10) });
+  PH.legend([{ s: lab('megmaradt'), k: 'megmaradt', col: css(mixc(HP_G, HP_B, .4)), w: 14 }, { s: lab('megette'), k: 'megette', col: 'rgba(150,150,110,.45)', w: 14 }], { x: PH.box.x + PH.box.w - 430, y: PH.box.y - 18, dir: 'right' });
+}
+
+/* ════════════ 4–5. lépés: nemzedékről nemzedékre, változó környezet ════════════ */
+const GMAX = 80;
+function genClock(S, st) { return Math.min(S.target, S.base + Math.max(0, st - S.tB) * S.rate); }
+const S4 = { seed: 41, ev: [], gens: null, target: 15, base: 0, tB: .8, rate: 2.5, bgSl: null };
+function run4() { const p = P(); return simGen(Object.assign({}, p, { seed: S4.seed, G: GMAX, z0: basePop(S1.seed), bg: bgOf(S4.ev, GREEN()) })); }
+function drawGen(G, gf, B, size, opt = {}) {
+  const g = Math.min(G.length - 1, Math.floor(gf)), fr = gf - g, rec = G[g], nx = G[Math.min(G.length - 1, g + 1)];
+  const b = lerp(rec.b, nx.b, smooth(fr * 2));
+  meadow(B, b);
+  c.save(); rr(B.x, B.y, B.w, B.h, 18); c.clip();
+  const lim = opt.max || 9999;
+  for (let i = 0; i < Math.min(lim, rec.z.length); i++) { const [x, y, an] = spot(B, g, i, size * .7); hopper(x, y, size, rec.z[i], an, 1); }
+  c.restore();
+  if (!rec.z.length) stamp('kihaltak', B.x + B.w / 2, B.y + B.h / 2, { a: 'center', bd: BAD, c: BAD });
+  return { g, rec, b };
+}
+function meanLine(pl, G, g, o = {}) {
+  const pts = [], bp = []; for (let q = 0; q <= g; q++) { if (G[q].z.length) pts.push([q, G[q].mean * 100]); bp.push([q, G[q].b * 100]); if (q < g) bp.push([q + 1, G[q].b * 100]); }
+  pl.line(bp, { col: css(darker(GR_G, .25)), w: 3, dash: [10, 7] });
+  if (pts.length) { const e = pl.line(pts, { col: RED, w: 4.5, dots: pts.length < 30 ? 4 : 0 }); if (e) disc(e[0], e[1], 7, RED); }
+}
+function scene4(st) {
+  const G = S4.gens || (S4.gens = run4()), gf = genClock(S4, st);
+  title('kérdés 4');
+  const { g, rec } = drawGen(G, gf, MB, 44);
+  // jobb oszlop: nemzedékszámláló + rátermettség
+  card(RC.x, RC.y, RC.w, RC.h, { r: 18 });
+  TH('nemzedék felirat', String(g), RC.x + 24, RC.y + 56, { s: 34, w: 700, c: INK, f: F.D });
+  T('rátermettség', RC.x + 24, RC.y + 108, { s: 22, w: 700, c: TEAL, max: RC.w - 48 });
+  const bx0 = RC.x + 40, bw = RC.w - 80, by0 = RC.y + 140, bh = 200;
+  ln(bx0, by0 + bh, bx0 + bw, by0 + bh, INK, 2.5); ln(bx0, by0, bx0, by0 + bh, INK, 2.5);
+  const gg = c.createLinearGradient(bx0, 0, bx0 + bw, 0); gg.addColorStop(0, css(HP_G)); gg.addColorStop(1, css(HP_B)); rr(bx0, by0 + bh + 10, bw, 14, 7); c.fillStyle = gg; c.fill();
+  const b = rec.b; ln(bx0 + b * bw, by0, bx0 + b * bw, by0 + bh, css(darker(GR_G, .3)), 2, [6, 6]);
+  c.beginPath(); for (let q = 0; q <= 60; q++) { const z = q / 60, X = bx0 + z * bw, Y = by0 + bh * (1 - survive(z, b, P().s)); if (q) c.lineTo(X, Y); else c.moveTo(X, Y); }
+  c.strokeStyle = TEAL; c.lineWidth = 4.5; c.lineJoin = 'round'; c.stroke(); c.lineJoin = 'miter';
+  T('fű vonal', bx0 + b * bw + (b < .6 ? 10 : -10), by0 + bh - 14, { s: 22, w: 600, c: css(darker(GR_G, .4)), a: b < .6 ? 'left' : 'right' });
+  T('zöld', bx0, by0 + bh + 50, { s: 22, w: 700, c: css(darker(HP_G, .35)) }); T('barna', bx0 + bw, by0 + bh + 50, { s: 22, w: 700, c: css(darker(HP_B, .35)), a: 'right' });
+  // hisztogram
+  const h = histo(rec.z); PH4.set({ ya: { min: 0, max: niceMax(h, 5, 30) } }); PH4.axes(); colorAxis(PH4, { name: false });
+  PH4.bars(h, { x0: 0, dx: .1, bw: .9, cols: binCols(10) });
+  // átlagszín nemzedékenként
+  PM4.set({ xa: { min: 0, max: Math.max(20, Math.ceil((S4.target + 1) / 10) * 10) } });
+  PM4.axes(); colorAxisY(PM4);
+  meanLine(PM4, G, g);
+  PM4.legend([{ s: lab('átlag vonal'), k: 'átlag vonal', col: RED }, { s: lab('fű vonal'), k: 'fű vonal', col: css(darker(GR_G, .25)), dash: [10, 7], w: 3 }], { x: PM4.box.x + 40, y: PM4.box.y - 18, dir: 'right' });
+}
+const S5 = { seed: 51, ev: null, gens: null, target: 24, base: 0, tB: 1, rate: 3.5, z0: null };
+const defEv5 = () => [{ g: num('aszály nemzedéke'), b: BROWN() }];
+function z05() {   // a zöld fűhöz már alkalmazkodott populáció (40 nemzedék előfuttatás)
+  if (!S5.z0) { const p = P(), G = simGen(Object.assign({}, p, { seed: 5, G: 40, z0: basePop(S1.seed), bg: () => GREEN(), lite: true })); S5.z0 = G[40].z; }
+  return S5.z0;
+}
+function run5() { const p = P(); return simGen(Object.assign({}, p, { seed: S5.seed, G: GMAX, z0: z05(), bg: bgOf(S5.ev, GREEN()) })); }
+function moth(x, y, s, dark) {
+  c.save(); c.translate(x, y); c.lineJoin = 'round';
+  const f = dark ? '#3a3633' : '#ece8dc', o = dark ? '#16130f' : '#6b655a';
+  c.beginPath(); c.moveTo(0, -s * .1); c.lineTo(-s * .62, s * .32); c.lineTo(-s * .1, s * .3); c.lineTo(0, s * .12); c.lineTo(s * .1, s * .3); c.lineTo(s * .62, s * .32); c.closePath();
+  c.fillStyle = f; c.fill(); c.strokeStyle = o; c.lineWidth = 2; c.stroke();
+  if (!dark) for (let i = 0; i < 9; i++) disc((hash(i, 3) - .5) * s * .9, s * (.05 + hash(i, 4) * .22), 2, '#3d3a35');
+  c.beginPath(); c.ellipse(0, s * .08, s * .06, s * .2, 0, 0, TAU); c.fillStyle = o; c.fill();
+  c.restore();
+}
+function bark(x, y, w, h, dark) {
+  rr(x, y, w, h, 10); c.fillStyle = dark ? '#4a4540' : '#d8d2c0'; c.fill(); c.strokeStyle = 'rgba(28,36,64,.4)'; c.lineWidth = 2; c.stroke();
+  c.save(); rr(x, y, w, h, 10); c.clip();
+  for (let i = 0; i < 26; i++) { c.beginPath(); c.ellipse(x + hash(i, 1, dark ? 7 : 3) * w, y + hash(i, 2, dark ? 7 : 3) * h, 6 + hash(i, 3) * 10, 3 + hash(i, 4) * 4, 0, 0, TAU); c.fillStyle = dark ? 'rgba(20,18,16,.5)' : 'rgba(150,160,120,.45)'; c.fill(); }
+  c.restore();
+}
+function scene5(st) {
+  const G = S5.gens || (S5.gens = run5()), gf = genClock(S5, st);
+  title('kérdés 5');
+  const B = { x: 40, y: 112, w: 640, h: 410 };
+  const { g, rec, b } = drawGen(G, gf, B, 40);
+  const isDry = b > .5;
+  L.pill(lab(isDry ? 'aszály' : 'eső'), B.x + 18, B.y + 20, { k: isDry ? 'aszály' : 'eső', s: 24, w: 700, b: 'top', bg: 'rgba(255,250,241,.93)', bd: isDry ? OCHRE : GOOD, c: isDry ? OCHRE : GOOD, pad: 10 });
+  L.pill(H('nemzedék felirat', String(g)), B.x + B.w - 18, B.y + B.h - 30, { k: 'nemzedék felirat', s: 26, w: 700, c: INK, a: 'right', f: F.D, bg: 'rgba(255,250,241,.93)', bd: MUT, pad: 10 });
+  // Honnan tudjuk? – nyírfaarasztó
+  const C = { x: 710, y: 112, w: 610, h: 410 };
+  card(C.x, C.y, C.w, C.h, { r: 18 });
+  hdr('honnan tudjuk', C.x + 22, C.y + 34, TEAL);
+  T('lepke cím', C.x + 22, C.y + 96, { s: 26, w: 700, c: INK, max: C.w - 44 });
+  bark(C.x + 22, C.y + 120, 270, 120, false); bark(C.x + 318, C.y + 120, 270, 120, true);
+  moth(C.x + 100, C.y + 170, 70, false); moth(C.x + 210, C.y + 180, 70, true);
+  moth(C.x + 396, C.y + 170, 70, false); moth(C.x + 506, C.y + 180, 70, true);
+  T('világos kéreg', C.x + 22, C.y + 268, { s: 22, w: 600, c: MUT }); T('kormos kéreg', C.x + 318, C.y + 268, { s: 22, w: 600, c: MUT });
+  TH('lepke 1', dat('első sötét lepke').s, C.x + 22, C.y + 314, { s: 22, w: 600, c: INK, max: C.w - 44 });
+  TH('lepke 2', [dat('sötét lepkék éve').s, fmt(num('sötét lepkék aránya'))], C.x + 22, C.y + 348, { s: 22, w: 600, c: INK, max: C.w - 44 });
+  TH('lepke 3', dat('tiszta levegő törvény').s, C.x + 22, C.y + 382, { s: 22, w: 600, c: INK, max: C.w - 44 });
+  // hisztogram + átlag
+  const h = histo(rec.z); PH5.set({ ya: { min: 0, max: niceMax(h, 5, 30) } }); PH5.axes(); colorAxis(PH5, { name: false });
+  PH5.bars(h, { x0: 0, dx: .1, bw: .9, cols: binCols(10) });
+  PM5.set({ xa: { min: 0, max: Math.max(30, Math.ceil((S5.target + 1) / 10) * 10) } });
+  PM5.axes(); colorAxisY(PM5); meanLine(PM5, G, g);
+  PM5.legend([{ s: lab('átlag vonal'), k: 'átlag vonal', col: RED }, { s: lab('fű vonal'), k: 'fű vonal', col: css(darker(GR_G, .25)), dash: [10, 7], w: 3 }], { x: PM5.box.x + 40, y: PM5.box.y - 18, dir: 'right' });
+}
+
+/* ════════════ 6. lépés: a véletlen is dönt (sodródás) ════════════ */
+const S6 = { big: false, birdOn: false, seed: 61, E: null };
+const GEN6 = 50;
+function run6() {
+  const N = num(S6.big ? 'nagy populáció' : 'kis populáció'), p = P();
+  return BioPop.ensemble((sd, i) => simGen(Object.assign({}, p, { N, s: S6.birdOn ? p.s : 0, seed: sd, G: GEN6, bg: () => GREEN(),
+    z0: initPop(N, sd + 1, num('kezdő átlagszín') / 100, num('kezdő színszórás') / 100), lite: true })), num('futások száma'), S6.seed).all().results;
+}
+const g6 = (st) => clamp((st - .6) * 7.5, 0, GEN6);
+function scene6(st) {
+  const R = S6.E || (S6.E = run6()), gf = g6(st), g = Math.floor(gf);
+  title('kérdés 6');
+  const B = { x: 40, y: 112, w: 560, h: 400 }, N = R[0][0].z.length;
+  drawGen(R[0], gf, B, S6.big ? 15 : 38);
+  L.pill(lab('futás 1'), B.x + 18, B.y + 20, { k: 'futás 1', s: 22, w: 700, b: 'top', bg: 'rgba(255,250,241,.93)', bd: RED, c: RED, pad: 10 });
+  // jobb: állapot és szóródás
+  const C = { x: 640, y: 112, w: 680, h: 400 };
+  card(C.x, C.y, C.w, C.h, { r: 18 });
+  TH('populáció', fmt(N), C.x + 26, C.y + 56, { s: 30, w: 700, c: INK, f: F.D });
+  T(S6.birdOn ? 'madár van' : 'madár nincs', C.x + 26, C.y + 104, { s: 24, w: 600, c: S6.birdOn ? RED : MUT });
+  if (S6.birdOn) bird(C.x + C.w - 80, C.y + 80, 80, -.3, 0); else { al(.25); bird(C.x + C.w - 80, C.y + 80, 80, -.3, 0); al(1); ln(C.x + C.w - 120, C.y + 120, C.x + C.w - 40, C.y + 40, BAD, 4); }
+  TH('futások', fmt(R.length), C.x + 26, C.y + 170, { s: 24, w: 600, c: MUT, max: C.w - 52 });
+  const fin = R.map((G) => G[g].z.length ? G[g].mean * 100 : NaN).filter((v) => !isNaN(v));
+  const lo = Math.min(...fin), hi = Math.max(...fin);
+  TH('végén', [String(g), fmt(Math.round(lo)) + '–' + fmt(Math.round(hi))], C.x + 26, C.y + 220, { s: 26, w: 700, c: INK, max: C.w - 52 });
+  // szóródás sávja egy kis skálán
+  const sx = C.x + 60, sw = C.w - 120, sy = C.y + 300;
+  const gg = c.createLinearGradient(sx, 0, sx + sw, 0); gg.addColorStop(0, css(HP_G)); gg.addColorStop(1, css(HP_B)); rr(sx, sy, sw, 18, 9); c.fillStyle = gg; c.fill(); c.strokeStyle = 'rgba(28,36,64,.35)'; c.lineWidth = 1.5; c.stroke();
+  if (fin.length) { rr(sx + lo / 100 * sw - 4, sy - 12, (hi - lo) / 100 * sw + 8, 42, 10); c.strokeStyle = RED; c.lineWidth = 3.5; c.stroke(); }
+  for (const v of fin) { ln(sx + v / 100 * sw, sy - 6, sx + v / 100 * sw, sy + 24, INK, 2.5); }
+  T('zöld', sx, sy + 62, { s: 22, w: 700, c: css(darker(HP_G, .35)) }); T('barna', sx + sw, sy + 62, { s: 22, w: 700, c: css(darker(HP_B, .35)), a: 'right' });
+  // futások
+  PM6.axes(); colorAxisY(PM6);
+  R.forEach((G, i) => { if (i === 0) return; const pts = []; for (let q = 0; q <= GEN6; q++) if (G[q].z.length) pts.push([q, G[q].mean * 100]); PM6.line(pts, { col: INK, w: 3, a: .42, upto: gf }); });
+  const p0 = []; for (let q = 0; q <= GEN6; q++) if (R[0][q].z.length) p0.push([q, R[0][q].mean * 100]);
+  const e = PM6.line(p0, { col: RED, w: 5, upto: gf }); if (e) disc(e[0], e[1], 7, RED);
+  stamp('modell bélyeg', 1310, 1036, { a: 'right' });
+}
+
+/* ════════════ 7. lépés: nem akarat – a lamarcki tévedés ════════════ */
+const ROW7 = [[.82, .2, .55, .12, .7, .33, .9, .25], null, null];
+(function () {   // a 2. és 3. sor a túlélők utódai (rögzített, kézzel ellenőrizhető példa)
+  const r = BioPop.rng(707), surv1 = ROW7[0].filter((z) => z < .5), out = (src) => { const o = []; for (let i = 0; i < 8; i++) o.push(clamp(refl(src[i % src.length] + .07 * r.norm()), 0, 1)); return o; };
+  ROW7[1] = out(surv1); ROW7[2] = out(ROW7[1].filter((z) => z < .45));
+})();
+function scene7(st) {
+  title('kérdés 7');
+  // TÉVHIT
+  const A = { x: 40, y: 116, w: 620, h: 520 };
+  card(A.x, A.y, A.w, A.h, { r: 18, bd: BAD, bw: 3 });
+  hdr('tévhit', A.x + 22, A.y + 32, BAD);
+  T('tévhit cím', A.x + 22, A.y + 94, { s: 26, w: 700, c: INK, f: F.D, i: 1, max: A.w - 44 });
+  const fw = 180, fy = A.y + 130;
+  for (let k = 0; k < 3; k++) {
+    const fx = A.x + 22 + k * (fw + 10), a = clamp((st - .3 - k * 1.2) / .5);
+    al(a);
+    rr(fx, fy, fw, 210, 14); c.fillStyle = css(GR_G); c.fill(); c.strokeStyle = 'rgba(28,36,64,.3)'; c.lineWidth = 2; c.stroke();
+    const z = k === 0 ? .85 : k === 1 ? lerp(.85, .18, smooth((st - 1.5) / 1.4)) : .18;
+    if (k < 2) hopper(fx + fw / 2, fy + 105, 120, z, -.4);
+    else { hopper(fx + fw / 2 - 30, fy + 70, 70, .18, -.5); hopper(fx + fw / 2 + 30, fy + 140, 70, .18, .3); }
+    T('t' + (k + 1), fx + fw / 2, fy + 246, { s: 22, w: 600, c: INK, a: 'center', max: fw });
+    if (k < 2) { ln(fx + fw + 1, fy + 105, fx + fw + 9, fy + 105, INK, 3); }
+    al(1);
+  }
+  // áthúzás
+  const xa = clamp((st - 4.6) / .5);
+  if (xa > 0) {
+    al(xa); c.save(); c.lineCap = 'round'; ln(A.x + 60, fy + 20, A.x + A.w - 60, fy + 200, BAD, 7); ln(A.x + A.w - 60, fy + 20, A.x + 60, fy + 200, BAD, 7); c.restore();
+    L.pill(lab('nem így'), A.x + A.w / 2, A.y + 460, { k: 'nem így', s: 28, w: 700, a: 'center', bg: CARD, bd: BAD, c: BAD, pad: 14 }); al(1);
+  }
+  // VALÓSÁG
+  const Bv = { x: 700, y: 116, w: 620, h: 520 };
+  card(Bv.x, Bv.y, Bv.w, Bv.h, { r: 18, bd: GOOD, bw: 3 });
+  hdr('valóság', Bv.x + 22, Bv.y + 32, GOOD);
+  T('valóság cím', Bv.x + 22, Bv.y + 94, { s: 26, w: 700, c: INK, f: F.D, i: 1, max: Bv.w - 44 });
+  for (let r = 0; r < 3; r++) {
+    const ry = Bv.y + 150 + r * 112, a = clamp((st - .4 - r * 2) / .5), thr = r === 0 ? .5 : .45;
+    al(a);
+    rr(Bv.x + 170, ry - 46, Bv.w - 192, 92, 12); c.fillStyle = css(GR_G); c.fill();
+    T((r + 1) + '. nemzedék', Bv.x + 22, ry + 8, { s: 22, w: 600, c: MUT });
+    ROW7[r].forEach((z, i) => {
+      const x = Bv.x + 205 + i * 52; let ha = 1;
+      if (r < 2 && z >= thr) { const u = clamp((st - 1.2 - r * 2 - i * .05) / .4); ha = 1 - .82 * u; if (u > 0 && u < 1) { c.save(); c.globalAlpha *= 1 - u; c.beginPath(); c.arc(x, ry, 14 + u * 12, 0, TAU); c.strokeStyle = RED; c.lineWidth = 2.5; c.stroke(); c.restore(); } }
+      hopper(x, ry, 46, z, -1.57, ha);
+    });
+    if (r < 2) { const ax = Bv.x + 140, a2 = clamp((st - 2 - r * 2) / .4); al(a * a2); ln(ax, ry + 30, ax, ry + 80, INK, 3); c.beginPath(); c.moveTo(ax, ry + 88); c.lineTo(ax - 7, ry + 76); c.lineTo(ax + 7, ry + 76); c.closePath(); c.fillStyle = INK; c.fill(); }
+    al(1);
+  }
+  al(clamp((st - 5.4) / .5)); T('ugyanaz marad', Bv.x + Bv.w / 2, Bv.y + 490, { s: 22, w: 700, c: GOOD, a: 'center', max: Bv.w - 40 }); al(1);
+  // Honnan tudjuk?
+  const C = { x: 40, y: 670, w: 1280, h: 340 };
+  al(clamp((st - 1) / .6));
+  card(C.x, C.y, C.w, C.h, { r: 18 });
+  hdr('honnan tudjuk', C.x + 22, C.y + 34, TEAL);
+  const book = (x, y, col) => { rr(x, y, 70, 96, 6); c.fillStyle = col; c.fill(); c.strokeStyle = INK; c.lineWidth = 2.5; c.stroke(); ln(x + 12, y + 6, x + 12, y + 90, 'rgba(255,250,241,.6)', 3); };
+  book(C.x + 30, C.y + 90, '#8c3b2a'); book(C.x + 650, C.y + 90, '#0a5a6e');
+  L.tx(dat('Lamarck könyve').s, C.x + 120, C.y + 118, { k: 'Lamarck könyve', f: F.M, s: 30, w: 700, c: BAD });
+  T('Lamarck könyv', C.x + 120, C.y + 160, { s: 22, w: 600, c: INK, max: 490 });
+  L.tx(dat('Darwin könyve').s, C.x + 740, C.y + 118, { k: 'Darwin könyve', f: F.M, s: 30, w: 700, c: GOOD });
+  T('Darwin könyv', C.x + 740, C.y + 160, { s: 22, w: 600, c: INK, max: 510 });
+  T('elmélet', C.x + C.w / 2, C.y + 270, { s: 24, w: 600, c: INK, a: 'center', max: C.w - 60, i: 1, f: F.D });
+  al(1);
+}
+
+/* ════════════ 8. lépés: ellenálló baktériumok ════════════ */
+const NCL = 6;   // ellenállósági szintek: a szint ennyi adagot még kibír: 1, 2, 4, 8, 16, 32 egység
+const MIC = (i) => Math.pow(2, i);
+const S8 = { dose: 16, dur: 6, extra: [], run: null, t0: 0 };
+const KMAX = 6, HILL = 6;   // pusztulási ráta (1/óra) és a görbe meredeksége – modellparaméterek
+function kill(cn, i) { if (cn <= 0) return 0; const q = Math.pow(cn / MIC(i), HILL); return KMAX * q / (1 + q); }
+function treat8() { const t0 = num('antibiotikum kezdete'); return [{ t: t0, dur: S8.dur }].concat(S8.extra); }
+function run8() {
+  const r = Math.LN2 / (num('osztódási idő') / 60), K = num('eltartóképesség a csészében'), N0 = num('kezdő baktériumok'), q = num('ellenállók ritkulása');
+  let w = 0; const fr = []; for (let i = 0; i < NCL; i++) { fr.push(Math.pow(q, -i)); w += fr[i]; }
+  const x0 = fr.map((f) => N0 * f / w);
+  const ev = []; for (const e of treat8()) { ev.push({ t: e.t, p: { c: S8.dose } }); ev.push({ t: e.t + e.dur, p: { c: 0 } }); }
+  ev.sort((a, b) => a.t - b.t);
+  return BioPop.ode({ f: (t, x, p) => { let N = 0; for (const v of x) N += v;
+      return x.map((v, i) => (v >= 1 ? r * v * (1 - N / K) : 0) - kill(p.c, i) * v); },
+    p: { c: 0 }, x0, T: 24, dt: .01, events: ev });
+}
+const tm8 = (st) => clamp((st - S8.t0 - .3) * 3, 0, 24);
+const cnt8 = (R, i, t) => { const v = R.get(i, t); return v >= 1 ? v : 0; };
+const tot8 = (R, t) => { let s = 0; for (let i = 0; i < NCL; i++) s += cnt8(R, i, t); return s; };
+const clsCol = (i) => mixc(SENS, RES, i / (NCL - 1));
+const DISH = { x: 300, y: 390, r: 228 }, SLOTS = [];
+for (let i = 0; i < 420; i++) { const a = hash(i, 21) * TAU, rd = Math.sqrt(hash(i, 22)) * (DISH.r - 22); SLOTS.push([DISH.x + Math.cos(a) * rd, DISH.y + Math.sin(a) * rd]); }
+function scene8(st) {
+  const R = S8.run || (S8.run = run8()), tm = tm8(st), cn = R.p(tm).c;
+  title('kérdés 8');
+  // Petri-csésze
+  const D = DISH;
+  c.beginPath(); c.arc(D.x, D.y, D.r + 10, 0, TAU); c.fillStyle = '#e9e4d6'; c.fill(); c.strokeStyle = 'rgba(28,36,64,.45)'; c.lineWidth = 3; c.stroke();
+  c.beginPath(); c.arc(D.x, D.y, D.r, 0, TAU); c.fillStyle = '#f2e7c6'; c.fill(); c.strokeStyle = 'rgba(28,36,64,.3)'; c.lineWidth = 2; c.stroke();
+  if (cn > 0) { c.beginPath(); c.arc(D.x, D.y, D.r, 0, TAU); c.fillStyle = 'rgba(10,111,134,.16)'; c.fill(); }
+  const n = [], tot = tot8(R, tm); for (let i = 0; i < NCL; i++) n.push(cnt8(R, i, tm));
+  const M = Math.round(SLOTS.length * clamp(Math.log10(Math.max(1, tot)) / 9));
+  const vis = SLOTS.slice(0, M).map((p, j) => [p, j]).sort((a, b) => Math.hypot(a[0][0] - D.x - 70, a[0][1] - D.y + 50) - Math.hypot(b[0][0] - D.x - 70, b[0][1] - D.y + 50));
+  const per = new Array(NCL).fill(0); let used = 0;
+  for (let i = NCL - 1; i >= 1; i--) { if (n[i] <= 0) continue; per[i] = Math.max(1, Math.round(M * n[i] / tot)); used += per[i]; }
+  per[0] = Math.max(0, M - used); if (n[0] <= 0) per[0] = 0;
+  let q = 0;
+  for (let i = NCL - 1; i >= 0; i--) for (let k = 0; k < per[i] && q < vis.length; k++, q++) {
+    const [p] = vis[q], col = clsCol(i); c.beginPath(); c.arc(p[0], p[1], 7.5, 0, TAU); c.fillStyle = css(col); c.fill(); c.strokeStyle = css(darker(col, .5)); c.lineWidth = 1.8; c.stroke();
+  }
+  L.pill(cn > 0 ? H('antibiotikum', fmt(cn)) : lab('nincs antibiotikum'), D.x, D.y + D.r + 46, { k: cn > 0 ? 'antibiotikum' : 'nincs antibiotikum', s: 24, w: 700, a: 'center', bg: cn > 0 ? TEAL : CARD, bd: cn > 0 ? TEAL : MUT, c: cn > 0 ? '#fffaf1' : MUT, pad: 12 });
+  TH('baktériumok', big(tot), D.x, D.y - D.r - 24, { s: 26, w: 700, c: INK, a: 'center' });
+  // a teljes létszám log. skálán
+  P8.axes();
+  for (const e of treat8()) { P8.band(e.t, Math.min(tm, e.t + e.dur), { col: 'rgba(10,111,134,.16)' }); }
+  T('log skála', P8.box.x + P8.box.w, P8.box.y - 18, { s: 22, w: 600, c: MUT, a: 'right' });
+  const pts = []; for (let t = 0; t <= 24.001; t += .05) pts.push([t, Math.max(.3, tot8(R, t))]);
+  const e = P8.line(pts, { col: INK, w: 4.5, upto: tm }); if (e && tot >= 1) disc(e[0], e[1], 7, INK);
+  const fin = tot8(R, 24), tEnd = treat8()[0].t + S8.dur;
+  if (tm >= 23.9) {
+    if (fin < 1) L.pill(lab('mind elpusztult'), P8.box.x + P8.box.w / 2, P8.box.y + 40, { k: 'mind elpusztult', s: 24, w: 700, a: 'center', bg: CARD, bd: GOOD, c: GOOD, pad: 12 });
+    else { let rs = 0; for (let i = 0; i < NCL; i++) if (MIC(i) >= S8.dose) rs += cnt8(R, i, 24);
+      L.pill(H('visszanőtt', fmt(Math.round(100 * rs / fin))), P8.box.x + P8.box.w / 2 + 20, P8.box.y + P8.box.h - 40, { k: 'visszanőtt', s: 24, w: 700, a: 'center', bg: CARD, bd: PURP, c: PURP, pad: 12 }); }
+  }
+  // tények
+  const gen = num('számolt idő') * 60 / num('osztódási idő');
+  TH('kóli', [fmt(num('osztódási idő')), fmt(num('számolt idő')), '≈ ' + fmt(Math.pow(2, gen) / 1e6, 1) + ' ' + lab('millió')], 690, 632, { s: 22, w: 600, c: INK, max: 630 });
+  TH('Fleming', [dat('penicillin felfedezése').s, dat('Fleming figyelmeztetése').s], 690, 670, { s: 22, w: 600, c: MUT, max: 630 });
+  // ellenállósági szintek
+  P8c.axes({ grid: false });
+  P8c.bars(n.map((v) => Math.max(v, 0)), { x0: 0, dx: 1, bw: .7, cols: Array.from({ length: NCL }, (_, i) => css(clsCol(i))), base: 1 });
+  for (let i = 0; i < NCL; i++) L.tx(fmt(MIC(i)), P8c.X(i + .5), P8c.box.y + P8c.box.h + 12, { f: F.M, s: 22, w: 600, a: 'center', b: 'top', c: MUT });
+  T('ellenállóság tengely', P8c.box.x + P8c.box.w / 2, P8c.box.y + P8c.box.h + 60, { s: 22, w: 600, c: INK, a: 'center' });
+  T('érzékeny', P8c.box.x, P8c.box.y + P8c.box.h + 60, { s: 22, w: 700, c: css(darker(SENS, .5)) });
+  T('ellenálló', P8c.box.x + P8c.box.w, P8c.box.y + P8c.box.h + 60, { s: 22, w: 700, c: PURP, a: 'right' });
+  const dx = P8c.X(Math.min(NCL - .05, Math.log2(S8.dose) + .5));
+  ln(dx, P8c.box.y - 34, dx, P8c.box.y + P8c.box.h, TEAL, 3.5, [10, 6]);
+  TH('adag jel', fmt(S8.dose), Math.min(dx, P8c.box.x + P8c.box.w - 50), P8c.box.y - 42, { s: 22, w: 700, c: TEAL, a: 'center' });
+  if (dx - P8c.box.x > 170) T('elpusztul', dx - 14, P8c.box.y - 8, { s: 22, w: 700, c: BAD, a: 'right' });
+  if (P8c.box.x + P8c.box.w - dx > 150) T('túléli', dx + 14, P8c.box.y - 8, { s: 22, w: 700, c: GOOD });
+  T('pötty', D.x, 1046, { s: 22, w: 500, c: MUT, a: 'center', max: 560 });
+  stamp('modell bélyeg', 1310, 1046, { a: 'right' });
+}
+
+/* ════════════ 9. lépés: összefoglalás ════════════ */
+function scene9(st) {
+  T('összegzés cím', 60, 82, { f: F.D, s: 44, w: 600 });
+  const boxes = [[40, 120], [690, 120], [40, 570], [690, 570]], kw = 630, kh = 420, keys = ['ö1', 'ö2', 'ö3', 'ö4'];
+  boxes.forEach(([x, y], i) => { const a = clamp((st - i * .35) / .5); al(a); card(x, y, kw, kh, { r: 16 }); T(keys[i], x + 24, y + 44, { s: 28, w: 700, c: INK, max: kw - 48 }); al(1); });
+  // 1: változatosság
+  al(clamp(st / .5));
+  const z0 = basePop(S1.seed), Bm = { x: 70, y: 180, w: 570, h: 330 };
+  meadow(Bm, GREEN()); c.save(); rr(Bm.x, Bm.y, Bm.w, Bm.h, 18); c.clip();
+  for (let i = 0; i < z0.length; i++) { const [x, y, an] = spot(Bm, 0, i, 24); hopper(x, y, 34, z0[i], an); } c.restore();
+  // 2: a hisztogram eltolódik
+  al(clamp((st - .35) / .5));
+  const G4 = S9.g4 || (S9.g4 = simGen(Object.assign({}, P(), { seed: S4.seed, G: 20, z0: z0, bg: () => GREEN(), lite: true })));
+  P9h.axes({ ticks: false, names: false });
+  const h0 = histo(G4[0].z), h1 = histo(G4[20].z), my = Math.max(...h0, ...h1) * 1.15; P9h.set({ ya: { min: 0, max: my } });
+  P9h.bars(h0, { x0: 0, dx: .1, bw: .9, cols: binCols(10), a: .3 }); P9h.bars(h1, { x0: 0, dx: .1, bw: .9, cols: binCols(10) });
+  const xa = P9h.X(G4[0].mean), xb = P9h.X(G4[20].mean), ya = P9h.box.y + 20;
+  ln(xa, ya, xb + 14, ya, RED, 4); c.beginPath(); c.moveTo(xb, ya); c.lineTo(xb + 16, ya - 9); c.lineTo(xb + 16, ya + 9); c.closePath(); c.fillStyle = RED; c.fill();
+  colorAxis(P9h, { name: false });
+  // 3: sodródás
+  al(clamp((st - .7) / .5));
+  const E = S9.e || (S9.e = BioPop.ensemble((sd) => simGen(Object.assign({}, P(), { N: num('kis populáció'), s: 0, seed: sd, G: GEN6, bg: () => GREEN(), z0: initPop(num('kis populáció'), sd + 1, .5, num('kezdő színszórás') / 100), lite: true })), 6, 61).all().results);
+  P9m.axes({ ticks: false, names: false });
+  E.forEach((G, i) => { const pts = []; for (let q = 0; q <= GEN6; q++) if (G[q].z.length) pts.push([q, G[q].mean * 100]); P9m.line(pts, { col: i ? INK : RED, w: i ? 3 : 4.5, a: i ? .45 : 1 }); });
+  // 4: Petri-csésze
+  al(clamp((st - 1.05) / .5));
+  const cx = 1005, cy = 790, r0 = 160;
+  c.beginPath(); c.arc(cx, cy, r0, 0, TAU); c.fillStyle = '#f2e7c6'; c.fill(); c.strokeStyle = 'rgba(28,36,64,.45)'; c.lineWidth = 3; c.stroke();
+  for (let i = 0; i < 120; i++) { const a = hash(i, 31) * TAU, rd = Math.sqrt(hash(i, 32)) * (r0 - 16), res = i < 100 ? NCL - 1 : 0, col = clsCol(res);
+    c.beginPath(); c.arc(cx + Math.cos(a) * rd, cy + Math.sin(a) * rd, 6, 0, TAU); c.fillStyle = css(col); c.fill(); c.strokeStyle = css(darker(col, .5)); c.lineWidth = 1.5; c.stroke(); }
+  al(1);
+}
+const S9 = { g4: null, e: null };
+
+/* ════════════════════════════════════════════════════════════════ */
+const sT = new Array(9).fill(0);
+function syncBtns(map, on) { for (const k in map) map[k].classList.toggle('on', k === on); }
+const B6 = {};
+function addGens(S, k) { const now = genClock(S, L.st); S.base = now; S.tB = L.st; S.target = Math.min(GMAX, Math.floor(now + 1e-9) + k); if (S.target <= now) S.target = Math.min(GMAX, Math.floor(now) + 1); }
+function setBg(S, b, runf) {
+  const g = Math.floor(genClock(S, L.st) + 1e-9);
+  S.ev = S.ev.filter((e) => e.g < g).concat([{ g, b }]); S.gens = null;
+  if (S.target <= g + 1) { S.base = g; S.tB = L.st; S.target = Math.min(GMAX, g + 12); }
+}
+const fuWord = (v) => lab(v < 35 ? 'zöld' : v > 65 ? 'barna' : 'átmeneti');
+L = Lesson.create({
+  content: window.LESSON_CONTENT,
+  home: false,
+  steps: [
+    { settle: 6, enter(L) { S1.seed = 3; },
+      controls(L) { L.button(lab('újra gomb'), () => { S1.seed++; S2.gens = null; S3.gens = null; S4.gens = null; S5.z0 = null; S5.gens = null; L.st = 0; }, 'újra gomb'); } },
+    { settle: 7.6, enter(L) { S2.gens = null; } },
+    { settle: 7.8,
+      enter(L) { S3.s = num('ragadozás erőssége') / 100; S3.seed = 31; S3.gens = null; S3.t0 = 0; },
+      controls(L) {
+        L.slider({ label: lab('ragadozás csúszka'), k: 'ragadozás csúszka', min: 0, max: 90, step: 5, value: num('ragadozás erőssége'), format: (v) => fmt(v) + ' %',
+          onInput: (v) => { S3.s = v / 100; S3.gens = null; S3.t0 = L.st; } });
+        L.button(lab('újra gomb'), () => { S3.seed++; S3.gens = null; S3.t0 = L.st; }, 'újra gomb');
+      } },
+    { settle: 7.4,
+      enter(L) { S4.seed = 41; S4.ev = []; S4.gens = null; S4.target = 15; S4.base = 0; S4.tB = .8; S4.rate = 2.5; if (S4.sl) S4.sl.set(num('zöld fű színe')); },
+      controls(L) {
+        L.button(lab('új nemzedék gomb'), () => addGens(S4, 1), 'új nemzedék gomb');
+        L.button(lab('tíz nemzedék gomb'), () => addGens(S4, 10), 'tíz nemzedék gomb');
+        L.button(lab('újra gomb'), () => { S4.seed++; S4.ev = []; S4.gens = null; S4.target = 15; S4.base = 0; S4.tB = L.st + .3; if (S4.sl) S4.sl.set(num('zöld fű színe')); }, 'újra gomb');
+        S4.sl = L.slider({ label: lab('fű csúszka'), k: 'fű csúszka', min: 0, max: 100, step: 5, value: num('zöld fű színe'), format: (v) => fmt(v) + ' – ' + fuWord(v),
+          onInput: (v) => setBg(S4, v / 100) });
+      } },
+    { settle: 8.2,
+      enter(L) { S5.seed = 51; S5.ev = defEv5(); S5.gens = null; S5.target = 24; S5.base = 0; S5.tB = 1; },
+      controls(L) {
+        L.button(lab('aszály gomb'), () => setBg(S5, BROWN()), 'aszály gomb');
+        L.button(lab('eső gomb'), () => setBg(S5, GREEN()), 'eső gomb');
+        L.button(lab('újra gomb'), () => { S5.seed++; S5.ev = defEv5(); S5.gens = null; S5.target = 24; S5.base = 0; S5.tB = L.st + .3; }, 'újra gomb');
+      } },
+    { settle: 7.6,
+      enter(L) { S6.big = false; S6.birdOn = false; S6.seed = 61; S6.E = null; if (B6.k) { syncBtns({ k: B6.k, n: B6.n }, 'k'); B6.m.classList.remove('on'); } },
+      controls(L) {
+        const re = () => { S6.E = null; L.st = 0; };
+        B6.k = L.button(lab('kicsi gomb'), () => { S6.big = false; syncBtns({ k: B6.k, n: B6.n }, 'k'); re(); }, 'kicsi gomb');
+        B6.n = L.button(lab('nagy gomb'), () => { S6.big = true; syncBtns({ k: B6.k, n: B6.n }, 'n'); re(); }, 'nagy gomb');
+        B6.m = L.button(lab('madár gomb'), () => { S6.birdOn = !S6.birdOn; B6.m.classList.toggle('on', S6.birdOn); re(); }, 'madár gomb');
+        L.button(lab('újra gomb'), () => { S6.seed += 101; re(); }, 'újra gomb');
+        B6.k.classList.add('on');
+      } },
+    { settle: 6.4 },
+    { settle: 8.6,
+      enter(L) { S8.dose = num('adag'); S8.dur = num('kezelés hossza'); S8.extra = []; S8.run = null; S8.t0 = 0; if (S8.sd) { S8.sd.set(Math.log2(S8.dose)); S8.sh.set(S8.dur); } },
+      controls(L) {
+        const re = () => { S8.extra = []; S8.run = null; S8.t0 = L.st; };
+        S8.sd = L.slider({ label: lab('adag csúszka'), k: 'adag csúszka', min: 0, max: 6, step: 1, value: Math.log2(num('adag')), format: (v) => fmt(Math.pow(2, v)) + ' ' + lab('egység'),
+          onInput: (v) => { S8.dose = Math.pow(2, v); re(); } });
+        S8.sh = L.slider({ label: lab('hossz csúszka'), k: 'hossz csúszka', min: 1, max: 12, step: 1, value: num('kezelés hossza'), format: (v) => fmt(v) + ' ' + lab('óra'),
+          onInput: (v) => { S8.dur = v; re(); } });
+        L.button(lab('újra adag gomb'), () => {
+          const t = tm8(L.st);
+          if (t >= 23) { S8.extra = [{ t: 12, dur: S8.dur }]; S8.t0 = L.st; } else S8.extra = S8.extra.concat([{ t: Math.round(t * 10) / 10, dur: S8.dur }]);
+          S8.run = null;
+        }, 'újra adag gomb');
+      } },
+    { settle: 3 },
+  ],
+  init(Lx) {
+    L = Lx; c = L.ctx;
+    const yn = { s: lab('sáskák tengely'), k: 'sáskák tengely' }, gn = { s: lab('nemzedék tengely'), k: 'nemzedék tengely' }, an = { s: lab('átlagszín tengely'), k: 'átlagszín tengely' };
+    const noX = { min: 0, max: 1, labels: false, ticks: [] };
+    PH = BioPlot.create(L, { x: 150, y: 650, w: 1110, h: 280, xa: noX, ya: { min: 0, max: 40, name: yn, ticks: 4 } });
+    PH4 = BioPlot.create(L, { x: 150, y: 650, w: 500, h: 280, xa: noX, ya: { min: 0, max: 40, name: yn, ticks: 4 } });
+    PM4 = BioPlot.create(L, { x: 800, y: 650, w: 480, h: 280, xa: { min: 0, max: 20, name: gn, ticks: 4 }, ya: { min: 0, max: 100, ticks: [0, 50, 100], labels: false } });
+    PH5 = BioPlot.create(L, { x: 150, y: 650, w: 500, h: 280, xa: noX, ya: { min: 0, max: 40, name: yn, ticks: 4 } });
+    PM5 = BioPlot.create(L, { x: 800, y: 650, w: 480, h: 280, xa: { min: 0, max: 30, name: gn, ticks: 3 }, ya: { min: 0, max: 100, ticks: [0, 50, 100], labels: false } });
+    PM6 = BioPlot.create(L, { x: 160, y: 610, w: 1100, h: 330, xa: { min: 0, max: GEN6, name: gn, ticks: 5 }, ya: { min: 0, max: 100, ticks: [0, 25, 50, 75, 100], labels: false, name: an } });
+    const tw = (v) => v >= 1e9 ? '1 ' + lab('milliárd') : v >= 1e6 ? '1 ' + lab('millió') : fmt(v);
+    P8 = BioPlot.create(L, { x: 820, y: 150, w: 470, h: 380, xa: { min: 0, max: 24, ticks: [0, 6, 12, 18, 24], name: { s: lab('idő tengely'), k: 'idő tengely' } },
+      ya: { min: 1, max: 1e10, log: true, ticks: [1, 1e3, 1e6, 1e9], fmt: tw, name: { s: lab('darab tengely'), k: 'darab tengely' } } });
+    P8c = BioPlot.create(L, { x: 690, y: 780, w: 610, h: 150, xa: { min: 0, max: NCL, labels: false, ticks: [] },
+      ya: { min: 1, max: 1e9, log: true, ticks: [1, 1e3, 1e6, 1e9], fmt: tw, labels: false } });
+    P9h = BioPlot.create(L, { x: 740, y: 200, w: 520, h: 270, xa: noX, ya: { min: 0, max: 40 } });
+    P9m = BioPlot.create(L, { x: 110, y: 640, w: 500, h: 290, xa: { min: 0, max: GEN6 }, ya: { min: 0, max: 100 } });
+    window.__bio = { S1, S2, S3, S4, S5, S6, S8, simGen, run8 };
+  },
+  draw(Lx) {
+    L = Lx; c = L.ctx; GA = 1; background();
+    const sp = L.sp;
+    if (L.step >= 0) sT[L.step] = L.st;
+    const SC = [scene1, scene2, scene3, scene4, scene5, scene6, scene7, scene8, scene9];
+    for (let i = 0; i < SC.length; i++) {
+      const w = clamp(1 - Math.abs(sp - i) * 1.6); if (w <= .005) continue;
+      GA = w; c.save(); c.globalAlpha = w; SC[i](sT[i]); c.restore();
+    }
+    c.globalAlpha = 1;
+  },
+});
+
+/* QA: számolt ↔ rajzolt érték, a modell önellenőrzése */
+L.checks = () => {
+  const o = [], p = P();
+  const z0 = basePop(3);
+  o.push({ name: 'kezdő populáció = sáskák száma', ok: z0.length === p.N, got: z0.length, want: p.N });
+  const G = simGen(Object.assign({}, p, { seed: 41, G: 15, z0, bg: () => GREEN() }));
+  o.push({ name: 'zöld fűben 15 nemzedék alatt zöldül (átlag csökken ≥ 15 pontot)', ok: (G[0].mean - G[15].mean) * 100 >= 15, got: fmt((G[0].mean - G[15].mean) * 100, 1), want: '≥ 15' });
+  const Gb = simGen(Object.assign({}, p, { seed: 41, G: 15, z0, bg: () => BROWN() }));
+  o.push({ name: 'barna fűben barnul', ok: Gb[15].mean > G[0].mean + .1, got: fmt(Gb[15].mean * 100, 1), want: '> ' + fmt(G[0].mean * 100 + 10, 1) });
+  const G0 = simGen(Object.assign({}, p, { s: 0, seed: 41, G: 1, z0, bg: () => GREEN() }));
+  let kept = 0; for (const v of G0[0].keep) kept += v;
+  o.push({ name: '2. lépés: felnő = sáskák száma, utód = N·F', ok: kept === p.N && G0[0].J.length === p.N * p.F, got: kept + ' / ' + G0[0].J.length, want: p.N + ' / ' + p.N * p.F });
+  o.push({ name: 'túlélési esély: rejtőző > feltűnő', ok: survive(GREEN(), GREEN(), p.s) > survive(BROWN(), GREEN(), p.s), got: fmt(survive(GREEN(), GREEN(), p.s), 2) + ' > ' + fmt(survive(BROWN(), GREEN(), p.s), 2), want: true });
+  const spread = (N) => { const R = BioPop.ensemble((sd) => simGen(Object.assign({}, p, { N, s: 0, seed: sd, G: GEN6, bg: () => GREEN(), z0: initPop(N, sd + 1, .5, .18), lite: true })), 8, 61).all().results;
+    const f = R.map((G) => G[GEN6].mean).filter((v) => !isNaN(v)); return Math.max(...f) - Math.min(...f); };
+  const s20 = spread(num('kis populáció')), s500 = spread(num('nagy populáció'));
+  o.push({ name: 'sodródás: a 20-as futások szóródása ≥ 2 × az 500-asoké', ok: s20 >= 2 * s500, got: fmt(s20 * 100, 1) + ' vs ' + fmt(s500 * 100, 1), want: '≥ 2×' });
+  const gen = num('számolt idő') * 60 / num('osztódási idő');
+  o.push({ name: 'E. coli: 8 óra = 24 osztódás → 2^24 = 16 777 216', ok: Math.pow(2, gen) === 16777216, got: Math.pow(2, gen), want: 16777216 });
+  // baktériumok: nagy adag + hosszú kezelés → mind elpusztul; közepes adag → az ellenállók veszik át
+  const save = [S8.dose, S8.dur, S8.extra];
+  S8.dose = 64; S8.dur = 6; S8.extra = []; const Ra = run8();
+  S8.dose = 16; const Rb = run8(); let rs = 0; for (let i = 0; i < NCL; i++) if (MIC(i) >= 16) rs += cnt8(Rb, i, 24);
+  S8.dose = 64; S8.dur = 1; const Rc = run8();
+  [S8.dose, S8.dur, S8.extra] = save;
+  o.push({ name: 'adag 64, 6 óra: mind elpusztul', ok: tot8(Ra, 24) === 0, got: tot8(Ra, 24), want: 0 });
+  o.push({ name: 'adag 16: a végén ≥ 99 % ellenálló (≥ 16 egység)', ok: rs / tot8(Rb, 24) >= .99, got: fmt(rs / tot8(Rb, 24) * 100, 2), want: '≥ 99' });
+  o.push({ name: 'adag 64, 1 óra: a túlélők visszanőnek', ok: tot8(Rc, 24) > 1e8, got: big(tot8(Rc, 24)), want: '> 100 millió' });
+  return o;
+};
+/* QA: szélső állapotok (tools/qa_lesson.py --states) */
+window.__qaStates = {
+  3: [{ name: 'nincs-madar', set(L) { S3.s = 0; S3.gens = null; S3.t0 = 0; } }, { name: 'eros-madar', set(L) { S3.s = .9; S3.gens = null; S3.t0 = 0; } }],
+  4: [{ name: 'barna-fu', set(L) { S4.ev = [{ g: 0, b: 1 }]; S4.gens = null; S4.target = 15; S4.base = 0; S4.tB = .8; } },
+      { name: 'hatvan-nemzedek', set(L) { S4.ev = [{ g: 0, b: GREEN() }, { g: 30, b: .5 }]; S4.gens = null; S4.target = 60; S4.base = 60; S4.tB = 0; } }],
+  5: [{ name: 'eso-vissza', set(L) { S5.ev = defEv5().concat([{ g: 14, b: GREEN() }]); S5.gens = null; S5.target = 30; S5.base = 30; S5.tB = 0; } }],
+  6: [{ name: 'nagy', set(L) { S6.big = true; S6.E = null; } }, { name: 'kicsi-madar', set(L) { S6.big = false; S6.birdOn = true; S6.E = null; } },
+      { name: 'nagy-madar', set(L) { S6.big = true; S6.birdOn = true; S6.E = null; } }],
+  8: [{ name: 'adag64', set(L) { S8.dose = 64; S8.dur = 6; S8.extra = []; S8.run = null; S8.t0 = 0; } },
+      { name: 'adag64-1ora', set(L) { S8.dose = 64; S8.dur = 1; S8.extra = []; S8.run = null; S8.t0 = 0; } },
+      { name: 'adag1', set(L) { S8.dose = 1; S8.dur = 12; S8.extra = []; S8.run = null; S8.t0 = 0; } },
+      { name: 'masodik-adag', set(L) { S8.dose = 16; S8.dur = 6; S8.extra = [{ t: 12, dur: 6 }]; S8.run = null; S8.t0 = 0; } }],
+};
+})();
+</script>
+</body>
+</html>
