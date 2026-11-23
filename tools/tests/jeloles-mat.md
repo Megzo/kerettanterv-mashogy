@@ -1,4 +1,4 @@
-# Próba: matematikai jelölés
+# Próba: matematikai jelölés – `x^2 - 1`, √(2), 2 1/3
 tantárgy: Matematika · évfolyam: 5–6. · témakör: 1. Teszt
 
 <!-- A build öntesztje (python3 tools/build_lesson.py --selftest): a várt HTML-t a selftest() ellenőrzi.

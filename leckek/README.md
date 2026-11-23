@@ -90,7 +90,7 @@ fajta, azt a lecke előírja; a build szól, ha a formátum nem stimmel.
 | évszám | `Kr. e. 753` · `Kr. u. 476` · `1241` · `i. e. 490` | 0. év nincs (Kr. e. 1 után Kr. u. 1 jön); mínuszjelet ne írj |
 | dátum | `1848. március 15.` · `1849. április` · `Kr. e. 44. március 15.` | hónap kisbetűvel, kiírva; a nap létezzen |
 | koordináta | `47,50° É, 19,04° K` · `38° 9′ É, 23° 58′ K` | É/D és K/Ny; ha a pont kiesik a lecke térképéről, a build szól |
-| tartomány | `50–70 ezer fő` · `25–28` | nagygondolatjel (–); `ezer`, `millió` megengedett |
+| tartomány | `50–70 ezer fő` · `25–28` · `10–30 µm` | nagygondolatjel (–); `ezer`, `millió` megengedett; ha a lecke mértékegység-családot kér (hosszúság, térfogat…), bármely egysége írható |
 | becslés | `kb. 25 ezer fő` · `~ 3000 km` · `Kr. e. 2560 körül` · `50–70 ezer fő (becslés)` | a lecke „kb.”-t vagy „becslés” bélyeget mutat |
 
 A számolás a leckében helyes lesz: Kr. e. 776 és Kr. e. 753 között 23 év telt el, Kr. e. 1 és
@@ -113,6 +113,10 @@ alakított át, és szól, ha valami gyanús (pl. `3.14`, `5 - 3`).
 | halmaz | `{1; 2; 3}` · `{ }` | {1; 2; 3} – pontosvesszővel (a `{kulcs}` adat-hivatkozásban nincs `;`) |
 | kémiai képlet (kémialecke) | `H2O` · `CO2` · `Ca(OH)2` · `Na^+` · `SO4^2-` · `->` | H₂O, CO₂, Ca(OH)₂, Na⁺, SO₄²⁻, → (Unicode-dal is írhatod: `H₂O`) |
 | jel szó szerint | `\{` `\}` `\^` `\_` `` \` `` `\/` | { } ^ _ ` / |
+
+A lecke **címében** (`#` sor) is működik: ott Unicode-jellé alakul (`` `x^2 - 1` `` → x² − 1,
+`Na^+` → Na⁺, kémialeckében `H2O` → H₂O); ami így nem írható (`F_fel`), az jelöléssel marad.
+Kémialecke feliratában a töltés is Unicode lesz: `Na^+` → Na⁺, `OH^-` → OH⁻.
 
 Matematikaleckében ezen felül: `3/4` magától álló tört, `2 1/3` vegyes szám, a `képlet:` sor
 egésze képlet, benne `(−b ± √(b^2 − 4ac)) / (2a)` emeletes tört lesz. Egyenlőtlenséggel ne kezdj
@@ -153,8 +157,10 @@ python3 tools/build_lesson.py --selftest                  # a build öntesztje (
 python3 tools/build_lesson.py --stale                     # elavuló („frissítendő”) adatok
 python3 tools/qa_lesson.py leckek/fizika-7-8/01-suruseg.html --back --review 6
 python3 tools/qa_lesson.py … --det --data                 # determinizmus-próba, adatlista
+python3 tools/qa_lesson.py … --jump-only                  # csak az ugrópróba (alapból is fut; --no-jump kihagyja)
 ```
 
 A QA képernyőképet készít minden lépésről (`build/qa/<lecke>/`), és kilistázza a JS-hibákat,
 a túlcsorduló panelszöveget, a panel alá lógó, 22 px-nél kisebb vagy egymást átfedő
-feliratokat. Új lecke írásához: [`SZERZODES.md`](SZERZODES.md).
+(forgatottnál a forgatott téglalap szerint, `L.pill` dobozánál a doboz szerint) feliratokat, és
+ugrópróbát futtat (1. → utolsó, vissza, véletlen ugrások, betöltés `#N`-re) JS-hiba-figyeléssel. Új lecke írásához: [`SZERZODES.md`](SZERZODES.md).

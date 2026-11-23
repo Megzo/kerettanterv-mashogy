@@ -1,4 +1,4 @@
-# Próba: kémiai jelölés
+# Próba: kémiai jelölés – H2O, Na^+ és SO4^2-
 tantárgy: Kémia · évfolyam: 7–8. · témakör: 1. Teszt
 
 <!-- A build öntesztje (python3 tools/build_lesson.py --selftest). -->
@@ -7,6 +7,10 @@ tantárgy: Kémia · évfolyam: 7–8. · témakör: 1. Teszt
 ### Feliratok
 - víz: H2O
 - ion: SO4^2-
+- kation: Na^+
+- hidroxidion: OH^-
+- kalciumion: Ca^2+-ion
+- unicode: Mg²⁺
 - reakció: CH4 + 2 O2 -> CO2 + 2 H2O
 - szóegyenlet: metán + oxigén = szén-dioxid + víz
 

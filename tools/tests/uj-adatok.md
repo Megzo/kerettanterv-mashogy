@@ -19,6 +19,8 @@ tantárgy: Biológia · évfolyam: 7–8. · témakör: 1. Teszt
 - jég: 68 ezer km²
 - sejt mérete: 7 µm
 - pohár: 2,5 dl
+- sejtméret-tartomány: 10–30 um
+- hajszál: 0,05–0,1 mm
 - lábak: 94
 - változás: +3
 - hidegrekord: −35 °C

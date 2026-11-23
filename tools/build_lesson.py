@@ -43,6 +43,8 @@ Adattípusok (a spec "data" bejegyzésének "type" mezője; alap: "number"):
           "s": "…"}; a spec "box": [lonmin, latmin, lonmax, latmax] ellenőrzi, hogy a térképen van-e.
   range   „50–70 ezer fő”, „25–28”, „60–100/perc” → {"t": "range", "lo": 50000, "hi": 70000, "v": 60000,
           "u": "fő", "d": 0, "s": "50–70 ezer fő"}; min/max a lo-ra és a hi-ra is.
+          Spec "dim" (mint a number-nél): „2–5 mm”, „60–90 µm” – a családból bármely egység; kimenet
+          + "blo", "bhi" (alapegységben), "base" (a közepük), "bu"; a min/max ekkor az alapegységre vonatkozik.
   ago     (mély idő) „3,8 milliárd éve”, „66 millió éve”, „7–6 millió éve” → {"t": "ago", "v": 3.8e9,
           ["lo", "hi"], "s"}; v = évek száma a jelen előtt; min/max években. „Kr. e.” itt hiba (→ year).
   ratio   „5474 : 1850”, „3 : 1”, „3 : 4 : 5” → {"t": "ratio", "a": 5474, "b": 1850, "v": a/b,
@@ -87,7 +89,9 @@ Jelölés a szövegben (panel, lépéscím, felirat) – a részletek a leckek/R
   "math": true – 3/4 álló tört, 2 1/3 vegyes szám, √(…) a szövegben is; a `képlet:` sor egésze
      képlet, (a) / (b) emeletes tört; figyelmeztet: 3*4, 5 - 3, 3.14, 30', (3, 2), cm2.
   "chem": true – H2O, CO2, Ca(OH)2 → alsó index; ₂ ⁺ (Unicode) → <sub>/<sup>; -> → →.
-     Feliratban Unicode-ra alakít (H₂O); minden átalakítást „info:” sorban kiír.
+     Feliratban Unicode-ra alakít (H₂O, Na^+ → Na⁺, SO4^2- → SO₄²⁻); minden átalakítást „info:” sorban kiír.
+  a # cím (sima szöveg: panel + böngészőfül) – minden leckében: `képlet`, x^2, Na^+, √(…) → Unicode
+     (x², Na⁺, √2); "chem": H2O → H₂O; amit Unicode-dal nem lehet (F_fel), az jelöléssel marad; „info:” sor.
 A fa és a HTML-alak a shared/matek/mtext.js MatText.parse-ával közös (próbák: tools/tests/mx-cases.js).
 Csak a Python standard könyvtárát használja.
 """
@@ -367,10 +371,23 @@ def parse_range(s, line, P, k, want):
         P.warn(line, f"„{k}” = {s}: kötőjel helyett nagygondolatjelet (–) írj a tartományba.")
     (ai, _, af), (bi, _, bf) = a.partition(","), b.partition(",")
     lo, hi, d = to_float(ai, af), to_float(bi, bf), max(len(af), len(bf))
-    mult, mw, unit = split_mult(rest, want.get("unit", ""), line, P)
-    if unit != norm_unit(want.get("unit", "")):
-        P.err(line, f"„{k}”: a mértékegység „{want.get('unit', '')}” legyen, nem „{unit}”.")
-        return None
+    dim = want.get("dim")
+    if dim:                                   # mértékegység-család: „2–5 mm”, „60–90 µm” → + blo, bhi, base, bu
+        dim = DIM_ALIAS.get(dim, dim)
+        if dim not in DIMS:
+            P.err(line, f"„{k}”: ismeretlen dim „{dim}” (lehet: {', '.join(DIMS)}).")
+            return None
+        bu, fam = DIMS[dim]
+        mult, mw, unit = split_mult(rest, "", line, P)
+        unit = DIM_UNIT_ALIASES.get(unit, unit)
+        if unit not in fam:
+            P.err(line, f"„{k}” = {s}: {dim} mértékegysége kell ({', '.join(fam)}), nem „{unit}”.")
+            return None
+    else:
+        mult, mw, unit = split_mult(rest, want.get("unit", ""), line, P)
+        if unit != norm_unit(want.get("unit", "")):
+            P.err(line, f"„{k}”: a mértékegység „{want.get('unit', '')}” legyen, nem „{unit}”.")
+            return None
     if lo >= hi:
         P.err(line, f"„{k}” = {s}: a tartomány alsó értéke kisebb legyen a felsőnél.")
         return None
@@ -381,7 +398,11 @@ def parse_range(s, line, P, k, want):
         text += unit_sep(unit) + unit
     lo, hi = clean(lo * mult), clean(hi * mult)
     d = max(0, d - int(round(math.log10(mult))))
-    return {"t": "range", "lo": lo, "hi": hi, "v": (lo + hi) / 2, "u": unit, "d": d}, text, False
+    item = {"t": "range", "lo": lo, "hi": hi, "v": (lo + hi) / 2, "u": unit, "d": d}
+    if dim:
+        item.update(blo=clean(lo * fam[unit]), bhi=clean(hi * fam[unit]), bu=bu)
+        item["base"] = clean((item["blo"] + item["bhi"]) / 2)
+    return item, text, False
 
 
 # ── új adattípusok ─────────────────────────────────────────────────────────────────────────
@@ -976,6 +997,8 @@ def parse_datum(k, raw, n, want, P, ctx=None):
     if typ in ("number", "year", "range", "ago", "ratio", "frac", "list", "series"):
         if typ == "number":
             lo = hi = chk
+        elif typ == "range" and "blo" in item:          # dim: a min/max az alapegységre vonatkozik
+            lo, hi = item["blo"], item["bhi"]
         elif typ in ("range", "ago") and "lo" in item:
             lo, hi = item["lo"], item["hi"]
         elif typ in ("list", "series"):
@@ -1305,6 +1328,60 @@ def mx_unicode(nodes):
     return "".join(out)
 
 
+SUP_ALL = str.maketrans("0123456789+−-=()ni", "⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻⁻⁼⁽⁾ⁿⁱ")
+SUB_ALL = str.maketrans("0123456789+−-=()", "₀₁₂₃₄₅₆₇₈₉₊₋₋₌₍₎")
+
+
+def mx_plain(nodes):
+    """Fa → sima szöveg (címhez, ahol nincs HTML): x², H₂O, Na⁺, √2, 3/4. Ami Unicode-dal nem írható
+    (pl. betűs index: F_fel), az a .md-jelöléssel marad (F_fel, x^(n+1))."""
+    out = []
+    for x in nodes:
+        if isinstance(x, str):
+            out.append(x); continue
+        t = x[0]
+        if t == "i":
+            out.append(x[1])
+        elif t in ("sup", "sub"):
+            inner = mx_plain(x[1])
+            ok = re.fullmatch(r"[0-9+−\-=()ni]+" if t == "sup" else r"[0-9+−\-=()]+", inner)
+            if ok:
+                out.append(inner.translate(SUP_ALL if t == "sup" else SUB_ALL))
+            else:
+                mark = "^" if t == "sup" else "_"
+                out.append(mark + (inner if re.fullmatch(r"\w+", inner) else "(" + inner + ")"))
+        elif t == "frac":
+            if out and out[-1][-1:].isdigit():
+                out.append(" ")                   # vegyes szám: 2 1/3 (a fa a szóközt elnyeli)
+            out.append(mx_plain(x[1]) + "/" + mx_plain(x[2]))
+        elif t == "sqrt":
+            inner = mx_plain(x[1])
+            out.append("√" + (inner if vis_len(x[1]) <= 1 or re.fullmatch(r"[\w,]+", inner) else "(" + inner + ")"))
+        elif t == "mx":
+            out.append(mx_plain(x[1]))
+    return "".join(out)
+
+
+def has_script(nodes):
+    """Van-e a fában felső/alsó index (bármilyen mélységben)."""
+    return any(not isinstance(x, str) and (x[0] in ("sup", "sub") or has_script(x[1] if x[0] != "frac" else x[1] + x[2]))
+               for x in nodes if not isinstance(x, str) and x[0] != "i")
+
+
+def plain_title(title, line, P, ctx):
+    """A # cím jelölése → sima Unicode-szöveg (a cím a panelen és a böngészőfülön textContent).
+    Képlet `…`, x^2, Na^+, √(…) minden leckében; "chem": H2O → H₂O; "math": 3/4 marad 3/4."""
+    if not title or not re.search(r"[`^_√]|->|[A-Z][a-z]?\d", title):
+        return title
+    mp = Mx(frac=bool(ctx.get("math")), chem=bool(ctx.get("chem")))
+    t = mx_plain(mp.text(title))
+    for e in mp.errors:
+        P.err(line, f"cím: {e}")
+    if t != title:
+        P.info(line, f"cím: {title} → {t}")
+    return t
+
+
 MATH_WARN = [
     (re.compile(r"\d\s*[*×]\s*\d|\d\s+x\s+\d"), "szorzásjelnek ·-ot írj (3 · 4), vagy tedd a képletet ` ` közé."),
     (re.compile(r"÷"), "osztásjelnek :-ot írj (12 : 3)."),
@@ -1624,12 +1701,14 @@ def build(md_path, check_only=False, out_dir=None):
         tree = mp.text(text)
         for e in mp.errors:
             P.err(n, f"„{k}”: {e}")
-        if spec["chem"] and mp.conv:
+        if spec["chem"] and (mp.conv or has_script(tree)):     # Na^+, SO4^2-, ₂ is (nem csak a H2O-szerű képlet)
             u = mx_unicode(tree)
             if u is not None:
                 for f in dict.fromkeys(mp.conv):
                     if f != "->":
                         P.info(n, f"{f} → {mx_unicode(Mx(chem=True).text(f))}")
+                if not mp.conv and u != text:
+                    P.info(n, f"„{k}”: {text} → {u}")
                 text = u
         if spec["chem"] and re.search(r"egyenlet$", k) and "→" not in text:
             P.warn(n, f"„{k}”: az egyenletben nyíl kell (→ vagy ->), pl. „metán + oxigén → szén-dioxid + víz”.")
@@ -1686,12 +1765,13 @@ def build(md_path, check_only=False, out_dir=None):
             P.warn(s["line"], f"a(z) „{s['title']}” lépés panelszövege {words} szó (ajánlott ≤ {spec['maxWords']}).")
         steps.append({"title": inline(s["title"], s["line"], P, data_fmt, ctx), "html": "".join(parts), "line": s["line"], "words": words})
 
+    title = plain_title(doc["title"], doc["titleLine"], P, ctx)
     if P.errors or check_only:
-        P.content = {"data": data, "labels": labels, "steps": steps}
+        P.content = {"data": data, "labels": labels, "steps": steps, "title": title}
         return P
     meta = doc["meta"]
     content = {
-        "source": md_path.name, "title": doc["title"], "titleLine": doc["titleLine"],
+        "source": md_path.name, "title": title, "titleLine": doc["titleLine"],
         "meta": {"subject": meta.get("tantárgy", ""), "grade": meta.get("évfolyam", ""), "topic": meta.get("témakör", "")},
         "steps": steps, "labels": labels, "data": data, "src": src,
     }
@@ -1799,6 +1879,10 @@ def selftest():
         check("szorzószó egységgel", (g("jég", "v"), g("jég", "u")), (68000, "km²"))
         check("dim", (g("sejt mérete", "base"), g("sejt mérete", "bu"), g("sejt mérete", "s")), (7e-6, "m", "7\u00a0µm"))
         check("dim térfogat", (g("pohár", "base"), g("pohár", "bu")), (0.25, "l"))
+        check("range dim", {f: g("sejtméret-tartomány", f) for f in ("lo", "hi", "u", "s", "blo", "bhi", "base", "bu")},
+              {"lo": 10.0, "hi": 30.0, "u": "µm", "s": "10–30\u00a0µm", "blo": 1e-5, "bhi": 3e-5, "base": 2e-5, "bu": "m"})
+        check("range dim tizedes", (g("hajszál", "blo"), g("hajszál", "bhi"), g("hajszál", "d"), g("hajszál", "s")),
+              (5e-5, 1e-4, 2, "0,05–0,1\u00a0mm"))
         check("int", g("lábak", "v"), 94)
         check("sign", g("változás", "s"), "+3")
         check("sign negatív", g("hidegrekord", "s"), "−35\u00a0°C")
@@ -1840,7 +1924,8 @@ def selftest():
                 "ismeretlen vegyjel „Xy”", "a lecke 1 C, 4 H összetételt vár", "szigorúan növekedjenek", "egész szám kell",
                 "két műveleti jel egymás után", "„y” betű nem szerepel", "páratlan zárójel", "kívül esik a lecke koordináta-rendszerén",
                 "negyedórás", "nincs ilyen adatfájl", "2022 nem szerepel az adatfájl", "hosszúság mértékegysége kell", "elem van, 12 kell",
-                "nem = vagy ⇌", "az „… éve”"]
+                "nem = vagy ⇌", "az „… éve”", "„hossz tartomány” = 2–5 kg: hosszúság mértékegysége kell",
+                "„nagy tartomány” = 2–5 m: kívül esik"]
         for w in want:
             if not any(w in e for e in P.errors):
                 fails.append(f"uj-hibak: hiányzó várt hiba: „{w}”")
@@ -1878,6 +1963,7 @@ def selftest():
         check("képlet: = 3 szó", st[2]["words"] if len(st) > 2 else None, 5)
         L = getattr(P, "content", {}).get("labels", {})
         check("felirat nyersen marad", L.get("tört felirat"), "3/4 + 1/4 = 1")
+        check("cím (matek)", getattr(P, "content", {}).get("title"), "Próba: matematikai jelölés – x² − 1, √2, 2 1/3")
         for w in ["szorzásjelnek", "valódi mínuszjelet", "tizedespont", "szögpercnek", "pontosvesszővel", "kitevővel",
                   "egyenlőtlenséggel ne kezdj"]:
             if not any(w in x for x in P.warnings):
@@ -1893,10 +1979,24 @@ def selftest():
                 fails.append(f"jeloles-kem: hiányzik „{e}”\n      " + "\n      ".join(hs))
         L = getattr(P, "content", {}).get("labels", {})
         check("kémiai felirat Unicode", (L.get("víz"), L.get("ion"), L.get("reakció")), ("H₂O", "SO₄²⁻", "CH₄ + 2 O₂ → CO₂ + 2 H₂O"))
+        check("kémiai felirat ion (^)", (L.get("kation"), L.get("hidroxidion"), L.get("kalciumion"), L.get("unicode")),
+              ("Na⁺", "OH⁻", "Ca²⁺-ion", "Mg²⁺"))
+        check("cím (kémia)", getattr(P, "content", {}).get("title"), "Próba: kémiai jelölés – H₂O, Na⁺ és SO₄²⁻")
+        if not any("Na^+ → Na⁺" in x for x in P.infos):
+            fails.append("jeloles-kem: hiányzó info: Na^+ → Na⁺")
         if not any("H2O → H₂O" in x for x in P.infos):
             fails.append("jeloles-kem: hiányzó info: H2O → H₂O")
         if not any("nyíl kell" in x for x in P.warnings):
             fails.append("jeloles-kem: hiányzó figyelmeztetés: szóegyenlet nyíl nélkül")
+
+    # ── a # cím más tárgyban: Unicode, ahol lehet; a többi változatlan ──
+    Pt = Problems(T / "cím")
+    for src, want in [("Miért úszik a jég? – a sűrűség", "Miért úszik a jég? – a sűrűség"),
+                      ("A `v = s/t` képlet", "A v = s/t képlet"), ("Az F_fel felhajtóerő", "Az F_fel felhajtóerő"),
+                      ("10^-3 és x^(n+1)", "10⁻³ és xⁿ⁺¹"), ("A CO2 és a B12", "A CO2 és a B12"), ("Kr. e. 753 – 1848", "Kr. e. 753 – 1848")]:
+        check(f"cím „{src}”", plain_title(src, 1, Pt, {}), want)
+    check("cím (kémia, B12 nem képlet)", plain_title("A CO2 és a B12", 1, Pt, {"chem": True}), "A CO₂ és a B12")
+    check("cím hibátlan", Pt.errors, [])
 
     # ── közös próbaesetek (a JS MatText.parse ugyanezeket futtatja) ──
     for c in mx_cases():

@@ -87,9 +87,15 @@ def lessons():
             print("figyelem (nem commitolt, kihagyva): " + msg)   # épp gyártott lecke ne állítsa meg az indexet
             continue
         page = md.with_suffix(".html")
+        cim = lines[0].lstrip("# ").strip()
+        cjs = md.with_suffix(".content.js")     # a build a címben a jelölést Unicode-ra alakítja (H2O → H₂O)
+        if cjs.exists():
+            mt = re.search(r'^ "title": (".*?(?<!\\)"),$', cjs.read_text(encoding="utf-8"), re.M)
+            if mt:
+                cim = json.loads(mt.group(1))
         found[(md.parent.name, md.stem)] = {
             "tantargy": m.group(1), "evfolyam": m.group(2).replace("-", "–"),
-            "temakor": int(m.group(3)), "cim": lines[0].lstrip("# ").strip(),
+            "temakor": int(m.group(3)), "cim": cim,
             "lepes": sum(1 for l in lines if re.match(r"## \d+\.", l)),
             "url": page.relative_to(ROOT).as_posix()
                    if page.exists() and (git is None or page.relative_to(ROOT).as_posix() in git) else None,

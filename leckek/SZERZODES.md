@@ -70,13 +70,24 @@ a build hibát ad hiányzó, fölösleges, túl hosszú, rossz egységű vagy ta
   fotózza), `enter(L)` (állítsd vissza a szimulációt), `leave(L)`, `controls(L)`.
 - Vezérlők: `L.slider({label, k, min, max, step, value, format, onInput})`,
   `L.button(label, fn, k)` – a `k` a .md-kulcs (review módhoz). A `controls` az `enter` ELŐTT
-  fut: kezdőértéket közvetlenül az adatból (`L.num`) vegyen.
+  fut: kezdőértéket közvetlenül az adatból (`L.num`) vegyen. A csúszka kezelője
+  `{el, input, set(v, o), get()}`: `set(v)` csak a csúszkát és a kiírt értéket állítja, **nem**
+  hívja az `onInput`-ot; `set(v, {fire: true})` hívja is (pl. `__qaStates`-ben: a csúszka és az
+  állapot együtt mozog). `L.sliders` az aktuális lépés csúszkái (`L.sliders[k]` a kulcs szerint).
+- Mutató: `L.pointer` `{x, y, down, inside}`; egy gyors (egy képkockán belüli) kattintásnál a
+  `down` a `draw` előtt már újra `false` – kattintásra ezért a **`L.pointer.pressed`** (lenyomás
+  volt az előző képkocka óta; `px, py`: hol), felengedésre a `released` figyeljen, vagy az
+  `events` sor (`[{type: 'down'|'up', x, y}]`); ezeket a motor a `draw` után üríti. Saját
+  `pointerdown`-figyelő nem kell.
 - Tartalom: `L.lab(k)` felirat · `L.num(k)` szám · `L.unit(k)` · `L.val(k, d?)` → „0,92 g/cm³”.
 - Szöveg a vásznon: **csak `L.tx(s, x, y, o)` / `L.pill(s, x, y, o)`** – ezekből tudja a QA és a
   review mód, hol van felirat. `o`: `s` px, `w` vastagság, `f` (`F.D` Fraunces, `F.B` Bricolage,
   `F.M` JetBrains Mono), `i` dőlt, `a` igazítás, `b` alapvonal, `c` szín, `ls` betűköz,
   `max` (szélesség, fölötte kicsinyít), `k` md-kulcs vagy kulcslista, `qa: false` (szándékos
   átfedés, pl. képletjel a dobozban). `L.pill`: `bg`, `bd`, `pad`, `r` – a doboz a szöveghez méreteződik.
+  A QA forgatott feliratnál (`c.rotate` után `L.tx`) a forgatott téglalappal számol (függőleges
+  tengelycímhez nem kell `qa: false`), és a pill dobozát is: ha egy pill egy másik feliratot takar,
+  az átfedés.
 - `U`: `clamp, lerp, smooth, inOut, out, outBack, rng(seed), rgba, mix, fmt(v, d)`
   (magyar szám: `fmt(-3.14159, 2)` → „−3,14”, `fmt(19300)` → „19 300”).
 
@@ -99,7 +110,8 @@ Formátum: `leckek/README.md` „A .md formátuma”. Röviden: `# Cím`, metaad
   szám és mértékegység között szóköz (10 g, 92 %), kivéve a szögfokot (15°).
 - Index, kitevő, képlet a panelen: `F_fel`, `x^2`, `` `x^2 - 4x + 3 = 0` ``, `[[a/b]]` – a build alakítja
   át (táblázat: `leckek/README.md` „Képlet, tört, kitevő…”); ne írj saját megoldást. A vásznon
-  ugyanezt a jelölést a `MatText.draw` szedi (`shared/matek/mtext.js`, 12. fejezet).
+  ugyanezt a jelölést a `MatText.draw` szedi (`shared/matek/mtext.js`, 12. fejezet). A `#` címben is
+  írható (ott Unicode lesz: `` `x^2` `` → x², kémiában `H2O` → H₂O).
 
 ## 6. Megjelenés – világos téma (kötelező)
 
@@ -140,6 +152,13 @@ fehér nagy felület (vakít), nincs halvány pasztell kulcselemen.
 - Jelenetek áttűnése: `w = clamp(1 − |L.sp − i|·2)`, a jelenet a saját utolsó idejét kapja
   (lásd a mintalecke `draw`-ját). Új elem: 0,4–0,8 s beúszás; egy lépés ≤ ~8 s alatt nyugalomba ér.
 - Kiemelés/elhalványítás: ami épp nem fontos, halványuljon (α ≈ 0,15–0,3), ne tűnjön el.
+- **Vászonállapot:** a motor alapból csak a transzformációt állítja vissza képkockánként; a többi
+  (`globalAlpha`, `lineCap`/`lineJoin`, `setLineDash`, `shadow*`, `textAlign`, `font`…) az előző
+  képkocka végéről átszivárog – ez rontja a `--det` próbát, és az első képkocka másképp néz ki.
+  **Új leckében kapcsold be:** `Lesson.create({ resetCtx: true, … })` → minden képkocka előtt
+  alapállapot (mint egy friss vásznon; `L.resetCtx()` kézzel is hívható). Ekkor minden rajzoló
+  függvény maga állítsa be, amit használ (pl. `c.lineCap = 'round'`). A meglévő leckékben azért
+  nincs alapból, mert több közülük tudtán kívül a szivárgó `'round'` vonalvégre támaszkodik.
 
 ## 9. QA – kötelező, minden körben
 
@@ -166,6 +185,12 @@ python3 tools/qa_lesson.py leckek/<…>/NN-slug.html --at 1.5,settle --back --re
   ugyanaz a kép?), `--states` (`window.__qaStates = {3: [{name: 'min', set(L) {…}}]}` – szélső
   állapotok fotója), `--poke '{…}'` (a lecke `L.poke(o)`-ja), `--data` (az adatok listája).
   Ha a lecke ad `L.checks()` függvényt (→ `[{name, ok, got, want}]`), minden képnél lefut.
+- **Ugrópróba** (alapból fut, `--no-jump` kihagyja, `--jump-only` csak ezt futtatja): 1. → utolsó,
+  utolsó → 1., véletlen ugrások (számbillentyű: áttűnés közben a **köztes jelenetek is
+  rajzolódnak, az `enter()`-jük nélkül**), és betöltés közvetlenül `#N`-re. Minden jelenet `draw`-ja
+  működjön akkor is, ha a lépésébe még nem léptünk be: a jelenetállapotot az `init()`-ben hozd
+  létre (az `enter()` csak visszaállítsa), vagy őrizd (`if (!S) return`). Egy `draw`-ban dobott hiba
+  leállítja a motor főciklusát – a lecke megfagy.
 
 ## 10. Kész, ha
 
@@ -361,7 +386,7 @@ sokféleség – ezek a szerkesztői elvek kötelezők).
 - **Számok:** mikro `µ` (nem `u`; a build az `um`-ot átírja); nagy szám szóval (`480 millió`);
   **billió = 10¹²** – angol forrásból kétszer ellenőrizd; élettani adat tartománnyal és kire
   vonatkozik: `60–100/perc` (`range`), ütem `70/perc`; `"dim": "térfogat"` stb., ha az egység
-  változhat.
+  változhat (a `range` típus is fogad `dim`-et: `60–90 µm` → `blo`, `bhi`, `base` méterben).
 - **Szimulációk** (populáció, öröklődés, járvány): csak `U.rng(seed)`; az `enter()`-ben vagy az
   interakció után előre lefut (≤ 200 ms – a QA 300 ms fölött szól), a rajz az `L.st` szerinti
   pillanatot mutatja; „Újra” új seedet ad, a QA az alapseeddel fotóz (`--det`). A panel kimondja,

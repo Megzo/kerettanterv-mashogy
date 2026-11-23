@@ -16,17 +16,23 @@
                  1-től) → minden állapotot is lefotóz (03-min.png) és ellenőriz
   --poke JSON    minden fotózott lépésnél meghívja a lecke L.poke(obj) függvényét (pl. '{"a": -2}')
   --data         kiírja az L.dat értékeit (évvel, frissítendő/előrejelzés/modell/becslés jelzővel) → data.json
+  --no-jump      kihagyja az ugrópróbát (alapból fut, lásd lent); --jump-only: csak az ugrópróba fut
 
 Mindig fut (visszafelé kompatibilisen; a „!” sorok figyelmeztetések, a kilépési kódot nem rontják):
   · glifellenőrzés: a vászon- és panelszöveg minden karaktere benne van-e a shared/lesson.css
     @font-face unicode-range-eiben (különben rendszerfontra esik vissza, gépenként eltérő szélességgel);
   · enter() futásideje: figyelmeztetés 300 ms felett;
   · ha a lecke ad L.checks() függvényt (→ [{name, ok, got, want}]), minden képnél lefut; ok: false → ✗;
-  · matematikaleckében ("math": true) a vászonfeliratokon: tizedespont, kötőjel-mínusz, *, ' (figyelmeztetés).
+  · matematikaleckében ("math": true) a vászonfeliratokon: tizedespont, kötőjel-mínusz, *, ' (figyelmeztetés);
+  · ugrópróba (rögzített képkockaidővel): 1. → utolsó, utolsó → 1., 6 véletlen (seedelt) ugrás számbillentyű-
+    szerűen (L.go, áttűnéssel – a köztes jelenetek is rajzolódnak, az enter()-jük nélkül!), és betöltés
+    közvetlenül az utolsó lépésre (URL #N); bármely JS-hiba ✗. (Egy draw()-ban dobott hiba a motor
+    főciklusát leállítja: a lecke megfagy.)
 
 Ellenőrzés: konzol- és oldalhibák; a panel szövegdoboza túlcsordul-e; panel-elemek kilógnak-e;
 a vásznon (L.tx-szel írt) feliratok: a panel alá lógnak-e (x > 1360), kilógnak-e a színpadról,
-kisebbek-e 22 px-nél, átfedik-e egymást; hiányzó tartalomkulcs (⟨kulcs⟩).
+kisebbek-e 22 px-nél, átfedik-e egymást (forgatott feliratnál a forgatott téglalappal), takarja-e
+egy L.pill doboza (bg/bd) egy másik feliratot; hiányzó tartalomkulcs (⟨kulcs⟩).
 A motor a dt-t 0,05 s-ra vágja, ezért a késői állapotokhoz a QA közvetlenül állítja az L.st-t.
 """
 import json
@@ -60,11 +66,37 @@ CHECK_JS = r"""() => {
     if (m.x < -1 || m.y < -1 || m.y + m.h > 1081 || m.x + m.w > 1921) out.push(`VÁSZON: kilóg a színpadról: ${nm}`);
     if (m.px < 21.5) out.push(`VÁSZON: ${m.px.toFixed(1)} px < 22 px: ${nm}`);
   }
+  // forgatott felirat (m.q: 4 sarok) → konvex sokszögek metszetének területe; a pill doboza (m.pb / m.pq) is
+  const rect = (r) => [[r.x, r.y], [r.x + r.w, r.y], [r.x + r.w, r.y + r.h], [r.x, r.y + r.h]];
+  const area = (P) => { let s = 0; for (let i = 0; i < P.length; i++) { const [x1, y1] = P[i], [x2, y2] = P[(i + 1) % P.length]; s += x1 * y2 - x2 * y1; } return Math.abs(s) / 2; };
+  const orient = (P) => { let s = 0; for (let i = 0; i < P.length; i++) { const [x1, y1] = P[i], [x2, y2] = P[(i + 1) % P.length]; s += x1 * y2 - x2 * y1; } return s < 0 ? P.slice().reverse() : P; };
+  const clipArea = (A, B) => {          // Sutherland–Hodgman: A ∩ B (mindkettő konvex)
+    let out = orient(A); B = orient(B);
+    for (let i = 0; i < B.length && out.length; i++) {
+      const [ax, ay] = B[i], [bx, by] = B[(i + 1) % B.length], inp = out; out = [];
+      const side = (p) => (bx - ax) * (p[1] - ay) - (by - ay) * (p[0] - ax);
+      for (let j = 0; j < inp.length; j++) {
+        const P = inp[j], Q = inp[(j + 1) % inp.length], sp = side(P), sq = side(Q);
+        if (sp >= 0) out.push(P);
+        if ((sp >= 0) !== (sq >= 0)) { const t = sp / (sp - sq); out.push([P[0] + (Q[0] - P[0]) * t, P[1] + (Q[1] - P[1]) * t]); }
+      }
+    }
+    return out.length > 2 ? area(out) : 0;
+  };
   const q = ms.filter((m) => m.qa);
+  const hit = (a, b) => {
+    if (a.q || b.q) { const A = a.q || rect(a), B = b.q || rect(b); return clipArea(A, B) > Math.max(4, .12 * Math.min(area(A), area(B))); }
+    const w = Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x), h = Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y);
+    return w > 2 && h > 2 && w * h > .12 * Math.min(a.w * a.h, b.w * b.h);
+  };
   for (let i = 0; i < q.length; i++) for (let j = i + 1; j < q.length; j++) {
     const a = q[i], b = q[j];
-    const w = Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x), h = Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y);
-    if (w > 2 && h > 2 && w * h > .12 * Math.min(a.w * a.h, b.w * b.h)) out.push(`VÁSZON: átfedés „${a.s.slice(0, 22)}” × „${b.s.slice(0, 22)}”`);
+    if (hit(a, b)) { out.push(`VÁSZON: átfedés „${a.s.slice(0, 22)}” × „${b.s.slice(0, 22)}”`); continue; }
+    for (const [p, t] of [[a, b], [b, a]]) {    // a pill doboza takarja a másik feliratot (vagy az a pillre lóg)
+      if (!p.pb) continue;
+      const T = t.q || rect(t), Pb = p.pq || rect(p.pb), ov = clipArea(T, Pb);
+      if (ov > Math.max(4, .12 * area(T))) { out.push(`VÁSZON: a(z) „${p.s.slice(0, 22)}” doboza (pill) takarja: „${t.s.slice(0, 22)}”`); break; }
+    }
   }
   return { problems: [...new Set(out)], marks: L.marks.length };
 }"""
@@ -106,6 +138,15 @@ DET_JS = r"""([i, j, settle]) => {
   return [diff, a.length / 4];
 }"""
 
+JUMP_JS = r"""([a, b]) => {        // a → b ugrás áttűnéssel; a draw()-ban dobott hibát elkapja
+  const L = window.__lesson, T = window.__qaTick;
+  // kiindulás: a-ra áttűnés nélkül (mint az URL #a), hogy ne ez legyen az első ugrás
+  try { L.go(a, true); L.sp = L.step; T(20); } catch (e) { return 'előkészítés (' + (a + 1) + '. lépés, áttűnés nélkül): ' + (e && e.message || e); }
+  try { L.go(b); T(30); } catch (e) { return String(e && e.message || e); }
+  return null;
+}"""
+
+
 MATH_MARK = [(re.compile(r"\d\.\d"), "tizedespont (3,14 a magyar írásmód)"),
              (re.compile(r"(?:^|\s)-\d|\d\s-\s\d"), "kötőjel-mínusz (−)"),
              (re.compile(r"\d\s*\*\s*\d"), "* szorzásjel (·)"), (re.compile(r"\d'"), "aposztróf szögperc (′)")]
@@ -131,6 +172,65 @@ def font_coverage():
 
 def missing_glyphs(text, rngs):
     return sorted({ch for ch in text if not ch.isspace() and ord(ch) >= 32 and not any(a <= ord(ch) <= b for a, b in rngs)})
+
+
+def det_page(b, html, query="", console=False):
+    """Rögzített képkockaidős oldal (window.__qaTick) – a --det és az ugrópróba használja."""
+    ctx2 = b.new_context(viewport={"width": 1920, "height": 1080}, device_scale_factor=.5)
+    ctx2.add_init_script(DET_INIT)
+    pd = ctx2.new_page()
+    derr = []
+    pd.on("pageerror", lambda e: derr.append("JS-HIBA: " + str(e).split("\n")[0]))
+    if console:
+        pd.on("console", lambda m: derr.append("KONZOL: " + m.text) if m.type == "error" else None)
+    pd.goto(html.as_uri() + query)
+    pd.wait_for_function("window.__lesson && window.__lesson.started", timeout=15000)
+    pd.evaluate("document.fonts.ready.then(() => 1)")
+    return ctx2, pd, derr
+
+
+def jump_test(b, html, n):
+    """Ugrópróba: 1 → utolsó, utolsó → 1, 6 seedelt véletlen ugrás, betöltés #N-re. → hibák száma."""
+    import random
+    rnd = random.Random(7)
+    jumps = [(0, n - 1), (n - 1, 0)] if n > 1 else []
+    tries = 0
+    while len(jumps) < 8 and n > 2 and tries < 200:
+        tries += 1
+        a, c = rnd.randrange(n), rnd.randrange(n)
+        if abs(a - c) > 1 and (a, c) not in jumps:
+            jumps.append((a, c))
+    probs = []
+    ctx2 = pd = None
+    for a, c in jumps:
+        if pd is None:
+            ctx2, pd, derr = det_page(b, html, console=True)
+            pd.wait_for_timeout(200)
+            pd.evaluate("window.__qaTick(3)")
+        derr.clear()
+        try:
+            e = pd.evaluate(JUMP_JS, [a, c])
+        except Exception as ex:
+            e = str(ex).split("\n")[0]
+        if e or derr:
+            probs.append(f"UGRÁS {a + 1} → {c + 1}: " + (f"JS-HIBA: {e}" if e else derr[0]))
+            ctx2.close(); pd = None        # a főciklus leállt → új oldal a következő ugráshoz
+    if pd is not None:
+        ctx2.close()
+    ctx2, pd, derr = det_page(b, html, f"#{n}", console=True)
+    try:
+        pd.wait_for_timeout(200)
+        pd.evaluate("window.__qaTick(30)")
+    except Exception as ex:
+        derr.append("JS-HIBA: " + str(ex).split("\n")[0])
+    if derr:
+        probs.append(f"BETÖLTÉS #{n}-re: " + derr[0])
+    ctx2.close()
+    probs = list(dict.fromkeys(probs))
+    print(f"ugrópróba ({len(jumps)} ugrás + #{n}) " + ("✓" if not probs else f"✗ {len(probs)}"))
+    for m in probs[:10]:
+        print("     · " + m)
+    return len(probs)
 
 
 def main(argv):
@@ -217,6 +317,8 @@ def main(argv):
         n = len(steps)
         idx = range(n) if "--steps" not in opts else [int(s) - 1 for s in opts["--steps"].split(",")]
         ats = (opts.get("--at") or "settle").split(",")
+        if "--jump-only" in opts:
+            idx = []
         if "--data" in opts:
             D = pg.evaluate("window.__lesson.content ? window.__lesson.content.data : {}")
             (out / "data.json").write_text(json.dumps(D, ensure_ascii=False, indent=1), encoding="utf-8")
@@ -277,15 +379,11 @@ def main(argv):
                 pg.mouse.move(r[0], r[1]); pg.wait_for_timeout(250)
                 pg.screenshot(path=str(out / f"review-{s + 1:02d}-panel.png"))
             print(f"review: {s + 1}. lépés → review-{s + 1:02d}-*.png")
+        if "--no-jump" not in opts:
+            total += jump_test(b, html, n)
         if "--det" in opts:
-            ctx2 = b.new_context(viewport={"width": 1920, "height": 1080}, device_scale_factor=.5)
-            ctx2.add_init_script(DET_INIT)
-            pd = ctx2.new_page()
-            derr = []
-            pd.on("pageerror", lambda e: derr.append("JS-HIBA: " + str(e).split("\n")[0]))
-            pd.goto(html.as_uri())
-            pd.wait_for_function("window.__lesson && window.__lesson.started", timeout=15000)
-            pd.evaluate("document.fonts.ready.then(() => 1)"); pd.wait_for_timeout(500)
+            ctx2, pd, derr = det_page(b, html)
+            pd.wait_for_timeout(500)
             pd.evaluate("window.__qaTick(3)")
             for i in idx:
                 derr.clear()

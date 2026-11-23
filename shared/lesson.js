@@ -15,8 +15,14 @@
                                            //   visszafelé lépve innen indul, a QA ezt fotózza
            enter(L) {}, leave(L) {},       // opcionális
            controls(L) { L.slider({...}); L.button('…', fn); } // opcionális
+                                           //   L.slider(...) → {el, input, k, label, set(v, o), get()}:
+                                           //   set(v) csak a csúszkát és a kiírást állítja (mint eddig);
+                                           //   ÚJ: set(v, {fire: true}) az onInput-ot is hívja
+                                           //   ÚJ: L.sliders – az aktuális lépés csúszkái (tömb + L.sliders[k] a k kulcs szerint)
          }, …
        ],
+       resetCtx: true,  // ÚJ (opcionális, új leckéknek ajánlott): minden képkocka előtt alapállapotba állítja a
+                        //   vásznat (globalAlpha, lineCap/Join, dash, shadow, textAlign, font…); alap: ki (régi viselkedés)
        init(L) {},     // egyszer, a betűtípusok betöltése után
        draw(L) {},     // minden képkockán
      });
@@ -31,8 +37,13 @@
      L.sp            simított lépés-index (lebegőpontos, kb. 0.6 s alatt követi L.step-et) — kamerához, áttűnéshez
      L.dir           +1 előre, −1 visszafelé léptünk
      L.prog(a, b)    0..1: hol tart L.st az [a, b] másodperc-intervallumban
+     L.resetCtx()    ÚJ: a vászon alapállapotba (mint egy friss kontextus) + az alap-transzformáció
      L.layer         DOM réteg a vászon fölött (1920×1080, absolute) — SVG/HTML elemekhez
      L.pointer       {x, y, down, inside} logikai koordinátákban
+                     ÚJ: pressed / released – volt-e lenyomás / felengedés az előző képkocka óta (egy képkockán
+                     belüli gyors kattintásnál a down már újra false, a pressed mégis true); px, py – az utolsó
+                     lenyomás helye; events – [{type: 'down'|'up', x, y, button}] az előző képkocka óta.
+                     A főciklus a draw(L) után üríti őket – a draw-ban olvasd (vagy amit a draw hív).
 
    ÚJ — tartalom (a .md-ből, lásd leckek/SZERZODES.md):
      L.lab(k)        felirat szövege ('### Feliratok' kulcs → szöveg)
@@ -53,7 +64,9 @@
    ÚJ — U.fmt(v, d)  magyar számformátum: tizedesvessző, valódi mínuszjel (−), 10 000 fölött ezres tagolás
    ÚJ — review mód:  ?review az URL-ben vagy a K billentyű → a feliratok és bekezdések fölé mutatva
                      kiírja a Markdown-kulcsot és a sor számát.
-   ÚJ — window.__lesson.marks: az utolsó képkocka feliratainak dobozai (a QA olvassa).
+   ÚJ — window.__lesson.marks: az utolsó képkocka feliratainak dobozai (a QA olvassa): {s, k, x, y, w, h, px, a, qa};
+                     forgatott/tükrözött feliratnál x, y, w, h a befoglaló doboz, q a 4 sarok; L.pill-nél (bg/bd)
+                     pb a pill doboza (forgatva pq is) – a QA ezekkel nézi az átfedést.
    ─────────────────────────────────────────────────────────────── */
 (function () {
   'use strict';
@@ -91,10 +104,11 @@
     const C = cfg.content || null;
     const L = {
       W, H, VW, U, cfg, steps: cfg.steps, step: 0, st: 0, sp: 0, t: 0, dt: 0, dir: 1,
-      pointer: { x: 0, y: 0, down: false, inside: false }, scale: 1, fonts: FONTS,
+      pointer: { x: 0, y: 0, down: false, inside: false, pressed: false, released: false, px: 0, py: 0, events: [] }, scale: 1, fonts: FONTS,
       content: C, marks: [], review: /[?&]review\b/.test(location.search),
     };
     L.prog = (a, b) => U.clamp((L.st - a) / (b - a));
+    L.sliders = [];
     const errors = [];
     if (cfg.content === undefined && 'content' in cfg) errors.push('Hiányzik a tartalomfájl (…content.js). Futtasd: python3 tools/build_lesson.py <lecke>.md');
     if (C) {
@@ -163,7 +177,12 @@
       const upd = () => { out.textContent = format(+inp.value); };
       inp.addEventListener('input', () => { upd(); onInput && onInput(+inp.value); });
       upd(); w.append(lb, out, inp); $controls.append(w); reviewTags();
-      return { el: w, input: inp, set: (v) => { inp.value = v; upd(); } };
+      // set(v): csak a csúszkát és a kiírt értéket állítja (alap, mint eddig); set(v, {fire: true}) az onInput-ot is hívja
+      const h = { el: w, input: inp, k: k || null, label,
+        set: (v, o) => { inp.value = v; upd(); if (o && o.fire && onInput) onInput(+inp.value); return h; },
+        get: () => +inp.value };
+      L.sliders.push(h); if (k) L.sliders[k] = h;
+      return h;
     };
     L.button = (label, onClick, k) => {
       let row = $controls.lastElementChild; if (!row || !row.classList.contains('lp-btnrow')) { row = el('div', 'lp-btnrow'); $controls.append(row); }
@@ -199,7 +218,7 @@
       $count.innerHTML = `<b>${String(L.step + 1).padStart(2, '0')}</b> <span>/ ${String(n).padStart(2, '0')}</span>`;
       $title.innerHTML = s.title; $text.innerHTML = s.text || '';
       if (s.src) $title.dataset.src = s.src; else delete $title.dataset.src;
-      $controls.innerHTML = ''; if (s.controls) s.controls(L);
+      $controls.innerHTML = ''; L.sliders = []; if (s.controls) s.controls(L);
       $body.classList.remove('lp-anim'); void $body.offsetWidth; $body.classList.add('lp-anim');
       [...$dots.children].forEach((d, i) => { d.classList.toggle('cur', i === L.step); d.classList.toggle('done', i < L.step); });
       $prev.disabled = L.step === 0; $next.disabled = L.step === n - 1;
@@ -246,8 +265,16 @@
     // ── mutató (logikai koordináták) ──
     L.toStage = (e) => { const r = stage.getBoundingClientRect(); return { x: (e.clientX - r.left) / r.width * W, y: (e.clientY - r.top) / r.height * H }; };
     stage.addEventListener('pointermove', (e) => { const p = L.toStage(e); L.pointer.x = p.x; L.pointer.y = p.y; L.pointer.inside = true; });
-    stage.addEventListener('pointerdown', (e) => { const p = L.toStage(e); L.pointer.x = p.x; L.pointer.y = p.y; L.pointer.down = true; });
-    window.addEventListener('pointerup', () => { L.pointer.down = false; });
+    // pressed / released / events: a két képkocka között történt lenyomás–felengedés sem vész el
+    // (a down egy gyors kattintásnál a draw előtt már újra false); a főciklus a draw után üríti őket.
+    stage.addEventListener('pointerdown', (e) => {
+      const p = L.toStage(e), P = L.pointer; P.x = p.x; P.y = p.y; P.down = true;
+      P.pressed = true; P.px = p.x; P.py = p.y; P.events.push({ type: 'down', x: p.x, y: p.y, button: e.button });
+    });
+    window.addEventListener('pointerup', (e) => {
+      const P = L.pointer; if (P.down) { const p = L.toStage(e); P.released = true; P.events.push({ type: 'up', x: p.x, y: p.y, button: e.button }); }
+      P.down = false;
+    });
     stage.addEventListener('pointerleave', () => { L.pointer.inside = false; });
 
     // ── vászon-szöveg mérése, feliratdobozok ──
@@ -271,11 +298,23 @@
       const alpha = c.globalAlpha;
       if (alpha > .04 && s.trim()) {
         const m = c.getTransform(), k = L.k || 1;
-        cur.push({ s, k: o.k || null, x: (m.a * box.x + m.c * box.y + m.e) / k, y: (m.b * box.x + m.d * box.y + m.f) / k,
-          w: box.w * Math.hypot(m.a, m.b) / k, h: box.h * Math.hypot(m.c, m.d) / k, px: sz * Math.hypot(m.c, m.d) / k, a: alpha, qa: o.qa !== false });
+        const mk = { s, k: o.k || null, x: (m.a * box.x + m.c * box.y + m.e) / k, y: (m.b * box.x + m.d * box.y + m.f) / k,
+          w: box.w * Math.hypot(m.a, m.b) / k, h: box.h * Math.hypot(m.c, m.d) / k, px: sz * Math.hypot(m.c, m.d) / k, a: alpha, qa: o.qa !== false };
+        if (m.b || m.c || m.a < 0 || m.d < 0) { const q = quad(m, box); Object.assign(mk, aabb(q)); mk.q = q; }   // forgatott/tükrözött: befoglaló doboz + sarkok
+        cur.push(mk);
       }
       return box;
     };
+    // a doboz 4 sarka színpad-koordinátában (az aktuális transzformációval)
+    function quad(m, b) {
+      const k = L.k || 1;
+      return [[b.x, b.y], [b.x + b.w, b.y], [b.x + b.w, b.y + b.h], [b.x, b.y + b.h]]
+        .map(([x, y]) => [(m.a * x + m.c * y + m.e) / k, (m.b * x + m.d * y + m.f) / k]);
+    }
+    function aabb(q) {
+      const xs = q.map((p) => p[0]), ys = q.map((p) => p[1]), x = Math.min(...xs), y = Math.min(...ys);
+      return { x, y, w: Math.max(...xs) - x, h: Math.max(...ys) - y };
+    }
     L.pill = (s, x, y, o = {}) => {
       const c = L.ctx, pad = o.pad == null ? 12 : o.pad, sz = o.s || 24, m = L.measure(s, o), a = o.a || 'left';
       const w = m.w + pad * 2, h = sz * 1.3 + pad * .8;
@@ -283,7 +322,12 @@
       c.beginPath(); c.roundRect(x0, y0, w, h, o.r == null ? h / 2 : o.r);
       if (o.bg) { c.fillStyle = o.bg; c.fill(); }
       if (o.bd) { c.strokeStyle = o.bd; c.lineWidth = o.bw || 2; c.stroke(); }
+      const n0 = cur.length;
       L.tx(s, x0 + pad, y0 + h / 2 + sz * .02, Object.assign({}, o, { a: 'left', b: 'middle' }));
+      if (cur.length > n0 && (o.bg || o.bd)) {      // a pill doboza is a QA-ba kerül: ami alatta/rajta van, átfedés
+        const mk = cur[cur.length - 1], q = quad(c.getTransform(), { x: x0, y: y0, w, h });
+        mk.pb = aabb(q); if (mk.q) mk.pq = q;
+      }
       return { x: x0, y: y0, w, h };
     };
 
@@ -307,16 +351,34 @@
       c.restore();
     }
 
+    // ── vászon-alapállapot (opt-in: Lesson.create({resetCtx: true}) minden képkocka előtt, vagy L.resetCtx()):
+    //    az előző képkockáról nem szivárog át semmi (globalAlpha, lineJoin/Cap, setLineDash, shadow*, textAlign,
+    //    font, filter, nyitott útvonal…). Alapból KI: a meglévő leckék egy része (tudtán kívül) a szivárgó
+    //    lineCap/lineJoin = 'round'-ra támaszkodik – bekapcsolva a képük megváltozna. ──
+    function resetCtx(c) {
+      c.globalAlpha = 1; c.globalCompositeOperation = 'source-over'; c.fillStyle = '#000'; c.strokeStyle = '#000';
+      c.lineWidth = 1; c.lineCap = 'butt'; c.lineJoin = 'miter'; c.miterLimit = 10; c.setLineDash([]); c.lineDashOffset = 0;
+      c.shadowBlur = 0; c.shadowColor = 'rgba(0,0,0,0)'; c.shadowOffsetX = 0; c.shadowOffsetY = 0;
+      c.font = '10px sans-serif'; c.textAlign = 'start'; c.textBaseline = 'alphabetic'; c.direction = 'inherit';
+      if ('letterSpacing' in c) c.letterSpacing = '0px'; if ('wordSpacing' in c) c.wordSpacing = '0px';
+      if ('fontKerning' in c) c.fontKerning = 'auto'; if ('filter' in c) c.filter = 'none';
+      c.imageSmoothingEnabled = true; c.beginPath();
+    }
+
+    L.resetCtx = () => { resetCtx(L.ctx); L.ctx.setTransform(L.k, 0, 0, L.k, 0, 0); };
+
     // ── főciklus ──
     let last = 0;
     function frame(now) {
       const dt = Math.min(0.05, (now - last) / 1000 || 0); last = now;
       L.dt = dt; L.t += dt; L.st += dt;
       L.sp += (L.step - L.sp) * (1 - Math.exp(-dt * 5.5)); if (Math.abs(L.step - L.sp) < 0.0005) L.sp = L.step;
+      if (cfg.resetCtx) resetCtx(L.ctx);
       L.ctx.setTransform(L.k, 0, 0, L.k, 0, 0);
       cur = [];
       if (cfg.draw) cfg.draw(L);
       L.marks = cur;
+      const P = L.pointer; P.pressed = P.released = false; if (P.events.length) P.events = [];
       if (L.review) drawReview();
       requestAnimationFrame(frame);
     }

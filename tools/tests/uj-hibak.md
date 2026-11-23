@@ -25,6 +25,8 @@ Szöveg.
 - nincs fájl: ENSZ
 - régi adatkészlet: ENSZ WPP 2022
 - hossz: 5 kg
+- hossz tartomány: 2–5 kg
+- nagy tartomány: 2–5 m
 - rövid lista: 1; 2; 3
 - egyenlőség: H2 + Cl2 = 2 HCl
 - éve évszám: 300 ezer éve
