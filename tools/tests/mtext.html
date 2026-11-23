@@ -1,0 +1,49 @@
+<!doctype html><html lang="hu"><head><meta charset="utf-8">
+<title>MatText – próbaoldal</title>
+<!-- Nem lecke: a shared/matek/mtext.js böngészős próbája. Megnyitható dupla kattintással, vagy:
+     python3 tools/qa_lesson.py tools/tests/mtext.html
+     A tools/tests/mx-cases.js minden esetén lefuttatja a MatText.parse-t; eltérésnél hibasáv (QA: HIBASÁV). -->
+<link rel="stylesheet" href="../../shared/lesson.css">
+</head><body>
+<script src="mx-cases.js"></script>
+<script src="../../shared/lesson.js"></script>
+<script src="../../shared/matek/mtext.js"></script>
+<script>
+(function () { 'use strict';
+const F = Lesson.FONTS;
+const bad = window.MX_CASES.filter((c) => JSON.stringify(MatText.parse(c.src, { frac: !!c.frac, chem: !!c.chem, math: !!c.math, big: !!c.big })) !== JSON.stringify(c.tree));
+const panel = (t) => `<p>${t}</p>`;
+const L = Lesson.create({
+  subject: 'Próba', title: 'MatText – próbaoldal', home: false,
+  steps: [
+    { title: 'Tört, kitevő, gyök a vásznon', settle: 1,
+      text: panel(`A <span class="frac"><span class="fn">3</span><span class="fs">/</span><span class="fd">4</span></span> álló tört,
+        vegyes szám: 2<span class="frac"><span class="fn">1</span><span class="fs">/</span><span class="fd">3</span></span>, hatvány: 2<sup>3</sup>,
+        képlet: <span class="mx"><i>x</i><sup>2</sup> − 4<i>x</i> + 3 = 0</span>,
+        gyök: <span class="mx"><span class="rt">√<span class="rad"><span class="rp">(</span><i>x</i> + 1<span class="rp">)</span></span></span></span>,
+        víz: H<sub>2</sub>O, ion: SO<sub>4</sub><sup>2−</sup>.`) +
+        `<p class="big-fx"><span class="mx"><i>x</i> = <span class="frac"><span class="fn">−<i>b</i> ± <span class="rt">√<span class="rad"><span class="rp">(</span><i>b</i><sup>2</sup> − 4<i>ac</i><span class="rp">)</span></span></span></span><span class="fs">/</span><span class="fd">2<i>a</i></span></span></span></p>` +
+        panel(`Elemző-próbák: ${window.MX_CASES.length - bad.length} / ${window.MX_CASES.length} egyezik a Python builddel.`) },
+  ],
+  init(L) { if (bad.length) MatText.check(L, '__nincs__', 0); },
+  draw(L) {
+    const c = L.ctx;
+    c.fillStyle = '#f7f1e6'; c.fillRect(0, 0, L.W, L.H);
+    const rows = [
+      ['3/4 + 1/4 = 1', { s: 40 }], ['2 1/3 − 5/6 = 1 1/2', { s: 40 }], ['2^3 = 8  és  10^-3', { s: 40 }],
+      ['`x^2 - 4x + 3 = 0`', { s: 40, f: F.D }], ['`f: x |-> 2x + 1`', { s: 40, f: F.D }],
+      ['`√(x + 1) ≤ pi`', { s: 40, f: F.D }], ['x = (-b +- √(b^2 - 4ac)) / (2a)', { s: 44, f: F.D, math: true, big: true }],
+      ['H2O + CO2 -> H2CO3  ·  SO4^2-', { s: 36, chem: true, f: F.M }],
+    ];
+    let y = 110;
+    for (const [s, o] of rows) {
+      const b = MatText.draw(L, s, 80, y, Object.assign({ k: 'próba' }, o));
+      L.tx(s, 760, y, { s: 22, f: F.M, c: '#565d72', k: 'forrás', max: 580 });
+      y += Math.max(110, b.h + 40);
+    }
+    MatText.frac(L, 5, 8, 1200, 140, { s: 40, sign: '−', k: 'tört' });
+  },
+});
+if (bad.length) console.error('MatText.parse eltér: ' + bad.map((c) => c.src).join(' | '));
+})();
+</script></body></html>

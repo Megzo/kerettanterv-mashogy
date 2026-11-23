@@ -97,7 +97,9 @@ Formátum: `leckek/README.md` „A .md formátuma”. Röviden: `# Cím`, metaad
   `==kiemelés==` a lényegre. `> megjegyzés:` = tanári tipp / feladat / érdekesség.
 - Magyar írásmód: tizedesvessző (3,14), valódi mínusz (−), „magyar idézőjel”, nagygondolatjel (–),
   szám és mértékegység között szóköz (10 g, 92 %), kivéve a szögfokot (15°).
-- Alsó index a panelen: `F_fel` → F<sub>fel</sub> (a build alakítja át; ne írj saját megoldást).
+- Index, kitevő, képlet a panelen: `F_fel`, `x^2`, `` `x^2 - 4x + 3 = 0` ``, `[[a/b]]` – a build alakítja
+  át (táblázat: `leckek/README.md` „Képlet, tört, kitevő…”); ne írj saját megoldást. A vásznon
+  ugyanezt a jelölést a `MatText.draw` szedi (`shared/matek/mtext.js`, 12. fejezet).
 
 ## 6. Megjelenés – világos téma (kötelező)
 
@@ -158,6 +160,12 @@ python3 tools/qa_lesson.py leckek/<…>/NN-slug.html --at 1.5,settle --back --re
   geometriai konstansból** dolgozzon – két, hasonló, de eltérő tartály-/skálaobjektum
   tipikus hibaforrás.
 - Ellenőrizd a review módot (`review-*.png`): minden felirat lila keretes (van kulcsa).
+- A QA ezeket is nézi (`!` = figyelmeztetés, nem rontja a kilépési kódot): a fontokból hiányzó
+  karakter (glif), 300 ms-nál lassabb `enter()`, matekleckében tizedespont/kötőjel-mínusz a
+  vásznon. Kapcsolók: `--det` (determinizmus: ugyanannál az `L.st`-nél oda-vissza léptetve
+  ugyanaz a kép?), `--states` (`window.__qaStates = {3: [{name: 'min', set(L) {…}}]}` – szélső
+  állapotok fotója), `--poke '{…}'` (a lecke `L.poke(o)`-ja), `--data` (az adatok listája).
+  Ha a lecke ad `L.checks()` függvényt (→ `[{name, ok, got, want}]`), minden képnél lefut.
 
 ## 10. Kész, ha
 
@@ -222,3 +230,206 @@ háborúk, határok, anakronizmus) és a saját briefed a 3. fejezetben.
   `shared/tort/` alá. A `shared/` módosítása továbbra is csak egyeztetve.
 - **Minden `.md`** végén `<!-- Vitatott / bizonytalan pontok: … -->` blokk a tanári review-hoz,
   forrásokkal (bizonytalan számnál: honnan, mennyire bizonytalan).
+
+## 12. Matematika-kiegészítés (5–6. és 9–10. évfolyam)
+
+Matematikaleckénél a fenti szabályok ezekkel együtt érvényesek. **Kötelező olvasmány:** a
+saját sávod terve – `pilot/matematika-5-6/terv.md` (3. briefek, 4. modulok API-ja és gyártási
+sor) vagy `pilot/matematika-9-10/terv.md` (3. briefek, 4. szerkesztői elvek, 5. modulok).
+A *(5–6)* / *(9–10)* jelű pont csak arra a sávra vonatkozik.
+
+- **Mappa, fejléc:** `leckek/matematika-5-6/…` ill. `leckek/matematika-9-10/…`; metaadat-sor:
+  `tantárgy: Matematika · évfolyam: 5–6. · témakör: N. <a kerettanterv témakörének címe>`.
+  Spec: `"math": true`; *(5–6)* `"maxWords": 45`, *(9–10)* 55 (alap). Egy képletszakasz, tört,
+  hatvány 1 szónak számít, a `képlet:` sor 3-nak.
+- **Jelölés a `.md`-ben (egységes, mindkét sávban):** képlet `` `…` `` között vagy `képlet:` sorban
+  (`*` → ·, `-` → −, `<=` `>=` `!=` `~=` `|->` `=>` `<=>` `+-` → ≤ ≥ ≠ ≈ ↦ ⇒ ⇔ ±, `pi` → π,
+  `NN ZZ QQ RR` → ℕ ℤ ℚ ℝ, `√(…)`/`gyök(…)`, a betűk dőltek, `sin lg log max…` állók);
+  kitevő `2^3`, `10^-3`, `2^(n+1)`; index `x_1`, `D_f`; tört a szövegben is `3/4` (álló), vegyes
+  szám `2 1/3`, emeletes tört `[[a + b/2]]` vagy a `képlet:` sorban `(a + b) / (2a)`; halmaz
+  `{1; 2; 3}`, pont `A(2; −3)`, intervallum `[a; b]`, `]a; b[` – pontosvesszővel, mert a vessző
+  tizedesvessző. A build figyelmeztet: `3*4`, `5 - 3`, `3.14`, `30'`, `(3, 2)`, `cm2`, és ha sor
+  `>`-vel kezdődik (az megjegyzésdoboz – egyenlőtlenség `` `x > 3` `` alakban). Szög `45°`, `30′`;
+  arány `2 : 3`; százalék `25 %`; ezres tagolás 5 jegytől (`U.fmt`): 4527, de 12 000. Közelítő
+  értéknél „≈”, sosem „=”.
+- **Szaknyelv:** szorzás `·`, osztás `:`, negatív szám zárójelben a műveleti jel után
+  (`3 − (−5)`); pont nagy dőlt betű, egyenes kis dőlt, szög görög betű; a háromszög `a, b, c`
+  oldala az `A, B, C` csúccsal szemben; `ℕ` tartalmazza a 0-t; `e ∥ f`, `e ⊥ f`. *(9–10)* A
+  nevezetes pontok betűi `### Feliratok` alatt legyenek (tankönyvenként eltérnek).
+- **A vásznon** matematikai szöveget (tört, kitevő, index, gyök, képlet) **csak a `MatText.draw`**
+  szed: `<script src="../../shared/matek/mtext.js"></script>` a `lesson.js` után;
+  `MatText.draw(L, L.lab('megoldás'), x, y, {s: 34, k: 'megoldás', math: true})`. A darabokat
+  `L.tx`-szel írja, kulccsal (QA, review). Unicode-kitevő (⁵) vagy kézzel rakott darabok helyett
+  is ezt használd. Betűk: szám, műveleti jel JetBrains Mono (`o.f`), változó dőlt Fraunces (`o.vf`),
+  magyarázó felirat Bricolage. Méret: tört részei az alap 0,8-szorosa → alap ≥ 28 px; kitevő
+  0,65-szöröse → alap ≥ 34 px. A hiányzó jeleket (π, ≤, ∈…) a fontkészlet unicode-range-dzsel
+  pótolja; a QA jelzi, ha valami mégis kiesik.
+- **Pontos számolás:** törtekkel `MatQ` (racionális aritmetika: `MatQ(1, 2).add(MatQ(1, 3))`,
+  `.str('mixed')`, `.dec()` → periódus), nem lebegőpontosan. Tizedes alakot csak kiíráskor
+  kerekíts, és akkor „≈”. Kifejezés-adat (`expr`) kiértékelése: `MatText.evalExpr(L.dat(k).tree,
+  {x: 2})` / `MatQ.evalExpr` – `eval` nincs.
+- **Bemenet az `.md`-ben, eredmény a kódban.** A feladat adatai `### Adatok` alatt (`frac`, `point`,
+  `list`, `expr`, `ratio`, `"int": true`, `"dim": "terület"`); az eredményt a kód számolja. Ha egy
+  eredmény a panelen is szerepel (`{összeg}`), az is adat, és a kód ellenőrzi:
+  `MatText.check(L, 'összeg', várt)` – eltérésnél hibasáv, a QA elkapja.
+- **A rajz maga a bizonyíték.** Minden kiírt mért érték a rajzolt geometriából vagy a lefuttatott
+  szimulációból számolódik, ugyanazzal a konstanssal; a kerekítés egy közös függvényen megy át
+  (`U.fmt`, ≤ 2 tizedes, szög 1). Szándékosan nem méretarányos ábra „vázlat” bélyeget kap.
+  *(9–10)* Ami csak mér, „mérés” bélyeget kap; a bizonyító lépés „bizonyítás” (cinóber keret),
+  a végén `∎`; a panel kimondja, ha egy állítást a lecke nem bizonyít.
+- **A tévhitet ellenpélda cáfolja a vásznon** (1/2 + 1/3 ≠ 2/5: a 2/5 szalagja rövidebb az 1/2-énél).
+  *(5–6)* Legyen egy „Tippelj előbb!” pillanat.
+- **Szerepek színekkel:** adott elem tinta; vizsgált elem és eredmény cinóber (eredmény 3,5 px);
+  második elem kékeszöld; segédvonal halvány tinta 2 px. Halmazok A cinóber, B kékeszöld, C okker
+  `#8f5a0c`, kitöltés α 0,16–0,24, a kiemelt rész sraffozva is. Előjel: pozitív cinóber, negatív
+  kékeszöld. Grafikon: tengely tinta 2,5 px nyíllal, rács `rgba(28,36,64,.08)`, fő görbe 4 px
+  cinóber, a görbe vágva és szakadásnál megszakítva; nyílt végpont üres, zárt teli karika.
+  Rajzlap: 40 px-es rács; egységnégyzetnél az egység 40 px többszöröse, erősebb rács.
+- **Húzható elem:** látható fogantyú ≥ 12 px, találati sugár ≥ 28 px, húzás közben élő érték;
+  egészre/rácsra ugrik, ahol a tananyag kéri; pályán marad; elfajuló helyzetben halványul, és
+  `.md`-felirat jelzi. Billentyűvel/csúszkával is elérhető. Az `enter(L)` visszaállítja. A szélső
+  helyzeteket a QA-val fotózd: `window.__qaStates` + `--states`.
+- **Véletlen:** csak `U.rng(seed)` (ill. a `MatRand`); az n-edik kísérlet a seedből és n-ből
+  számolható; a kiírt gyakoriság a kirajzolt kísérletekből jön; 10 000 kísérletet ne
+  képkockánként szimulálj. QA: `--det`.
+- **Kitalált és valós adat:** kitalált példa `<!-- kitalált példa -->` (*(9–10)* a vásznon
+  „kitalált adat” bélyeg); valós adat forrással és dátummal a megjegyzésben.
+- **Modulok:** a `shared/matek/mtext.js` kész. A többi `Mat…` modul (`MatLine`, `MatPlot`,
+  `MatGeo`, `MatFrac`, `MatRand`, `MatVenn`, `MatFv`, `MatSzerk`…) a 16. fejezet szerint, a terv
+  4./5. fejezetének API-jával. A 9–10 terv `MatKeplet` modulja nem készül külön: az a `MatText.draw`.
+- **Minden `.md`** végén *(5–6)* `<!-- Tanári megjegyzések: … -->` (kitalált számok,
+  egyszerűsítések, tankönyvi jelöléseltérés), *(9–10)* `<!-- Matematikai ellenőrzés: … -->`
+  (számpéldák, tételek, mivel ellenőrizted, dátum).
+
+## 13. Kémia-kiegészítés (7–8. évfolyam)
+
+**Kötelező olvasmány:** `pilot/kemia-7-8/terv.md` 5. fejezet (szerkesztői elvek) és a saját
+briefed (3. fejezet).
+
+- **Mappa, fejléc:** `leckek/kemia-7-8/…`; `tantárgy: Kémia · évfolyam: 7–8. · témakör: N. …`.
+  Spec: `"chem": true`.
+- **Képlet a `.md`-ben:** ASCII-ként (`H2O`, `Ca(OH)2`, `Na^+`, `SO4^2-`, `->`) vagy Unicode-dal
+  (`H₂O`, `Na⁺`, `→`); a build a panelre `<sub>`/`<sup>`-t, a feliratba Unicode-ot tesz, és minden
+  átalakítást `info:` sorban kiír – nézd át (vitamin- vagy útjelzés-szerű szavakat, pl. `B12`,
+  nem alakít át; egyedi esetben `\` elé). Adat: `formula` (`{"atoms": …, "charge": …}`) és
+  `equation` (a build ellenőrzi az atom- és töltésmérleget). Mol, ⇌, állapotjel nincs.
+- **A vásznon:** a Unicode-alak (`H₂O`, `Na⁺`) `L.tx`-szel is helyesen jelenik meg (a fontkészlet
+  lefedi); egyenlethez és nagy képlethez `MatText.draw(L, L.lab('reakció'), x, y, {chem: true,
+  s: 34})` – valódi index, a QA-nak egy kulccsal. A `KemTx`, ha kell, erre épüljön.
+- **Szóegyenlet először** („metán + oxigén → szén-dioxid + víz”), a képletes egyenlet kiegészítő.
+- **Három szint:** makro (természetes színek), részecske (csak nagyítóban/részecskeablakban,
+  tintakeret, „nagyítás · szemléltetés” felirat a `.md`-ből), jel (JetBrains Mono).
+- **Magyar nevek** (AkH., nevezéktan): szén-dioxid, nátrium-klorid; nátriumion, kloridion;
+  Na⁺-ion. Ionvegyületnél nincs „molekula”. Antropomorf szó („szeretne”) nincs.
+- **Atomszínek** a `KemMol.EL` szerint (H fehér, C fekete, O piros, N kék, Cl zöld, S sárga,
+  Na lila), sötét körvonallal; kiemelés gyűrű/fényudvar (cinóber), nem kitöltés.
+- **A modell becsületessége:** a részecskerajz mérete, távolsága, sebessége nem arányos – ahol
+  félrevezethet, a panel kimondja; a Bohr-modell „modell”.
+- **Biztonság (kötelező; részletek: terv 5. fejezet):** veszélyes kísérlet soha nem recept
+  (nincs mennyiség, lépéssor, látványos robbanás), „NE PRÓBÁLD KI” (keret `#b3261e`) vagy
+  „tanári bemutató” bélyeggel, a veszély okát mutatja. Otthon csak konyhai anyag, azzal is:
+  nem kóstoljuk, nem szagoljuk, szemvédelem. A helyes cselekvést írjuk (fedő, szellőztetés, 112).
+  GHS-jel csak valósághű. Biztonsági szám (gyulladási hőmérséklet, határérték) forrással.
+- **Részecskeszimuláció:** determinisztikus visszajátszás (`S.at(L.st, events)`), az események
+  időbélyeggel naplózva, az `enter(L)` üríti; nem `L.dt`-vel léptetve. QA: `--det`.
+- **Minden `.md`** végén `<!-- Modell-egyszerűsítések és források: … -->`.
+
+## 14. Biológia-kiegészítés (7–8. évfolyam)
+
+**Kötelező olvasmány:** `pilot/biologia-7-8/terv.md` – a saját briefed (3.), a modulok (4.) és a
+teljes kiegészítés-szöveg (7. fejezet: emberi test, szaporodás, egészség, evolúció, emberi
+sokféleség – ezek a szerkesztői elvek kötelezők).
+
+- **Mappa, fejléc:** `leckek/biologia-7-8/…`; `tantárgy: Biológia · évfolyam: 7–8. · témakör: N. …`.
+  ≤ 55 szó; új fogalom félkövéren, egy mondattal.
+- **„Honnan tudjuk?”** lépés vagy kártya minden leckében; elavult tankönyvi számnál az újabb, az
+  eltérést kimondva.
+- **Emberi test:** stilizált, nemileg semleges, nem szexualizált alak; több testalkat, egyik sem
+  „ideális”; semleges bőrtónus; nincs vér, sérülés, ijesztgetés. Szaporodás csak a kerettanterv
+  szintjén, sematikus metszetrajzzal.
+- **Szervrendszer-színkód** (egyszerre ≤ 3 rendszer színes): oxigéndús vér `#c0392b`,
+  oxigénszegény vér `#7b2440` (**soha nem kék**), levegő/O₂ `#0a6f86` (CO₂ `#565d72`), tápanyag
+  `#8f5a0c`, kiválasztás `#6b6a12`, ideg `#2a4d9b`, hormon `#7b4fa0`, csont `#ece1c9`/`#6b5a3e`,
+  izom `#e3a593`/`#8c3b2a`.
+- **Egészség, elsősegély:** minden egészségügyi szám forrással; nincs egyéni tanács, márka. Az
+  elsősegély az ERC/MRT aktuális ajánlása szerint, a számok és a lépések sorrendje `### Adatok`
+  alatt; spec `"review": ["elsősegély"]` → a build kéri a `<!-- Szakmai ellenőrzés: <szerep>,
+  <dátum>, <ajánlás verziója> -->` blokkot (név nélkül). 112; az utolsó lépés gyakorlati képzésre bíztat.
+- **Evolúció, sokféleség:** tudományos keretben, elágazó bokor (nincs „majomtól emberig” sor),
+  célelvű szavak nélkül; egy emberi faj, folytonos változatosság, nincs tipológiai ábra.
+- **Számok:** mikro `µ` (nem `u`; a build az `um`-ot átírja); nagy szám szóval (`480 millió`);
+  **billió = 10¹²** – angol forrásból kétszer ellenőrizd; élettani adat tartománnyal és kire
+  vonatkozik: `60–100/perc` (`range`), ütem `70/perc`; `"dim": "térfogat"` stb., ha az egység
+  változhat.
+- **Szimulációk** (populáció, öröklődés, járvány): csak `U.rng(seed)`; az `enter()`-ben vagy az
+  interakció után előre lefut (≤ 200 ms – a QA 300 ms fölött szól), a rajz az `L.st` szerinti
+  pillanatot mutatja; „Újra” új seedet ad, a QA az alapseeddel fotóz (`--det`). A panel kimondja,
+  ha az eredmény a véletlentől függ, és ha a modell didaktikus.
+- **Képek csak saját rajzból** (canvas); állatkísérlet, boncolás nincs.
+
+## 15. Földrajz-kiegészítés (9–10. évfolyam)
+
+**Kötelező olvasmány:** `pilot/foldrajz-9-10/terv.md` 4. fejezet (modulok, adatfájlok), a saját
+briefed (3.) és a teljes kiegészítés-szöveg (7. fejezet – a 7. „Határok, nevek” és a 8. „Érzékeny
+témák” pont kötelező). A Történelem-kiegészítésből érvényes: bélyegstílus, térképadat, „mai
+határok” réteg.
+
+- **Mappa, fejléc:** `leckek/foldrajz-9-10/…`; `tantárgy: Földrajz · évfolyam: 9–10. · témakör: N. …`.
+  Spec: `"sources": true`. A kerettanterv fogalma első előfordulásakor félkövér; topográfiai
+  név a kerettanterv írásmódjával.
+- **Négyféle adat:** *mért* (forrássorral), *becslés* („kb.” / „becslés” bélyeg), *előrejelzés*
+  (szaggatott vonal 8/6 px vagy sáv, „előrejelzés” bélyeg kékeszöld kerettel, forrás + kiadás +
+  változat), *modell* („modell” bélyeg halvány tinta; a panel kimondja, mit hagy el). Kézi
+  áramlás, partvonal: „vázlatos”.
+- **Az adat éve a `.md`-ben:** `- világ népessége: 8,2 milliárd fő (2025, frissítendő)`,
+  `(2050, előrejelzés)`, `(modell)` → `L.dat(k).yr / .upd / .proj / .model`; a kód ebből
+  rajzolja a bélyeget és a forrássor évét. `python3 tools/build_lesson.py --stale` listázza a
+  2 évnél régebbi „frissítendő” adatokat.
+- **Forrás a `.md`-ben:** minden adat mellé `<!-- forrás: <hivatkozás>, lekérdezve: ÉÉÉÉ-HH-NN,
+  licenc -->` ugyanabban vagy a következő sorban, vagy a szakasz elején egyszer `<!-- forrás
+  (az alábbiakra): … -->`; a build szól, ha hiányzik. A vásznon minden diagram és tematikus
+  térkép alatt forrássor („Forrás: <intézmény, adatkészlet>, <év>”, Bricolage 22 px, egy
+  `forrás …` felirat-kulcsból).
+- **Nagy adat** a `shared/foldrajz/<id>.js` alatt (`tools/build_geodata.py`, fejlécben forrás,
+  licenc, verzió); a `.md` `dataset` típusú adattal hivatkozik rá (`- korfa: ENSZ WPP 2024`, spec
+  `{"type": "dataset", "id": "korfa-wpp2024"}` – a szöveg a forrássor rövid neve; a build
+  ellenőrzi, hogy a fájl létezik, és a benne írt évszám a fájl fejlécének verziójában is szerepel). Amit a
+  panel kimond vagy a vászon kiemel, az `### Adatok` alatt is szerepel. Havi sorozat: `list`
+  (`"len": 12`); időzóna: `utc`; mély idő: `ago`; koordináta: `coord`.
+- **Lépték és vetület:** keresztmetszetnél „függőleges torzítás N×” bélyeg, és legalább egyszer
+  méretarányos nézet. Globális folyamat gömbön (`TortProj.ortho`) vagy egyenlő területű
+  vetületen (`TortProj.equalEarth`); Mercatoron területet nem hasonlítunk. Log. tengelyen
+  „log. skála” felirat.
+- **Színek:** szekvenciális papír → cinóber / kékeszöld, 4–6 osztály; divergens kékeszöld ↔ papír
+  ↔ cinóber értelmes középponttal; „nincs adat” halvány sraffozás; ország nem kap „jó” zöld /
+  „rossz” piros színt; meleg/hideg áramlás cinóber / `#1b5a94`.
+- **Érzékeny témák semlegesen, adattal** (migráció ENSZ/UNHCR-fogalmakkal, fejlettség
+  mutatókkal, éghajlatváltozás az IPCC AR6 konszenzusa szerint, pénzügyben nincs márka/ajánlás,
+  katasztrófa tisztelettel) – a terv 7. fejezet 8. pontja szerint.
+- **Licenc:** közkincs vagy nyílt (CC BY, ODC-BY, CC BY 3.0 IGO), nevezéssel a `.md`-ben és a
+  forrássorban; más csak jóváhagyással. Kép, atlaszlap, műholdfelvétel nem kerül be.
+- **QA:** modellnél mindkét szélső beállítás (`--states`) és kézi ellenőrző számolás; gömbnél a
+  hátoldal is; időcsúszkánál az első és az utolsó adatév; `--data` kiírja az adatok évét és jelölőit.
+
+## 16. Közös modulok és párhuzamos gyártás
+
+- **Kész közös fájlok** (betöltés sima `<script>`-tel, a `lesson.js` után): `shared/matek/mtext.js`
+  (`MatText`, `MatQ`), `shared/tort/proj.js` + térképadatok, `shared/foldrajz/*.js` adatkészletek.
+  Ezeket a leckeügynök **nem módosítja**; hiba vagy hiány esetén a jelentésében jelzi
+  (fájl, függvény, mi kellene, miért).
+- **Új tantárgyi modul** (pl. `MatLine`, `KemMol`, `Reszecske`, `BioTest`, `FoldSection`) először a
+  terv szerinti **referencialeckében** készül, a lecke `<script>`-jében külön blokkban:
+  `/* ── MODUL: Számegyenes (MatLine) · forrás: matematika-5-6/03-…, 2026-11-23 ── */ … /* ── MODUL VÉGE ── */`,
+  saját névtérrel (`const MatLine = (() => { … })();`), a blokk elején API-leírással, a
+  lecke-specifikus kódra való hivatkozás nélkül.
+- **Átvétel:** a többi lecke a blokkot **bájtra azonosan** másolja az eddigi legfrissebb leckéből
+  (ellenőrzés: `diff` a két blokk között). Ha bővíteni kell, csak visszafelé kompatibilisen, a
+  fejlécben jelezve, és a jelentésben kiemelve – a koordinátor viszi vissza a referenciába, majd
+  (több átvétel után) a `shared/` alá. Párhuzamos változatot ne írj.
+- **Párhuzamos munkában** a leckeügynök csak a saját leckéjének fájljait írja
+  (`leckek/<tárgy>-<sáv>/NN-slug.{md,html,content.js}`); a `shared/` és a `tools/` alá nem ír,
+  a `build_index.py`-t nem futtatja. Build **csak a saját leckére**:
+  `python3 tools/build_lesson.py leckek/<…>/NN-slug.md` – a `--all` más, épp készülő leckék
+  fájljait is újraírná. QA a saját `--out` mappába (vagy az alapértelmezett `build/qa/<lecke>/`-ba).
+- **Build- vagy QA-igény** (új adattípus, jelölés, QA-ellenőrzés) a jelentésbe kerül, nem a
+  `tools/`-ba; addig a lecke a meglévő típusokkal és egy `<!-- -->` megjegyzéssel old meg mindent.

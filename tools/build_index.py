@@ -78,8 +78,14 @@ def lessons():
     for md in sorted((ROOT / "leckek").glob("*/[0-9][0-9]-*.md")):
         lines = md.read_text(encoding="utf-8").splitlines()
         m = HEAD_RE.search(lines[1] if len(lines) > 1 else "")
+        rel = md.relative_to(ROOT).as_posix()
+        committed = git is None or rel in git
         if not m:
-            raise SystemExit(f"{md}: a 2. sor nem „tantárgy: … · évfolyam: … · témakör: N. …”")
+            msg = f"{rel}: a 2. sor nem „tantárgy: … · évfolyam: … · témakör: N. …”"
+            if committed:
+                raise SystemExit(msg)
+            print("figyelem (nem commitolt, kihagyva): " + msg)   # épp gyártott lecke ne állítsa meg az indexet
+            continue
         page = md.with_suffix(".html")
         found[(md.parent.name, md.stem)] = {
             "tantargy": m.group(1), "evfolyam": m.group(2).replace("-", "–"),
@@ -87,7 +93,8 @@ def lessons():
             "lepes": sum(1 for l in lines if re.match(r"## \d+\.", l)),
             "url": page.relative_to(ROOT).as_posix()
                    if page.exists() and (git is None or page.relative_to(ROOT).as_posix() in git) else None,
-            "md": REPO + md.relative_to(ROOT).as_posix(),
+            "md": REPO + rel if committed else None,       # a GitHub-link csak commitolt fájlra él
+            "committed": committed,
         }
     planned = []
     for terv in sorted((ROOT / "pilot").glob("*/terv.md")):
@@ -104,7 +111,7 @@ def lessons():
             planned.append({
                 "tantargy": known[0]["tantargy"], "evfolyam": known[0]["evfolyam"],
                 "temakor": int(tk), "cim": cim, "lepes": 0, "url": None, "md": None,
-                "slug": slug,
+                "slug": slug, "committed": False,
             })
     out = []
     for (folder, slug), v in found.items():
@@ -118,11 +125,14 @@ def build():
     key_of = {n: k for n, k in SUBJECTS}
     for les in lessons():
         cell = data.get(f"{key_of.get(les['tantargy'])}/{les['evfolyam']}")
-        if not cell:
-            raise SystemExit(f"{les['slug']}: nincs ilyen tantárgy/évfolyam: {les['tantargy']} {les['evfolyam']}")
-        tk = next((t for t in cell["temakorok"] if t["n"] == les["temakor"] and not t["modul"]), None)
+        tk = cell and next((t for t in cell["temakorok"] if t["n"] == les["temakor"] and not t["modul"]), None)
         if not tk:
-            raise SystemExit(f"{les['slug']}: nincs {les['temakor']}. témakör")
+            msg = (f"{les['slug']}: nincs {les['temakor']}. témakör" if cell else
+                   f"{les['slug']}: nincs ilyen tantárgy/évfolyam: {les['tantargy']} {les['evfolyam']}")
+            if les["committed"]:
+                raise SystemExit(msg)
+            print("figyelem (nem commitolt, kihagyva): " + msg)
+            continue
         tk["leckek"].append({k: les[k] for k in ("cim", "url", "md", "lepes")})
     for cell in data.values():
         cell["fajl"] = REPO + "kerettanterv/" + cell["fajl"]

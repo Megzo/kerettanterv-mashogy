@@ -5,11 +5,15 @@
     python3 tools/build_lesson.py --all          # minden leckek/**/NN-*.md, amelynek van .html párja
     python3 tools/build_lesson.py --check …      # csak ellenőriz, nem ír
     python3 tools/build_lesson.py --selftest     # a tools/tests/ próbafájljain teszteli a buildet
+    python3 tools/build_lesson.py --stale [ÉV]   # a „frissítendő” adatok, amelyek éve < ÉV − 2 (alap: idei év)
 
 A .md formátumát a leckek/README.md írja le. A lecke HTML-je egy
 <script type="application/json" id="lesson-spec"> blokkban deklarálja, mit vár:
     {"steps": 9,
      "maxWords": 45,                              # opcionális: panelszöveg-korlát lépésenként (alap: 55)
+     "math": true,  /  "chem": true,              # opcionális: tantárgyi jelölés (lásd lent)
+     "sources": true,                             # opcionális: minden adat mellé <!-- forrás: … --> kell
+     "review": ["elsősegély"],                    # opcionális: <!-- Szakmai ellenőrzés: … --> blokk kell
      "labels": {"kulcs": 40, "másik": null},      # felirat → max. hossz (null: alapértelmezés)
      "data":   {"kulcs": {"unit": "g/cm³", "min": 0.1, "max": 25}}}   # vagy csak "g/cm³"
 A build hibával (1-es kilépési kód, sorszámmal) áll le, ha hiányzó vagy fölösleges kulcs van,
@@ -18,8 +22,14 @@ Figyelmeztet, ha egy lépés panelszövege a korlátnál (alap: 55 szó) hosszab
 
 Adattípusok (a spec "data" bejegyzésének "type" mezője; alap: "number"):
   number  „0,92 g/cm³” → {"v": 0.92, "u": "g/cm³", "d": 2}
-          Szorzószó: ha a spec egysége "fő", a „25 ezer fő” → v = 25000 (ezer / millió / milliárd);
-          ha a spec egysége maga „millió km”, a szó az egység része marad (visszafelé kompatibilis).
+          Szorzószó (ezer / millió / milliárd / billió = 10¹²) bármely egységgel: „25 ezer fő”,
+          „480 millió”, „4,5 millió/µl” → v = 25000 …; ha a spec egysége maga „millió km”, a szó az
+          egység része marad (visszafelé kompatibilis). A „trillió” szóra figyelmeztet.
+          Egység közvetlenül a szám után: „70/perc” (u = "/perc"). Szög: „45° 30′” → v = 45,5 (spec "°").
+          Spec-kapcsolók: "int": true (egész), "sign": true (a „+3” előjele megmarad, s = "+3"),
+          "dim": "hosszúság" | "terület" | "térfogat" | "tömeg" | "idő" | "szög" (rövid nevek: hossz)
+          → a családból bármely egység írható; kimenet + "base" (alapegységben) és "bu" (m, m², l,
+          kg, s, °); a min/max ekkor az alapegységre vonatkozik.
   year    „Kr. e. 753”, „i. e. 753”, „Kr. u. 476”, „i. sz. 476”, „1241” (0. év nincs → hiba)
           → {"t": "year", "v": -753, "a": -752, "s": "Kr. e. 753"}
           v = előjeles történeti év (Kr. e. 753 = −753, 0 nincs); a = csillagászati év (Kr. e. 1 = 0,
@@ -31,14 +41,56 @@ Adattípusok (a spec "data" bejegyzésének "type" mezője; alap: "number"):
           a napot a hónap hosszához méri (február 29.: 1582 előtt Julián, utána Gergely-naptár).
   coord   „47,50° É, 19,04° K” (É/D, K/Ny; „47° 30′ É” is) → {"t": "coord", "lat": 47.5, "lon": 19.04,
           "s": "…"}; a spec "box": [lonmin, latmin, lonmax, latmax] ellenőrzi, hogy a térképen van-e.
-  range   „50–70 ezer fő”, „25–28” → {"t": "range", "lo": 50000, "hi": 70000, "v": 60000, "u": "fő",
-          "d": 0, "s": "50–70 ezer fő"}; min/max a lo-ra és a hi-ra is.
+  range   „50–70 ezer fő”, „25–28”, „60–100/perc” → {"t": "range", "lo": 50000, "hi": 70000, "v": 60000,
+          "u": "fő", "d": 0, "s": "50–70 ezer fő"}; min/max a lo-ra és a hi-ra is.
+  ago     (mély idő) „3,8 milliárd éve”, „66 millió éve”, „7–6 millió éve” → {"t": "ago", "v": 3.8e9,
+          ["lo", "hi"], "s"}; v = évek száma a jelen előtt; min/max években. „Kr. e.” itt hiba (→ year).
+  ratio   „5474 : 1850”, „3 : 1”, „3 : 4 : 5” → {"t": "ratio", "a": 5474, "b": 1850, "v": a/b,
+          ["p": [3, 4, 5]], "s": "5474 : 1850"}
+  frac    „3/4”, „2 1/3”, „−5/8”, „7/4” → {"t": "frac", "n": 1, "d": 3, "w": 2, "neg": false,
+          "v": 2.333…, "red": true, "s": "2 1/3"}; spec: "maxDen", "proper", "reduced" (6/8 → hiba).
+  list    „2; 3; 5; 5; 5”, „−1,2; 0,9; 5,4 °C” (pontosvessző!) → {"t": "list", "v": [...], "u", "d", "s"};
+          spec: "len": 12 vagy [min, max], "int", min/max elemenként.
+  series  (x → y párok) „0 °C: 13,3 · 20 °C: 31,6” → {"t": "series", "x": [...], "y": [...], "ux", "uy",
+          "s"}; spec: "ux" (x egysége), "unit" (y egysége), "len", min/max (y), "xmin"/"xmax";
+          x szigorúan nő.
+  point   „(2; −1,5)”, „A(2; −3)” → {"t": "point", "x": 2, "y": -1.5, ["name"], "s"}; spec "box":
+          [xmin, ymin, xmax, ymax], "int".
+  expr    „x^2 − 4x + 3”, „2 + 3 · 4”, „3x + 4 = 19” → {"t": "expr", "s", "tok": [...], "tree": [...]}
+          ellenőrzött kifejezésfa (spec "vars": ["x"] – alap; csak ezek a betűk). A fa: szám, "x",
+          [op, a, b] – op: + − · : / ^ imp (2x) = < > ≤ ≥ ≠; [neg, a] [() a] [abs a] [√ a].
+          A JS a fát eval nélkül értékeli ki (shared/matek/mtext.js: MatText.evalExpr, MatQ.evalExpr).
+  formula „H₂O”, „H2O”, „SO4^2-”, „Ca(OH)₂” → {"t": "formula", "s": "H₂O", "atoms": {"H": 2, "O": 1},
+          "charge": 0}; spec "atoms" / "charge" (ha megadja, egyeznie kell).
+  equation „CH₄ + 2 O₂ → CO₂ + 2 H₂O” (vagy ->) → {"t": "equation", "s", "lhs": [{"k", "f", "atoms",
+          "charge"}], "rhs": [...]}; atom- és töltésmérleg, a nyíl kötelező.
+  utc     „UTC+5:30”, „UTC−5”, „UTC” → {"t": "utc", "min": 330, "s": "UTC+5:30"}
+  dataset „ENSZ WPP 2024” + spec {"id": "korfa-wpp2024"} → a shared/foldrajz/<id>.js (vagy spec "path")
+          léteznie kell, a fejléc "id"-je egyezzen, és a .md szövegének évszámai (2024) a fejléc
+          "src"/"ver" mezőjében is szerepeljenek (a szöveg maga a forrássor rövid neve).
+          → {"t": "dataset", "id", "src", "ver", "s"}
 Becslésjelző minden típuson: „kb. …”, „~ …”, „≈ …”, „… (becslés)”, évszámnál „… körül” is
   → "est": true, és "s" „kb. ”-vel kezdődik ("s0": ugyanez a jelző nélkül).
+Az adat éve és állapota (zárójeles utótag, vesszővel): „8,2 milliárd fő (2025, frissítendő)”,
+  „(előrejelzés)”, „(modell)”, „(2030, előrejelzés)” → "yr": 2025, "upd": true, "proj": true,
+  "model": true; a "s" a jelölők nélkül.
 Az új típusoknál (és becslésnél, szorzószónál) a "s" a magyarul formázott alak; ezt kapja a
 panelszöveg {kulcs} hivatkozása és az L.val(k). A régi, sima számok kimenete változatlan.
+
+Jelölés a szövegben (panel, lépéscím, felirat) – a részletek a leckek/README.md-ben:
+  minden leckében: `…` képletszakasz (1 szó), x^2 / 10^-3 / 2^(n+1) / Na^+ / SO4^2- (felső index),
+     F_fel, x_1, H_2O (alsó index: számjegyek VAGY betűk), [[x/2]] álló tört, {1; 2; 3} halmaz
+     (nem adatkulcs, mert van benne „;”), \\{ \\} \\/ \\^ \\_ \\` szó szerint.
+  a `…` képletben: * → ·, - → −, <= >= != ~= → ≤ ≥ ≠ ≈, -> |-> => <=> → ↦ ⇒ ⇔, +- → ±,
+     pi inf → π ∞, NN ZZ QQ RR → ℕ ℤ ℚ ℝ, √(…) / gyök(…), a latin betűk dőltek (sin, lg… állók).
+  "math": true – 3/4 álló tört, 2 1/3 vegyes szám, √(…) a szövegben is; a `képlet:` sor egésze
+     képlet, (a) / (b) emeletes tört; figyelmeztet: 3*4, 5 - 3, 3.14, 30', (3, 2), cm2.
+  "chem": true – H2O, CO2, Ca(OH)2 → alsó index; ₂ ⁺ (Unicode) → <sub>/<sup>; -> → →.
+     Feliratban Unicode-ra alakít (H₂O); minden átalakítást „info:” sorban kiír.
+A fa és a HTML-alak a shared/matek/mtext.js MatText.parse-ával közös (próbák: tools/tests/mx-cases.js).
 Csak a Python standard könyvtárát használja.
 """
+import datetime
 import html as H
 import json
 import math
@@ -46,37 +98,61 @@ import pathlib
 import re
 import sys
 import tempfile
+from fractions import Fraction
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 DEFAULT_LABEL_MAX = 32
 MAX_WORDS = 55
 UNIT_ALIASES = {"cm3": "cm³", "m3": "m³", "dm3": "dm³", "mm3": "mm³", "g/cm3": "g/cm³", "kg/m3": "kg/m³",
                 "kg/dm3": "kg/dm³", "fok": "°", "°c": "°C", "C°": "°C"}
-NUM_RE = re.compile(r"^([−\-+]?)(\d{1,3}(?:[ \u00a0\u202f]\d{3})+|\d+)(?:,(\d+))?(?=\s|$|%|°)\s*(.*)$")
-TYPES = ("number", "year", "date", "coord", "range")
-NB = " "                                   # nem törő szóköz: „Kr. e. 753” ne törjön sort
+NUM_RE = re.compile(r"^([−\-+]?)(\d{1,3}(?:[ \u00a0\u202f]\d{3})+|\d+)(?:,(\d+))?(?=\s|$|%|°|/|′|')\s*(.*)$")
+TYPES = ("number", "year", "date", "coord", "range", "ago", "ratio", "frac", "list", "series", "point", "expr",
+         "formula", "equation", "utc", "dataset")
+NB = "\u00a0"                                   # nem törő szóköz: „Kr. e. 753” ne törjön sort
 MONTHS = ["január", "február", "március", "április", "május", "június", "július", "augusztus",
           "szeptember", "október", "november", "december"]
-MULT = {"ezer": 1e3, "millió": 1e6, "milliárd": 1e9}
+MULT = {"ezer": 1e3, "millió": 1e6, "milliárd": 1e9, "billió": 1e12, "trillió": 1e18}
 INT = r"\d{1,3}(?:[ \u00a0\u202f]\d{3})+|\d+"
+NUM = rf"(?:{INT})(?:,\d+)?"
 EST_PRE = re.compile(r"^(?:kb\.|kb\s|cca\.|~|≈)\s*", re.I)
 EST_POST = re.compile(r"\s*\((?:becslés|becsült)\)$", re.I)
 ERA = r"(?:(Kr\.\s*e\.|i\.\s*e\.)|(Kr\.\s*u\.|i\.\s*sz\.))"
 YEAR_RE = re.compile(rf"^{ERA}?\s*({INT})(\s+körül)?$", re.I)
 DATE_RE = re.compile(rf"^{ERA}?\s*({INT})\.\s+([a-zéáíóöőúüű]+)(?:\s+(\d{{1,2}})\.)?$", re.I)
 COORD_PART = re.compile(r"(\d{1,3}(?:,\d+)?)\s*°(?:\s*(\d{1,2}(?:,\d+)?)\s*[′'])?\s*(É|D|K|Ny)\b")
-RANGE_RE = re.compile(rf"^((?:{INT})(?:,\d+)?)\s*([–\-])\s*((?:{INT})(?:,\d+)?)(?=\s|$|%)\s*(.*)$")
+RANGE_RE = re.compile(rf"^((?:{INT})(?:,\d+)?)\s*([–\-])\s*((?:{INT})(?:,\d+)?)(?=\s|$|%|/)\s*(.*)$")
+AGO_RE = re.compile(rf"^({NUM})(?:\s*([–\-])\s*({NUM}))?\s+(?:(ezer|millió|milliárd)\s+)?éve$")
+# mértékegység-családok: egység → szorzó az alapegységre
+DIMS = {
+    "hosszúság": ("m", {"nm": 1e-9, "µm": 1e-6, "mm": 1e-3, "cm": 1e-2, "dm": 0.1, "m": 1, "km": 1e3}),
+    "terület": ("m²", {"mm²": 1e-6, "cm²": 1e-4, "dm²": 1e-2, "m²": 1, "a": 100, "ha": 1e4, "km²": 1e6}),
+    "térfogat": ("l", {"µl": 1e-6, "mm³": 1e-6, "ml": 1e-3, "cm³": 1e-3, "cl": 1e-2, "dl": 0.1, "l": 1, "dm³": 1,
+                       "hl": 100, "m³": 1000, "km³": 1e12}),
+    "tömeg": ("kg", {"µg": 1e-9, "mg": 1e-6, "g": 1e-3, "dkg": 1e-2, "kg": 1, "t": 1e3}),
+    "idő": ("s", {"ms": 1e-3, "s": 1, "perc": 60, "min": 60, "óra": 3600, "h": 3600, "nap": 86400,
+                  "hét": 604800, "év": 31557600}),
+    "szög": ("°", {"°": 1, "′": 1 / 60}),
+}
+DIM_ALIAS = {"hossz": "hosszúság", "térf": "térfogat"}
+DIM_UNIT_ALIASES = {"cm2": "cm²", "m2": "m²", "dm2": "dm²", "mm2": "mm²", "km2": "km²", "L": "l", "liter": "l",
+                    "km3": "km³", "um": "µm", "μm": "µm", "μl": "µl", "μg": "µg", "ul": "µl"}
+TAG_WORDS = {"frissítendő": "upd", "előrejelzés": "proj", "modell": "model", "becslés": "est", "becsült": "est"}
 
 
 class Problems:
     def __init__(self, path):
-        self.path, self.errors, self.warnings = path, [], []
+        self.path, self.errors, self.warnings, self.infos = path, [], [], []
 
     def err(self, line, msg):
         self.errors.append(f"{self.path.name}{f':{line}' if line else ''}: HIBA: {msg}")
 
     def warn(self, line, msg):
-        self.warnings.append(f"{self.path.name}{f':{line}' if line else ''}: figyelem: {msg}")
+        m = f"{self.path.name}{f':{line}' if line else ''}: figyelem: {msg}"
+        if m not in self.warnings:
+            self.warnings.append(m)
+
+    def info(self, line, msg):
+        self.infos.append(f"{self.path.name}{f':{line}' if line else ''}: info: {msg}")
 
 
 def norm_unit(u):
@@ -86,6 +162,17 @@ def norm_unit(u):
 
 def to_float(intp, frac):
     return float(re.sub(r"[ \u00a0\u202f]", "", intp) + ("." + frac if frac else ""))
+
+
+def clean(v):
+    """Szorzás utáni lebegőpontos zaj eltüntetése: 8,2 · 10⁹ = 8200000000.0, nem 8199999999.999999."""
+    return float(f"{v:.12g}")
+
+
+def num_of(t):
+    """'3,25' / '19 300' → float (előjel nélkül)."""
+    i, _, f = t.partition(",")
+    return to_float(i, f or None)
 
 
 def parse_number(raw, line, P):
@@ -115,6 +202,11 @@ def fmt_num(v, d):
     return ("−" if v < 0 else "") + i + ("," + s[1] if len(s) > 1 else "")
 
 
+def unit_sep(u):
+    """Szám és egység között: 20 °C, de 15° és 70/perc (szóköz nélkül)."""
+    return "" if not u or u in ("°", "′") or u.startswith("/") else NB
+
+
 def fmt_value(v, d, u):
     return fmt_num(v, d) + ((u if u == "°" else NB + u) if u else "")   # szögfok: 15° (szóköz nélkül); 20 °C
 
@@ -131,13 +223,34 @@ def split_est(s):
     return s, est
 
 
-def split_mult(rest, want_unit):
-    """('ezer fő', 'fő') → (1000, 'ezer', 'fő'). Ha a teljes maradék maga az elvárt egység, nincs szorzó."""
+def split_tags(s):
+    """Záró zárójeles jelölők: '8,2 milliárd fő (2025, frissítendő)' → ('8,2 milliárd fő', {'yr': 2025, 'upd': True}).
+    Csak akkor, ha a zárójelben minden elem ismert jelölő (évszám vagy TAG_WORDS)."""
+    m = re.search(r"\s*\(([^()]*)\)$", s)
+    if not m:
+        return s, {}
+    tags = {}
+    for part in (p.strip().lower() for p in m.group(1).split(",")):
+        if re.fullmatch(r"\d{4}", part) and "yr" not in tags:
+            tags["yr"] = int(part)
+        elif part in TAG_WORDS:
+            tags[TAG_WORDS[part]] = True
+        else:
+            return s, {}
+    return s[:m.start()].strip(), tags
+
+
+def split_mult(rest, want_unit, line=None, P=None):
+    """('ezer fő', 'fő') → (1000, 'ezer', 'fő'); ('millió/µl', '/µl') → (1e6, 'millió', '/µl').
+    Ha a teljes maradék maga az elvárt egység, nincs szorzó."""
     u = norm_unit(rest)
     if u == norm_unit(want_unit):
         return 1, "", u
-    w, _, tail = rest.strip().partition(" ")
+    m = re.match(r"^(\S+?)(?:\s+|(?=/)|$)(.*)$", rest.strip())
+    w, tail = (m.group(1), m.group(2)) if m else ("", "")
     if w in MULT:
+        if w == "trillió" and P:
+            P.warn(line, "„trillió” = 10¹⁸ – angol forrásból (trillion = 10¹² = billió) szinte mindig hibás; ellenőrizd.")
         return MULT[w], w, norm_unit(tail)
     return 1, "", u
 
@@ -158,6 +271,9 @@ def era_styles(bc, ad):
 def parse_year(s, line, P, k):
     if re.match(r"^[−\-]\s*\d", s):
         P.err(line, f"„{k}” = {s}: időszámításunk előtti évet „Kr. e. {s.lstrip('−-').strip()}” alakban írj.")
+        return None
+    if re.search(r"\béve\b", s):
+        P.err(line, f"„{k}” = {s}: ez évszám-adat; az „… éve” (pl. 66 millió éve) a mély idő („ago”) típusa.")
         return None
     m = YEAR_RE.match(s)
     if not m:
@@ -250,89 +366,1004 @@ def parse_range(s, line, P, k, want):
         P.warn(line, f"„{k}” = {s}: kötőjel helyett nagygondolatjelet (–) írj a tartományba.")
     (ai, _, af), (bi, _, bf) = a.partition(","), b.partition(",")
     lo, hi, d = to_float(ai, af), to_float(bi, bf), max(len(af), len(bf))
-    mult, mw, unit = split_mult(rest, want.get("unit", ""))
+    mult, mw, unit = split_mult(rest, want.get("unit", ""), line, P)
     if unit != norm_unit(want.get("unit", "")):
         P.err(line, f"„{k}”: a mértékegység „{want.get('unit', '')}” legyen, nem „{unit}”.")
         return None
     if lo >= hi:
         P.err(line, f"„{k}” = {s}: a tartomány alsó értéke kisebb legyen a felsőnél.")
         return None
-    text = fmt_num(lo, len(af)) + "–" + fmt_num(hi, len(bf)) + (NB + mw if mw else "") + ((NB + unit) if unit else "")
-    lo, hi = lo * mult, hi * mult
+    text = fmt_num(lo, len(af)) + "–" + fmt_num(hi, len(bf))
+    if mw:
+        text += NB + mw + (("" if unit.startswith("/") else NB) + unit if unit else "")
+    elif unit:
+        text += unit_sep(unit) + unit
+    lo, hi = clean(lo * mult), clean(hi * mult)
     d = max(0, d - int(round(math.log10(mult))))
     return {"t": "range", "lo": lo, "hi": hi, "v": (lo + hi) / 2, "u": unit, "d": d}, text, False
 
 
-def parse_datum(k, raw, n, want, P):
-    """Egy ### Adatok sor értéke → (adat-dict, formázott szöveg) vagy None (a hibát jeleztük)."""
+# ── új adattípusok ─────────────────────────────────────────────────────────────────────────
+
+def parse_number_item(s, n, P, k, want):
+    """number típus → (item, text) vagy None."""
+    r = parse_number(s, n, P)
+    if not r:
+        return None
+    val, unit, d = r
+    raw_sign = s.strip()[:1]
+    wu = norm_unit(want.get("unit", ""))
+    extra = {}
+    text = None
+    # szög: 45° 30′
+    m = re.fullmatch(r"°\s*(\d{1,2}(?:,\d+)?)\s*([′'])", unit)
+    if wu == "°" and (m or unit in ("′", "'")):
+        if (m and m.group(2) == "'") or unit == "'":
+            P.warn(n, f"„{k}”: szögpercnek ′ jelet írj, ne aposztrófot (45° 30′).")
+        if m:
+            mins = num_of(m.group(1))
+            if mins >= 60:
+                P.err(n, f"„{k}” = {s}: a szögperc 60-nál kisebb legyen.")
+                return None
+            text = fmt_num(val, d) + "°" + NB + m.group(1) + "′"
+            val = val + (mins if val >= 0 else -mins) / 60
+        else:
+            text = fmt_num(val, d) + "′"
+            val = val / 60
+        unit, d, extra["s"] = "°", max(d, 2), text
+    dim = want.get("dim")
+    if dim:
+        dim = DIM_ALIAS.get(dim, dim)
+        if dim not in DIMS:
+            P.err(n, f"„{k}”: ismeretlen dim „{dim}” (lehet: {', '.join(DIMS)}).")
+            return None
+        bu, fam = DIMS[dim]
+        u2 = DIM_UNIT_ALIASES.get(unit, unit)
+        if u2 not in fam:
+            P.err(n, f"„{k}” = {s}: {dim} mértékegysége kell ({', '.join(fam)}), nem „{unit}”.")
+            return None
+        item = {"v": val, "u": u2, "d": d, "base": val * fam[u2], "bu": bu}
+        text = text or (fmt_num(val, d) + unit_sep(u2) + u2)
+        item["s"] = text
+        chk = item["base"]
+    else:
+        mult, mw, unit2 = (1, "", unit)
+        if unit != wu:
+            mult, mw, unit2 = split_mult(unit, want.get("unit", ""), n, P)
+        if unit2 != wu:
+            P.err(n, f"„{k}”: a mértékegység „{want.get('unit', '')}” legyen, nem „{unit}”.")
+        item = {"v": clean(val * mult), "u": unit2, "d": max(0, d - int(round(math.log10(mult))))}
+        if text is None:
+            text = fmt_value(val, d, unit) if not unit.startswith("/") else fmt_num(val, d) + unit
+        if mw:
+            item["s"] = text = fmt_num(val, d) + NB + mw + (("" if unit2.startswith("/") else NB) + unit2 if unit2 else "")
+        if "s" in extra:
+            item["s"] = extra["s"]
+        if unit.startswith("/") and not mw:
+            item["s"] = text
+        chk = item["v"]
+    if want.get("int") and abs(chk - round(chk)) > 1e-9:
+        P.err(n, f"„{k}” = {s}: egész szám kell.")
+    if want.get("sign"):
+        if raw_sign == "+" and val > 0:
+            text = "+" + text
+        item["s"] = text
+    return item, text, chk
+
+
+def parse_ago(s, line, P, k, want):
+    if re.search(r"Kr\.|i\.\s*e\.|i\.\s*sz\.", s):
+        P.err(line, f"„{k}” = {s}: a mély idő „… éve” alakú (pl. 66 millió éve); „Kr. e.” évszámhoz year típus kell.")
+        return None
+    m = AGO_RE.match(s)
+    if not m:
+        P.err(line, f"„{k}” = {s}: nem értelmezhető (formátum: 3,8 milliárd éve · 66 millió éve · 7–6 millió éve).")
+        return None
+    a, dash, b, mw = m.groups()
+    if dash == "-":
+        P.warn(line, f"„{k}” = {s}: kötőjel helyett nagygondolatjelet (–) írj a tartományba.")
+    mult = MULT[mw] if mw else 1
+    text = fmt_num(num_of(a), len(a.partition(",")[2])) + "".join(
+        ["–" + fmt_num(num_of(b), len(b.partition(",")[2]))] if b else []) + (NB + mw if mw else "") + NB + "éve"
+    va = clean(num_of(a) * mult)
+    item = {"t": "ago", "v": va}
+    if b:
+        vb = clean(num_of(b) * mult)
+        if va == vb:
+            P.err(line, f"„{k}” = {s}: a tartomány két vége egyforma.")
+            return None
+        item.update(lo=min(va, vb), hi=max(va, vb), v=(va + vb) / 2)
+    return item, text, False
+
+
+def parse_ratio(s, line, P, k, want):
+    parts = [p.strip() for p in s.split(":")]
+    if len(parts) < 2 or not all(re.fullmatch(NUM, p) for p in parts):
+        P.err(line, f"„{k}” = {s}: nem értelmezhető arány (formátum: 3 : 1 · 5474 : 1850 · 16 : 9).")
+        return None
+    vals = [num_of(p) for p in parts]
+    if any(v == 0 for v in vals[1:]):
+        P.err(line, f"„{k}” = {s}: az arány tagja nem lehet 0.")
+        return None
+    item = {"t": "ratio", "a": vals[0], "b": vals[1], "v": vals[0] / vals[1]}
+    if len(vals) > 2:
+        item["p"] = vals
+    return item, " : ".join(fmt_num(v, len(p.partition(",")[2])) for v, p in zip(vals, parts)), False
+
+
+def parse_frac(s, line, P, k, want):
+    if re.fullmatch(rf"{NUM}\s*:\s*{NUM}", s):
+        P.err(line, f"„{k}” = {s}: ez arány – törtet így írj: 3/4 (arányhoz a lecke ratio típust használjon).")
+        return None
+    m = re.fullmatch(r"([−\-+]?)\s*(?:(\d+)\s+)?(\d+)\s*/\s*(\d+)", s)
+    if not m:
+        P.err(line, f"„{k}” = {s}: nem értelmezhető tört (formátum: 3/4 · 2 1/3 · −5/8).")
+        return None
+    sign, w, a, b = m.groups()
+    if sign == "-":
+        P.warn(line, f"„{k}” = {s}: kötőjel helyett valódi mínuszjelet (−) írj.")
+    w, a, b = int(w or 0), int(a), int(b)
+    if b == 0:
+        P.err(line, f"„{k}” = {s}: a nevező nem lehet 0.")
+        return None
+    if w and a >= b:
+        P.err(line, f"„{k}” = {s}: vegyes számban a tört része valódi tört legyen (számláló < nevező).")
+        return None
+    if want.get("maxDen") and b > want["maxDen"]:
+        P.err(line, f"„{k}” = {s}: a nevező legfeljebb {want['maxDen']} lehet.")
+    if want.get("proper") and (w or a >= b):
+        P.err(line, f"„{k}” = {s}: valódi tört kell (a számláló kisebb a nevezőnél).")
+    g = math.gcd(a, b)
+    if want.get("reduced") and g > 1:
+        P.err(line, f"„{k}” = {s}: nem egyszerűsített alak ({a}/{b} → {a // g}/{b // g}?).")
+    neg = sign in ("−", "-")
+    v = (w + a / b) * (-1 if neg else 1)
+    text = ("−" if neg else "") + (f"{w} " if w else "") + f"{a}/{b}"
+    return {"t": "frac", "n": a, "d": b, "w": w, "neg": neg, "v": v, "red": g == 1}, text, False
+
+
+def parse_list(s, line, P, k, want):
+    if ";" not in s and re.search(r"\d,\s+[−\-]?\d", s):
+        P.err(line, f"„{k}” = {s}: az elemeket pontosvesszővel válaszd el (a vessző tizedesvessző): 2; 3; 5.")
+        return None
+    parts = [p.strip() for p in s.split(";")]
+    if any(not p for p in parts):
+        P.err(line, f"„{k}” = {s}: üres elem a listában.")
+        return None
+    vals, units, ds = [], [], []
+    for p in parts:
+        r = parse_number(p, line, P)
+        if not r:
+            return None
+        vals.append(r[0]); units.append(r[1]); ds.append(r[2])
+    wu = norm_unit(want.get("unit", ""))
+    given = [u for u in units if u]
+    if given and (len(set(given)) > 1 or not (len(given) == len(units) or len(given) == 1 and units[-1])):
+        P.err(line, f"„{k}” = {s}: a mértékegységet egyszer, a lista végére írd (−1,2; 0,9; 5,4 °C).")
+        return None
+    unit = given[0] if given else ""
+    if unit != wu:
+        P.err(line, f"„{k}”: a mértékegység „{want.get('unit', '')}” legyen, nem „{unit}”.")
+        return None
+    ln = want.get("len")
+    if ln is not None:
+        lo, hi = (ln, ln) if isinstance(ln, int) else ln
+        if not lo <= len(vals) <= hi:
+            P.err(line, f"„{k}”: {len(vals)} elem van, " + (f"{lo} kell." if lo == hi else f"{lo}–{hi} kell."))
+    if want.get("int") and any(abs(v - round(v)) > 1e-9 for v in vals):
+        P.err(line, f"„{k}” = {s}: minden elem egész szám legyen.")
+    text = "; ".join(fmt_num(v, d) for v, d in zip(vals, ds)) + (unit_sep(unit) + unit if unit else "")
+    return {"t": "list", "v": vals, "u": unit, "d": max(ds)}, text, False
+
+
+def parse_series(s, line, P, k, want):
+    pairs = [p.strip() for p in re.split(r"\s*[·;]\s*", s) if p.strip()]
+    xs, ys, txt, dx, dy = [], [], [], 0, 0
+    ux, uy = norm_unit(want.get("ux", "")), norm_unit(want.get("unit", ""))
+    for p in pairs:
+        a, sep, b = p.partition(":")
+        if not sep:
+            P.err(line, f"„{k}”: „{p}” – a párokat „x: y” alakban, „·” jellel elválasztva írd (0 °C: 13,3 · 20 °C: 31,6).")
+            return None
+        ra, rb = parse_number(a, line, P), parse_number(b, line, P)
+        if not ra or not rb:
+            return None
+        if ra[1] != ux:
+            P.err(line, f"„{k}”: az x mértékegysége „{ux}” legyen, nem „{ra[1]}”.")
+            return None
+        if rb[1] and rb[1] != uy:
+            P.err(line, f"„{k}”: az y mértékegysége „{uy}” legyen, nem „{rb[1]}”.")
+            return None
+        xs.append(ra[0]); ys.append(rb[0]); dx, dy = max(dx, ra[2]), max(dy, rb[2])
+        txt.append(fmt_num(ra[0], ra[2]) + unit_sep(ux) + ux + ": " + fmt_num(rb[0], rb[2]))
+    if any(b <= a for a, b in zip(xs, xs[1:])):
+        P.err(line, f"„{k}”: az x értékei szigorúan növekedjenek.")
+        return None
+    ln = want.get("len")
+    if ln is not None:
+        lo, hi = (ln, ln) if isinstance(ln, int) else ln
+        if not lo <= len(xs) <= hi:
+            P.err(line, f"„{k}”: {len(xs)} pár van, " + (f"{lo} kell." if lo == hi else f"{lo}–{hi} kell."))
+    if "xmin" in want and xs[0] < want["xmin"] or "xmax" in want and xs[-1] > want["xmax"]:
+        P.err(line, f"„{k}”: az x kívül esik a tartományon ({want.get('xmin', '…')} – {want.get('xmax', '…')}).")
+    return {"t": "series", "x": xs, "y": ys, "ux": ux, "uy": uy, "dx": dx, "dy": dy}, " · ".join(txt), False
+
+
+def parse_point(s, line, P, k, want):
+    m = re.fullmatch(r"([A-Z][′']*)?\s*\(\s*([^;()]+?)\s*;\s*([^;()]+?)\s*\)", s)
+    if not m:
+        hint = " A koordinátákat pontosvesszővel válaszd el (a vessző tizedesvessző)." if "," in s else ""
+        P.err(line, f"„{k}” = {s}: nem értelmezhető pont (formátum: (2; −1,5) · A(3; −2)).{hint}")
+        return None
+    name, a, b = m.groups()
+    ra, rb = parse_number(a, line, P), parse_number(b, line, P)
+    if not ra or not rb:
+        return None
+    if ra[1] or rb[1]:
+        P.err(line, f"„{k}” = {s}: a pont koordinátái mértékegység nélküli számok.")
+        return None
+    x, y = ra[0], rb[0]
+    box = want.get("box")
+    if box and not (box[0] <= x <= box[2] and box[1] <= y <= box[3]):
+        P.err(line, f"„{k}” = {s}: kívül esik a lecke koordináta-rendszerén (x: {box[0]}…{box[2]}, y: {box[1]}…{box[3]}).")
+        return None
+    if want.get("int") and (x != int(x) or y != int(y)):
+        P.err(line, f"„{k}” = {s}: egész koordináták kellenek.")
+    item = {"t": "point", "x": x, "y": y}
+    if name:
+        item["name"] = name.replace("'", "′")
+    return item, (item.get("name", "")) + f"({fmt_num(x, ra[2])}; {fmt_num(y, rb[2])})", False
+
+
+def parse_utc(s, line, P, k, want):
+    m = re.fullmatch(r"UTC\s*(?:([+−\-±])\s*(\d{1,2})(?::(\d{2}))?)?", s)
+    if not m:
+        P.err(line, f"„{k}” = {s}: nem értelmezhető időzóna (formátum: UTC+1 · UTC+5:30 · UTC−5 · UTC).")
+        return None
+    sign, h, mi = m.groups()
+    if sign == "-":
+        P.warn(line, f"„{k}” = {s}: kötőjel helyett valódi mínuszjelet (−) írj: UTC−5.")
+    h, mi = int(h or 0), int(mi or 0)
+    if mi not in (0, 15, 30, 45) or h > 14 or (h == 14 and mi):
+        P.err(line, f"„{k}” = {s}: az eltérés −12:00 és +14:00 között, negyedórás lépésben lehet.")
+        return None
+    tot = (h * 60 + mi) * (-1 if sign in ("−", "-") else 1)
+    if not sign:
+        text = "UTC"
+    else:
+        text = "UTC" + ("±" if sign == "±" else "−" if tot < 0 else "+") + str(h) + (f":{mi:02d}" if mi else "")
+    return {"t": "utc", "min": tot}, text, False
+
+
+def dataset_header(path):
+    head = path.read_text(encoding="utf-8", errors="replace")[:6000]
+    out = {}
+    for f in ("id", "ver", "src"):
+        m = re.search(rf"[\"']?\b{f}[\"']?\s*:\s*[\"']([^\"'\n]+)[\"']", head)
+        if m:
+            out[f] = m.group(1).strip()
+    return out
+
+
+def parse_dataset(s, line, P, k, want):
+    did = want.get("id")
+    if not did:
+        P.err(line, f"„{k}”: a dataset típusnál a spec-ben „id” kell (pl. \"id\": \"korfa-wpp2024\").")
+        return None
+    path = ROOT / (want.get("path") or f"shared/foldrajz/{did}.js")
+    if not path.exists():
+        P.err(line, f"„{k}”: nincs ilyen adatfájl: {path.relative_to(ROOT).as_posix()}")
+        return None
+    hd = dataset_header(path)
+    norm = lambda t: re.sub(r"\s+", " ", t.strip())
+    if hd.get("id") and hd["id"] != did:
+        P.err(line, f"„{k}”: az adatfájl azonosítója „{hd['id']}”, a spec-ben „{did}”.")
+    # a .md szövege a forrássor rövid neve („ENSZ WPP 2024”); a benne álló évszám(ok) a fájl fejlécében
+    # (src/ver) is szerepeljen – így egy adatfrissítés után a .md elavult évszáma kiderül
+    head = " ".join(hd.get(f, "") for f in ("src", "ver"))
+    miss = [y for y in re.findall(r"\b(?:19|20)\d\d\b", s) if y not in head]
+    if head.strip() and miss:
+        P.err(line, f"„{k}” = {s}: a(z) {', '.join(miss)} nem szerepel az adatfájl fejlécében "
+                    f"(verzió: {hd.get('ver') or '–'}) – frissítsd a .md-t.")
+        return None
+    item = {"t": "dataset", "id": did}
+    item.update({f: hd[f] for f in ("src", "ver") if f in hd})
+    return item, norm(s), False
+
+
+# ── kémiai képlet és egyenlet ──
+def chem_formula(f):
+    """'Ca(OH)2', 'SO4^2-', 'H₂O', 'Mg²⁺' → (atoms, charge, unicode, html) vagy hibaüzenet (str)."""
+    f = f.strip()
+    m = re.search("[⁰¹²³⁴⁵⁶⁷⁸⁹]*[⁺⁻]$", f)
+    if m:
+        f = f[:m.start()] + "^" + m.group(0).translate(SUP_IN)
+    f = f.translate(SUB_IN)
+    body, _, ch = f.partition("^")
+    charge = 0
+    if ch:
+        mm = re.fullmatch(r"(\d*)([+\-−])", ch)
+        if not mm:
+            return f"„{f}”: a töltést így írd: Na^+ · SO4^2- (vagy Na⁺, SO₄²⁻)"
+        charge = int(mm.group(1) or 1) * (1 if mm.group(2) == "+" else -1)
+    stack, i, uni, htm = [{}], 0, "", ""
+    while i < len(body):
+        c = body[i]
+        if c == "(":
+            stack.append({}); uni += c; htm += c; i += 1; continue
+        mm = re.match(r"\)(\d*)|([A-Z][a-z]?)(\d*)", body[i:])
+        if not mm:
+            return f"„{f}”: váratlan jel „{c}” a képletben"
+        if mm.group(0).startswith(")"):
+            if len(stack) < 2:
+                return f"„{f}”: páratlan zárójel"
+            num = int(mm.group(1) or 1)
+            top = stack.pop()
+            for a, n in top.items():
+                stack[-1][a] = stack[-1].get(a, 0) + n * num
+            uni += ")" + (mm.group(1) or "").translate(SUB_OUT)
+            htm += ")" + (f"<sub>{mm.group(1)}</sub>" if mm.group(1) else "")
+        else:
+            sym, num = mm.group(2), mm.group(3)
+            if sym not in ELEMENTS:
+                return f"„{f}”: ismeretlen vegyjel „{sym}”"
+            stack[-1][sym] = stack[-1].get(sym, 0) + int(num or 1)
+            uni += sym + num.translate(SUB_OUT)
+            htm += sym + (f"<sub>{num}</sub>" if num else "")
+        i += len(mm.group(0))
+    if len(stack) != 1 or not stack[0]:
+        return f"„{f}”: " + ("páratlan zárójel" if len(stack) != 1 else "üres képlet")
+    if charge:
+        q = (str(abs(charge)) if abs(charge) > 1 else "") + ("+" if charge > 0 else "−")
+        uni += q.translate(SUP_OUT)
+        htm += f"<sup>{q}</sup>"
+    return stack[0], charge, uni, htm
+
+
+def parse_formula(s, line, P, k, want):
+    r = chem_formula(s)
+    if isinstance(r, str):
+        P.err(line, f"„{k}”: {r}.")
+        return None
+    atoms, charge, uni, htm = r
+    if "atoms" in want and atoms != want["atoms"]:
+        P.err(line, f"„{k}” = {s}: a lecke {fmt_atoms(want['atoms'])} összetételt vár, ez {fmt_atoms(atoms)}.")
+    if "charge" in want and charge != want["charge"]:
+        P.err(line, f"„{k}” = {s}: a lecke {want['charge']} töltést vár, ez {charge}.")
+    return {"t": "formula", "atoms": atoms, "charge": charge, "_html": htm}, uni, False
+
+
+def fmt_atoms(a):
+    return ", ".join(f"{n} {e}" for e, n in a.items())
+
+
+def parse_equation(s, line, P, k, want):
+    sides = re.split(r"\s*(?:→|->)\s*", s)
+    if len(sides) != 2:
+        P.err(line, f"„{k}” = {s}: " + ("pontosan egy nyíl (→ vagy ->) kell a két oldal közé."
+                                       if len(sides) > 2 or not re.search("⇌|<->|=", s) else
+                                       "a reakcióegyenletben nyíl áll (→ vagy ->), nem = vagy ⇌."))
+        return None
+    out, tot, uni, htm = {}, [{}, {}], [], []
+    for si, side in enumerate(sides):
+        terms = []
+        for t in re.split(r"\s+\+\s+", side.strip()):
+            m = re.fullmatch(r"(\d+)?\s*(\S+)", t.strip())
+            if not m:
+                P.err(line, f"„{k}”: nem értelmezhető tag: „{t}”.")
+                return None
+            kf = int(m.group(1) or 1)
+            r = chem_formula(m.group(2))
+            if isinstance(r, str):
+                P.err(line, f"„{k}”: {r}.")
+                return None
+            atoms, charge, u, h = r
+            terms.append({"k": kf, "f": u, "atoms": atoms, "charge": charge})
+            for a, n in atoms.items():
+                tot[si][a] = tot[si].get(a, 0) + n * kf
+            tot[si]["±"] = tot[si].get("±", 0) + charge * kf
+            uni.append((f"{kf} " if kf > 1 else "") + u)
+            htm.append((f"{kf} " if kf > 1 else "") + h)
+        out["lhs" if si == 0 else "rhs"] = terms
+        uni.append("→"); htm.append("→")
+    uni.pop(); htm.pop()
+    nl = len(out["lhs"])
+    text = " + ".join(uni[:nl]) + " → " + " + ".join(uni[nl + 1:])
+    html_ = " + ".join(htm[:nl]) + " → " + " + ".join(htm[nl + 1:])
+    bad = []
+    for a in list(dict.fromkeys(list(tot[0]) + list(tot[1]))):
+        if a != "±" and tot[0].get(a, 0) != tot[1].get(a, 0):
+            bad.append(f"bal oldalon {tot[0].get(a, 0)} {a}, jobb oldalon {tot[1].get(a, 0)} {a}")
+    if tot[0].get("±", 0) != tot[1].get("±", 0):
+        bad.append(f"a töltés bal oldalon {tot[0].get('±', 0):+d}, jobb oldalon {tot[1].get('±', 0):+d}")
+    if bad:
+        P.err(line, f"„{k}” = {s}: nincs kiegyenlítve: " + "; ".join(bad) + ".")
+        return None
+    return {"t": "equation", **out, "_html": html_}, text, False
+
+
+# ── kifejezés (expr) ──
+EXPR_TOK = re.compile(r"\s*(?:(\d+(?:,\d+)?)|(<=>|<=|>=|!=|[=<>≤≥≠])|([+\-−·*×:/^()|√])|([A-Za-z])|(\S))")
+REL = {"<=": "≤", ">=": "≥", "!=": "≠"}
+
+
+def parse_expr_tree(src, vars_):
+    """→ (fa, tokenek) vagy hibaüzenet (str)."""
+    toks, pos = [], 0
+    while pos < len(src):
+        m = EXPR_TOK.match(src, pos)
+        if not m or m.end() == pos:
+            break
+        pos = m.end()
+        num, rel, op, var, bad = m.groups()
+        if bad:
+            return f"ismeretlen jel „{bad}” a kifejezésben"
+        if num:
+            toks.append(("n", num))
+        elif rel:
+            toks.append(("r", REL.get(rel, rel)))
+        elif op:
+            toks.append(("o", {"-": "−", "*": "·", "×": "·"}.get(op, op)))
+        else:
+            if var not in vars_:
+                return f"„{var}” betű nem szerepel a lecke változói között ({', '.join(vars_) or 'nincs'})"
+            toks.append(("v", var))
+    if not toks:
+        return "üres kifejezés"
+    i = 0
+
+    def peek():
+        return toks[i] if i < len(toks) else (None, None)
+
+    def eat():
+        nonlocal i
+        i += 1
+        return toks[i - 1]
+
+    def num(t):
+        return int(t) if "," not in t else float(t.replace(",", "."))
+
+    def atom():
+        t, v = peek()
+        if t == "n":
+            eat(); return num(v)
+        if t == "v":
+            eat(); return v
+        if v == "(":
+            eat(); e = summ()
+            if peek()[1] != ")":
+                raise ValueError("páratlan zárójel: hiányzik egy „)”")
+            eat(); return ["()", e]
+        if v == "|":
+            eat(); e = summ()
+            if peek()[1] != "|":
+                raise ValueError("lezáratlan abszolútérték-jel |")
+            eat(); return ["abs", e]
+        if v == "√":
+            eat(); return ["√", atom()]
+        if t is None:
+            raise ValueError("a kifejezés hiányosan végződik")
+        raise ValueError(f"két műveleti jel egymás után („{v}”)" if t == "o" else f"váratlan „{v}”")
+
+    def power():
+        a = atom()
+        if peek()[1] == "^":
+            eat(); return ["^", a, unary()]
+        return a
+
+    def unary():
+        t, v = peek()
+        if t == "o" and v in "+−":
+            eat(); return ["neg" if v == "−" else "pos", unary()]
+        return power()
+
+    def term():
+        a = unary()
+        while True:
+            t, v = peek()
+            if t == "o" and v in "·:/":
+                eat(); a = [v, a, unary()]
+            elif t == "v" or v in ("(", "√"):
+                a = ["imp", a, unary()]
+            elif t == "n":
+                raise ValueError("hiányzó műveleti jel két szám között")
+            else:
+                return a
+
+    def summ():
+        a = term()
+        while peek()[0] == "o" and peek()[1] in "+−":
+            v = eat()[1]
+            a = [v, a, term()]
+        return a
+
+    try:
+        e = summ()
+        if peek()[0] == "r":
+            r = eat()[1]
+            e = [r, e, summ()]
+            if peek()[0] == "r":
+                raise ValueError("csak egy reláció (=, <, ≤ …) állhat a kifejezésben")
+        if i < len(toks):
+            raise ValueError(f"váratlan „{toks[i][1]}”" + (" (páratlan zárójel)" if toks[i][1] == ")" else ""))
+    except ValueError as ex:
+        return str(ex)
+    return e, [v for _, v in toks]
+
+
+def expr_str(e):
+    if isinstance(e, (int, float)):
+        return fmt_num(e, len(repr(e).partition(".")[2]) if isinstance(e, float) else 0)
+    if isinstance(e, str):
+        return e
+    op = e[0]
+    if op == "()":
+        return "(" + expr_str(e[1]) + ")"
+    if op == "abs":
+        return "|" + expr_str(e[1]) + "|"
+    if op == "√":
+        return "√" + expr_str(e[1])
+    if op == "neg":
+        return "−" + expr_str(e[1])
+    if op == "pos":
+        return "+" + expr_str(e[1])
+    if op == "^":
+        b, bs = e[2], expr_str(e[2])
+        simple = isinstance(b, (int, str)) or b[0] == "()" or b[0] == "neg" and isinstance(b[1], (int, str))
+        return expr_str(e[1]) + "^" + (bs if simple else "(" + bs + ")")
+    if op == "imp":
+        return expr_str(e[1]) + expr_str(e[2])
+    if op == "/":
+        return expr_str(e[1]) + "/" + expr_str(e[2])
+    return expr_str(e[1]) + f" {op} " + expr_str(e[2])
+
+
+def parse_expr(s, line, P, k, want, ctx):
+    if ctx.get("math"):
+        if "*" in s:
+            P.warn(line, f"„{k}”: szorzásjelnek ·-ot írj (3 · 4), ne *-ot.")
+        if re.search(r"(?:^|[\s(])-(?=\s*[\w(])|\s-\s", s):
+            P.warn(line, f"„{k}”: kötőjel helyett valódi mínuszjelet (−) írj.")
+    r = parse_expr_tree(s, want.get("vars", ["x"]))
+    if isinstance(r, str):
+        P.err(line, f"„{k}” = {s}: {r}.")
+        return None
+    tree, tok = r
+    text = expr_str(tree)
+    mxp = Mx(frac=True)
+    return {"t": "expr", "tok": tok, "tree": tree,
+            "_html": '<span class="mx">' + mx_html(mxp.math(text)) + "</span>"}, text, False
+
+
+def parse_datum(k, raw, n, want, P, ctx=None):
+    """Egy ### Adatok sor értéke → (adat-dict, formázott szöveg, panel-HTML vagy None) vagy None."""
+    ctx = ctx or {}
     typ = want.get("type", "number")
     if typ not in TYPES:
         return None              # a spec hibáját a read_spec már jelezte
-    s, est = split_est(raw)
+    s0, tags = split_tags(raw.strip())
+    s, est = split_est(s0)
+    est = est or tags.pop("est", False)
+    chk = None
+    html_ = None
     if typ == "number":
-        r = parse_number(s, n, P)
+        r = parse_number_item(s, n, P, k, want)
         if not r:
             return None
-        val, unit, d = r
-        mult, mw, unit2 = (1, "", unit)
-        if unit != norm_unit(want.get("unit", "")):
-            mult, mw, unit2 = split_mult(unit, want.get("unit", ""))
-        if unit2 != norm_unit(want.get("unit", "")):
-            P.err(n, f"„{k}”: a mértékegység „{want.get('unit', '')}” legyen, nem „{unit}”.")
-        item = {"v": val * mult, "u": unit2, "d": max(0, d - int(round(math.log10(mult))))}
-        text = fmt_value(val, d, unit)
-        if mw:
-            item["s"] = text = fmt_num(val, d) + NB + mw + (NB + unit2 if unit2 else "")
+        item, text, chk = r
     elif typ == "year":
         r = parse_year(s, n, P, k)
         if not r:
             return None
         item, text, korul = r
         est = est or korul
-    elif typ == "date":
-        r = parse_date(s, n, P, k)
-        if not r:
-            return None
-        item, text, _ = r
-    elif typ == "coord":
-        r = parse_coord(s, n, P, k, want)
-        if not r:
-            return None
-        item, text, _ = r
     else:
-        r = parse_range(s, n, P, k, want)
+        fn = {"date": lambda: parse_date(s, n, P, k), "coord": lambda: parse_coord(s, n, P, k, want),
+              "range": lambda: parse_range(s, n, P, k, want), "ago": lambda: parse_ago(s, n, P, k, want),
+              "ratio": lambda: parse_ratio(s, n, P, k, want), "frac": lambda: parse_frac(s, n, P, k, want),
+              "list": lambda: parse_list(s, n, P, k, want), "series": lambda: parse_series(s, n, P, k, want),
+              "point": lambda: parse_point(s, n, P, k, want), "utc": lambda: parse_utc(s, n, P, k, want),
+              "dataset": lambda: parse_dataset(s, n, P, k, want),
+              "formula": lambda: parse_formula(s, n, P, k, want),
+              "equation": lambda: parse_equation(s, n, P, k, want),
+              "expr": lambda: parse_expr(s, n, P, k, want, ctx)}[typ]
+        r = fn()
         if not r:
             return None
         item, text, _ = r
-    if typ != "coord":
-        lo, hi = (item["lo"], item["hi"]) if typ == "range" else (item["v"], item["v"])
+        html_ = item.pop("_html", None)
+    if typ in ("number", "year", "range", "ago", "ratio", "frac", "list", "series"):
+        if typ == "number":
+            lo = hi = chk
+        elif typ in ("range", "ago") and "lo" in item:
+            lo, hi = item["lo"], item["hi"]
+        elif typ in ("list", "series"):
+            lo, hi = min(item["v" if typ == "list" else "y"]), max(item["v" if typ == "list" else "y"])
+        elif typ == "ratio":
+            lo = hi = item["v"]
+        else:
+            lo = hi = item["v"]
         if "min" in want and lo < want["min"] or "max" in want and hi > want["max"]:
             P.err(n, f"„{k}” = {raw}: kívül esik az értelmes tartományon ({want.get('min', '…')} – {want.get('max', '…')}).")
+    if typ == "frac" and html_ is None:
+        html_ = mx_html(Mx(frac=True).text(text))
     if est:
         item["est"] = True
         item["s0"] = text
         text = "kb." + NB + text
+        if html_:
+            html_ = "kb." + NB + html_
+    for t in ("yr", "upd", "proj", "model"):
+        if t in tags:
+            item[t] = tags[t]
+    if tags.get("upd") and "yr" not in tags:
+        P.warn(n, f"„{k}”: a „frissítendő” adat mellé írd az évét is: „(2025, frissítendő)”.")
     if typ != "number" or est:
         item["s"] = text
-    return item, item.get("s", text)
+    if typ == "number" and tags and "s" not in item:
+        item["s"] = text
+    return item, item.get("s", text), html_
 
 
-def inline(text, line, P, data_fmt):
-    """Tanárbarát jelölés → HTML. **félkövér**, *dőlt*, ==színnel kiemelt==, F_fel → alsó index, {adatkulcs} → az adat értéke."""
+# ── Jelölés (matematika, kémia, minden tárgy) ─────────────────────────────────────────────
+# A jelölés-elemző egy kis fát ad, ugyanazt, mint a shared/matek/mtext.js MatText.parse-a
+# (közös próbaesetek: tools/tests/mx-cases.js). A fa csomópontjai:
+#   "szöveg" · ["i", "x"] dőlt változó · ["sup", [...]] · ["sub", [...]] · ["frac", [számláló], [nevező]]
+#   ["sqrt", [...]] · ["mx", [...]] képletszakasz (`…`)
+SUB_IN = str.maketrans("₀₁₂₃₄₅₆₇₈₉", "0123456789")
+SUP_IN = str.maketrans("⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻", "0123456789+−")
+SUB_OUT = str.maketrans("0123456789", "₀₁₂₃₄₅₆₇₈₉")
+SUP_OUT = str.maketrans("0123456789+−-", "⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻⁻")
+ELEMENTS = set("""H He Li Be B C N O F Ne Na Mg Al Si P S Cl Ar K Ca Sc Ti V Cr Mn Fe Co Ni Cu Zn Ga Ge As Se
+  Br Kr Rb Sr Y Zr Nb Mo Tc Ru Rh Pd Ag Cd In Sn Sb Te I Xe Cs Ba La Ce Pr Nd Pm Sm Eu Gd Tb Dy Ho Er Tm Yb
+  Lu Hf Ta W Re Os Ir Pt Au Hg Tl Pb Bi Po At Rn Fr Ra Ac Th Pa U Np Pu Am Cm Bk Cf Es Fm Md No Lr Rf Db Sg
+  Bh Hs Mt Ds Rg Cn Nh Fl Mc Lv Ts Og""".split())
+# kémiai módban sem képlet (vitamin, hegy, papírméret…); a „\” előtag is letiltja: \B12
+CHEM_EXCEPT = {"B1", "B2", "B3", "B5", "B6", "B7", "B9", "B12", "C3", "C4", "K2", "V1", "V2", "U2", "A3", "A4", "A5",
+               "PM10", "PM2", "N1", "S1", "S2"}
+MATH_OPS = [("<=>", "⇔"), ("|->", "↦"), ("<=", "≤"), (">=", "≥"), ("!=", "≠"), ("~=", "≈"), ("->", "→"),
+            ("=>", "⇒"), ("+-", "±")]
+FUNCS = {"sin", "cos", "tg", "ctg", "tan", "cot", "log", "lg", "ln", "lim", "max", "min", "sgn", "lnko", "lkkt",
+         "mod", "exp", "abs"}
+NAMED = {"pi": "π", "inf": "∞", "NN": "ℕ", "ZZ": "ℤ", "QQ": "ℚ", "RR": "ℝ"}
+LET = "A-Za-zÀ-ÖØ-öø-žΑ-Ωα-ω"
+IS_LET = re.compile(f"[{LET}]")
+IS_WORD = re.compile(f"[{LET}0-9_]")
+CHEM_RE = re.compile(r"(?:[A-Z][a-z]?\d*|\((?:[A-Z][a-z]?\d*)+\)\d*)+")
+CHEM_PART = re.compile(r"([A-Z][a-z]?|[()])(\d*)")
+FRAC_RE = re.compile(r"(\d+)/(\d+)(?![0-9/]|,\d)")
+EXP_RE = re.compile(r"\^([−-]?)(\d+(?:,\d+)?|[A-Za-zα-ω])")
+CHARGE_RE = re.compile(r"\^(\d*[+\-−])(?![\w(])")
+
+
+def match_close(s, i, op="(", cl=")"):
+    """s[i] == op → a párja indexe, vagy -1."""
+    depth = 0
+    for j in range(i, len(s)):
+        if s[j] == "\\":
+            continue
+        if s[j] == op:
+            depth += 1
+        elif s[j] == cl:
+            depth -= 1
+            if depth == 0:
+                return j
+    return -1
+
+
+def split_top(s, ch="/"):
+    """Az első, zárójelen kívüli ch mentén kettévág (None, ha nincs)."""
+    depth = 0
+    for j, c in enumerate(s):
+        if c in "([":
+            depth += 1
+        elif c in ")]":
+            depth -= 1
+        elif c == ch and depth == 0 and (j == 0 or s[j - 1] != "\\"):
+            return s[:j], s[j + 1:]
+    return None
+
+
+class Mx:
+    """Jelölés-elemző. frac: a 3/4 számjegyes tört állóvá válik (matematikalecke);
+    chem: H2O, Na^+, -> és a Unicode-indexek kémiai jelölése (kémialecke)."""
+
+    def __init__(self, frac=False, chem=False):
+        self.frac, self.chem = frac, chem
+        self.errors, self.conv = [], []
+
+    @staticmethod
+    def push(out, x):
+        if isinstance(x, str):
+            if not x:
+                return
+            if out and isinstance(out[-1], str):
+                out[-1] += x
+                return
+        out.append(x)
+
+    def text(self, s):
+        return self.seq(s, math=False)
+
+    def math(self, s, big=False):
+        return self.seq(s, math=True, big=big)
+
+    def seq(self, s, math, big=False):
+        out, i, n = [], 0, len(s)
+        P = self.push
+        while i < n:
+            c = s[i]
+            prev = s[i - 1] if i else ""
+            if c == "\\" and i + 1 < n:
+                P(out, s[i + 1]); i += 2; continue
+            if c == "`":
+                j = s.find("`", i + 1)
+                while j > 0 and s[j - 1] == "\\":
+                    j = s.find("`", j + 1)
+                if j < 0:
+                    self.errors.append("lezáratlan ` (a képletszakasz végéről hiányzik a ` jel)")
+                    P(out, s[i + 1:]); break
+                out.append(["mx", self.math(s[i + 1:j])]); i = j + 1; continue
+            if s.startswith("[[", i):
+                j = s.find("]]", i + 2)
+                parts = split_top(s[i + 2:j]) if j > 0 else None
+                if j < 0 or not parts:
+                    self.errors.append("[[…]]: " + ("hiányzik a ]]" if j < 0 else "hiányzik a törtvonal (/), pl. [[x/2]]"))
+                    P(out, s[i:j + 2] if j > 0 else s[i:]); i = j + 2 if j > 0 else n; continue
+                out.append(["frac", self.math(parts[0].strip()), self.math(parts[1].strip())]); i = j + 2; continue
+            if c == "^" and out:
+                if s.startswith("^(", i):
+                    j = match_close(s, i + 1)
+                    if j > 0:
+                        out.append(["sup", self.seq(s[i + 2:j], math)]); i = j + 1; continue
+                m = CHARGE_RE.match(s, i)
+                if m:
+                    out.append(["sup", [m.group(1).replace("-", "−")]]); i = m.end(); continue
+                m = EXP_RE.match(s, i)
+                if m:
+                    sign, tok = m.groups()
+                    inner = ["−"] if sign else []
+                    if math and IS_LET.match(tok):
+                        inner.append(["i", tok])
+                    else:
+                        self.push(inner, tok)
+                    out.append(["sup", inner]); i = m.end(); continue
+            if c == "_" and i + 1 < n and (IS_LET.match(prev) or math and (prev.isdigit() or prev == ")")):
+                if s[i + 1] == "(":
+                    j = match_close(s, i + 1)
+                    if j > 0:
+                        out.append(["sub", self.seq(s[i + 2:j], math)]); i = j + 1; continue
+                m = re.compile(r"\d+|[" + LET + r"]+").match(s, i + 1)
+                if m:
+                    t = m.group(0)
+                    out.append(["sub", [["i", t]] if math and len(t) == 1 and IS_LET.match(t) else [t]])
+                    i = m.end(); continue
+            if (math or self.frac) and (c == "√" or math and s.startswith("gyök(", i)):
+                k = i + (1 if c == "√" else 4)
+                if k < n and s[k] == "(":
+                    j = match_close(s, k)
+                    if j > 0:
+                        out.append(["sqrt", self.seq(s[k + 1:j], True)]); i = j + 1; continue
+                m = re.compile(r"\d+(?:,\d+)?|[A-Za-zα-ω]").match(s, k) if c == "√" else None
+                if m:
+                    t = m.group(0)
+                    out.append(["sqrt", [["i", t]] if math and not t[0].isdigit() else [t]]); i = m.end(); continue
+            if (math or self.frac) and c.isdigit() and not (IS_WORD.match(prev) or prev and prev in ",./"):
+                m = FRAC_RE.match(s, i)
+                if m and not (i + len(m.group(0)) < n and IS_LET.match(s[i + len(m.group(0))])):
+                    a, b = m.groups()
+                    if out and isinstance(out[-1], str):
+                        mm = re.search(r"(?:^|[^\w,])(\d+) $", out[-1])
+                        if mm and int(a) < int(b):
+                            out[-1] = out[-1][:-1]
+                    out.append(["frac", [a], [b]]); i = m.end(); continue
+            if self.chem and not math:
+                if (c.isupper() or c == "(") and not (IS_WORD.match(prev) or prev == "\\"):
+                    m = CHEM_RE.match(s, i)
+                    if m and re.search(r"\d", m.group(0)) and not (m.end() < n and re.match(r"[a-záéíóöőúüű0-9]", s[m.end()])):
+                        f = m.group(0)
+                        syms = re.findall(r"[A-Z][a-z]?", f)
+                        if f not in CHEM_EXCEPT and all(x in ELEMENTS for x in syms) and f.count("(") == f.count(")"):
+                            for sym, num in CHEM_PART.findall(f):
+                                P(out, sym)
+                                if num:
+                                    out.append(["sub", [num]])
+                            self.conv.append(f)
+                            i = m.end(); continue
+                if c in "₀₁₂₃₄₅₆₇₈₉" and out:
+                    m = re.compile("[₀₁₂₃₄₅₆₇₈₉]+").match(s, i)
+                    out.append(["sub", [m.group(0).translate(SUB_IN)]]); i = m.end(); continue
+                if c in "⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻" and out:
+                    m = re.compile("[⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻]+").match(s, i)
+                    if re.search("[⁺⁻]", m.group(0)):
+                        out.append(["sup", [m.group(0).translate(SUP_IN)]]); i = m.end(); continue
+                if s.startswith("->", i):
+                    P(out, "→"); self.conv.append("->"); i += 2; continue
+            if math:
+                op = next((b for a, b in MATH_OPS if s.startswith(a, i)), None)
+                if op:
+                    P(out, op); i += len(next(a for a, b in MATH_OPS if b == op)); continue
+                if c == "*":
+                    if out and isinstance(out[-1], str):
+                        out[-1] = out[-1].rstrip(" ")
+                    P(out, " · "); i += 1
+                    while i < n and s[i] == " ":
+                        i += 1
+                    continue
+                if c == "-":
+                    P(out, "−"); i += 1; continue
+                if c == "(":
+                    j = match_close(s, i)
+                    if j < 0:
+                        self.errors.append("páratlan zárójel a képletben: hiányzik egy „)”")
+                        P(out, "("); i += 1; continue
+                    inner = self.seq(s[i + 1:j], True, big)
+                    m = re.compile(r"\s*/\s*\(").match(s, j + 1) if big else None
+                    if m:
+                        k = m.end() - 1
+                        j2 = match_close(s, k)
+                        if j2 > 0:
+                            out.append(["frac", inner, self.seq(s[k + 1:j2], True, big)]); i = j2 + 1; continue
+                    P(out, "(")
+                    for x in inner:
+                        P(out, x)
+                    P(out, ")"); i = j + 1; continue
+                if c == ")":
+                    self.errors.append("páratlan zárójel a képletben: fölösleges „)”")
+                    P(out, ")"); i += 1; continue
+                m = re.compile(f"[{LET}]+").match(s, i)
+                if m:
+                    w = m.group(0)
+                    if w in NAMED:
+                        P(out, NAMED[w])
+                    elif not re.fullmatch(r"[A-Za-z]+", w) or w in FUNCS:
+                        P(out, w)
+                    else:
+                        out.append(["i", w])
+                    i = m.end(); continue
+            P(out, c); i += 1
+        return out
+
+
+def mx_html(nodes, esc=True):
+    e = (lambda t: H.escape(t, quote=False)) if esc else (lambda t: t)
+    out = []
+    for x in nodes:
+        if isinstance(x, str):
+            out.append(e(x)); continue
+        t = x[0]
+        if t == "i":
+            out.append(f"<i>{e(x[1])}</i>")
+        elif t in ("sup", "sub"):
+            out.append(f"<{t}>{mx_html(x[1], esc)}</{t}>")
+        elif t == "frac":
+            out.append(f'<span class="frac"><span class="fn">{mx_html(x[1], esc)}</span><span class="fs">/</span>'
+                       f'<span class="fd">{mx_html(x[2], esc)}</span></span>')
+        elif t == "sqrt":
+            inner = mx_html(x[1], esc)
+            if vis_len(x[1]) > 1:
+                inner = '<span class="rp">(</span>' + inner + '<span class="rp">)</span>'
+            out.append(f'<span class="rt">√<span class="rad">{inner}</span></span>')
+        elif t == "mx":
+            out.append(f'<span class="mx">{mx_html(x[1], esc)}</span>')
+    return "".join(out)
+
+
+def vis_len(nodes):
+    """Látható hossz (karakterben, közelítő): a tört max(számláló, nevező) + 1."""
+    n = 0
+    for x in nodes:
+        if isinstance(x, str):
+            n += len(x)
+        elif x[0] == "i":
+            n += len(x[1])
+        elif x[0] == "frac":
+            n += max(vis_len(x[1]), vis_len(x[2])) + 1
+        elif x[0] == "sqrt":
+            n += 1 + vis_len(x[1])
+        else:
+            n += vis_len(x[1])
+    return n
+
+
+def mx_unicode(nodes):
+    """Fa → Unicode-szöveg (kémiai feliratokhoz: H₂O, Na⁺); None, ha nem írható át."""
+    out = []
+    for x in nodes:
+        if isinstance(x, str):
+            out.append(x)
+        elif x[0] == "i":
+            out.append(x[1])
+        elif x[0] in ("sub", "sup") and all(isinstance(y, str) for y in x[1]):
+            t = "".join(x[1])
+            if not re.fullmatch(r"[0-9]+" if x[0] == "sub" else r"[0-9+−-]+", t):
+                return None
+            out.append(t.translate(SUB_OUT if x[0] == "sub" else SUP_OUT))
+        elif x[0] == "mx":
+            r = mx_unicode(x[1])
+            if r is None:
+                return None
+            out.append(r)
+        else:
+            return None
+    return "".join(out)
+
+
+MATH_WARN = [
+    (re.compile(r"\d\s*[*×]\s*\d|\d\s+x\s+\d"), "szorzásjelnek ·-ot írj (3 · 4), vagy tedd a képletet ` ` közé."),
+    (re.compile(r"÷"), "osztásjelnek :-ot írj (12 : 3)."),
+    (re.compile(r"(?:^|[\s(])-(?=\s*\d)|\s-\s"), "kötőjel helyett valódi mínuszjelet (−) írj, vagy tedd a képletet ` ` közé."),
+    (re.compile(r"\d\.\d"), "tizedespont? A magyar írásmód tizedesvessző (3,14)."),
+    (re.compile(r"\d'"), "szögpercnek ′ jelet írj (30′), ne aposztrófot."),
+    (re.compile(r"\(\s*[−\-]?\d+(?:,\d+)?\s*,\s+[−\-]?\d"), "pont koordinátáit pontosvesszővel válaszd el: P(3; −2)."),
+    (re.compile(r"(?<![\w^])(?:mm|cm|dm|m|km)\^?[23]\b"), "mértékegység kitevővel: m², cm³ (nem m2, cm^2)."),
+]
+
+
+def inline(text, line, P, data_fmt, ctx=None, fx=False):
+    """Tanárbarát jelölés → HTML. **félkövér**, *dőlt*, ==színnel kiemelt==, F_fel → alsó index, {adatkulcs} → az adat
+    értéke, `képlet`, x^2, [[a/b]], {1; 2; 3} halmaz; matematika- és kémialeckében a tantárgyi jelölés is."""
+    ctx = ctx or {}
+    math_, chem = ctx.get("math"), ctx.get("chem")
+    data_html = ctx.get("html", {})
+    keys = list(data_fmt)
+    s = text.replace("\\{", "\x01").replace("\\}", "\x02")
+
     def sub_ph(m):
         k = m.group(1).strip()
-        if k not in data_fmt:
-            P.err(line, f"{{{k}}}: nincs ilyen adat az ### Adatok listákban.")
-            return k
-        return "\x00PH" + str(list(data_fmt).index(k)) + "\x00"
-    s = re.sub(r"\{([^{}]+)\}", sub_ph, text)
+        if k in data_fmt:
+            return "\x00" + chr(0xE000 + keys.index(k)) + "\x00"
+        if ";" in k or not k:                 # halmaz: {1; 2; 3}, { }
+            return "\x01" + m.group(1) + "\x02"
+        P.err(line, f"{{{k}}}: nincs ilyen adat az ### Adatok listákban." +
+              (" (Halmazt pontosvesszővel írj: {1; 2; 3}.)" if math_ else ""))
+        return k
+    s = re.sub(r"\{([^{}]*)\}", sub_ph, s)
+    store = []
+
+    def put(h):
+        store.append(h)
+        return "\x03" + chr(0xE000 + len(store) - 1) + "\x03"
+
+    def sub_mx(src, big=False):
+        mp = Mx(frac=math_)
+        tree = mp.math(src, big)
+        for e in mp.errors:
+            P.err(line, e)
+        return put('<span class="mx">' + mx_html(tree) + "</span>")
+    if fx and math_:
+        s = sub_mx(s, big=True)
+    else:
+        if math_:
+            for rx, msg in MATH_WARN:
+                if rx.search(re.sub(r"(?<!\\)`(?:\\`|[^`])*`", " ", s)):
+                    P.warn(line, msg)
+        s = re.sub(r"(?<!\\)`((?:\\`|[^`])*)`", lambda m: sub_mx(m.group(1)), s)
+        if chem:
+            s = s.replace("->", "→")
+        if re.search(r"(?<!\\)`", s):
+            P.err(line, "lezáratlan ` (a képletszakasz végéről hiányzik a ` jel).")
     s = H.escape(s, quote=False)
     s = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", s)
     s = re.sub(r"(?<![*\w])\*(?!\s)(.+?)(?<!\s)\*(?![*\w])", r"<em>\1</em>", s)
     s = re.sub(r"==(.+?)==", r'<span class="key">\1</span>', s)
-    # alsó index: F_fel → F<sub>fel</sub>, v_0 → v<sub>0</sub> (betű/ρ/Δ után, betűk-számok a végéig)
-    s = re.sub(r"([A-Za-zρΔ])_([0-9A-Za-zÁÉÍÓÖŐÚÜŰáéíóöőúüű]+)", r"\1<sub>\2</sub>", s)
-    s = re.sub(r"\x00PH(\d+)\x00", lambda m: H.escape(data_fmt[list(data_fmt)[int(m.group(1))]]), s)
+    # tantárgyi jelölés a sima szövegen (a HTML-tagek érintetlenek): alsó/felső index, tört, kémiai képlet
+    mp = Mx(frac=math_, chem=chem)
+    parts = re.split(r"(<[^>]+>)", s)
+    for i in range(0, len(parts), 2):
+        if parts[i]:
+            parts[i] = mx_html(mp.text(parts[i]), esc=False)
+    s = "".join(parts)
+    for e in mp.errors:
+        P.err(line, e)
+    for f in dict.fromkeys(mp.conv):
+        if f != "->" and f not in ctx.setdefault("seen", set()):
+            ctx["seen"].add(f)
+            P.info(line, f"{f} → {mx_unicode(Mx(chem=True).text(f))}")
+    s = re.sub("\x03(.)\x03", lambda m: store[ord(m.group(1)) - 0xE000], s)
+    s = re.sub("\x00(.)\x00", lambda m: data_html.get(keys[ord(m.group(1)) - 0xE000]) or
+               H.escape(data_fmt[keys[ord(m.group(1)) - 0xE000]]), s)
+    s = s.replace("\x01", "{").replace("\x02", "}")
     if re.search(r"\*|==", s):
         P.warn(line, "lezáratlan * vagy == jelölés a szövegben.")
     return s
@@ -340,6 +1371,19 @@ def inline(text, line, P, data_fmt):
 
 def plain(s):
     return re.sub(r"\*\*|==|(?<!\w)\*|\*(?!\w)", "", s)
+
+
+def count_words(t, ctx, fx=False):
+    """Panelszöveg szavai. Képletszakasz (`…`) = 1 szó; matematikában a tört és a hatvány is 1 szó,
+    a `képlet:` sor matematika- és kémialeckében 3 szó."""
+    if fx and (ctx.get("math") or ctx.get("chem")):
+        return 3
+    t = re.sub(r"(?<!\\)`(?:\\`|[^`])*`", "X", t)
+    t = re.sub(r"\[\[.*?\]\]", "X", t)
+    if ctx.get("math"):
+        t = re.sub(r"(?<![\w,])\d+(?: \d+)?/\d+", "X", t)
+        t = re.sub(r"[\w)]+\^(?:\([^)]*\)|[−\-]?\w+)", "X", t)
+    return len(re.findall(r"[\wÀ-ž]+(?:[-–][\wÀ-ž]+)*", plain(re.sub(r"\{[^{}]+\}", "X", t))))
 
 
 def read_spec(html_path, P):
@@ -365,7 +1409,14 @@ def read_spec(html_path, P):
     mw = spec.get("maxWords", MAX_WORDS)
     if not isinstance(mw, int) or mw < 1:
         P.err(0, f"{html_path.name}: a maxWords pozitív egész szám legyen."); mw = MAX_WORDS
-    return {"steps": spec.get("steps"), "labels": labels, "data": data, "maxWords": mw}
+    if spec.get("math") and spec.get("chem"):
+        P.err(0, f"{html_path.name}: a \"math\" és a \"chem\" közül legfeljebb az egyik lehet true.")
+    rv = spec.get("review", [])
+    if not isinstance(rv, list):
+        P.err(0, f"{html_path.name}: a \"review\" lista legyen, pl. [\"elsősegély\"]."); rv = []
+    return {"steps": spec.get("steps"), "labels": labels, "data": data, "maxWords": mw,
+            "math": bool(spec.get("math")), "chem": bool(spec.get("chem")),
+            "sources": bool(spec.get("sources")), "review": rv}
 
 
 def parse_md(path, P):
@@ -389,7 +1440,7 @@ def parse_md(path, P):
                     out, rest, in_c = out + rest[:j], rest[j + 4:], True
         lines[i] = out.rstrip()
 
-    doc = {"title": None, "titleLine": 0, "meta": {}, "steps": [], "items": {}}
+    doc = {"title": None, "titleLine": 0, "meta": {}, "steps": [], "items": {}, "bareNotes": []}
     sec = None          # None | 'common' | step dict
     sub = None          # None | 'labels' | 'data'
     para = []           # [(line, text)]
@@ -458,6 +1509,8 @@ def parse_md(path, P):
             continue
         if l.startswith(">"):
             flush()
+            if not re.match(r"(?i)^>\s*megjegyzés\s*:", l):
+                doc["bareNotes"].append(n)
             t = re.sub(r"^>\s*(megjegyzés\s*:)?\s*", "", l, flags=re.I)
             sec["blocks"].append(("note", n, t)); continue
         if re.match(r"(?i)^képlet\s*:", l):
@@ -469,6 +1522,38 @@ def parse_md(path, P):
     return doc
 
 
+def md_comments(path):
+    """[(kezdősor, szöveg)] a .md HTML-megjegyzéseiről."""
+    text = path.read_text(encoding="utf-8")
+    return [(text.count("\n", 0, m.start()) + 1, m.group(1)) for m in re.finditer(r"<!--(.*?)-->", text, re.S)]
+
+
+def check_sources(md_path, doc, P):
+    """"sources": true – minden adat mellett <!-- forrás: … --> (utána, ugyanabban a sorban, vagy blokkszinten
+    <!-- forrás (az alábbiakra): … --> a szakasz elején)."""
+    raw = md_path.read_text(encoding="utf-8").split("\n")
+    com = md_comments(md_path)
+    src_at = {ln for ln, t in com if re.match(r"\s*forrás\b", t, re.I)}
+    block_at = {ln for ln, t in com if re.match(r"\s*forrás\s*\(az alábbiakra\)", t, re.I)}
+    for k, (kind, v, n) in doc["items"].items():
+        if kind != "data":
+            continue
+        ok = n in src_at
+        j = n                                     # a következő nem üres sor egy forrás-megjegyzés?
+        while not ok and j < len(raw) and not raw[j].strip():
+            j += 1
+        if not ok and j < len(raw) and (j + 1) in src_at and raw[j].lstrip().startswith("<!--"):
+            ok = True
+        j = n - 1                                 # blokkszintű megjegyzés a szakasz elején
+        while not ok and j >= 1 and not raw[j - 1].lstrip().startswith("#"):
+            if j in block_at:
+                ok = True
+            j -= 1
+        if not ok:
+            P.warn(n, f"„{k}”: hiányzik a forrás – írd utána: <!-- forrás: <hivatkozás>, lekérdezve: ÉÉÉÉ-HH-NN -->"
+                      " (közismert adatnál: <!-- forrás: közismert -->).")
+
+
 def build(md_path, check_only=False, out_dir=None):
     md_path = md_path.resolve()
     P = Problems(md_path)
@@ -476,6 +1561,7 @@ def build(md_path, check_only=False, out_dir=None):
     doc = parse_md(md_path, P)
     if spec is None:
         return P
+    ctx = {"math": spec["math"], "chem": spec["chem"], "html": {}}
 
     for k in ("tantárgy", "évfolyam", "témakör"):
         if k not in doc["meta"]:
@@ -490,11 +1576,13 @@ def build(md_path, check_only=False, out_dir=None):
         if k not in spec["data"]:
             P.err(n, f"„{k}”: fölösleges adat — a lecke nem használja" + (" (felirat lenne?)" if k in spec["labels"] else "") + ".")
             continue
-        r = parse_datum(k, v, n, spec["data"][k], P)
+        r = parse_datum(k, v, n, spec["data"][k], P, ctx)
         if not r:
             data_fmt[k] = v      # a hibát már jeleztük; a {hivatkozás} ne okozzon újabbat
             continue
-        data[k], data_fmt[k] = r
+        data[k], data_fmt[k], h = r
+        if h:
+            ctx["html"][k] = h
     # 2) feliratok
     for k, (kind, v, n) in doc["items"].items():
         if kind != "labels":
@@ -505,10 +1593,34 @@ def build(md_path, check_only=False, out_dir=None):
             continue
         if not v:
             P.err(n, f"„{k}”: üres felirat."); continue
-        text = re.sub(r"\{([^{}]+)\}", lambda m: data_fmt.get(m.group(1).strip()) or (P.err(n, f"{{{m.group(1)}}}: nincs ilyen adat.") or m.group(0)), v)
+
+        def lab_ref(m):
+            kk = m.group(1).strip()
+            if kk in data_fmt:
+                return data_fmt[kk]
+            if ";" in kk or not kk:
+                return m.group(0)
+            P.err(n, f"{{{m.group(1)}}}: nincs ilyen adat.")
+            return m.group(0)
+        text = re.sub(r"\{([^{}]*)\}", lab_ref, v.replace("\\{", "\x01").replace("\\}", "\x02"))
+        text = text.replace("\x01", "{").replace("\x02", "}")
+        mp = Mx(frac=spec["math"], chem=spec["chem"])
+        tree = mp.text(text)
+        for e in mp.errors:
+            P.err(n, f"„{k}”: {e}")
+        if spec["chem"] and mp.conv:
+            u = mx_unicode(tree)
+            if u is not None:
+                for f in dict.fromkeys(mp.conv):
+                    if f != "->":
+                        P.info(n, f"{f} → {mx_unicode(Mx(chem=True).text(f))}")
+                text = u
+        if spec["chem"] and re.search(r"egyenlet$", k) and "→" not in text:
+            P.warn(n, f"„{k}”: az egyenletben nyíl kell (→ vagy ->), pl. „metán + oxigén → szén-dioxid + víz”.")
         mx = spec["labels"][k] or DEFAULT_LABEL_MAX
-        if len(text) > mx:
-            P.err(n, f"„{k}”: a felirat {len(text)} karakter, legfeljebb {mx} lehet (a vásznon nem férne el).")
+        ln = vis_len(tree) if not (spec["chem"] and text != v) else len(text)
+        if ln > mx:
+            P.err(n, f"„{k}”: a felirat {ln} karakter, legfeljebb {mx} lehet (a vásznon nem férne el).")
         if re.search(r"\d\.\d", text):
             P.warn(n, f"„{k}”: tizedespont? A magyar írásmód tizedesvessző (3,14).")
         labels[k] = text
@@ -519,8 +1631,21 @@ def build(md_path, check_only=False, out_dir=None):
         if k not in data and k not in doc["items"]:
             w = spec["data"][k]
             hint = {"year": "Kr. e. 753", "date": "1848. március 15.", "coord": "47,50° É, 19,04° K",
-                    "range": "50–70 ezer " + w.get("unit", "")}.get(w.get("type"), "… " + w.get("unit", ""))
+                    "range": "50–70 ezer " + w.get("unit", ""), "ago": "66 millió éve", "ratio": "3 : 1",
+                    "frac": "3/4", "list": "2; 3; 5 " + w.get("unit", ""), "point": "(2; −1,5)",
+                    "series": "0 " + w.get("ux", "") + ": 13,3 · 20 " + w.get("ux", "") + ": 31,6",
+                    "expr": "x^2 − 4x + 3", "formula": "H₂O", "equation": "CH₄ + 2 O₂ → CO₂ + 2 H₂O",
+                    "utc": "UTC+1", "dataset": "<a forrás neve>"}.get(w.get("type"), "… " + w.get("unit", ""))
             P.err(0, f"hiányzó adat: „- {k}: {hint.strip()}” (### Adatok alá)")
+    if spec["sources"]:
+        check_sources(md_path, doc, P)
+    if spec["review"] and not any(re.match(r"\s*Szakmai ellenőrzés\s*:", t) for _, t in md_comments(md_path)):
+        P.warn(0, f"a lecke szakmai lektorálást kér ({', '.join(spec['review'])}): hiányzik a "
+                  "<!-- Szakmai ellenőrzés: <szerep>, <dátum>, <ajánlás verziója> --> blokk (név nélkül).")
+    if spec["math"]:
+        for n in doc["bareNotes"]:
+            P.warn(n, "a „>” sor megjegyzésdoboz – egyenlőtlenséggel ne kezdj sort (írd ` ` közé: `x > 3`), "
+                      "megjegyzésnél írd ki: „> megjegyzés: …”.")
 
     # 3) lépések
     if spec["steps"] is not None and len(doc["steps"]) != spec["steps"]:
@@ -529,8 +1654,8 @@ def build(md_path, check_only=False, out_dir=None):
     for s in doc["steps"]:
         parts, words, ul = [], 0, []
         for kind, n, t in s["blocks"]:
-            words += len(re.findall(r"[\wÀ-ž]+(?:[-–][\wÀ-ž]+)*", plain(re.sub(r"\{[^{}]+\}", "X", t))))
-            h = inline(t, n, P, data_fmt)
+            words += count_words(t, ctx, kind == "fx")
+            h = inline(t, n, P, data_fmt, ctx, fx=kind == "fx")
             if kind == "li":
                 ul.append(f'<li data-src="{n}">{h}</li>'); continue
             if ul:
@@ -543,9 +1668,10 @@ def build(md_path, check_only=False, out_dir=None):
             P.warn(s["line"], f"a(z) „{s['title']}” lépésnek nincs panelszövege.")
         if words > spec["maxWords"]:
             P.warn(s["line"], f"a(z) „{s['title']}” lépés panelszövege {words} szó (ajánlott ≤ {spec['maxWords']}).")
-        steps.append({"title": inline(s["title"], s["line"], P, data_fmt), "html": "".join(parts), "line": s["line"], "words": words})
+        steps.append({"title": inline(s["title"], s["line"], P, data_fmt, ctx), "html": "".join(parts), "line": s["line"], "words": words})
 
     if P.errors or check_only:
+        P.content = {"data": data, "labels": labels, "steps": steps}
         return P
     meta = doc["meta"]
     content = {
@@ -562,8 +1688,32 @@ def build(md_path, check_only=False, out_dir=None):
     return P
 
 
+def all_lessons():
+    return sorted(p for p in (ROOT / "leckek").rglob("*.md") if re.match(r"^\d\d-", p.name) and p.with_suffix(".html").exists())
+
+
+def stale(files, year):
+    """--stale: a „frissítendő” adatok, amelyek éve régebbi, mint year − 2."""
+    n = 0
+    for f in files:
+        P = build(f, check_only=True)
+        for k, d in getattr(P, "content", {}).get("data", {}).items():
+            if d.get("upd") and d.get("yr", 0) < year - 2:
+                n += 1
+                rel = f.resolve().relative_to(ROOT).as_posix() if f.resolve().is_relative_to(ROOT) else f.name
+                print(f"{rel}: „{k}” = {d.get('s', d.get('v'))} ({d.get('yr', 'év nélkül')}) – frissítendő")
+    print(f"{'✓ nincs elavult adat' if not n else f'{n} frissítendő adat'} (határ: {year - 2} előtti)")
+    return 0
+
+
+def mx_cases():
+    t = (ROOT / "tools" / "tests" / "mx-cases.js").read_text(encoding="utf-8")
+    return json.loads(t[t.index("["):t.rindex("]") + 1])
+
+
 def selftest():
-    """A tools/tests/ próbafájljai: tort-adatok.md (hibátlan, értékek ellenőrzése), tort-hibak.md (várt hibák)."""
+    """A tools/tests/ próbafájljai: tort-adatok.md (hibátlan, értékek ellenőrzése), tort-hibak.md (várt hibák),
+    uj-adatok.md / uj-hibak.md (az új adattípusok), jeloles-mat.md / jeloles-kem.md (jelölés), mx-cases.js."""
     T = ROOT / "tools" / "tests"
     fails = []
 
@@ -579,29 +1729,29 @@ def selftest():
         g = lambda k, f: D.get(k, {}).get(f)
         check("olimpia v", g("első olimpia", "v"), -776)
         check("olimpia a", g("első olimpia", "a"), -775)
-        check("róma s", g("Róma alapítása", "s"), "Kr. e. 753")
+        check("róma s", g("Róma alapítása", "s"), "Kr.\u00a0e.\u00a0753")
         check("eltelt évek", g("Róma alapítása", "a") - g("első olimpia", "a"), 23)
         check("Kr. e. 1 → Kr. u. 1", g("Kr. u. 1", "a") - g("Kr. e. 1", "a"), 1)
-        check("476 s", g("Nyugatrómai Birodalom vége", "s"), "Kr. u. 476")
-        check("i. e. stílus", g("i. e. év", "s"), "i. e. 490")
+        check("476 s", g("Nyugatrómai Birodalom vége", "s"), "Kr.\u00a0u.\u00a0476")
+        check("i. e. stílus", g("i. e. év", "s"), "i.\u00a0e.\u00a0490")
         check("tatárjárás", (g("muhi csata", "v"), g("muhi csata", "s")), (1241, "1241"))
         check("körül → est", (g("piramis", "est"), g("piramis", "s"), g("piramis", "s0")),
-              (True, "kb. Kr. e. 2560", "Kr. e. 2560"))
+              (True, "kb.\u00a0Kr.\u00a0e.\u00a02560", "Kr.\u00a0e.\u00a02560"))
         check("dátum", (g("forradalom", "ymd"), g("forradalom", "s"), g("forradalom", "v")), ([1848, 3, 15], "1848. március 15.", 1848))
         check("dátum a", round(g("forradalom", "a"), 3), round(1848 + (31 + 29 + 14.5) / 366, 3))
         check("hónap", (g("csak hónap", "ymd"), g("csak hónap", "s")), ([1849, 4, None], "1849. április"))
         check("Kr. e. dátum", (g("Caesar halála", "ymd"), g("Caesar halála", "a") < -42), ([-44, 3, 15], True))
-        check("koord", (g("Buda", "lat"), g("Buda", "lon"), g("Buda", "s")), (47.5, 19.04, "47,50° É, 19,04° K"))
+        check("koord", (g("Buda", "lat"), g("Buda", "lon"), g("Buda", "s")), (47.5, 19.04, "47,50°\u00a0É, 19,04°\u00a0K"))
         check("koord perc", (round(g("Marathón", "lat"), 4), round(g("Marathón", "lon"), 4)), (38.15, 23.9667))
         check("koord D/Ny", (g("Lisszabon", "lat"), g("Lisszabon", "lon")), (38.72, -9.14))
         check("tartomány", {f: g("sereg", f) for f in ("lo", "hi", "v", "u", "s", "est")},
-              {"lo": 50000.0, "hi": 70000.0, "v": 60000.0, "u": "fő", "s": "kb. 50–70 ezer fő", "est": True})
+              {"lo": 50000.0, "hi": 70000.0, "v": 60000.0, "u": "fő", "s": "kb.\u00a050–70\u00a0ezer\u00a0fő", "est": True})
         check("tartomány egység nélkül", (g("napok", "lo"), g("napok", "hi"), g("napok", "s"), g("napok", "u")), (25.0, 28.0, "25–28", ""))
-        check("szám becsléssel", (g("lakosság", "v"), g("lakosság", "est"), g("lakosság", "s")), (2000000.0, True, "kb. 2 millió fő"))
+        check("szám becsléssel", (g("lakosság", "v"), g("lakosság", "est"), g("lakosság", "s")), (2000000.0, True, "kb.\u00a02\u00a0millió\u00a0fő"))
         check("sima szám változatlan", D.get("távolság"), {"v": 42.195, "u": "km", "d": 3})
         check("millió km egység", D.get("Nap távolsága"), {"v": 150.0, "u": "millió km", "d": 0})
         html = "".join(s["html"] for s in getattr(P, "content", {}).get("steps", []))
-        check("{hivatkozás}", "Kr. e. 753" in H.unescape(html) and "kb. 50–70 ezer fő" in H.unescape(html), True)
+        check("{hivatkozás}", "Kr.\u00a0e.\u00a0753" in H.unescape(html) and "kb.\u00a050–70\u00a0ezer\u00a0fő" in H.unescape(html), True)
 
         P = build(T / "tort-hibak.md", check_only=True)
         want = ["0. év nincs", "Kr. e. 33", "február 30. nem létező nap", "ismeretlen hónap", "kívül esik a lecke térképén",
@@ -614,6 +1764,129 @@ def selftest():
             fails.append(f"{len(P.errors)} hiba, várt: {len(want)}:\n    " + "\n    ".join(P.errors))
         if not any("szó (ajánlott ≤ 20)" in w for w in P.warnings):
             fails.append("hiányzó figyelmeztetés: maxWords (20)")
+
+        # ── új adattípusok ──
+        P = build(T / "uj-adatok.md", out_dir=tmp)
+        for m in P.errors + P.warnings:
+            fails.append("uj-adatok váratlan: " + m)
+        D = getattr(P, "content", {}).get("data", {})
+        g = lambda k, f=None: D.get(k, {}) if f is None else D.get(k, {}).get(f)
+        check("ago", (g("élet kezdete", "v"), g("élet kezdete", "s")), (3.8e9, "3,8\u00a0milliárd\u00a0éve"))
+        check("ago tartomány", (g("emberfélék", "lo"), g("emberfélék", "hi"), g("emberfélék", "s")), (6e6, 7e6, "7–6\u00a0millió\u00a0éve"))
+        check("ago becslés", (g("oxigén", "est"), g("oxigén", "s")), (True, "kb.\u00a02,4\u00a0milliárd\u00a0éve"))
+        check("ratio", (g("Mendel", "a"), g("Mendel", "b"), round(g("Mendel", "v"), 4), g("Mendel", "s")), (5474, 1850, 2.9589, "5474 : 1850"))
+        check("ratio 3 tag", g("háromszög", "p"), [3, 4, 5])
+        check("pulzus /perc", (g("pulzus", "v"), g("pulzus", "u"), g("pulzus", "s")), (70, "/perc", "70/perc"))
+        check("tartomány /perc", (g("pulzus tartomány", "lo"), g("pulzus tartomány", "u"), g("pulzus tartomány", "s")), (60, "/perc", "60–100/perc"))
+        check("millió/µl", (g("vörösvérsejt", "v"), g("vörösvérsejt", "u"), g("vörösvérsejt", "s")), (4.5e6, "/µl", "4,5\u00a0millió/µl"))
+        check("billió", (g("sejtek", "v"), g("sejtek", "s")), (3.8e13, "38\u00a0billió"))
+        check("szorzószó egységgel", (g("jég", "v"), g("jég", "u")), (68000, "km²"))
+        check("dim", (g("sejt mérete", "base"), g("sejt mérete", "bu"), g("sejt mérete", "s")), (7e-6, "m", "7\u00a0µm"))
+        check("dim térfogat", (g("pohár", "base"), g("pohár", "bu")), (0.25, "l"))
+        check("int", g("lábak", "v"), 94)
+        check("sign", g("változás", "s"), "+3")
+        check("sign negatív", g("hidegrekord", "s"), "−35\u00a0°C")
+        check("szög perc", (g("szög", "v"), g("szög", "s")), (45.5, "45°\u00a030′"))
+        check("frac", {f: g("tört", f) for f in ("n", "d", "w", "neg", "red", "s")},
+              {"n": 3, "d": 4, "w": 0, "neg": False, "red": True, "s": "3/4"})
+        check("frac vegyes", (g("vegyes", "w"), g("vegyes", "n"), g("vegyes", "d"), round(g("vegyes", "v"), 4)), (2, 1, 3, 2.3333))
+        check("frac negatív", (g("negatív tört", "neg"), g("negatív tört", "v"), g("negatív tört", "s")), (True, -0.625, "−5/8"))
+        check("list", (g("jegyek", "v"), g("jegyek", "s")), ([2, 3, 5, 5, 5], "2; 3; 5; 5; 5"))
+        check("list egységgel", (g("havi hőmérséklet", "v")[:3], g("havi hőmérséklet", "u"), len(g("havi hőmérséklet", "v"))),
+              ([-1.2, 0.9, 5.4], "°C", 12))
+        check("series", (g("oldhatóság", "x"), g("oldhatóság", "y"), g("oldhatóság", "ux")), ([0, 20, 40], [13.3, 31.6, 63.9], "°C"))
+        check("point", (g("csúcs", "x"), g("csúcs", "y"), g("csúcs", "s")), (2, -1.5, "(2; −1,5)"))
+        check("point névvel", (g("A pont", "name"), g("A pont", "s")), ("A", "A(3; −2)"))
+        check("utc", (g("Delhi", "min"), g("Delhi", "s")), (330, "UTC+5:30"))
+        check("utc negatív", (g("New York", "min"), g("New York", "s")), (-300, "UTC−5"))
+        check("utc 0", (g("London", "min"), g("London", "s")), (0, "UTC"))
+        check("év/állapot", {f: g("világ népessége", f) for f in ("yr", "upd", "s", "v")},
+              {"yr": 2025, "upd": True, "s": "8,2\u00a0milliárd\u00a0fő", "v": 8.2e9})
+        check("előrejelzés", (g("népesség 2050", "proj"), g("népesség 2050", "yr")), (True, 2050))
+        check("modell", g("föhn", "model"), True)
+        check("expr", (g("függvény", "s"), g("függvény", "tree")),
+              ("x^2 − 4x + 3", ["+", ["−", ["^", "x", 2], ["imp", 4, "x"]], 3]))
+        check("expr sorrend", g("műveleti sorrend", "tree"), ["+", 2, ["·", 3, 4]])
+        check("expr egyenlet", g("egyenlet", "tree"), ["=", ["+", ["imp", 3, "x"], 4], 19])
+        check("formula", (g("víz", "s"), g("víz", "atoms"), g("víz", "charge")), ("H₂O", {"H": 2, "O": 1}, 0))
+        check("formula ion", (g("szulfátion", "s"), g("szulfátion", "atoms"), g("szulfátion", "charge")), ("SO₄²⁻", {"S": 1, "O": 4}, -2))
+        check("formula zárójel", g("oltott mész", "atoms"), {"Ca": 1, "O": 2, "H": 2})
+        check("equation", (g("metán égése", "s"), [t["k"] for t in g("metán égése", "rhs")]),
+              ("CH₄ + 2 O₂ → CO₂ + 2 H₂O", [1, 2]))
+        check("equation ionok", g("csapadék", "s"), "Ag⁺ + Cl⁻ → AgCl")
+        html = "".join(s["html"] for s in getattr(P, "content", {}).get("steps", []))
+        check("{tört} álló", '<span class="frac"><span class="fn">3</span>' in html, True)
+        check("{képlet} index", "H<sub>2</sub>O" in html, True)
+        check("{kifejezés}", '<span class="mx"><i>x</i><sup>2</sup>' in html, True)
+
+        P = build(T / "uj-hibak.md", check_only=True)
+        want = ["Kr. e.” évszámhoz year", "nem lehet 0", "6/8 → 3/4", "pontosvesszővel", "nincs kiegyenlítve: bal oldalon 2 O, jobb oldalon 4 O",
+                "ismeretlen vegyjel „Xy”", "a lecke 1 C, 4 H összetételt vár", "szigorúan növekedjenek", "egész szám kell",
+                "két műveleti jel egymás után", "„y” betű nem szerepel", "páratlan zárójel", "kívül esik a lecke koordináta-rendszerén",
+                "negyedórás", "nincs ilyen adatfájl", "2022 nem szerepel az adatfájl", "hosszúság mértékegysége kell", "elem van, 12 kell",
+                "nem = vagy ⇌", "az „… éve”"]
+        for w in want:
+            if not any(w in e for e in P.errors):
+                fails.append(f"uj-hibak: hiányzó várt hiba: „{w}”")
+        if len(P.errors) != len(want):
+            fails.append(f"uj-hibak: {len(P.errors)} hiba, várt: {len(want)}:\n    " + "\n    ".join(P.errors))
+        for w in ["trillió", "frissítendő” adat mellé", "hiányzik a forrás", "Szakmai ellenőrzés"]:
+            if not any(w in x for x in P.warnings):
+                fails.append(f"uj-hibak: hiányzó figyelmeztetés: „{w}”")
+
+        # ── jelölés ──
+        P = build(T / "jeloles-mat.md", out_dir=tmp)
+        for m in P.errors:
+            fails.append("jeloles-mat váratlan: " + m)
+        st = getattr(P, "content", {}).get("steps", [])
+        hs = [s["html"] for s in st]
+        exp = [
+            (0, '<span class="frac"><span class="fn">3</span><span class="fs">/</span><span class="fd">4</span></span>'),
+            (0, "3/4 km/h"),                                    # \/ menekítés, km/h érintetlen
+            (0, '2<span class="frac"><span class="fn">1</span>'),  # vegyes szám: a szóköz eltűnik
+            (0, "2<sup>3</sup>"),
+            (0, "{1; 2; 3}"), (0, "{ }"), (0, "{x}"),
+            (1, '<span class="mx"><i>x</i><sup>2</sup> − 4<i>x</i> + 3 = 0</span>'),
+            (1, '<span class="mx"><i>a</i> · <i>b</i> ≤ <i>c</i></span>'),
+            (1, '<span class="mx"><i>f</i>: <i>x</i> ↦ 2<i>x</i> + 1</span>'),
+            (1, '<span class="rt">√<span class="rad"><span class="rp">(</span><i>x</i> + 1<span class="rp">)</span></span></span>'),
+            (1, "π"), (1, "10<sup>−3</sup>"), (1, "2<sup><i>n</i>+1</sup>"), (1, "<i>D</i><sub><i>f</i></sub>"),
+            (1, "<i>x</i><sub>1</sub>"),
+            (2, '<p class="big-fx" data-src="'), (2, '<span class="frac"><span class="fn">−<i>b</i> ± '),
+            (3, '<span class="frac"><span class="fn"><i>x</i></span><span class="fs">/</span><span class="fd">2</span></span>'),
+        ]
+        for i, e in exp:
+            if i >= len(hs) or e not in hs[i]:
+                fails.append(f"jeloles-mat {i + 1}. lépés: hiányzik „{e}”\n      {hs[i] if i < len(hs) else '—'}")
+        check("képletszakasz = 1 szó", st[1]["words"] if len(st) > 1 else None, 12)
+        check("képlet: = 3 szó", st[2]["words"] if len(st) > 2 else None, 5)
+        L = getattr(P, "content", {}).get("labels", {})
+        check("felirat nyersen marad", L.get("tört felirat"), "3/4 + 1/4 = 1")
+        for w in ["szorzásjelnek", "valódi mínuszjelet", "tizedespont", "szögpercnek", "pontosvesszővel", "kitevővel",
+                  "egyenlőtlenséggel ne kezdj"]:
+            if not any(w in x for x in P.warnings):
+                fails.append(f"jeloles-mat: hiányzó figyelmeztetés: „{w}”")
+
+        P = build(T / "jeloles-kem.md", out_dir=tmp)
+        for m in P.errors:
+            fails.append("jeloles-kem váratlan: " + m)
+        hs = [s["html"] for s in getattr(P, "content", {}).get("steps", [])]
+        for e in ["H<sub>2</sub>O", "CO<sub>2</sub>-kibocsátás", "Na<sup>+</sup>-ion", "SO<sub>4</sub><sup>2−</sup>",
+                  "Ca(OH)<sub>2</sub>", " → ", "Mg<sup>2+</sup>", "B12", "Cl-atom", "H<sub>2</sub>O (alsó index)"]:
+            if not any(e in h for h in hs):
+                fails.append(f"jeloles-kem: hiányzik „{e}”\n      " + "\n      ".join(hs))
+        L = getattr(P, "content", {}).get("labels", {})
+        check("kémiai felirat Unicode", (L.get("víz"), L.get("ion"), L.get("reakció")), ("H₂O", "SO₄²⁻", "CH₄ + 2 O₂ → CO₂ + 2 H₂O"))
+        if not any("H2O → H₂O" in x for x in P.infos):
+            fails.append("jeloles-kem: hiányzó info: H2O → H₂O")
+        if not any("nyíl kell" in x for x in P.warnings):
+            fails.append("jeloles-kem: hiányzó figyelmeztetés: szóegyenlet nyíl nélkül")
+
+    # ── közös próbaesetek (a JS MatText.parse ugyanezeket futtatja) ──
+    for c in mx_cases():
+        mp = Mx(frac=c.get("frac", False), chem=c.get("chem", False))
+        got = mp.math(c["src"], c.get("big", False)) if c.get("math") else mp.text(c["src"])
+        check(f"mx „{c['src']}”", got, c["tree"])
     for f in fails:
         print("✗", f)
     print("✓ selftest: minden rendben" if not fails else f"✗ selftest: {len(fails)} hiba")
@@ -623,10 +1896,15 @@ def selftest():
 def main(argv):
     if "--selftest" in argv:
         return selftest()
+    if "--stale" in argv:
+        i = argv.index("--stale")
+        year = int(argv[i + 1]) if i + 1 < len(argv) and argv[i + 1].isdigit() else datetime.date.today().year
+        rest = [a for j, a in enumerate(argv) if not a.startswith("--") and not (j == i + 1 and a.isdigit())]
+        return stale([pathlib.Path(a) for a in rest] or all_lessons(), year)
     check = "--check" in argv
     args = [a for a in argv if not a.startswith("--")]
     if "--all" in argv:
-        files = sorted(p for p in (ROOT / "leckek").rglob("*.md") if re.match(r"^\d\d-", p.name) and p.with_suffix(".html").exists())
+        files = all_lessons()
     else:
         files = [pathlib.Path(a) for a in args]
     if not files:
@@ -636,7 +1914,7 @@ def main(argv):
         if not f.exists():
             print(f"{f}: nincs ilyen fájl"); bad += 1; continue
         P = build(f, check)
-        for m in P.warnings + P.errors:
+        for m in P.infos + P.warnings + P.errors:
             print(m)
         if P.errors:
             bad += 1
