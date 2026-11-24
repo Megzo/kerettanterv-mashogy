@@ -12,55 +12,55 @@ window.LESSON_CONTENT = {
  "steps": [
   {
    "title": "Al-Hvárizmi négyzete",
-   "html": "<p data-src=\"24\">Al-Hvárizmi bagdadi tudós könyvének feladata: <span class=\"mx\"><i>x</i><sup>2</sup> + 10<i>x</i> = 39</span>. Rajzoljuk le! Az <span class=\"mx\"><i>x</i><sup>2</sup></span> egy négyzet, a <span class=\"mx\">10<i>x</i></span> két <span class=\"mx\">5<i>x</i></span>-es csík a két oldalán. A sarokból hiányzik egy <span class=\"mx\">5 · 5</span>-ös négyzet – tegyük be! <span class=\"key\">Így egy <span class=\"mx\"><i>x</i> + 5</span> oldalú, 64 területű négyzet lesz</span>: az oldala 8, tehát <span class=\"mx\"><i>x</i> = 3</span>.</p><p class=\"note\" data-src=\"26\">Ő csak a pozitív megoldást kereste. Van másik is – a 4. lépésben kiderül.</p>",
+   "html": "<p data-src=\"24\">Al-Hvárizmi bagdadi tudós könyvének feladata: <span class=\"mx\"><i>x</i><sup>2</sup> + 10<i>x</i> = 39</span>. Rajzoljuk le! Az <span class=\"mx\"><i>x</i><sup>2</sup></span> egy négyzet, a <span class=\"mx\">10<i>x</i></span> két <span class=\"mx\">5<i>x</i></span>-es csík a két oldalán. A sarokból hiányzik egy <span class=\"mx\">5 · 5</span>-ös négyzet – tegyük be! <span class=\"key\">Így egy <span class=\"mx\"><i>x</i> + 5</span> oldalú, 64 területű négyzet lesz</span>: az oldala 8, tehát <span class=\"mx\"><i>x</i> = 3</span>.</p><p class=\"note\" data-src=\"26\">Ő csak a pozitív megoldást kereste. Van másik is – a 4. lépésben kiderül.</p>",
    "line": 23,
    "words": 54
   },
   {
    "title": "Teljes négyzet a betűkkel",
-   "html": "<p data-src=\"46\">Ugyanez minden <em>b</em>-re: az <span class=\"mx\"><i>x</i><sup>2</sup> + <i>bx</i></span> mellé két <span class=\"mx\"><i>b</i>/2 · <i>x</i></span>-es csík kerül, a sarokból <span class=\"mx\">(<i>b</i>/2)<sup>2</sup></span> hiányzik. Hozzáadjuk, és ugyanannyit le is vonunk: <span class=\"key\"><span class=\"mx\"><i>x</i><sup>2</sup> + <i>bx</i> = (<i>x</i> + <i>b</i>/2)<sup>2</sup> − (<i>b</i>/2)<sup>2</sup></span>.</span> Negatív <em>b</em>-re a rajz nem működik, a számolás igen.</p><p class=\"note\" data-src=\"48\">Húzd a <em>b</em> csúszkát! A példa a következő lépés függvénye.</p>",
+   "html": "<p data-src=\"46\">Ugyanez minden <em>b</em>-re: az <span class=\"mx\"><i>x</i><sup>2</sup> + <i>bx</i></span> mellé két <span class=\"mx\"><i>b</i>/2 · <i>x</i></span>-es csík kerül, a sarokból <span class=\"mx\">(<i>b</i>/2)<sup>2</sup></span> hiányzik. Hozzáadjuk, és ugyanannyit le is vonunk: <span class=\"key\"><span class=\"mx\"><i>x</i><sup>2</sup> + <i>bx</i> = (<i>x</i> + <i>b</i>/2)<sup>2</sup> − (<i>b</i>/2)<sup>2</sup></span>.</span> Negatív <em>b</em>-re a rajz nem működik, a számolás igen.</p><p class=\"note\" data-src=\"48\">Húzd a <em>b</em> csúszkát! A példa a következő lépés függvénye.</p>",
    "line": 45,
    "words": 40
   },
   {
    "title": "A parabola csúcsa",
-   "html": "<p data-src=\"58\">A teljes négyzetes alakból leolvasható a grafikon: <span class=\"mx\">(<i>x</i> − 2)<sup>2</sup> − 1</span> az <span class=\"mx\"><i>x</i><sup>2</sup></span> parabolája <b>2-vel jobbra és 1-gyel lefelé</b> tolva. Mivel <span class=\"mx\">(<i>x</i> − 2)<sup>2</sup> ≥ 0</span>, a függvény <span class=\"key\">legkisebb értéke −1, az <span class=\"mx\"><i>x</i> = 2</span> helyen</span>: ez a csúcs. A parabola az <span class=\"mx\"><i>x</i> = 2</span> egyenesre szimmetrikus.</p><p class=\"note\" data-src=\"60\">Húzd a pontot: a magassága a csúcs fölött éppen <span class=\"mx\">(<i>x</i> − 2)<sup>2</sup></span>.</p>",
+   "html": "<p data-src=\"58\">A teljes négyzetes alakból leolvasható a grafikon: <span class=\"mx\">(<i>x</i> − 2)<sup>2</sup> − 1</span> az <span class=\"mx\"><i>x</i><sup>2</sup></span> parabolája <b>2-vel jobbra és 1-gyel lefelé</b> tolva. Mivel <span class=\"mx\">(<i>x</i> − 2)<sup>2</sup> ≥ 0</span>, a függvény <span class=\"key\">legkisebb értéke −1, az <span class=\"mx\"><i>x</i> = 2</span> helyen</span>: ez a csúcs. A parabola az <span class=\"mx\"><i>x</i> = 2</span> egyenesre szimmetrikus.</p><p class=\"note\" data-src=\"60\">Húzd a pontot: a magassága a csúcs fölött éppen <span class=\"mx\">(<i>x</i> − 2)<sup>2</sup></span>.</p>",
    "line": 57,
    "words": 46
   },
   {
    "title": "Hol metszi a tengelyt?",
-   "html": "<p data-src=\"74\">A zérushelyen <span class=\"mx\"><i>f</i>(<i>x</i>) = 0</span>, azaz <span class=\"mx\">(<i>x</i> − 2)<sup>2</sup> = 1</span>. Melyik szám négyzete 1? Az 1-é <b>és a −1-é</b> is! Tehát <span class=\"mx\"><i>x</i> − 2 = 1</span> vagy <span class=\"mx\"><i>x</i> − 2 = −1</span>, így <span class=\"key\"><span class=\"mx\"><i>x</i> = 3</span> vagy <span class=\"mx\"><i>x</i> = 1</span></span> – a csúcstól egyformán messze. Az <span class=\"mx\"><i>x</i><sup>2</sup> = 9</span>-nek is két megoldása van: 3 és −3.</p><p class=\"note\" data-src=\"76\">Al-Hvárizmi egyenlete: <span class=\"mx\"><i>x</i> + 5 = −8</span> is lehet, tehát <span class=\"mx\"><i>x</i> = −13</span>.</p>",
+   "html": "<p data-src=\"74\">A zérushelyen <span class=\"mx\"><i>f</i>(<i>x</i>) = 0</span>, azaz <span class=\"mx\">(<i>x</i> − 2)<sup>2</sup> = 1</span>. Melyik szám négyzete 1? Az 1-é <b>és a −1-é</b> is! Tehát <span class=\"mx\"><i>x</i> − 2 = 1</span> vagy <span class=\"mx\"><i>x</i> − 2 = −1</span>, így <span class=\"key\"><span class=\"mx\"><i>x</i> = 3</span> vagy <span class=\"mx\"><i>x</i> = 1</span></span> – a csúcstól egyformán messze. Az <span class=\"mx\"><i>x</i><sup>2</sup> = 9</span>-nek is két megoldása van: 3 és −3.</p><p class=\"note\" data-src=\"76\">Al-Hvárizmi egyenlete: <span class=\"mx\"><i>x</i> + 5 = −8</span> is lehet, tehát <span class=\"mx\"><i>x</i> = −13</span>.</p>",
    "line": 73,
    "words": 43
   },
   {
    "title": "A diszkrimináns",
-   "html": "<p data-src=\"88\">A parabola <b>metszi, érinti vagy elkerüli</b> a tengelyt. Melyik? Egyetlen szám dönti el, a <b>diszkrimináns</b>: <span class=\"mx\"><i>D</i> = <i>b</i><sup>2</sup> − 4<i>ac</i></span>. <span class=\"key\"><span class=\"mx\"><i>D</i> &gt; 0</span>: két megoldás, <span class=\"mx\"><i>D</i> = 0</span>: egy, <span class=\"mx\"><i>D</i> &lt; 0</span>: nincs valós megoldás.</span></p>",
+   "html": "<p data-src=\"88\">A parabola <b>metszi, érinti vagy elkerüli</b> a tengelyt. Melyik? Egyetlen szám dönti el, a <b>diszkrimináns</b>: <span class=\"mx\"><i>D</i> = <i>b</i><sup>2</sup> − 4<i>ac</i></span>. <span class=\"key\"><span class=\"mx\"><i>D</i> &gt; 0</span>: két megoldás, <span class=\"mx\"><i>D</i> = 0</span>: egy, <span class=\"mx\"><i>D</i> &lt; 0</span>: nincs valós megoldás.</span></p>",
    "line": 87,
    "words": 25
   },
   {
    "title": "Megoldóképlet és gyöktényezős alak",
-   "html": "<p data-src=\"103\">A teljes négyzetté kiegészítés betűkkel adja a <b>megoldóképletet</b>:</p><p class=\"big-fx\" data-src=\"105\"><span class=\"mx\"><i>x</i> = <span class=\"frac\"><span class=\"fn\">−<i>b</i> ± <span class=\"rt\">√<span class=\"rad\"><span class=\"rp\">(</span><i>b</i><sup>2</sup> − 4<i>ac</i><span class=\"rp\">)</span></span></span></span><span class=\"fs\">/</span><span class=\"fd\">2<i>a</i></span></span></span></p><p data-src=\"107\">Példa: <span class=\"mx\">2<i>x</i><sup>2</sup> + 3<i>x</i> − 2 = 0</span>, <span class=\"mx\"><i>D</i> = 25</span>, <span class=\"mx\"><i>x</i> = (−3 ± 5)/4</span>, <span class=\"key\">így <span class=\"mx\"><i>x</i><sub>1</sub> = 0,5</span> és <span class=\"mx\"><i>x</i><sub>2</sub> = −2</span>.</span> A <b>gyöktényezős alak</b>, <span class=\"mx\">2(<i>x</i> − 0,5)(<i>x</i> + 2)</span>, a zérushelyeket mutatja. Negatív <em>D</em>-nél nincs valós gyök: negatív számnak nincs négyzetgyöke.</p>",
+   "html": "<p data-src=\"103\">A teljes négyzetté kiegészítés betűkkel adja a <b>megoldóképletet</b>:</p><p class=\"big-fx\" data-src=\"105\"><span class=\"mx\"><i>x</i> = <span class=\"frac\"><span class=\"fn\">−<i>b</i> ± <span class=\"rt\">√<span class=\"rad\"><span class=\"rp\">(</span><i>b</i><sup>2</sup> − 4<i>ac</i><span class=\"rp\">)</span></span></span></span><span class=\"fs\">/</span><span class=\"fd\">2<i>a</i></span></span></span></p><p data-src=\"107\">Példa: <span class=\"mx\">2<i>x</i><sup>2</sup> + 3<i>x</i> − 2 = 0</span>, <span class=\"mx\"><i>D</i> = 25</span>, <span class=\"mx\"><i>x</i> = (−3 ± 5)/4</span>, <span class=\"key\">így <span class=\"mx\"><i>x</i><sub>1</sub> = 0,5</span> és <span class=\"mx\"><i>x</i><sub>2</sub> = −2</span>.</span> A <b>gyöktényezős alak</b>, <span class=\"mx\">2(<i>x</i> − 0,5)(<i>x</i> + 2)</span>, a zérushelyeket mutatja. Negatív <em>D</em>-nél nincs valós gyök: negatív számnak nincs négyzetgyöke.</p>",
    "line": 102,
    "words": 35
   },
   {
    "title": "Ne ossz x-szel!",
-   "html": "<p data-src=\"126\">Csábító: <span class=\"mx\"><i>x</i><sup>2</sup> = 3<i>x</i></span>, osszunk <em>x</em>-szel, és kész: <span class=\"mx\"><i>x</i> = 3</span>. De a grafikonok <b>két</b> pontban metszik egymást! <em>x</em>-szel osztani csak <span class=\"mx\"><i>x</i> ≠ 0</span> esetén szabad: <span class=\"key\">az <span class=\"mx\"><i>x</i> = 0</span> megoldás elveszett.</span> Helyesen: <span class=\"mx\"><i>x</i><sup>2</sup> − 3<i>x</i> = 0</span>, kiemelve <span class=\"mx\"><i>x</i>(<i>x</i> − 3) = 0</span>. Egy szorzat akkor 0, ha valamelyik tényezője 0.</p>",
+   "html": "<p data-src=\"126\">Csábító: <span class=\"mx\"><i>x</i><sup>2</sup> = 3<i>x</i></span>, osszunk <em>x</em>-szel, és kész: <span class=\"mx\"><i>x</i> = 3</span>. De a grafikonok <b>két</b> pontban metszik egymást! <em>x</em>-szel osztani csak <span class=\"mx\"><i>x</i> ≠ 0</span> esetén szabad: <span class=\"key\">az <span class=\"mx\"><i>x</i> = 0</span> megoldás elveszett.</span> Helyesen: <span class=\"mx\"><i>x</i><sup>2</sup> − 3<i>x</i> = 0</span>, kiemelve <span class=\"mx\"><i>x</i>(<i>x</i> − 3) = 0</span>. Egy szorzat akkor 0, ha valamelyik tényezője 0.</p>",
    "line": 125,
    "words": 36
   },
   {
    "title": "Mikor negatív? (egyenlőtlenség)",
-   "html": "<p data-src=\"140\">Sokan így oldják meg: <span class=\"mx\"><i>x</i><sup>2</sup> − <i>x</i> − 6 &lt; 0</span>, tehát <span class=\"mx\"><i>x</i> &lt; 3</span>. Próbáld ki az <span class=\"mx\"><i>x</i> = −3</span>-at: <span class=\"mx\">9 + 3 − 6 = 6</span>, ez nem negatív! A zérushelyek −2 és 3, és <span class=\"key\">a parabola csak a kettő között van a tengely alatt</span>: <span class=\"mx\">−2 &lt; <i>x</i> &lt; 3</span>, vagyis <span class=\"mx\"><i>x</i> ∈ ]−2; 3[</span>.</p><p class=\"note\" data-src=\"142\">Próbáld a többi relációt is!</p>",
+   "html": "<p data-src=\"140\">Sokan így oldják meg: <span class=\"mx\"><i>x</i><sup>2</sup> − <i>x</i> − 6 &lt; 0</span>, tehát <span class=\"mx\"><i>x</i> &lt; 3</span>. Próbáld ki az <span class=\"mx\"><i>x</i> = −3</span>-at: <span class=\"mx\">9 + 3 − 6 = 6</span>, ez nem negatív! A zérushelyek −2 és 3, és <span class=\"key\">a parabola csak a kettő között van a tengely alatt</span>: <span class=\"mx\">−2 &lt; <i>x</i> &lt; 3</span>, vagyis <span class=\"mx\"><i>x</i> ∈ ]−2; 3[</span>.</p><p class=\"note\" data-src=\"142\">Próbáld a többi relációt is!</p>",
    "line": 139,
    "words": 39
   },
   {
    "title": "A legnagyobb kert – összefoglalás",
-   "html": "<p data-src=\"167\">20 m spárgával téglalap alakú kertet kerítünk. Ha az egyik oldal <em>x</em>, a másik <span class=\"mx\">10 − <i>x</i></span>, a terület <span class=\"mx\"><i>T</i>(<i>x</i>) = <i>x</i>(10 − <i>x</i>)</span>. Húzd a sarkot! Teljes négyzettel: <span class=\"mx\"><i>T</i>(<i>x</i>) = 25 − (<i>x</i> − 5)<sup>2</sup> ≤ 25</span>. <span class=\"key\">A legnagyobb kert az <span class=\"mx\">5 · 5</span>-ös négyzet, 25 m².</span></p>",
+   "html": "<p data-src=\"167\">20 m spárgával téglalap alakú kertet kerítünk. Ha az egyik oldal <em>x</em>, a másik <span class=\"mx\">10 − <i>x</i></span>, a terület <span class=\"mx\"><i>T</i>(<i>x</i>) = <i>x</i>(10 − <i>x</i>)</span>. Húzd a sarkot! Teljes négyzettel: <span class=\"mx\"><i>T</i>(<i>x</i>) = 25 − (<i>x</i> − 5)<sup>2</sup> ≤ 25</span>. <span class=\"key\">A legnagyobb kert az <span class=\"mx\">5 · 5</span>-ös négyzet, 25 m².</span></p>",
    "line": 166,
    "words": 31
   }

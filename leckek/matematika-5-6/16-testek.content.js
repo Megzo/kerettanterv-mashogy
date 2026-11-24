@@ -36,13 +36,13 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "Felszín: a háló területe",
-   "html": "<p data-src=\"114\">A test <b>felszíne</b> a lapjai területének összege, vagyis a háló területe. A téglatest szemközti lapjai egyformák:</p><p class=\"big-fx\" data-src=\"116\"><span class=\"mx\"><i>A</i> = 2 · (<i>ab</i> + <i>ac</i> + <i>bc</i>)</span></p><p data-src=\"118\"><span class=\"key\">A 3 cm, 4 cm és 5 cm élű téglatest felszíne 94 cm².</span></p>",
+   "html": "<p data-src=\"114\">A test <b>felszíne</b> a lapjai területének összege, vagyis a háló területe. A téglatest szemközti lapjai egyformák:</p><p class=\"big-fx\" data-src=\"116\"><span class=\"mx\"><i>A</i> = 2 · (<i>ab</i> + <i>ac</i> + <i>bc</i>)</span></p><p data-src=\"118\"><span class=\"key\">A 3 cm, 4 cm és 5 cm élű téglatest felszíne 94 cm².</span></p>",
    "line": 113,
    "words": 28
   },
   {
    "title": "Megtöltjük: térfogat",
-   "html": "<p data-src=\"133\">Hány 1 cm élű kis kocka fér a dobozba? Egy rétegben a · b, és c réteg van:</p><p class=\"big-fx\" data-src=\"135\"><span class=\"mx\"><i>V</i> = <i>a</i> · <i>b</i> · <i>c</i></span></p><p data-src=\"137\">A <b>térfogat</b> azt mutatja, hány <b>egységkocka</b> fér bele: most 60 cm³. <span class=\"key\">A felszín és a térfogat nem ugyanaz: cm² és cm³!</span></p>",
+   "html": "<p data-src=\"133\">Hány 1 cm élű kis kocka fér a dobozba? Egy rétegben a · b, és c réteg van:</p><p class=\"big-fx\" data-src=\"135\"><span class=\"mx\"><i>V</i> = <i>a</i> · <i>b</i> · <i>c</i></span></p><p data-src=\"137\">A <b>térfogat</b> azt mutatja, hány <b>egységkocka</b> fér bele: most 60 cm³. <span class=\"key\">A felszín és a térfogat nem ugyanaz: cm² és cm³!</span></p>",
    "line": 132,
    "words": 40
   },

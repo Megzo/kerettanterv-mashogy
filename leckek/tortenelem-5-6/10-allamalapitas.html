@@ -2727,7 +2727,11 @@ L = Lesson.create({
     });
   },
   draw(Lx) {
-    L = Lx; c = L.ctx; GA = 1; paper(); L.stage.style.cursor = '';
+    L = Lx; c = L.ctx;
+    // a vászonállapot a 7. lépésben ne attól függjön, honnan érkeztünk (visszalépéskor a következő lépés
+    // lineJoin-je szivárgott át); az érték az előre léptetés eddigi állapota → a kép nem változik
+    if (L.step === 6) c.lineJoin = 'miter';
+    GA = 1; paper(); L.stage.style.cursor = '';
     const sp = L.sp, wt = (i) => clamp(1 - Math.abs(sp - i) * 2);
     if (L.step >= 0) sT[L.step] = L.st;
     const mapA = Math.max(wt(1), wt(4), wt(5));

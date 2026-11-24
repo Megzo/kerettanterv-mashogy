@@ -18,7 +18,7 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "Számold a négyzeteket!",
-   "html": "<p data-src=\"42\">A terület azt mutatja, hány <b>egységnégyzet</b> fedi le az alakzatot. A téglalapban <span class=\"mx\"><i>b</i></span> sor van, minden sorban <span class=\"mx\"><i>a</i></span> négyzet: <span class=\"key\"><span class=\"mx\"><i>T</i> = <i>a</i> · <i>b</i></span>.</span> A kerület <span class=\"mx\"><i>K</i> = 2 · (<i>a</i> + <i>b</i>)</span>. Húzd a sarkot! Mikor ugyanaz a két szám?</p>",
+   "html": "<p data-src=\"42\">A terület azt mutatja, hány <b>egységnégyzet</b> fedi le az alakzatot. A téglalapban <span class=\"mx\"><i>b</i></span> sor van, minden sorban <span class=\"mx\"><i>a</i></span> négyzet: <span class=\"key\"><span class=\"mx\"><i>T</i> = <i>a</i> · <i>b</i></span>.</span> A kerület <span class=\"mx\"><i>K</i> = 2 · (<i>a</i> + <i>b</i>)</span>. Húzd a sarkot! Mikor ugyanaz a két szám?</p>",
    "line": 41,
    "words": 31
   },
@@ -30,7 +30,7 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "1 m² hány cm²?",
-   "html": "<p data-src=\"77\"><b>Tippelj előbb!</b> Hány cm² az 1 m²? Az 1 m-es négyzet oldala 10 dm, ezért <span class=\"mx\">10 · 10</span> = 100 darab 1 dm²-re bontható. Minden 1 dm² újabb <span class=\"mx\">10 · 10</span> = 100 cm². <span class=\"key\">1 m² = 100 · 100 cm² = 10 000 cm².</span></p>",
+   "html": "<p data-src=\"77\"><b>Tippelj előbb!</b> Hány cm² az 1 m²? Az 1 m-es négyzet oldala 10 dm, ezért <span class=\"mx\">10 · 10</span> = 100 darab 1 dm²-re bontható. Minden 1 dm² újabb <span class=\"mx\">10 · 10</span> = 100 cm². <span class=\"key\">1 m² = 100 · 100 cm² = 10 000 cm².</span></p>",
    "line": 76,
    "words": 34
   },
@@ -42,13 +42,13 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "A ferde téglalap: paralelogramma",
-   "html": "<p data-src=\"116\">Told el a téglalap felső oldalát: <b>paralelogramma</b> lesz. Vágd le a sarkát, és told át a túloldalra: újra téglalap! A <b>magasság</b> a két párhuzamos oldal távolsága. <span class=\"key\"><span class=\"mx\"><i>T</i> = <i>a</i> · <i>m</i></span>: alap · magasság, nem alap · oldal.</span> Húzd a felső oldalt!</p>",
+   "html": "<p data-src=\"116\">Told el a téglalap felső oldalát: <b>paralelogramma</b> lesz. Vágd le a sarkát, és told át a túloldalra: újra téglalap! A <b>magasság</b> a két párhuzamos oldal távolsága. <span class=\"key\"><span class=\"mx\"><i>T</i> = <i>a</i> · <i>m</i></span>: alap · magasság, nem alap · oldal.</span> Húzd a felső oldalt!</p>",
    "line": 115,
    "words": 36
   },
   {
    "title": "A háromszög: fél paralelogramma",
-   "html": "<p data-src=\"137\">Fordítsd fejjel lefelé a háromszög másolatát, és illeszd mellé: paralelogramma lesz! Ennek területe alap · magasság. <span class=\"key\">A háromszög ennek a fele: <span class=\"mx\"><i>T</i> = <i>a</i> · <i>m</i> : 2</span>.</span> Húzd a csúcsot! Az alap és a magasság nem változik, így a terület sem.</p><p class=\"note\" data-src=\"139\">Tompaszögű háromszögnél a magasság talppontja az alap meghosszabbítására esik.</p>",
+   "html": "<p data-src=\"137\">Fordítsd fejjel lefelé a háromszög másolatát, és illeszd mellé: paralelogramma lesz! Ennek területe alap · magasság. <span class=\"key\">A háromszög ennek a fele: <span class=\"mx\"><i>T</i> = <i>a</i> · <i>m</i> : 2</span>.</span> Húzd a csúcsot! Az alap és a magasság nem változik, így a terület sem.</p><p class=\"note\" data-src=\"139\">Tompaszögű háromszögnél a magasság talppontja az alap meghosszabbítására esik.</p>",
    "line": 136,
    "words": 44
   },
@@ -60,7 +60,7 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "Összefoglalás",
-   "html": "<ul><li data-src=\"178\">A <b>kerület</b> a határ hossza, a <b>terület</b> a lefedett egységnégyzetek száma.</li><li data-src=\"179\">1 m² = 100 dm² = 10 000 cm².</li><li data-src=\"180\">Téglalap: <span class=\"mx\"><i>T</i> = <i>a</i> · <i>b</i></span>. Paralelogramma: <span class=\"mx\"><i>T</i> = <i>a</i> · <i>m</i></span>. Háromszög: <span class=\"mx\"><i>T</i> = <i>a</i> · <i>m</i> : 2</span>.</li></ul><p data-src=\"182\"><span class=\"key\">Átdarabolva a terület nem változik.</span></p>",
+   "html": "<ul><li data-src=\"178\">A <b>kerület</b> a határ hossza, a <b>terület</b> a lefedett egységnégyzetek száma.</li><li data-src=\"179\">1 m² = 100 dm² = 10 000 cm².</li><li data-src=\"180\">Téglalap: <span class=\"mx\"><i>T</i> = <i>a</i> · <i>b</i></span>. Paralelogramma: <span class=\"mx\"><i>T</i> = <i>a</i> · <i>m</i></span>. Háromszög: <span class=\"mx\"><i>T</i> = <i>a</i> · <i>m</i> : 2</span>.</li></ul><p data-src=\"182\"><span class=\"key\">Átdarabolva a terület nem változik.</span></p>",
    "line": 177,
    "words": 29
   }

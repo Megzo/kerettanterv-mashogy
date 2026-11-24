@@ -42,7 +42,7 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "Fiú vagy lány?",
-   "html": "<p data-src=\"144\">A 23. pár a <b>nemi kromoszómapár</b>: ez általában XX vagy XY. A petesejt mindig X-et visz, a hímivarsejt fele eséllyel X-et, fele eséllyel Y-t. <span class=\"key\">A hímivarsejt dönti el, fiú lesz-e vagy lány.</span> Tévhit, hogy három lány után „jár” egy fiú: a véletlennek nincs emlékezete.</p><p class=\"note\" data-src=\"146\">Kicsit több fiú születik: kb. 105 : 100.</p>",
+   "html": "<p data-src=\"144\">A 23. pár a <b>nemi kromoszómapár</b>: ez általában XX vagy XY. A petesejt mindig X-et visz, a hímivarsejt fele eséllyel X-et, fele eséllyel Y-t. <span class=\"key\">A hímivarsejt dönti el, fiú lesz-e vagy lány.</span> Tévhit, hogy három lány után „jár” egy fiú: a véletlennek nincs emlékezete.</p><p class=\"note\" data-src=\"146\">Kicsit több fiú születik: kb. 105 : 100.</p>",
    "line": 143,
    "words": 49
   },
@@ -266,14 +266,14 @@ window.LESSON_CONTENT = {
    "a": 6022.0,
    "b": 2001.0,
    "v": 3.009495252373813,
-   "s": "6022 : 2001"
+   "s": "6022 : 2001"
   },
   "Mendel alak": {
    "t": "ratio",
    "a": 5474.0,
    "b": 1850.0,
    "v": 2.958918918918919,
-   "s": "5474 : 1850"
+   "s": "5474 : 1850"
   },
   "gyerekek egy családban": {
    "v": 4.0,
@@ -296,8 +296,8 @@ window.LESSON_CONTENT = {
    "b": 100.0,
    "v": 1.05,
    "est": true,
-   "s0": "105 : 100",
-   "s": "kb. 105 : 100"
+   "s0": "105 : 100",
+   "s": "kb. 105 : 100"
   },
   "sorsolt családok száma": {
    "v": 10000.0,

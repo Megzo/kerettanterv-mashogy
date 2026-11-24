@@ -11,14 +11,23 @@
   --half         960×540-es képek (gyorsabb átnézéshez); alap: 1920×1080
   --out DIR      kimeneti mappa; alap: build/qa/<lecke>/
   --det          determinizmus-próba: minden lépést kétszer fotóz ugyanannál az L.st-nél (közte oda-vissza
-                 léptet), rögzített képkockaidővel (50 ms); eltérésnél ✗ és NN-det-a/b.png
+                 léptet), rögzített képkockaidővel (50 ms); eltérésnél ✗ és NN-det-a/b.png. Ha a lecke ad
+                 idle()-t (Lesson.create({idle})), és az a settle-nél még false (pl. visszalépéskor a settle-től
+                 induló kamera), mindkét képnél ugyanannyi képkockát vár tovább (a fejlécben: „+ K képkocka”).
   --states       ha a lecke megadja: window.__qaStates = {3: [{name: 'min', set(L) {…}}, …]} (kulcs: lépés
-                 1-től) → minden állapotot is lefotóz (03-min.png) és ellenőriz
+                 1-től) → minden állapotot is lefotóz (03-min.png) és ellenőriz. Sorrend (v2): a lépésre lép,
+                 L.st = settle (vagy az állapot st-je: {name, st: 2.5, set}), lefut a set(L), és wait ms (alap
+                 250; {wait: 600}) múlva exponál – az L.st-t utána már nem állítja, így az L.st-hez kötött
+                 állapot (S.t0 = L.st − 2 → „2 mp-cel az indítás után”) a saját idejét mutatja (± a wait).
+                 Figyelmeztet („! ÁLLAPOT”), ha a vászon rögzített képkockaidővel képpontra ugyanaz, mint
+                 az állapot nélkül (a set() nem hatott – vagy az állapot a lépés alapképe, pl. a túra vége).
+                 A kulcs 1-alapú lépésszám; érvénytelen kulcsra (0, > lépésszám) figyelmeztet.
   --poke JSON    minden fotózott lépésnél meghívja a lecke L.poke(obj) függvényét (pl. '{"a": -2}')
   --data         kiírja az L.dat értékeit (évvel, frissítendő/előrejelzés/modell/becslés jelzővel) → data.json
   --no-jump      kihagyja az ugrópróbát (alapból fut, lásd lent); --jump-only: csak az ugrópróba fut
 
 Mindig fut (visszafelé kompatibilisen; a „!” sorok figyelmeztetések, a kilépési kódot nem rontják):
+  · idle: ha a lecke ad idle()-t, a settle- és a visszalépés-képek előtt megvárja (max. 5 mp);
   · glifellenőrzés: a vászon- és panelszöveg minden karaktere benne van-e a shared/lesson.css
     @font-face unicode-range-eiben (különben rendszerfontra esik vissza, gépenként eltérő szélességgel);
   · enter() futásideje: figyelmeztetés 300 ms felett;
@@ -131,12 +140,36 @@ DET_INIT = r"""(() => {          // rögzített képkockaidő: a QA lépteti (wi
 
 DET_JS = r"""([i, j, settle]) => {
   const L = window.__lesson, T = window.__qaTick;
-  const at = () => { L.st = settle; L.t = 100; L.sp = L.step; T(1); };
-  L.go(i, true); T(2); at(); const a = window.__qaGrab();
-  L.go(j, true); T(6); L.go(i, true); T(2); at(); const b = window.__qaGrab();
+  // a: i-re lépve; b: j-ről vissza i-re. Mindkettő L.st = settle-nél (L.t = 100). Ha a lecke ad idle()-t
+  // (Lesson.create({idle})), és az a settle-nél még false (pl. visszalépéskor a settle-től induló kamera),
+  // mindkét kép előtt ugyanannyi (K) képkockát léptet tovább, ahány a lassabbiknak kell – így a kép ugyanannál
+  // az L.st-nél és L.t-nél készül, és a nyugalmi állapotot hasonlítja össze.
+  const idle = () => typeof L.idle !== 'function' || L.idle();
+  const pin = (k) => { L.st = settle; L.t = 100; L.sp = L.step; T(1 + k); };
+  const A = (k) => { L.go(i, true); T(2); pin(k); }, B = (k) => { L.go(j, true); T(6); L.go(i, true); T(2); pin(k); };
+  const wait = () => { let k = 0; while (k < 100 && !idle()) { T(1); k++; } return k; };
+  A(0); const ka = wait(); let a = ka ? null : window.__qaGrab();
+  B(0); const kb = wait(); let b = kb ? null : window.__qaGrab();
+  const K = Math.max(ka, kb);
+  if (K) { A(K); a = window.__qaGrab(); B(K); b = window.__qaGrab(); }
   let diff = 0; for (let k = 0; k < a.length; k += 4) if (Math.abs(a[k] - b[k]) + Math.abs(a[k + 1] - b[k + 1]) + Math.abs(a[k + 2] - b[k + 2]) > 12) diff++;
-  return [diff, a.length / 4];
+  return [diff, a.length / 4, K, K >= 100];
 }"""
+
+STATE_JS = r"""([i, sn, settle]) => {         // az állapot az exponálás előtt fut: L.st = settle (vagy az állapot st-je), aztán set(L)
+  const L = window.__lesson, S = window.__qaStates[i + 1][sn];
+  L.st = S.st != null ? S.st : settle; L.sp = L.step; S.set(L);
+}"""
+
+STATE_EFFECT_JS = r"""([i, sn, settle]) => {   // hatott-e az állapot? rögzített képkockaidővel: kép nélküle és vele, ugyanannál az L.st-nél
+  const L = window.__lesson, T = window.__qaTick, S = window.__qaStates[i + 1][sn];
+  const shot = (on) => { L.go(i, true); T(2); L.st = S.st != null ? S.st : settle; L.t = 100; L.sp = L.step; if (on) S.set(L); T(4); return window.__qaGrab(); };
+  const a = shot(false), b = shot(true);
+  let diff = 0; for (let k = 0; k < a.length; k += 4) if (a[k] !== b[k] || a[k + 1] !== b[k + 1] || a[k + 2] !== b[k + 2]) diff++;
+  return diff;
+}"""
+
+IDLE_JS = "(() => { const L = window.__lesson; return typeof L.idle !== 'function' || L.idle(); })()"
 
 JUMP_JS = r"""([a, b]) => {        // a → b ugrás áttűnéssel; a draw()-ban dobott hibát elkapja
   const L = window.__lesson, T = window.__qaTick;
@@ -305,10 +338,19 @@ def main(argv):
             pg.wait_for_function("window.__lesson && window.__lesson.started", timeout=15000)
             pg.wait_for_timeout(300)
 
-        def shoot(i, t, name):
+        def wait_idle(limit=5000):
+            """Ha a lecke ad idle()-t: vár, amíg true (legfeljebb limit ms) → False, ha nem lett nyugodt."""
+            waited = 0
+            while waited < limit and not pg.evaluate(IDLE_JS):
+                pg.wait_for_timeout(100); waited += 100
+            return waited < limit
+
+        def shoot(i, t, name, wait=250, idle=True):
             if t is not None:
                 pg.evaluate(f"(() => {{ const L = window.__lesson; L.st = {t}; L.sp = L.step; }})()")
-            pg.wait_for_timeout(250)
+            pg.wait_for_timeout(wait)
+            if idle:
+                wait_idle()
             pg.screenshot(path=str(out / name))
             return pg.evaluate(CHECK_JS)
 
@@ -330,6 +372,27 @@ def main(argv):
                 print(f"   {k}: {val}" + (f"  [{', '.join(flags)}]" if flags else ""))
         states = pg.evaluate("(() => { const s = window.__qaStates || {}; const o = {}; for (const k in s) o[k] = s[k].map((x) => x.name); return o; })()") \
             if "--states" in opts else {}
+        state_wait = {(int(k) - 1, sn): w for k, ws in (pg.evaluate(
+            "(() => { const s = window.__qaStates || {}; const o = {}; for (const k in s) o[k] = s[k].map((x) => x.wait || 250); return o; })()")
+            if states else {}).items() for sn, w in enumerate(ws)}
+        no_effect = set()
+        bad_keys = [k for k in states if not (k.isdigit() and 1 <= int(k) <= n)]
+        if bad_keys:                  # a kulcs 1-alapú lépésszám – a 0 vagy a túl nagy kulcs némán rossz lépésre esne
+            print(f"! __qaStates: érvénytelen kulcs(ok): {', '.join(bad_keys)} (1-alapú lépésszám kell, 1–{n}) – kihagyva")
+            nwarn += len(bad_keys)
+            states = {k: v for k, v in states.items() if k not in bad_keys}
+        if states:                    # hatott-e az állapot? (rögzített képkockaidővel, a fotózás előtt)
+            ctx3, pd3, _ = det_page(b, html)
+            pd3.wait_for_timeout(300); pd3.evaluate("window.__qaTick(3)")
+            for k, names in states.items():
+                for sn in range(len(names)):
+                    i0 = int(k) - 1
+                    try:
+                        if pd3.evaluate(STATE_EFFECT_JS, [i0, sn, steps[i0]["settle"]]) == 0:
+                            no_effect.add((i0, sn))
+                    except Exception:
+                        pass               # a hibát a fotózás úgyis jelzi
+            ctx3.close()
         for i in idx:
             for k, at in enumerate(ats):
                 errs.clear()
@@ -348,10 +411,15 @@ def main(argv):
             for sn, nm in enumerate(states.get(str(i + 1), [])):
                 errs.clear()
                 pg.evaluate(GO_JS, i); pg.wait_for_timeout(300)
-                pg.evaluate(f"(() => {{ const L = window.__lesson; window.__qaStates[{i + 1}][{sn}].set(L); }})()")
-                pg.wait_for_timeout(300)
-                r = shoot(i, steps[i]["settle"], f"{i + 1:02d}-{nm}.png")
+                # az állapot közvetlenül az exponálás előtt fut (L.st = settle, ill. az állapot st-je), és utána
+                # a QA már nem állítja az L.st-t: az L.st-hez kötött állapot (t0 = L.st − 2) is a saját idejét mutatja
+                pg.evaluate(STATE_JS, [i, sn, steps[i]["settle"]])
+                r = shoot(i, None, f"{i + 1:02d}-{nm}.png", wait=state_wait[(i, sn)], idle=False)
                 warns, chk = extra(pg)
+                if (i, sn) in no_effect:
+                    warns.append("ÁLLAPOT: a vászon képpontra ugyanaz, mint az állapot nélkül – a set() nem hatott? "
+                                 "(L.st-hez kötött állapotnál: t0 = L.st − x, vagy adj st-t; ha az állapot a lépés alapképe – pl. a túra "
+                                 "vége –, rendben van, de akkor fölösleges)")
                 probs = errs + r["problems"] + chk
                 total += len(probs); nwarn += len(warns)
                 report(f"{i + 1:02d} állapot „{nm}”{'':<20} ", probs, warns)
@@ -359,8 +427,8 @@ def main(argv):
             for i in [j for j in idx if j < n - 1]:
                 errs.clear()
                 pg.evaluate(f"window.__lesson.go({i + 1}, true)"); pg.wait_for_timeout(400)
-                pg.evaluate("window.__lesson.prev()"); pg.wait_for_timeout(900)
-                r = shoot(i, None, f"{i + 1:02d}-vissza.png")
+                pg.evaluate("window.__lesson.prev()"); pg.wait_for_timeout(650)
+                r = shoot(i, None, f"{i + 1:02d}-vissza.png")     # + vár az idle()-re (pl. kamera)
                 probs = errs + r["problems"]; total += len(probs)
                 st = pg.evaluate("window.__lesson.st")
                 print(f"{i + 1:02d} vissza ({i + 2}→{i + 1}), L.st={st:.1f}  " + ("✓" if not probs else f"✗ {len(probs)}"))
@@ -388,8 +456,10 @@ def main(argv):
             for i in idx:
                 derr.clear()
                 j = i + 1 if i < n - 1 else max(0, i - 1)
-                diff, tot = pd.evaluate(DET_JS, [i, j, steps[i]["settle"]])
+                diff, tot, K, stuck = pd.evaluate(DET_JS, [i, j, steps[i]["settle"]])
                 probs = list(derr)
+                if stuck:
+                    probs.append("IDLE: a lecke idle()-je 5 mp (100 képkocka) után sem lett true")
                 if diff / tot > 0.0005:
                     probs.append(f"DETERMINIZMUS: ugyanannál az L.st-nél a két kép {diff} képpontban ({100 * diff / tot:.2f} %) eltér "
                                  "(seed nélküli Math.random, valós idő, képkockánként halmozott állapot?)")
@@ -398,10 +468,10 @@ def main(argv):
                             pd.evaluate("([j, i]) => { window.__lesson.go(j, true); window.__qaTick(6); window.__lesson.go(i, true); window.__qaTick(2); }", [jj, i])
                         else:
                             pd.evaluate("(i) => { window.__lesson.go(i, true); window.__qaTick(2); }", i)
-                        pd.evaluate(f"(() => {{ const L = window.__lesson; L.st = {steps[i]['settle']}; L.t = 100; L.sp = L.step; window.__qaTick(1); }})()")
+                        pd.evaluate(f"(() => {{ const L = window.__lesson; L.st = {steps[i]['settle']}; L.t = 100; L.sp = L.step; window.__qaTick({1 + K}); }})()")
                         pd.screenshot(path=str(out / f"{i + 1:02d}-det-{tag}.png"))
                 total += len(probs)
-                report(f"{i + 1:02d} determinizmus (L.st={steps[i]['settle']:g}, {j + 1}. lépésen át)  ", probs, [])
+                report(f"{i + 1:02d} determinizmus (L.st={steps[i]['settle']:g}{f' + {K} képkocka (idle)' if K else ''}, {j + 1}. lépésen át)  ", probs, [])
             ctx2.close()
         b.close()
     if nwarn:

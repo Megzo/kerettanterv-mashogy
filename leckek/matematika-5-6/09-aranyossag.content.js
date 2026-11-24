@@ -18,7 +18,7 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "Torpedó a rácson",
-   "html": "<p data-src=\"49\">Egy pontot két szám ad meg: <span class=\"mx\"><i>P</i>(3; 2)</span>. Az <b>első</b> az <em>x</em>: ennyit lépünk jobbra. A <b>második</b> az <em>y</em>: ennyit fölfelé. <span class=\"key\">A sorrend számít:</span> a <span class=\"mx\">(2; 3)</span> egészen máshol van! Lőj a hajókra: kattints egy rácspontra!</p><p class=\"note\" data-src=\"51\">Párban papíron is játszható.</p>",
+   "html": "<p data-src=\"49\">Egy pontot két szám ad meg: <span class=\"mx\"><i>P</i>(3; 2)</span>. Az <b>első</b> az <em>x</em>: ennyit lépünk jobbra. A <b>második</b> az <em>y</em>: ennyit fölfelé. <span class=\"key\">A sorrend számít:</span> a <span class=\"mx\">(2; 3)</span> egészen máshol van! Lőj a hajókra: kattints egy rácspontra!</p><p class=\"note\" data-src=\"51\">Párban papíron is játszható.</p>",
    "line": 48,
    "words": 38
   },
@@ -30,7 +30,7 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "Pontok egy egyenesen, az origón át",
-   "html": "<p data-src=\"84\">Minden oszlop egy pont: <span class=\"mx\">(<i>darab</i>; ár)</span>. A pontok <b>egy egyenesre</b> esnek, és az egyenes <span class=\"key\">átmegy az origón</span>: 0 kifli 0 forintba kerül. Minden újabb kifli ugyanannyival, 80 Ft-tal emeli az árat: a lépcsők egyformák.</p>",
+   "html": "<p data-src=\"84\">Minden oszlop egy pont: <span class=\"mx\">(<i>darab</i>; ár)</span>. A pontok <b>egy egyenesre</b> esnek, és az egyenes <span class=\"key\">átmegy az origón</span>: 0 kifli 0 forintba kerül. Minden újabb kifli ugyanannyival, 80 Ft-tal emeli az árat: a lépcsők egyformák.</p>",
    "line": 83,
    "words": 32
   },
@@ -60,7 +60,7 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "Összefoglalás",
-   "html": "<ul><li data-src=\"173\">Egy pont két adat: <span class=\"mx\">(<i>x</i>; <i>y</i>)</span>. Először <em>x</em>, aztán <em>y</em>.</li><li data-src=\"174\"><b>Egyenes arányosság:</b> a hányados állandó, a grafikon <span class=\"key\">origón átmenő egyenes</span>.</li><li data-src=\"175\">Darabszámnál csak pontok vannak.</li><li data-src=\"176\">Ami együtt nő, nem mindig arányos.</li><li data-src=\"177\"><b>Fordított arányosság:</b> a szorzat állandó.</li></ul>",
+   "html": "<ul><li data-src=\"173\">Egy pont két adat: <span class=\"mx\">(<i>x</i>; <i>y</i>)</span>. Először <em>x</em>, aztán <em>y</em>.</li><li data-src=\"174\"><b>Egyenes arányosság:</b> a hányados állandó, a grafikon <span class=\"key\">origón átmenő egyenes</span>.</li><li data-src=\"175\">Darabszámnál csak pontok vannak.</li><li data-src=\"176\">Ami együtt nő, nem mindig arányos.</li><li data-src=\"177\"><b>Fordított arányosság:</b> a szorzat állandó.</li></ul>",
    "line": 172,
    "words": 34
   }

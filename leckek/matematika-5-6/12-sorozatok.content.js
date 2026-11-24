@@ -24,7 +24,7 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "A 100. ház – szabály és csapda",
-   "html": "<p data-src=\"58\">Nem kell megépíteni! A bal szélső fal 1 szál, utána minden ház 5. Tehát <em>n</em> házhoz <span class=\"mx\">5 · <i>n</i> + 1</span> szál kell, 100 házhoz 501. <span class=\"key\">Csapda:</span> 25 ház 126 szál, de 100 ház nem <span class=\"mx\">4 · 126 = 504</span>! Miért? Nyomd meg a gombot!</p>",
+   "html": "<p data-src=\"58\">Nem kell megépíteni! A bal szélső fal 1 szál, utána minden ház 5. Tehát <em>n</em> házhoz <span class=\"mx\">5 · <i>n</i> + 1</span> szál kell, 100 házhoz 501. <span class=\"key\">Csapda:</span> 25 ház 126 szál, de 100 ház nem <span class=\"mx\">4 · 126 = 504</span>! Miért? Nyomd meg a gombot!</p>",
    "line": 57,
    "words": 37
   },
@@ -48,19 +48,19 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "Négyzetszámok",
-   "html": "<p data-src=\"121\">Négyzetbe is rakhatunk pöttyöket: 1; 4; 9; 16; 25. Minden új szegély egy <b>L</b> alak: 3, 5, 7, 9 pötty – a páratlan számok! <span class=\"key\">Az első <em>n</em> páratlan szám összege <span class=\"mx\"><i>n</i> · <i>n</i></span>.</span> Vágd ketté a négyzetet: két szomszédos háromszögszám lesz belőle!</p>",
+   "html": "<p data-src=\"121\">Négyzetbe is rakhatunk pöttyöket: 1; 4; 9; 16; 25. Minden új szegély egy <b>L</b> alak: 3, 5, 7, 9 pötty – a páratlan számok! <span class=\"key\">Az első <em>n</em> páratlan szám összege <span class=\"mx\"><i>n</i> · <i>n</i></span>.</span> Vágd ketté a négyzetet: két szomszédos háromszögszám lesz belőle!</p>",
    "line": 120,
    "words": 39
   },
   {
    "title": "Gauss trükkje: 1 + 2 + … + 100",
-   "html": "<p data-src=\"135\">A hagyomány szerint a kisiskolás Gauss pillanatok alatt összeadta a számokat 1-től 100-ig. A trükk: a lépcső mellé tegyünk egy fordított lépcsőt! Együtt téglalapot adnak: <span class=\"mx\">100 · 101</span>. <span class=\"key\">A lépcső ennek a fele: 5050.</span> Ez a 100. háromszögszám.</p><p class=\"note\" data-src=\"137\">Párokban: <span class=\"mx\">1 + 100 = 2 + 99 = … = 101</span>.</p>",
+   "html": "<p data-src=\"135\">A hagyomány szerint a kisiskolás Gauss pillanatok alatt összeadta a számokat 1-től 100-ig. A trükk: a lépcső mellé tegyünk egy fordított lépcsőt! Együtt téglalapot adnak: <span class=\"mx\">100 · 101</span>. <span class=\"key\">A lépcső ennek a fele: 5050.</span> Ez a 100. háromszögszám.</p><p class=\"note\" data-src=\"137\">Párokban: <span class=\"mx\">1 + 100 = 2 + 99 = … = 101</span>.</p>",
    "line": 134,
    "words": 38
   },
   {
    "title": "Összefoglalás",
-   "html": "<ul><li data-src=\"157\">A <b>sorozat</b> tagjai egy <b>szabály</b> szerint követik egymást.</li><li data-src=\"158\">Ha mindig ugyanannyival nő: egyforma lépcsők, a pontok egy egyenesen.</li><li data-src=\"159\">A tagot a sorszámból is kiszámolhatod: <span class=\"mx\">5 · <i>n</i> + 1</span>.</li><li data-src=\"160\"><span class=\"key\">Néhány tagból többféle szabály is kijöhet.</span></li><li data-src=\"161\">Háromszög- és négyzetszámok: egyre nagyobb lépcsők.</li></ul>",
+   "html": "<ul><li data-src=\"157\">A <b>sorozat</b> tagjai egy <b>szabály</b> szerint követik egymást.</li><li data-src=\"158\">Ha mindig ugyanannyival nő: egyforma lépcsők, a pontok egy egyenesen.</li><li data-src=\"159\">A tagot a sorszámból is kiszámolhatod: <span class=\"mx\">5 · <i>n</i> + 1</span>.</li><li data-src=\"160\"><span class=\"key\">Néhány tagból többféle szabály is kijöhet.</span></li><li data-src=\"161\">Háromszög- és négyzetszámok: egyre nagyobb lépcsők.</li></ul>",
    "line": 156,
    "words": 37
   }

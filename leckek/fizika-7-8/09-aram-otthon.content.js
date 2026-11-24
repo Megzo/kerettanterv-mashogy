@@ -24,7 +24,7 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "kWh és forint",
-   "html": "<p data-src=\"110\"><b>Energia = teljesítmény × idő.</b> Otthon kilowattórában (kWh) mérjük, ezt fizetjük ki.</p><p data-src=\"112\">Tévhit: a nagyobb teljesítményű készülék mindig többet fogyaszt. <span class=\"key\">Az idő is számít!</span> A tévé 1 óra alatt ugyanannyi energiát használ, mint a vízforraló 3 perc alatt.</p><p class=\"big-fx\" data-src=\"114\">E = P · t</p><p class=\"note\" data-src=\"116\">Húzd a tévé idejét! Hány perc tévézés ér fel két forralással?</p>",
+   "html": "<p data-src=\"110\"><b>Energia = teljesítmény × idő.</b> Otthon kilowattórában (kWh) mérjük, ezt fizetjük ki.</p><p data-src=\"112\">Tévhit: a nagyobb teljesítményű készülék mindig többet fogyaszt. <span class=\"key\">Az idő is számít!</span> A tévé 1 óra alatt ugyanannyi energiát használ, mint a vízforraló 3 perc alatt.</p><p class=\"big-fx\" data-src=\"114\">E = P · t</p><p class=\"note\" data-src=\"116\">Húzd a tévé idejét! Hány perc tévézés ér fel két forralással?</p>",
    "line": 109,
    "words": 51
   },

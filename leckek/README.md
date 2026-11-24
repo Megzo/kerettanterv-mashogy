@@ -107,7 +107,8 @@ alakított át, és szól, ha valami gyanús (pl. `3.14`, `5 - 3`).
 |---|---|---|
 | kitevő | `x^2` · `10^-3` · `2^(n+1)` | x², 10⁻³, 2ⁿ⁺¹ (felső index) |
 | alsó index | `F_fel` · `x_1` · `v_(max)` | F<sub>fel</sub>, x<sub>1</sub> |
-| képlet | `` `x^2 - 4x + 3 = 0` `` (két fordított aposztróf közt) | *x*² − 4*x* + 3 = 0: dőlt betűk, valódi mínusz; 1 szónak számít |
+| képlet | `` `x^2 - 4x + 3 = 0` `` (két fordított aposztróf közt) | *x*² − 4*x* + 3 = 0: dőlt betűk, valódi mínusz; 1 szónak számít; a panelen egyben marad (csak `=`, `<`, `≤` … után törhet sort) |
+| mértékegység a képletben | `` `9,81 m/s^2` `` · `` `5 cm` `` · `` `20 °C` `` · `` `"max"` `` | álló betű (m/s², cm, °C), a változó dőlt marad. Csak **szám után** egység: `` `F = m * a` `` – itt *m* tömeg (dőlt); `` `5 m` `` = 5 méter, `` `5m` `` = 5 · *m*. `"…"` közé írt szöveg mindig álló. A *t* (tonna) és az *a* (ár) nem egység. |
 | … a képletben | `*` · `<=` `>=` `!=` `~=` · `->` `\|->` `=>` `<=>` · `+-` · `pi` `inf` · `NN` `ZZ` `QQ` `RR` · `√(x + 1)` vagy `gyök(x + 1)` | · ≤ ≥ ≠ ≈ → ↦ ⇒ ⇔ ± π ∞ ℕ ℤ ℚ ℝ √ |
 | álló tört | `[[x/2]]` · `[[a + b/2]]` | emeletes tört (a felső és alsó rész a `/` két oldala) |
 | halmaz | `{1; 2; 3}` · `{ }` | {1; 2; 3} – pontosvesszővel (a `{kulcs}` adat-hivatkozásban nincs `;`) |
@@ -117,6 +118,8 @@ alakított át, és szól, ha valami gyanús (pl. `3.14`, `5 - 3`).
 A lecke **címében** (`#` sor) is működik: ott Unicode-jellé alakul (`` `x^2 - 1` `` → x² − 1,
 `Na^+` → Na⁺, kémialeckében `H2O` → H₂O); ami így nem írható (`F_fel`), az jelöléssel marad.
 Kémialecke feliratában a töltés is Unicode lesz: `Na^+` → Na⁺, `OH^-` → OH⁻.
+A `képlet:` sor (nagy, kiemelt képlet) a panelen egyben marad; ha nem fér ki egy sorba, csak
+relációjel (`=`, `<`, `≤`, `⇒` …) után törik.
 
 Matematikaleckében ezen felül: `3/4` magától álló tört, `2 1/3` vegyes szám, a `képlet:` sor
 egésze képlet, benne `(−b ± √(b^2 − 4ac)) / (2a)` emeletes tört lesz. Egyenlőtlenséggel ne kezdj

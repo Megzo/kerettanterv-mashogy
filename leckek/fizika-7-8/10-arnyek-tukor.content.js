@@ -36,7 +36,7 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "A visszaverődés törvénye",
-   "html": "<p data-src=\"90\">A tükörre eső fénysugár úgy pattan vissza, mint a falnak dobott labda.</p><p class=\"big-fx\" data-src=\"92\">α = β</p><p data-src=\"94\">A <b>beesési szög</b> (α) egyenlő a <b>visszaverődési szöggel</b> (β). Mindkettőt a <span class=\"key\">beesési merőlegestől</span> mérjük, nem a tükör felületétől! Húzd a lézert!</p><p class=\"note\" data-src=\"96\">A beeső sugár, a merőleges és a visszavert sugár egy síkban van.</p>",
+   "html": "<p data-src=\"90\">A tükörre eső fénysugár úgy pattan vissza, mint a falnak dobott labda.</p><p class=\"big-fx\" data-src=\"92\">α = β</p><p data-src=\"94\">A <b>beesési szög</b> (α) egyenlő a <b>visszaverődési szöggel</b> (β). Mindkettőt a <span class=\"key\">beesési merőlegestől</span> mérjük, nem a tükör felületétől! Húzd a lézert!</p><p class=\"note\" data-src=\"96\">A beeső sugár, a merőleges és a visszavert sugár egy síkban van.</p>",
    "line": 89,
    "words": 47
   },

@@ -24,19 +24,19 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "Fel a lejtőn",
-   "html": "<p data-src=\"73\">A lejtőn fölfelé a golyó lassul: a mozgási energiája <b>helyzeti energiává</b> alakul.</p><p class=\"big-fx\" data-src=\"75\">E<sub>h</sub> = m · g · h</p><p data-src=\"77\">Ahol megáll, ott minden energiája helyzeti. Tedd meredekebbé a lejtőt: <span class=\"key\">ugyanolyan magasra jut fel</span>!</p><p class=\"note\" data-src=\"79\">Egyszerűsítés: nincs súrlódás, és a golyó forgását nem számoljuk.</p>",
+   "html": "<p data-src=\"73\">A lejtőn fölfelé a golyó lassul: a mozgási energiája <b>helyzeti energiává</b> alakul.</p><p class=\"big-fx\" data-src=\"75\">E<sub>h</sub> = m · g · h</p><p data-src=\"77\">Ahol megáll, ott minden energiája helyzeti. Tedd meredekebbé a lejtőt: <span class=\"key\">ugyanolyan magasra jut fel</span>!</p><p class=\"note\" data-src=\"79\">Egyszerűsítés: nincs súrlódás, és a golyó forgását nem számoljuk.</p>",
    "line": 72,
    "words": 39
   },
   {
    "title": "Zuhanás",
-   "html": "<p data-src=\"90\">Most ejtsük le a golyót! Esés közben a helyzeti energiája <b>mozgási energiává</b> alakul: <span class=\"key\">ami az egyikből fogy, az a másikhoz adódik</span>.</p><p class=\"big-fx\" data-src=\"92\">E<sub>m</sub> = ½ · m · v²</p><p data-src=\"94\">A homokba csapódva a mozgási energia <b>belső energia</b> lesz: a homok és a golyó kicsit felmelegszik.</p><p class=\"note\" data-src=\"96\">Légellenállás nélkül számoltunk.</p>",
+   "html": "<p data-src=\"90\">Most ejtsük le a golyót! Esés közben a helyzeti energiája <b>mozgási energiává</b> alakul: <span class=\"key\">ami az egyikből fogy, az a másikhoz adódik</span>.</p><p class=\"big-fx\" data-src=\"92\">E<sub>m</sub> = ½ · m · v²</p><p data-src=\"94\">A homokba csapódva a mozgási energia <b>belső energia</b> lesz: a homok és a golyó kicsit felmelegszik.</p><p class=\"note\" data-src=\"96\">Légellenállás nélkül számoltunk.</p>",
    "line": 89,
    "words": 44
   },
   {
    "title": "Nehéz és könnyű golyó",
-   "html": "<p data-src=\"109\">Sokan gondolják: <span class=\"key\">a nehezebb test gyorsabban esik</span>.</p><p data-src=\"111\">A nehezebb golyónak több a helyzeti energiája, de több tömeget is kell felgyorsítania. <b>Kilogrammonként ugyanannyi</b> energia jut, ezért egyszerre érnek le.</p><p class=\"big-fx\" data-src=\"113\">v = √(2 · g · h)</p><p class=\"note\" data-src=\"115\">A tollat a levegő fékezi, nem a tömege.</p>",
+   "html": "<p data-src=\"109\">Sokan gondolják: <span class=\"key\">a nehezebb test gyorsabban esik</span>.</p><p data-src=\"111\">A nehezebb golyónak több a helyzeti energiája, de több tömeget is kell felgyorsítania. <b>Kilogrammonként ugyanannyi</b> energia jut, ezért egyszerre érnek le.</p><p class=\"big-fx\" data-src=\"113\">v = √(2 · g · h)</p><p class=\"note\" data-src=\"115\">A tollat a levegő fékezi, nem a tömege.</p>",
    "line": 108,
    "words": 40
   },

@@ -24,13 +24,13 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "Egyenlő távolság = ponthalmaz",
-   "html": "<p data-src=\"74\">Húzd a P pontot! Ha a merőlegesen van, <span class=\"mx\"><i>PA</i> = <i>PB</i></span>. Ha lelép róla, az egyik város közelebb kerül. <span class=\"key\">A szakaszfelező merőleges azoknak a pontoknak a halmaza, amelyek A-tól és B-től egyenlő távolságra vannak.</span> Miért? Az egyenesre tükrözve A és B helyet cserél, P helyben marad.</p><p class=\"note\" data-src=\"76\">Ez mérés. A tükrözéses érv minden pontra igaz.</p>",
+   "html": "<p data-src=\"74\">Húzd a P pontot! Ha a merőlegesen van, <span class=\"mx\"><i>PA</i> = <i>PB</i></span>. Ha lelép róla, az egyik város közelebb kerül. <span class=\"key\">A szakaszfelező merőleges azoknak a pontoknak a halmaza, amelyek A-tól és B-től egyenlő távolságra vannak.</span> Miért? Az egyenesre tükrözve A és B helyet cserél, P helyben marad.</p><p class=\"note\" data-src=\"76\">Ez mérés. A tükrözéses érv minden pontra igaz.</p>",
    "line": 73,
    "words": 52
   },
   {
    "title": "Miért metszik egymást egy pontban?",
-   "html": "<p data-src=\"90\">Szerkesszük meg BC felezőmerőlegesét is! A két egyenes metszéspontja K. Ez a pont az elsőn rajta van, ezért <span class=\"mx\"><i>KA</i> = <i>KB</i></span>; a másodikon is, ezért <span class=\"mx\"><i>KB</i> = <i>KC</i></span>. Így <span class=\"mx\"><i>KA</i> = <i>KC</i></span>, tehát K a harmadik merőlegesen is rajta van. <span class=\"key\">K mindhárom várostól kb. 104 km távolságra van: ez a körülírt kör középpontja.</span></p>",
+   "html": "<p data-src=\"90\">Szerkesszük meg BC felezőmerőlegesét is! A két egyenes metszéspontja K. Ez a pont az elsőn rajta van, ezért <span class=\"mx\"><i>KA</i> = <i>KB</i></span>; a másodikon is, ezért <span class=\"mx\"><i>KB</i> = <i>KC</i></span>. Így <span class=\"mx\"><i>KA</i> = <i>KC</i></span>, tehát K a harmadik merőlegesen is rajta van. <span class=\"key\">K mindhárom várostól kb. 104 km távolságra van: ez a körülírt kör középpontja.</span></p>",
    "line": 89,
    "words": 45
   },
@@ -48,19 +48,19 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "Súlyvonal és súlypont",
-   "html": "<p data-src=\"131\">A <b>súlyvonal</b> a csúcsot a szemközti oldal felezőpontjával köti össze. A három súlyvonal egy pontban, a <b>súlypontban</b> (S) metszi egymást. Húzd a tűt! A kartonlap csak az S-en egyensúlyoz. <span class=\"key\">S mindegyik súlyvonalat 2 : 1 arányban osztja.</span> Ezt itt csak mérjük, nem bizonyítjuk.</p>",
+   "html": "<p data-src=\"131\">A <b>súlyvonal</b> a csúcsot a szemközti oldal felezőpontjával köti össze. A három súlyvonal egy pontban, a <b>súlypontban</b> (S) metszi egymást. Húzd a tűt! A kartonlap csak az S-en egyensúlyoz. <span class=\"key\">S mindegyik súlyvonalat 2 : 1 arányban osztja.</span> Ezt itt csak mérjük, nem bizonyítjuk.</p>",
    "line": 130,
    "words": 41
   },
   {
    "title": "Magasságpont és az Euler-egyenes",
-   "html": "<p data-src=\"145\">A <b>magasságvonal</b> a csúcsból merőleges a szemközti oldal egyenesére; a három metszéspontja a <b>magasságpont</b> (M). Tompaszögnél kívül esik. Kapcsold ki-be a pontokat! Általában négy különböző pont, de K, S és M mindig egy egyenesen van (<b>Euler-egyenes</b>). <span class=\"key\"><span class=\"mx\"><i>KS</i> : <i>SM</i> = 1 : 2</span></span> – ezt is csak mérjük.</p>",
+   "html": "<p data-src=\"145\">A <b>magasságvonal</b> a csúcsból merőleges a szemközti oldal egyenesére; a három metszéspontja a <b>magasságpont</b> (M). Tompaszögnél kívül esik. Kapcsold ki-be a pontokat! Általában négy különböző pont, de K, S és M mindig egy egyenesen van (<b>Euler-egyenes</b>). <span class=\"key\"><span class=\"mx\"><i>KS</i> : <i>SM</i> = 1 : 2</span></span> – ezt is csak mérjük.</p>",
    "line": 144,
    "words": 41
   },
   {
    "title": "Összefoglaló",
-   "html": "<ul><li data-src=\"161\">oldalfelező merőlegesek → K, a <b>körülírt kör</b> középpontja</li><li data-src=\"162\">szögfelezők → O, a <b>beírt kör</b> középpontja</li><li data-src=\"163\">súlyvonalak → S, <span class=\"mx\">2 : 1</span> arány</li><li data-src=\"164\">magasságvonalak → M</li><li data-src=\"165\">K, S, M: Euler-egyenes</li></ul><p data-src=\"167\"><span class=\"key\">A mentőállomás helye: K.</span></p>",
+   "html": "<ul><li data-src=\"161\">oldalfelező merőlegesek → K, a <b>körülírt kör</b> középpontja</li><li data-src=\"162\">szögfelezők → O, a <b>beírt kör</b> középpontja</li><li data-src=\"163\">súlyvonalak → S, <span class=\"mx\">2 : 1</span> arány</li><li data-src=\"164\">magasságvonalak → M</li><li data-src=\"165\">K, S, M: Euler-egyenes</li></ul><p data-src=\"167\"><span class=\"key\">A mentőállomás helye: K.</span></p>",
    "line": 160,
    "words": 27
   }
@@ -201,14 +201,14 @@ window.LESSON_CONTENT = {
    "a": 2.0,
    "b": 1.0,
    "v": 2.0,
-   "s": "2 : 1"
+   "s": "2 : 1"
   },
   "Euler-arány": {
    "t": "ratio",
    "a": 1.0,
    "b": 2.0,
    "v": 0.5,
-   "s": "1 : 2"
+   "s": "1 : 2"
   }
  },
  "src": {

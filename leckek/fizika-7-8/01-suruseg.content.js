@@ -30,13 +30,13 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "A sűrűség: ρ = m / V",
-   "html": "<p data-src=\"83\">Ezt az anyagra jellemző arányt <b>sűrűségnek</b> hívjuk (jele: ρ, olvasd: „ró”).</p><p class=\"big-fx\" data-src=\"85\">ρ = m / V</p><p data-src=\"87\">Megmutatja, hány gramm <b>1 cm³</b> az anyagból. Minél <span class=\"key\">meredekebb</span> az egyenes, annál nagyobb a sűrűség.</p><p class=\"note\" data-src=\"89\">A jég és a víz egyenese majdnem egybeesik – ez még fontos lesz!</p>",
+   "html": "<p data-src=\"83\">Ezt az anyagra jellemző arányt <b>sűrűségnek</b> hívjuk (jele: ρ, olvasd: „ró”).</p><p class=\"big-fx\" data-src=\"85\">ρ = m / V</p><p data-src=\"87\">Megmutatja, hány gramm <b>1 cm³</b> az anyagból. Minél <span class=\"key\">meredekebb</span> az egyenes, annál nagyobb a sűrűség.</p><p class=\"note\" data-src=\"89\">A jég és a víz egyenese majdnem egybeesik – ez még fontos lesz!</p>",
    "line": 82,
    "words": 41
   },
   {
    "title": "Mennyi a terem levegője?",
-   "html": "<p data-src=\"99\">A levegőnek is van tömege! Sűrűsége kb. 1,2 kg/m³.</p><p class=\"big-fx\" data-src=\"101\">m = ρ · V</p><p data-src=\"103\">Egy tanterem levegője <span class=\"key\">több mázsa</span>: annyi, mint néhány felnőtt együtt. Állítsd be a saját termetek méreteit!</p>",
+   "html": "<p data-src=\"99\">A levegőnek is van tömege! Sűrűsége kb. 1,2 kg/m³.</p><p class=\"big-fx\" data-src=\"101\">m = ρ · V</p><p data-src=\"103\">Egy tanterem levegője <span class=\"key\">több mázsa</span>: annyi, mint néhány felnőtt együtt. Állítsd be a saját termetek méreteit!</p>",
    "line": 98,
    "words": 27
   },

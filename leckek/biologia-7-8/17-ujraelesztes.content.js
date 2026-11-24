@@ -48,7 +48,7 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "30 : 2 – ha tanultad a befúvást",
-   "html": "<p data-src=\"151\">Aki tanulta, <b>30 : 2</b> arányban dolgozik: 30 nyomás, 2 befúvás, újra. Aki nem tanulta, <span class=\"key\">csak nyomja folyamatosan – ez is életet ment</span>. A leállás utáni első percekben a vérben még van oxigén, ezért a nyomás a legfontosabb. A mentésirányító telefonon segít.</p><p class=\"note\" data-src=\"153\">Gyermeknél a sorrend más (öt befúvással kezdődik) – ezt tanfolyamon tanulod.</p>",
+   "html": "<p data-src=\"151\">Aki tanulta, <b>30 : 2</b> arányban dolgozik: 30 nyomás, 2 befúvás, újra. Aki nem tanulta, <span class=\"key\">csak nyomja folyamatosan – ez is életet ment</span>. A leállás utáni első percekben a vérben még van oxigén, ezért a nyomás a legfontosabb. A mentésirányító telefonon segít.</p><p class=\"note\" data-src=\"153\">Gyermeknél a sorrend más (öt befúvással kezdődik) – ezt tanfolyamon tanulod.</p>",
    "line": 150,
    "words": 49
   },
@@ -266,7 +266,7 @@ window.LESSON_CONTENT = {
    "a": 30.0,
    "b": 2.0,
    "v": 15.0,
-   "s": "30 : 2"
+   "s": "30 : 2"
   },
   "befúvások szünete legfeljebb": {
    "v": 10.0,

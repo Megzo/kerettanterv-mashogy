@@ -48,7 +48,7 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "Közösségi védettség",
-   "html": "<p data-src=\"191\">Az oltott nem kapja el, és nem is adja tovább. Ha elég sokan védettek, <span class=\"key\">a járvány elakad</span> – így a nem oltható csecsemő is védett. Küszöb: <span class=\"mx\">1 − 1/<i>R</i><sub>0</sub></span>, kanyarónál kb. 93 %.</p><p class=\"note\" data-src=\"193\">Modell: itt az oltás 100 %-ban véd.</p>",
+   "html": "<p data-src=\"191\">Az oltott nem kapja el, és nem is adja tovább. Ha elég sokan védettek, <span class=\"key\">a járvány elakad</span> – így a nem oltható csecsemő is védett. Küszöb: <span class=\"mx\">1 − 1/<i>R</i><sub>0</sub></span>, kanyarónál kb. 93 %.</p><p class=\"note\" data-src=\"193\">Modell: itt az oltás 100 %-ban véd.</p>",
    "line": 190,
    "words": 36
   },

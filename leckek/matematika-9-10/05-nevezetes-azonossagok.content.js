@@ -12,55 +12,55 @@ window.LESSON_CONTENT = {
  "steps": [
   {
    "title": "Mekkora a (3 + 5)²?",
-   "html": "<p data-src=\"24\">Tippelj! Sokan rávágják: <span class=\"mx\">(3 + 5)<sup>2</sup> = 3<sup>2</sup> + 5<sup>2</sup> = 34</span>. Pedig <span class=\"mx\">3 + 5 = 8</span>, és <span class=\"mx\">8<sup>2</sup> = 64</span>. Rajzoljuk le! A 8 oldalú négyzetben elfér egy <span class=\"mx\">3<sup>2</sup></span>-es és egy <span class=\"mx\">5<sup>2</sup></span>-es négyzet, de <span class=\"key\">kimarad két <span class=\"mx\">3 · 5</span>-ös téglalap: ez a hiányzó 30.</span> Tehát <span class=\"mx\">(<i>a</i> + <i>b</i>)<sup>2</sup> ≠ <i>a</i><sup>2</sup> + <i>b</i><sup>2</sup></span>.</p><p class=\"note\" data-src=\"26\">Kérdezd meg az osztályt, ki tippelt 34-et!</p>",
+   "html": "<p data-src=\"24\">Tippelj! Sokan rávágják: <span class=\"mx\">(3 + 5)<sup>2</sup> = 3<sup>2</sup> + 5<sup>2</sup> = 34</span>. Pedig <span class=\"mx\">3 + 5 = 8</span>, és <span class=\"mx\">8<sup>2</sup> = 64</span>. Rajzoljuk le! A 8 oldalú négyzetben elfér egy <span class=\"mx\">3<sup>2</sup></span>-es és egy <span class=\"mx\">5<sup>2</sup></span>-es négyzet, de <span class=\"key\">kimarad két <span class=\"mx\">3 · 5</span>-ös téglalap: ez a hiányzó 30.</span> Tehát <span class=\"mx\">(<i>a</i> + <i>b</i>)<sup>2</sup> ≠ <i>a</i><sup>2</sup> + <i>b</i><sup>2</sup></span>.</p><p class=\"note\" data-src=\"26\">Kérdezd meg az osztályt, ki tippelt 34-et!</p>",
    "line": 23,
    "words": 39
   },
   {
    "title": "Négy darab: a², 2ab, b²",
-   "html": "<p data-src=\"41\">Az <span class=\"mx\"><i>a</i> + <i>b</i></span> oldalú négyzet négy darabra esik: egy <span class=\"mx\"><i>a</i><sup>2</sup></span>-es és egy <span class=\"mx\"><i>b</i><sup>2</sup></span>-es négyzetre, meg <b>két</b> <span class=\"mx\"><i>a</i> · <i>b</i></span>-s téglalapra. <span class=\"key\"><span class=\"mx\">(<i>a</i> + <i>b</i>)<sup>2</sup> = <i>a</i><sup>2</sup> + 2<i>ab</i> + <i>b</i><sup>2</sup></span>.</span> Húzd a csúszkákat: a darabok és a számok együtt változnak. A <span class=\"mx\">2<i>ab</i></span> a két téglalap – éppen ez hiányzott a tévhitből.</p><p class=\"note\" data-src=\"43\">Ez a rajz csak pozitív <em>a</em>-ra és <em>b</em>-re bizonyít: oldalhossz nem lehet negatív.</p>",
+   "html": "<p data-src=\"41\">Az <span class=\"mx\"><i>a</i> + <i>b</i></span> oldalú négyzet négy darabra esik: egy <span class=\"mx\"><i>a</i><sup>2</sup></span>-es és egy <span class=\"mx\"><i>b</i><sup>2</sup></span>-es négyzetre, meg <b>két</b> <span class=\"mx\"><i>a</i> · <i>b</i></span>-s téglalapra. <span class=\"key\"><span class=\"mx\">(<i>a</i> + <i>b</i>)<sup>2</sup> = <i>a</i><sup>2</sup> + 2<i>ab</i> + <i>b</i><sup>2</sup></span>.</span> Húzd a csúszkákat: a darabok és a számok együtt változnak. A <span class=\"mx\">2<i>ab</i></span> a két téglalap – éppen ez hiányzott a tévhitből.</p><p class=\"note\" data-src=\"43\">Ez a rajz csak pozitív <em>a</em>-ra és <em>b</em>-re bizonyít: oldalhossz nem lehet negatív.</p>",
    "line": 40,
    "words": 51
   },
   {
    "title": "Minden számra: szorzás tagonként",
-   "html": "<p data-src=\"56\">Negatív számhoz nincs ilyen négyzet. A szorzás viszont <b>tagonként</b> mindig elvégezhető (disztributivitás): minden tagot minden taggal szorzunk. A táblázat négy cellája ugyanaz a négy darab. <span class=\"key\">Így <span class=\"mx\">(<i>a</i> + <i>b</i>)<sup>2</sup> = <i>a</i><sup>2</sup> + 2<i>ab</i> + <i>b</i><sup>2</sup></span> minden valós <em>a</em>, <em>b</em> számra igaz.</span> Próbáld ki negatív számmal is!</p>",
+   "html": "<p data-src=\"56\">Negatív számhoz nincs ilyen négyzet. A szorzás viszont <b>tagonként</b> mindig elvégezhető (disztributivitás): minden tagot minden taggal szorzunk. A táblázat négy cellája ugyanaz a négy darab. <span class=\"key\">Így <span class=\"mx\">(<i>a</i> + <i>b</i>)<sup>2</sup> = <i>a</i><sup>2</sup> + 2<i>ab</i> + <i>b</i><sup>2</sup></span> minden valós <em>a</em>, <em>b</em> számra igaz.</span> Próbáld ki negatív számmal is!</p>",
    "line": 55,
    "words": 38
   },
   {
    "title": "(a − b)²: levágunk",
-   "html": "<p data-src=\"70\">Az <em>a</em> oldalú négyzetből vágj le egy <em>b</em> széles csíkot jobbról, majd egyet felülről: mindkettő <span class=\"mx\"><i>a</i> · <i>b</i></span>. De a jobb felső <span class=\"mx\"><i>b</i><sup>2</sup></span>-es sarkot <span class=\"key\">kétszer vontuk le, ezért egyszer vissza kell adni</span>: <span class=\"mx\">(<i>a</i> − <i>b</i>)<sup>2</sup> = <i>a</i><sup>2</sup> − 2<i>ab</i> + <i>b</i><sup>2</sup></span>. Tehát <span class=\"mx\">(<i>a</i> − <i>b</i>)<sup>2</sup> ≠ <i>a</i><sup>2</sup> − <i>b</i><sup>2</sup></span>!</p><p class=\"note\" data-src=\"72\">Ha <em>b</em> nagyobb, a rajz tükröződik, de a képlet ugyanaz: <span class=\"mx\">(<i>a</i> − <i>b</i>)<sup>2</sup> = (<i>b</i> − <i>a</i>)<sup>2</sup></span>.</p>",
+   "html": "<p data-src=\"70\">Az <em>a</em> oldalú négyzetből vágj le egy <em>b</em> széles csíkot jobbról, majd egyet felülről: mindkettő <span class=\"mx\"><i>a</i> · <i>b</i></span>. De a jobb felső <span class=\"mx\"><i>b</i><sup>2</sup></span>-es sarkot <span class=\"key\">kétszer vontuk le, ezért egyszer vissza kell adni</span>: <span class=\"mx\">(<i>a</i> − <i>b</i>)<sup>2</sup> = <i>a</i><sup>2</sup> − 2<i>ab</i> + <i>b</i><sup>2</sup></span>. Tehát <span class=\"mx\">(<i>a</i> − <i>b</i>)<sup>2</sup> ≠ <i>a</i><sup>2</sup> − <i>b</i><sup>2</sup></span>!</p><p class=\"note\" data-src=\"72\">Ha <em>b</em> nagyobb, a rajz tükröződik, de a képlet ugyanaz: <span class=\"mx\">(<i>a</i> − <i>b</i>)<sup>2</sup> = (<i>b</i> − <i>a</i>)<sup>2</sup></span>.</p>",
    "line": 69,
    "words": 44
   },
   {
    "title": "a² − b²: átdarabolás téglalappá",
-   "html": "<p data-src=\"90\">Vágd ki az <span class=\"mx\"><i>a</i><sup>2</sup></span>-es négyzet sarkából a <span class=\"mx\"><i>b</i><sup>2</sup></span>-es négyzetet! A maradék L alak felső csíkját fordítsd át a jobb oldalra: <span class=\"key\">egy <span class=\"mx\"><i>a</i> + <i>b</i></span> hosszú, <span class=\"mx\"><i>a</i> − <i>b</i></span> magas téglalap lesz.</span> Tehát <span class=\"mx\"><i>a</i><sup>2</sup> − <i>b</i><sup>2</sup> = (<i>a</i> + <i>b</i>)(<i>a</i> − <i>b</i>)</span>. Jobbról balra olvasva: <b>szorzattá alakítás</b>, <span class=\"mx\"><i>x</i><sup>2</sup> − 9 = (<i>x</i> + 3)(<i>x</i> − 3)</span>.</p>",
+   "html": "<p data-src=\"90\">Vágd ki az <span class=\"mx\"><i>a</i><sup>2</sup></span>-es négyzet sarkából a <span class=\"mx\"><i>b</i><sup>2</sup></span>-es négyzetet! A maradék L alak felső csíkját fordítsd át a jobb oldalra: <span class=\"key\">egy <span class=\"mx\"><i>a</i> + <i>b</i></span> hosszú, <span class=\"mx\"><i>a</i> − <i>b</i></span> magas téglalap lesz.</span> Tehát <span class=\"mx\"><i>a</i><sup>2</sup> − <i>b</i><sup>2</sup> = (<i>a</i> + <i>b</i>)(<i>a</i> − <i>b</i>)</span>. Jobbról balra olvasva: <b>szorzattá alakítás</b>, <span class=\"mx\"><i>x</i><sup>2</sup> − 9 = (<i>x</i> + 3)(<i>x</i> − 3)</span>.</p>",
    "line": 89,
    "words": 35
   },
   {
    "title": "Fejszámolás azonosságokkal",
-   "html": "<p data-src=\"106\"><span class=\"key\">Keress egy kerek számot a közelben!</span> <span class=\"mx\">47<sup>2</sup> = (50 − 3)<sup>2</sup> = 2500 − 300 + 9 = 2209</span>. Ha két szám egy kerek szám körül egyformán messze áll: <span class=\"mx\">49 · 51 = 50<sup>2</sup> − 1<sup>2</sup> = 2499</span>, és <span class=\"mx\">99 · 101 = 9999</span>. Válassz egy példát, vagy húzd a csúszkát!</p><p class=\"note\" data-src=\"108\">Versenyezzen valaki számológéppel!</p>",
+   "html": "<p data-src=\"106\"><span class=\"key\">Keress egy kerek számot a közelben!</span> <span class=\"mx\">47<sup>2</sup> = (50 − 3)<sup>2</sup> = 2500 − 300 + 9 = 2209</span>. Ha két szám egy kerek szám körül egyformán messze áll: <span class=\"mx\">49 · 51 = 50<sup>2</sup> − 1<sup>2</sup> = 2499</span>, és <span class=\"mx\">99 · 101 = 9999</span>. Válassz egy példát, vagy húzd a csúszkát!</p><p class=\"note\" data-src=\"108\">Versenyezzen valaki számológéppel!</p>",
    "line": 105,
    "words": 30
   },
   {
    "title": "Gondolj egy számra!",
-   "html": "<p data-src=\"126\">Gondolj egy pozitív egészre! Szorozd meg a nála 2-vel nagyobbal, adj hozzá 1-et, vonj belőle négyzetgyököt, és vond ki a gondolt számot. <span class=\"key\">Mindig 1 jön ki.</span> Miért? A csempék megmutatják: <span class=\"mx\"><i>x</i>(<i>x</i> + 2) + 1 = <i>x</i><sup>2</sup> + 2<i>x</i> + 1 = (<i>x</i> + 1)<sup>2</sup></span>, és ennek gyöke <span class=\"mx\"><i>x</i> + 1</span>.</p><p class=\"note\" data-src=\"128\">Egy diák gondoljon számot, a többiek számoljanak vele!</p>",
+   "html": "<p data-src=\"126\">Gondolj egy pozitív egészre! Szorozd meg a nála 2-vel nagyobbal, adj hozzá 1-et, vonj belőle négyzetgyököt, és vond ki a gondolt számot. <span class=\"key\">Mindig 1 jön ki.</span> Miért? A csempék megmutatják: <span class=\"mx\"><i>x</i>(<i>x</i> + 2) + 1 = <i>x</i><sup>2</sup> + 2<i>x</i> + 1 = (<i>x</i> + 1)<sup>2</sup></span>, és ennek gyöke <span class=\"mx\"><i>x</i> + 1</span>.</p><p class=\"note\" data-src=\"128\">Egy diák gondoljon számot, a többiek számoljanak vele!</p>",
    "line": 125,
    "words": 43
   },
   {
    "title": "Két páratlan szám négyzete",
-   "html": "<p data-src=\"144\">Két szomszédos páratlan szám: <span class=\"mx\">2<i>k</i> − 1</span> és <span class=\"mx\">2<i>k</i> + 1</span>. A négyzetük különbsége a rajzon egy 1 széles keret. <span class=\"key\">A keret mindig 8 egyforma, <em>k</em> hosszú darabra vágható</span>, tehát a különbség osztható 8-cal. Algebrával: <span class=\"mx\">(2<i>k</i> + 1)<sup>2</sup> − (2<i>k</i> − 1)<sup>2</sup> = 4<i>k</i> · 2 = 8<i>k</i></span>. Például <span class=\"mx\">9<sup>2</sup> − 7<sup>2</sup> = 32</span>.</p>",
+   "html": "<p data-src=\"144\">Két szomszédos páratlan szám: <span class=\"mx\">2<i>k</i> − 1</span> és <span class=\"mx\">2<i>k</i> + 1</span>. A négyzetük különbsége a rajzon egy 1 széles keret. <span class=\"key\">A keret mindig 8 egyforma, <em>k</em> hosszú darabra vágható</span>, tehát a különbség osztható 8-cal. Algebrával: <span class=\"mx\">(2<i>k</i> + 1)<sup>2</sup> − (2<i>k</i> − 1)<sup>2</sup> = 4<i>k</i> · 2 = 8<i>k</i></span>. Például <span class=\"mx\">9<sup>2</sup> − 7<sup>2</sup> = 32</span>.</p>",
    "line": 143,
    "words": 34
   },
   {
    "title": "Összefoglaló",
-   "html": "<p data-src=\"157\">Három <b>nevezetes azonosság</b>, mindhárom minden valós számra igaz. <span class=\"key\">A négyzetre emelés nem megy tagonként: a <span class=\"mx\">2<i>ab</i></span> mindig ott van.</span> Mire jók?</p><ul><li data-src=\"159\">fejszámolás: <span class=\"mx\">47<sup>2</sup></span>, <span class=\"mx\">49 · 51</span></li><li data-src=\"160\">szorzattá alakítás: <span class=\"mx\"><i>x</i><sup>2</sup> − 9 = (<i>x</i> + 3)(<i>x</i> − 3)</span></li><li data-src=\"161\">oszthatóság: <span class=\"mx\">(2<i>k</i> + 1)<sup>2</sup> − (2<i>k</i> − 1)<sup>2</sup> = 8<i>k</i></span></li></ul><p class=\"note\" data-src=\"163\">A másodfokú egyenleteknél a teljes négyzetté kiegészítés is ezekre épül.</p>",
+   "html": "<p data-src=\"157\">Három <b>nevezetes azonosság</b>, mindhárom minden valós számra igaz. <span class=\"key\">A négyzetre emelés nem megy tagonként: a <span class=\"mx\">2<i>ab</i></span> mindig ott van.</span> Mire jók?</p><ul><li data-src=\"159\">fejszámolás: <span class=\"mx\">47<sup>2</sup></span>, <span class=\"mx\">49 · 51</span></li><li data-src=\"160\">szorzattá alakítás: <span class=\"mx\"><i>x</i><sup>2</sup> − 9 = (<i>x</i> + 3)(<i>x</i> − 3)</span></li><li data-src=\"161\">oszthatóság: <span class=\"mx\">(2<i>k</i> + 1)<sup>2</sup> − (2<i>k</i> − 1)<sup>2</sup> = 8<i>k</i></span></li></ul><p class=\"note\" data-src=\"163\">A másodfokú egyenleteknél a teljes négyzetté kiegészítés is ezekre épül.</p>",
    "line": 156,
    "words": 39
   }

@@ -12,7 +12,7 @@ window.LESSON_CONTENT = {
  "steps": [
   {
    "title": "Négyzet átlója: hány egység?",
-   "html": "<p data-src=\"26\">Az egységnégyzet átlója hosszabb az oldalánál, de rövidebb kettőnél – mérve kb. 1,4. Pontosan mennyi? Rajzoljunk négyzetet az átlóra! Két egységnégyzetet átlósan félbevágunk, és a négy fél éppen kitölti. <span class=\"key\">Az átlóra rajzolt négyzet területe 2, tehát az átló <span class=\"mx\"><i>d</i> = <span class=\"rt\">√<span class=\"rad\">2</span></span></span>.</span></p><p class=\"note\" data-src=\"28\">Pitagorasz-tétellel ugyanez: <span class=\"mx\">1<sup>2</sup> + 1<sup>2</sup> = <i>d</i><sup>2</sup></span>.</p>",
+   "html": "<p data-src=\"26\">Az egységnégyzet átlója hosszabb az oldalánál, de rövidebb kettőnél – mérve kb. 1,4. Pontosan mennyi? Rajzoljunk négyzetet az átlóra! Két egységnégyzetet átlósan félbevágunk, és a négy fél éppen kitölti. <span class=\"key\">Az átlóra rajzolt négyzet területe 2, tehát az átló <span class=\"mx\"><i>d</i> = <span class=\"rt\">√<span class=\"rad\">2</span></span></span>.</span></p><p class=\"note\" data-src=\"28\">Pitagorasz-tétellel ugyanez: <span class=\"mx\">1<sup>2</sup> + 1<sup>2</sup> = <i>d</i><sup>2</sup></span>.</p>",
    "line": 25,
    "words": 42
   },
@@ -24,25 +24,25 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "Tizedesjegyek: nagyítás",
-   "html": "<p data-src=\"57\">Nagyíts rá a pontra! Minden nagyításnál egy újabb tizedesjegy derül ki, és a <span class=\"rt\">√<span class=\"rad\">2</span></span> mindig két szomszédos osztás közé esik: <span class=\"mx\">1,41<sup>2</sup> &lt; 2 &lt; 1,42<sup>2</sup></span>. <span class=\"key\">Akárhány jegyet írunk le, csak közelítést kapunk.</span> A számológép is kerekít.</p><p class=\"note\" data-src=\"59\">Kérdezd meg: hányadik jegynél áll meg? (Sehol – ezt a 6. lépés bizonyítja.)</p>",
+   "html": "<p data-src=\"57\">Nagyíts rá a pontra! Minden nagyításnál egy újabb tizedesjegy derül ki, és a <span class=\"rt\">√<span class=\"rad\">2</span></span> mindig két szomszédos osztás közé esik: <span class=\"mx\">1,41<sup>2</sup> &lt; 2 &lt; 1,42<sup>2</sup></span>. <span class=\"key\">Akárhány jegyet írunk le, csak közelítést kapunk.</span> A számológép is kerekít.</p><p class=\"note\" data-src=\"59\">Kérdezd meg: hányadik jegynél áll meg? (Sehol – ezt a 6. lépés bizonyítja.)</p>",
    "line": 56,
    "words": 44
   },
   {
    "title": "Törtek: véges vagy szakaszos",
-   "html": "<p data-src=\"75\">Osszuk el az 1-et 7-tel! A maradék csak 0, 1, …, 6 lehet. Ha 0 jön, vége; ha nem, legkésőbb a hetedik maradék már ismétlődik – és vele a jegyek is. <span class=\"key\">Egy tört tizedes alakja véges vagy szakaszos.</span> Fordítva is igaz. Ha a <span class=\"rt\">√<span class=\"rad\">2</span></span> tört volna, a jegyei ismétlődnének.</p><p class=\"note\" data-src=\"77\">Visszafelé: <span class=\"mx\"><i>x</i> = 0,3636…</span> esetén <span class=\"mx\">100<i>x</i> − <i>x</i> = 36</span>, így <span class=\"mx\"><i>x</i> = <span class=\"frac\"><span class=\"fn\">36</span><span class=\"fs\">/</span><span class=\"fd\">99</span></span> = <span class=\"frac\"><span class=\"fn\">4</span><span class=\"fs\">/</span><span class=\"fd\">11</span></span></span>.</p>",
+   "html": "<p data-src=\"75\">Osszuk el az 1-et 7-tel! A maradék csak 0, 1, …, 6 lehet. Ha 0 jön, vége; ha nem, legkésőbb a hetedik maradék már ismétlődik – és vele a jegyek is. <span class=\"key\">Egy tört tizedes alakja véges vagy szakaszos.</span> Fordítva is igaz. Ha a <span class=\"rt\">√<span class=\"rad\">2</span></span> tört volna, a jegyei ismétlődnének.</p><p class=\"note\" data-src=\"77\">Visszafelé: <span class=\"mx\"><i>x</i> = 0,3636…</span> esetén <span class=\"mx\">100<i>x</i> − <i>x</i> = 36</span>, így <span class=\"mx\"><i>x</i> = <span class=\"frac\"><span class=\"fn\">36</span><span class=\"fs\">/</span><span class=\"fd\">99</span></span> = <span class=\"frac\"><span class=\"fn\">4</span><span class=\"fs\">/</span><span class=\"fd\">11</span></span></span>.</p>",
    "line": 74,
    "words": 53
   },
   {
    "title": "Vadásszunk törtet!",
-   "html": "<p data-src=\"96\">Keress törtet, amelynek a négyzete 2! <span class=\"mx\">(<i>p</i>/<i>q</i>)<sup>2</sup> = 2</span> azt jelenti: <span class=\"mx\"><i>p</i><sup>2</sup> = 2<i>q</i><sup>2</sup></span>. A legjobb párokra a különbség csak 1. <span class=\"key\">De sosem 0 – legalábbis eddig.</span> Ez csak <b>sejtés</b>: végtelen sok törtet nem nézhetünk végig.</p><p class=\"note\" data-src=\"98\">A <span class=\"mx\"><i>q</i><span class=\"rt\">√<span class=\"rad\">2</span></span></span> oldalú négyzet területe <span class=\"mx\">2<i>q</i><sup>2</sup></span>.</p>",
+   "html": "<p data-src=\"96\">Keress törtet, amelynek a négyzete 2! <span class=\"mx\">(<i>p</i>/<i>q</i>)<sup>2</sup> = 2</span> azt jelenti: <span class=\"mx\"><i>p</i><sup>2</sup> = 2<i>q</i><sup>2</sup></span>. A legjobb párokra a különbség csak 1. <span class=\"key\">De sosem 0 – legalábbis eddig.</span> Ez csak <b>sejtés</b>: végtelen sok törtet nem nézhetünk végig.</p><p class=\"note\" data-src=\"98\">A <span class=\"mx\"><i>q</i><span class=\"rt\">√<span class=\"rad\">2</span></span></span> oldalú négyzet területe <span class=\"mx\">2<i>q</i><sup>2</sup></span>.</p>",
    "line": 95,
    "words": 37
   },
   {
    "title": "Két négyzet, amely sosem egyforma",
-   "html": "<p data-src=\"119\">Tegyük fel, hogy <span class=\"mx\"><i>p</i><sup>2</sup> = 2<i>q</i><sup>2</sup></span> (a legkisebb ilyen egészekkel). Akkor a két <em>q</em> oldalú négyzet együtt akkora, mint a <em>p</em> oldalú. Toljuk be őket két sarokba! A kétszer fedett rész annyi, mint a két üres sarok: <span class=\"key\">kisebb egész megoldást kaptunk – ellentmondás.</span> A <span class=\"rt\">√<span class=\"rad\">2</span></span> tehát <b>irracionális</b>.</p><p class=\"note\" data-src=\"121\">A „Csökkentés” ugyanezt teszi a <span class=\"frac\"><span class=\"fn\">99</span><span class=\"fs\">/</span><span class=\"fd\">70</span></span> „majdnem-megoldással”.</p>",
+   "html": "<p data-src=\"119\">Tegyük fel, hogy <span class=\"mx\"><i>p</i><sup>2</sup> = 2<i>q</i><sup>2</sup></span> (a legkisebb ilyen egészekkel). Akkor a két <em>q</em> oldalú négyzet együtt akkora, mint a <em>p</em> oldalú. Toljuk be őket két sarokba! A kétszer fedett rész annyi, mint a két üres sarok: <span class=\"key\">kisebb egész megoldást kaptunk – ellentmondás.</span> A <span class=\"rt\">√<span class=\"rad\">2</span></span> tehát <b>irracionális</b>.</p><p class=\"note\" data-src=\"121\">A „Csökkentés” ugyanezt teszi a <span class=\"frac\"><span class=\"fn\">99</span><span class=\"fs\">/</span><span class=\"fd\">70</span></span> „majdnem-megoldással”.</p>",
    "line": 118,
    "words": 51
   },
@@ -54,13 +54,13 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "Az A4-es lap titka",
-   "html": "<p data-src=\"161\">Ha egy A4-es lapot félbehajtasz, A5-öt kapsz, és az <b>ugyanolyan alakú</b>. A hosszabb és a rövidebb oldal aránya legyen <em>r</em>; a fél lapé <span class=\"mx\">2/<i>r</i></span>. Ez csak akkor <em>r</em>, ha <span class=\"mx\"><i>r</i><sup>2</sup> = 2</span>. <span class=\"key\">Az A4 297 mm × 210 mm, és 297 : 210 = 99 : 70</span> – ismerős?</p><p class=\"note\" data-src=\"163\">Az A0 területe kb. 1 m²; minden hajtás felezi.</p>",
+   "html": "<p data-src=\"161\">Ha egy A4-es lapot félbehajtasz, A5-öt kapsz, és az <b>ugyanolyan alakú</b>. A hosszabb és a rövidebb oldal aránya legyen <em>r</em>; a fél lapé <span class=\"mx\">2/<i>r</i></span>. Ez csak akkor <em>r</em>, ha <span class=\"mx\"><i>r</i><sup>2</sup> = 2</span>. <span class=\"key\">Az A4 297 mm × 210 mm, és 297 : 210 = 99 : 70</span> – ismerős?</p><p class=\"note\" data-src=\"163\">Az A0 területe kb. 1 m²; minden hajtás felezi.</p>",
    "line": 160,
    "words": 52
   },
   {
    "title": "Összefoglaló",
-   "html": "<ul><li data-src=\"189\">Az egységnégyzet átlója <span class=\"mx\"><span class=\"rt\">√<span class=\"rad\">2</span></span></span>, mert <span class=\"mx\"><i>d</i><sup>2</sup> = 2</span>.</li><li data-src=\"190\">A <span class=\"rt\">√<span class=\"rad\">2</span></span> körzővel pontosan a számegyenesre vihető.</li><li data-src=\"191\">Tizedes alakja végtelen és nem szakaszos: csak közelítjük.</li><li data-src=\"192\">Egy tört tizedes alakja véges vagy szakaszos.</li><li data-src=\"193\">A <span class=\"rt\">√<span class=\"rad\">2</span></span> nem írható fel törtként – ezt bizonyítottuk.</li><li data-src=\"194\">Racionális + irracionális = valós számok: kitöltik az egyenest.</li></ul>",
+   "html": "<ul><li data-src=\"189\">Az egységnégyzet átlója <span class=\"mx\"><span class=\"rt\">√<span class=\"rad\">2</span></span></span>, mert <span class=\"mx\"><i>d</i><sup>2</sup> = 2</span>.</li><li data-src=\"190\">A <span class=\"rt\">√<span class=\"rad\">2</span></span> körzővel pontosan a számegyenesre vihető.</li><li data-src=\"191\">Tizedes alakja végtelen és nem szakaszos: csak közelítjük.</li><li data-src=\"192\">Egy tört tizedes alakja véges vagy szakaszos.</li><li data-src=\"193\">A <span class=\"rt\">√<span class=\"rad\">2</span></span> nem írható fel törtként – ezt bizonyítottuk.</li><li data-src=\"194\">Racionális + irracionális = valós számok: kitöltik az egyenest.</li></ul>",
    "line": 188,
    "words": 43
   }
@@ -253,7 +253,7 @@ window.LESSON_CONTENT = {
    "a": 99.0,
    "b": 70.0,
    "v": 1.4142857142857144,
-   "s": "99 : 70"
+   "s": "99 : 70"
   }
  },
  "src": {

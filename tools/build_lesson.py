@@ -29,7 +29,8 @@ Adattípusok (a spec "data" bejegyzésének "type" mezője; alap: "number"):
           Spec-kapcsolók: "int": true (egész), "sign": true (a „+3” előjele megmarad, s = "+3"),
           "dim": "hosszúság" | "terület" | "térfogat" | "tömeg" | "idő" | "szög" (rövid nevek: hossz)
           → a családból bármely egység írható; kimenet + "base" (alapegységben) és "bu" (m, m², l,
-          kg, s, °); a min/max ekkor az alapegységre vonatkozik.
+          kg, s, °); a min/max ekkor az alapegységre vonatkozik, az "int" viszont a MEGADOTT egységben
+          ellenőriz („5 cm” egész, „2,5 cm” nem).
   year    „Kr. e. 753”, „i. e. 753”, „Kr. u. 476”, „i. sz. 476”, „1241” (0. év nincs → hiba)
           → {"t": "year", "v": -753, "a": -752, "s": "Kr. e. 753"}
           v = előjeles történeti év (Kr. e. 753 = −753, 0 nincs); a = csillagászati év (Kr. e. 1 = 0,
@@ -48,7 +49,7 @@ Adattípusok (a spec "data" bejegyzésének "type" mezője; alap: "number"):
   ago     (mély idő) „3,8 milliárd éve”, „66 millió éve”, „7–6 millió éve” → {"t": "ago", "v": 3.8e9,
           ["lo", "hi"], "s"}; v = évek száma a jelen előtt; min/max években. „Kr. e.” itt hiba (→ year).
   ratio   „5474 : 1850”, „3 : 1”, „3 : 4 : 5” → {"t": "ratio", "a": 5474, "b": 1850, "v": a/b,
-          ["p": [3, 4, 5]], "s": "5474 : 1850"}
+          ["p": [3, 4, 5]], "s": "5474 : 1850"} (a kettőspont körül nem törő szóköz: nem törik sort)
   frac    „3/4”, „2 1/3”, „−5/8”, „7/4” → {"t": "frac", "n": 1, "d": 3, "w": 2, "neg": false,
           "v": 2.333…, "red": true, "s": "2 1/3"}; spec: "maxDen", "proper", "reduced" (6/8 → hiba).
   list    „2; 3; 5; 5; 5”, „−1,2; 0,9; 5,4 °C” (pontosvessző!) → {"t": "list", "v": [...], "u", "d", "s"};
@@ -61,6 +62,9 @@ Adattípusok (a spec "data" bejegyzésének "type" mezője; alap: "number"):
   expr    „x^2 − 4x + 3”, „2 + 3 · 4”, „3x + 4 = 19” → {"t": "expr", "s", "tok": [...], "tree": [...]}
           ellenőrzött kifejezésfa (spec "vars": ["x"] – alap; csak ezek a betűk). A fa: szám, "x",
           [op, a, b] – op: + − · : / ^ imp (2x) = < > ≤ ≥ ≠; [neg, a] [() a] [abs a] [√ a].
+          Tört-literál: egész/egész (utána nem ^) egyetlen levél, erősebben köt, mint a · : (1/3 · 3/4 →
+          [·, [/, 1, 3], [/, 3, 4]]; 2 : 1/4 → [:, 2, [/, 1, 4]]) – mint a MatExpr v1.1; tizedesnél
+          (1,5/3) és kitevőnél (1/2^3) a / közönséges osztás marad.
           A JS a fát eval nélkül értékeli ki (shared/matek/mtext.js: MatText.evalExpr, MatQ.evalExpr).
   formula „H₂O”, „H2O”, „SO4^2-”, „Ca(OH)₂” → {"t": "formula", "s": "H₂O", "atoms": {"H": 2, "O": 1},
           "charge": 0}; spec "atoms" / "charge" (ha megadja, egyeznie kell).
@@ -85,7 +89,10 @@ Jelölés a szövegben (panel, lépéscím, felirat) – a részletek a leckek/R
      (nem adatkulcs, mert van benne „;”), \\{ \\} \\/ \\^ \\_ \\` szó szerint.
   a `…` képletben: * → ·, - → −, <= >= != ~= → ≤ ≥ ≠ ≈, -> |-> => <=> → ↦ ⇒ ⇔, +- → ±,
      pi inf → π ∞, NN ZZ QQ RR → ℕ ℤ ℚ ℝ, √(…) / gyök(…), a latin betűk és a görög kisbetűk
-     dőltek (sin, lg…, a π és a görög nagybetűk – Δ, Σ, Ω – állók).
+     dőltek (sin, lg…, a π és a görög nagybetűk – Δ, Σ, Ω – állók). Mértékegység SZÁM UTÁN álló (ISO 80000):
+     `9,81 m/s^2`, `5 cm`, `3 * 10^8 m/s`, `20 °C`; egybetűs (m, s, g…) csak szóközzel (`5m` = 5 · m);
+     szám nélkül változó (`F = m * a`); "…" közti szöveg álló. A panelen a képlet szóközei nem törők
+     (csak relációjel után törhet), a `képlet:` sor is egyben marad.
   "math": true – 3/4 álló tört, 2 1/3 vegyes szám, √(…) a szövegben is; a `képlet:` sor egésze
      képlet, (a) / (b) emeletes tört; figyelmeztet: 3*4, 5 - 3, 3.14, 30', (3, 2), cm2.
   "chem": true – H2O, CO2, Ca(OH)2 → alsó index; ₂ ⁺ (Unicode) → <sub>/<sup>; -> → →.
@@ -448,6 +455,7 @@ def parse_number_item(s, n, P, k, want):
         text = text or (fmt_num(val, d) + unit_sep(u2) + u2)
         item["s"] = text
         chk = item["base"]
+        ichk = val                            # int: a megadott egységben („5 cm” egész), nem az alapegységben
     else:
         mult, mw, unit2 = (1, "", unit)
         if unit != wu:
@@ -463,8 +471,8 @@ def parse_number_item(s, n, P, k, want):
             item["s"] = extra["s"]
         if unit.startswith("/") and not mw:
             item["s"] = text
-        chk = item["v"]
-    if want.get("int") and abs(chk - round(chk)) > 1e-9:
+        chk = ichk = item["v"]
+    if want.get("int") and abs(ichk - round(ichk)) > 1e-9:
         P.err(n, f"„{k}” = {s}: egész szám kell.")
     if want.get("sign"):
         if raw_sign == "+" and val > 0:
@@ -510,7 +518,7 @@ def parse_ratio(s, line, P, k, want):
     item = {"t": "ratio", "a": vals[0], "b": vals[1], "v": vals[0] / vals[1]}
     if len(vals) > 2:
         item["p"] = vals
-    return item, " : ".join(fmt_num(v, len(p.partition(",")[2])) for v, p in zip(vals, parts)), False
+    return item, (NB + ":" + NB).join(fmt_num(v, len(p.partition(",")[2])) for v, p in zip(vals, parts)), False   # „105 : 100” nem törik
 
 
 def parse_frac(s, line, P, k, want):
@@ -848,7 +856,13 @@ def parse_expr_tree(src, vars_):
     def atom():
         t, v = peek()
         if t == "n":
-            eat(); return num(v)
+            eat()
+            # tört-literál: egész/egész (utána nem ^) → egyetlen levél, erősebben köt, mint a · : (1/3 · 3/4 →
+            # [·, [/, 1, 3], [/, 3, 4]]; 2 : 1/4 → [:, 2, [/, 1, 4]]) – mint a MatExpr v1.1 (matematika-5-6/04)
+            d, nx = (toks[i + 1] if i + 1 < len(toks) else None), (toks[i + 2] if i + 2 < len(toks) else None)
+            if peek()[1] == "/" and d and d[0] == "n" and "," not in v and "," not in d[1] and not (nx and nx[1] == "^"):
+                eat(); eat(); return ["/", num(v), num(d[1])]
+            return num(v)
         if t == "v":
             eat(); return v
         if v == "(":
@@ -954,7 +968,7 @@ def parse_expr(s, line, P, k, want, ctx):
     text = expr_str(tree)
     mxp = Mx(frac=True)
     return {"t": "expr", "tok": tok, "tree": tree,
-            "_html": '<span class="mx">' + mx_html(mxp.math(text)) + "</span>"}, text, False
+            "_html": '<span class="mx">' + nobreak(mx_html(mxp.math(text))) + "</span>"}, text, False
 
 
 def parse_datum(k, raw, n, want, P, ctx=None):
@@ -1062,6 +1076,15 @@ CHARGE_RE = re.compile(r"\^(\d*[+\-−])(?![\w(])")
 GREEK = re.compile("[Α-Ωα-ωϑϕϵ]")
 MATH_WORD = re.compile("[A-Za-zÀ-ÖØ-öø-ž]+")
 PRIMES = re.compile("[′″‴]*")  # a változó vesszője vele együtt dőlt: γ′, f″
+# Mértékegység a képletben (ISO 80000: álló betű). Csak SZÁM UTÁN álló egység számít egységnek – a betű különben
+# változó (m: tömeg, s: út, V: térfogat …). Egybetűs egység csak szóközzel: „5 m”, „2m” = 2 · m; többbetűs
+# szóköz nélkül is: „5cm”. Szám = számjegyre végződő szöveg, vagy hatvány (3 · 10^8 m/s). Az egység után
+# „/” vagy „·” és egy újabb egység folytatja (m/s, km/h, N·m), a kitevő is (m^2, m/s^2). °C, °F mindig álló.
+# Explicit jelölés: "…" a képletben – az idézőjelek közti szöveg álló marad ("cm", "max").
+# Szándékosan nincs benne: t (tonna – idő), a (ár – változó).
+UNITS = set("""nm µm mm cm dm m km mg g dkg kg s ms h perc l ml cl dl hl N kN J kJ MJ W kW MW Wh kWh Pa kPa hPa MPa
+  bar V mV kV A mA K Hz kHz MHz mol cal kcal ha lx dB""".split())
+UNIT_WORD = re.compile("[µμ]?[A-Za-z]+")
 
 
 def is_var(t):
@@ -1121,9 +1144,21 @@ class Mx:
     def math(self, s, big=False):
         return self.seq(s, math=True, big=big)
 
+    @staticmethod
+    def after_number(out):
+        """Számra végződik-e az eddigi kimenet (szöveg számjeggyel a végén, vagy szám^kitevő)?"""
+        k = len(out) - 1
+        if k >= 0 and isinstance(out[k], str):
+            if out[k].strip():
+                return bool(re.search(r"\d\s*$", out[k]))
+            k -= 1                                     # 10^8 után álló szóköz
+        return (k > 0 and out[k][0] == "sup" and all(isinstance(x, str) for x in out[k][1])
+                and isinstance(out[k - 1], str) and bool(re.search(r"\d$", out[k - 1])))
+
     def seq(self, s, math, big=False):
         out, i, n = [], 0, len(s)
         P = self.push
+        unit_end = -1                  # az utolsó mértékegység vége (a folytatáshoz: m/s, m^2)
         while i < n:
             c = s[i]
             prev = s[i - 1] if i else ""
@@ -1160,7 +1195,10 @@ class Mx:
                         inner.append(["i", tok])
                     else:
                         self.push(inner, tok)
-                    out.append(["sup", inner]); i = m.end(); continue
+                    out.append(["sup", inner])
+                    if i == unit_end:
+                        unit_end = m.end()
+                    i = m.end(); continue
             if c == "_" and i + 1 < n and (IS_LET.match(prev) or math and (prev.isdigit() or prev == ")")):
                 if s[i + 1] == "(":
                     j = match_close(s, i + 1)
@@ -1244,6 +1282,18 @@ class Mx:
                 if c == ")":
                     self.errors.append("páratlan zárójel a képletben: fölösleges „)”")
                     P(out, ")"); i += 1; continue
+                if c == '"':
+                    j = s.find('"', i + 1)
+                    if j > 0:
+                        P(out, s[i + 1:j]); i = unit_end = j + 1; continue
+                if c == "°" and s[i + 1:i + 2] in ("C", "F") and not (i + 2 < n and IS_WORD.match(s[i + 2])):
+                    P(out, s[i:i + 2]); i = unit_end = i + 2; continue
+                m = UNIT_WORD.match(s, i)
+                if m and m.group(0).replace("μ", "µ") in UNITS and not (m.end() < n and (IS_WORD.match(s[m.end()]) or s[m.end()] in "′″‴(")):
+                    w = m.group(0)
+                    cont = unit_end >= 0 and s[unit_end:i].strip() in ("/", "·", "*")
+                    if cont or self.after_number(out) and (len(w) > 1 or prev == " "):
+                        P(out, w.replace("μ", "µ")); i = unit_end = m.end(); continue
                 if GREEK.fullmatch(c):
                     if not is_var(c):
                         P(out, c); i += 1; continue
@@ -1284,8 +1334,21 @@ def mx_html(nodes, esc=True):
                 inner = '<span class="rp">(</span>' + inner + '<span class="rp">)</span>'
             out.append(f'<span class="rt">√<span class="rad">{inner}</span></span>')
         elif t == "mx":
-            out.append(f'<span class="mx">{mx_html(x[1], esc)}</span>')
+            out.append(f'<span class="mx">{nobreak(mx_html(x[1], esc))}</span>')
     return "".join(out)
+
+
+REL_BREAK = re.compile(r"(?<![=≤≥≠≈⇒⇔→↦])(?<!&lt;)(?<!&gt;) ")
+
+
+def nobreak(h):
+    """Képlet a panelen: a szóközök nem törő szóközzé válnak (a képlet egyben marad), kivéve a relációjel
+    (= < > ≤ ≥ ≠ ≈ ⇒ ⇔ → ↦) utánit – egy túl hosszú képlet ott törhet (mint a nyomdai szedésben).
+    Csak a HTML-tageken kívüli szöveget érinti."""
+    parts = re.split(r"(<[^>]+>)", h)
+    for i in range(0, len(parts), 2):
+        parts[i] = REL_BREAK.sub(NB, parts[i])
+    return "".join(parts)
 
 
 def vis_len(nodes):
@@ -1423,7 +1486,7 @@ def inline(text, line, P, data_fmt, ctx=None, fx=False):
         tree = mp.math(src, big)
         for e in mp.errors:
             P.err(line, e)
-        return put('<span class="mx">' + mx_html(tree) + "</span>")
+        return put('<span class="mx">' + nobreak(mx_html(tree)) + "</span>")
     if fx and math_:
         s = sub_mx(s, big=True)
     else:
@@ -1756,6 +1819,8 @@ def build(md_path, check_only=False, out_dir=None):
             if ul:
                 parts.append("<ul>" + "".join(ul) + "</ul>"); ul = []
             cls = {"note": ' class="note"', "fx": ' class="big-fx"'}.get(kind, "")
+            if kind == "fx":
+                h = nobreak(h)                 # a képlet: sor egyben marad (csak relációjel után törhet)
             parts.append(f'<p{cls} data-src="{n}">{h}</p>')
         if ul:
             parts.append("<ul>" + "".join(ul) + "</ul>")
@@ -1870,7 +1935,7 @@ def selftest():
         check("ago", (g("élet kezdete", "v"), g("élet kezdete", "s")), (3.8e9, "3,8\u00a0milliárd\u00a0éve"))
         check("ago tartomány", (g("emberfélék", "lo"), g("emberfélék", "hi"), g("emberfélék", "s")), (6e6, 7e6, "7–6\u00a0millió\u00a0éve"))
         check("ago becslés", (g("oxigén", "est"), g("oxigén", "s")), (True, "kb.\u00a02,4\u00a0milliárd\u00a0éve"))
-        check("ratio", (g("Mendel", "a"), g("Mendel", "b"), round(g("Mendel", "v"), 4), g("Mendel", "s")), (5474, 1850, 2.9589, "5474 : 1850"))
+        check("ratio", (g("Mendel", "a"), g("Mendel", "b"), round(g("Mendel", "v"), 4), g("Mendel", "s")), (5474, 1850, 2.9589, "5474\u00a0:\u00a01850"))
         check("ratio 3 tag", g("háromszög", "p"), [3, 4, 5])
         check("pulzus /perc", (g("pulzus", "v"), g("pulzus", "u"), g("pulzus", "s")), (70, "/perc", "70/perc"))
         check("tartomány /perc", (g("pulzus tartomány", "lo"), g("pulzus tartomány", "u"), g("pulzus tartomány", "s")), (60, "/perc", "60–100/perc"))
@@ -1956,9 +2021,20 @@ def selftest():
             (2, '<p class="big-fx" data-src="'), (2, '<span class="frac"><span class="fn">−<i>b</i> ± '),
             (3, '<span class="frac"><span class="fn"><i>x</i></span><span class="fs">/</span><span class="fd">2</span></span>'),
         ]
+        exp = [(i, nobreak(e) if i in (1, 2) and not e.startswith("<p") else e) for i, e in exp]     # a képlet szóközei nem törők (v2)
         for i, e in exp:
             if i >= len(hs) or e not in hs[i]:
                 fails.append(f"jeloles-mat {i + 1}. lépés: hiányzik „{e}”\n      {hs[i] if i < len(hs) else '—'}")
+        check("képlet: törés csak relációjel után", nobreak("<i>a</i> + 1 = 2 &lt; 3"),
+              "<i>a</i>\u00a0+\u00a01\u00a0= 2\u00a0&lt; 3")
+        Pq = Problems(T / "x.md")
+        check("dim + int a megadott egységben", parse_number_item("5 cm", 1, Pq, "k", {"dim": "hossz", "int": True})[0]["base"], 0.05)
+        parse_number_item("2,5 cm", 1, Pq, "k", {"dim": "hossz", "int": True})
+        check("dim + int: 2,5 cm hiba", len(Pq.errors), 1)
+        check("expr tört-literál", parse_expr_tree("1/3 · 3/4", ["x"])[0], ["·", ["/", 1, 3], ["/", 3, 4]])
+        check("expr tört-literál osztás után", parse_expr_tree("2 : 1/4", ["x"])[0], [":", 2, ["/", 1, 4]])
+        check("expr tizedes / marad osztás", parse_expr_tree("1,5/3 · 2", ["x"])[0], ["·", ["/", 1.5, 3], 2])
+        check("expr tört^ nem literál", parse_expr_tree("1/2^3", ["x"])[0], ["/", 1, ["^", 2, 3]])
         check("képletszakasz = 1 szó", st[1]["words"] if len(st) > 1 else None, 12)
         check("képlet: = 3 szó", st[2]["words"] if len(st) > 2 else None, 5)
         L = getattr(P, "content", {}).get("labels", {})

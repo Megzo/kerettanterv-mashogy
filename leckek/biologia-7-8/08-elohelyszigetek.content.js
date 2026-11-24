@@ -30,7 +30,7 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "Fajok és terület",
-   "html": "<p data-src=\"150\">Nagyobb területen több faj él. A <b>fajszám–terület összefüggés</b>: <span class=\"mx\"><i>S</i> = <i>c</i> · <i>A</i><sup><i>z</i></sup></span>. Ha z ≈ 0,2–0,35, akkor tízszer nagyobb terület kb. 1,6–2,2-szer annyi fajt tart el. <span class=\"key\">A kis terület a fajok nagy részét elveszíti.</span> Húzd a területet, és nézd a lépcsőt: minden tízszeres lépés ugyanannyiszor több faj.</p>",
+   "html": "<p data-src=\"150\">Nagyobb területen több faj él. A <b>fajszám–terület összefüggés</b>: <span class=\"mx\"><i>S</i> = <i>c</i> · <i>A</i><sup><i>z</i></sup></span>. Ha z ≈ 0,2–0,35, akkor tízszer nagyobb terület kb. 1,6–2,2-szer annyi fajt tart el. <span class=\"key\">A kis terület a fajok nagy részét elveszíti.</span> Húzd a területet, és nézd a lépcsőt: minden tízszeres lépés ugyanannyiszor több faj.</p>",
    "line": 149,
    "words": 45
   },

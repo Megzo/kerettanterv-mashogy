@@ -12,49 +12,49 @@ window.LESSON_CONTENT = {
  "steps": [
   {
    "title": "A függvénygép",
-   "html": "<p data-src=\"31\">A függvény egy gép: beteszel egy <em>x</em>-et, kijön egy szám, az <span class=\"mx\"><i>f</i>(<i>x</i>)</span>. Az <span class=\"mx\">(<i>x</i>; <i>f</i>(<i>x</i>))</span> párok pontként esnek a koordináta-rendszerbe, és sok pontból összeáll a <b>grafikon</b>. <span class=\"key\">Minden x-hez pontosan egy y tartozik.</span> A kör ezért nem függvénygrafikon: egy <em>x</em>-hez két <em>y</em>-t ad.</p><p class=\"note\" data-src=\"33\">Húzd a csúszkát: hány pontban metszi a függőleges egyenes a görbét?</p>",
+   "html": "<p data-src=\"31\">A függvény egy gép: beteszel egy <em>x</em>-et, kijön egy szám, az <span class=\"mx\"><i>f</i>(<i>x</i>)</span>. Az <span class=\"mx\">(<i>x</i>; <i>f</i>(<i>x</i>))</span> párok pontként esnek a koordináta-rendszerbe, és sok pontból összeáll a <b>grafikon</b>. <span class=\"key\">Minden x-hez pontosan egy y tartozik.</span> A kör ezért nem függvénygrafikon: egy <em>x</em>-hez két <em>y</em>-t ad.</p><p class=\"note\" data-src=\"33\">Húzd a csúszkát: hány pontban metszi a függőleges egyenes a görbét?</p>",
    "line": 30,
    "words": 52
   },
   {
    "title": "Mit árul el a grafikon?",
-   "html": "<p data-src=\"49\"><b>Értelmezési tartomány</b> (<span class=\"mx\"><i>D</i><sub><i>f</i></sub></span>): mely <em>x</em>-ekre van értelmezve. <b>Értékkészlet</b> (<span class=\"mx\"><i>R</i><sub><i>f</i></sub></span>): mely <em>y</em>-okat veszi fel – <span class=\"key\">nem az egész y tengely!</span> <b>Zérushely</b>: ahol <span class=\"mx\"><i>f</i>(<i>x</i>) = 0</span>, itt −1 és 3. <b>Minimum</b>: a legkisebb érték, −4. Hol csökken, hol nő?</p><p class=\"note\" data-src=\"51\">Húzd a pontot a görbén!</p>",
+   "html": "<p data-src=\"49\"><b>Értelmezési tartomány</b> (<span class=\"mx\"><i>D</i><sub><i>f</i></sub></span>): mely <em>x</em>-ekre van értelmezve. <b>Értékkészlet</b> (<span class=\"mx\"><i>R</i><sub><i>f</i></sub></span>): mely <em>y</em>-okat veszi fel – <span class=\"key\">nem az egész y tengely!</span> <b>Zérushely</b>: ahol <span class=\"mx\"><i>f</i>(<i>x</i>) = 0</span>, itt −1 és 3. <b>Minimum</b>: a legkisebb érték, −4. Hol csökken, hol nő?</p><p class=\"note\" data-src=\"51\">Húzd a pontot a görbén!</p>",
    "line": 48,
    "words": 39
   },
   {
    "title": "Az alapfüggvények",
-   "html": "<p data-src=\"76\">Ezekből az <b>elemi függvényekből</b> építkezünk. Nézd meg, hol vannak értelmezve! A <span class=\"mx\"><span class=\"rt\">√<span class=\"rad\"><i>x</i></span></span></span> csak <span class=\"mx\"><i>x</i> ≥ 0</span>-ra, az <span class=\"mx\">1/<i>x</i></span> az <span class=\"mx\"><i>x</i> = 0</span>-ban nincs értelmezve: a két ága <span class=\"key\">sosem ér össze</span>. Az <span class=\"mx\"><i>y</i> = 12/<i>x</i></span> <b>fordított arányosság</b>: a téglalapok területe mind <span class=\"mx\"><i>x</i> · <i>y</i> = 12</span>.</p>",
+   "html": "<p data-src=\"76\">Ezekből az <b>elemi függvényekből</b> építkezünk. Nézd meg, hol vannak értelmezve! A <span class=\"mx\"><span class=\"rt\">√<span class=\"rad\"><i>x</i></span></span></span> csak <span class=\"mx\"><i>x</i> ≥ 0</span>-ra, az <span class=\"mx\">1/<i>x</i></span> az <span class=\"mx\"><i>x</i> = 0</span>-ban nincs értelmezve: a két ága <span class=\"key\">sosem ér össze</span>. Az <span class=\"mx\"><i>y</i> = 12/<i>x</i></span> <b>fordított arányosság</b>: a téglalapok területe mind <span class=\"mx\"><i>x</i> · <i>y</i> = 12</span>.</p>",
    "line": 75,
    "words": 35
   },
   {
-   "title": "<span class=\"mx\"><i>f</i>(<i>x</i>) + <i>v</i></span>: fel és le",
-   "html": "<p data-src=\"95\">Adj minden függvényértékhez 3-at: <span class=\"mx\"><i>g</i>(<i>x</i>) = <i>f</i>(<i>x</i>) + 3</span>. Minden pont pontosan 3 egységgel <b>feljebb</b> kerül, a görbe alakja nem változik. <span class=\"key\">Pozitív v fel, negatív v le tolja.</span> Húzd a csúcsot, vagy próbáld ki más alapfüggvénnyel!</p>",
+   "title": "<span class=\"mx\"><i>f</i>(<i>x</i>) + <i>v</i></span>: fel és le",
+   "html": "<p data-src=\"95\">Adj minden függvényértékhez 3-at: <span class=\"mx\"><i>g</i>(<i>x</i>) = <i>f</i>(<i>x</i>) + 3</span>. Minden pont pontosan 3 egységgel <b>feljebb</b> kerül, a görbe alakja nem változik. <span class=\"key\">Pozitív v fel, negatív v le tolja.</span> Húzd a csúcsot, vagy próbáld ki más alapfüggvénnyel!</p>",
    "line": 94,
    "words": 32
   },
   {
-   "title": "<span class=\"mx\"><i>f</i>(<i>x</i> + <i>u</i>)</span>: miért balra?",
-   "html": "<p data-src=\"105\">A „+ 3” miatt sokan jobbra tolnák. Ha <span class=\"mx\"><i>f</i>(<i>x</i><sub>0</sub>) = <i>y</i><sub>0</sub></span>, akkor <span class=\"mx\"><i>g</i>(<i>x</i><sub>0</sub> − 3) = <i>f</i>(<i>x</i><sub>0</sub> − 3 + 3) = <i>y</i><sub>0</sub></span>. <span class=\"key\">Az f minden pontja 3-mal balra kerül:</span> a g ugyanazt az értéket 3-mal kisebb <em>x</em>-nél veszi fel. ∎</p>",
+   "title": "<span class=\"mx\"><i>f</i>(<i>x</i> + <i>u</i>)</span>: miért balra?",
+   "html": "<p data-src=\"105\">A „+ 3” miatt sokan jobbra tolnák. Ha <span class=\"mx\"><i>f</i>(<i>x</i><sub>0</sub>) = <i>y</i><sub>0</sub></span>, akkor <span class=\"mx\"><i>g</i>(<i>x</i><sub>0</sub> − 3) = <i>f</i>(<i>x</i><sub>0</sub> − 3 + 3) = <i>y</i><sub>0</sub></span>. <span class=\"key\">Az f minden pontja 3-mal balra kerül:</span> a g ugyanazt az értéket 3-mal kisebb <em>x</em>-nél veszi fel. ∎</p>",
    "line": 104,
    "words": 27
   },
   {
-   "title": "<span class=\"mx\"><i>a</i> · <i>f</i>(<i>x</i>)</span>: nyújtás és tükrözés",
-   "html": "<p data-src=\"116\">A <span class=\"mx\">2 · <i>f</i>(<i>x</i>)</span> minden <em>y</em>-értéket a kétszeresére növel, az <em>x</em> marad. A parabola ezért <b>keskenyebbnek</b> látszik – nem lett „kétszer szélesebb”, csak magasabb. Az <em>x</em> tengely pontjai helyben maradnak. <span class=\"key\">Negatív szorzó az x tengelyre tükröz.</span></p>",
+   "title": "<span class=\"mx\"><i>a</i> · <i>f</i>(<i>x</i>)</span>: nyújtás és tükrözés",
+   "html": "<p data-src=\"116\">A <span class=\"mx\">2 · <i>f</i>(<i>x</i>)</span> minden <em>y</em>-értéket a kétszeresére növel, az <em>x</em> marad. A parabola ezért <b>keskenyebbnek</b> látszik – nem lett „kétszer szélesebb”, csak magasabb. Az <em>x</em> tengely pontjai helyben maradnak. <span class=\"key\">Negatív szorzó az x tengelyre tükröz.</span></p>",
    "line": 115,
    "words": 33
   },
   {
    "title": "<span class=\"mx\">|<i>f</i>(<i>x</i>)|</span>: felhajtás",
-   "html": "<p data-src=\"127\">Az abszolútérték a negatív értékeket ellentettjükre váltja: a grafikon tengely alatti része <span class=\"key\">felhajlik, az x tengelyre tükrözve.</span> Az <span class=\"mx\">|<i>x</i><sup>2</sup> − 4|</span> zérushelyei maradnak <span class=\"mx\">±2</span>, és az <span class=\"mx\"><i>x</i> = 0</span>-ban <b>helyi maximuma</b> lett: 4. Vigyázz: az <span class=\"mx\"><i>f</i>(|<i>x</i>|)</span> egészen mást jelent!</p>",
+   "html": "<p data-src=\"127\">Az abszolútérték a negatív értékeket ellentettjükre váltja: a grafikon tengely alatti része <span class=\"key\">felhajlik, az x tengelyre tükrözve.</span> Az <span class=\"mx\">|<i>x</i><sup>2</sup> − 4|</span> zérushelyei maradnak <span class=\"mx\">±2</span>, és az <span class=\"mx\"><i>x</i> = 0</span>-ban <b>helyi maximuma</b> lett: 4. Vigyázz: az <span class=\"mx\"><i>f</i>(|<i>x</i>|)</span> egészen mást jelent!</p>",
    "line": 126,
    "words": 35
   },
   {
-   "title": "<span class=\"mx\"><i>f</i>(<i>x</i>) = <i>c</i></span> és a megfordítás",
-   "html": "<p data-src=\"140\">Melyik <em>x</em>-hez tartozik az 5? Az <span class=\"mx\"><i>x</i><sup>2</sup> = 5</span> egyenletnek két megoldása van: <span class=\"mx\"><i>x</i> = ±<span class=\"rt\">√<span class=\"rad\">5</span></span> ≈ ±</span>2,24. Két <em>x</em> ugyanahhoz az <em>y</em>-hoz: így az <span class=\"mx\"><i>x</i><sup>2</sup></span> <span class=\"key\">nem fordítható meg</span>. Az <span class=\"mx\"><i>x</i> ≥ 0</span> rész már <b>kölcsönösen egyértelmű</b>: tükrözzük az <span class=\"mx\"><i>y</i> = <i>x</i></span> egyenesre – ez a <span class=\"mx\"><span class=\"rt\">√<span class=\"rad\"><i>x</i></span></span></span>.</p>",
+   "title": "<span class=\"mx\"><i>f</i>(<i>x</i>) = <i>c</i></span> és a megfordítás",
+   "html": "<p data-src=\"140\">Melyik <em>x</em>-hez tartozik az 5? Az <span class=\"mx\"><i>x</i><sup>2</sup> = 5</span> egyenletnek két megoldása van: <span class=\"mx\"><i>x</i> = ±<span class=\"rt\">√<span class=\"rad\">5</span></span> ≈ ±</span>2,24. Két <em>x</em> ugyanahhoz az <em>y</em>-hoz: így az <span class=\"mx\"><i>x</i><sup>2</sup></span> <span class=\"key\">nem fordítható meg</span>. Az <span class=\"mx\"><i>x</i> ≥ 0</span> rész már <b>kölcsönösen egyértelmű</b>: tükrözzük az <span class=\"mx\"><i>y</i> = <i>x</i></span> egyenesre – ez a <span class=\"mx\"><span class=\"rt\">√<span class=\"rad\"><i>x</i></span></span></span>.</p>",
    "line": 139,
    "words": 36
   },

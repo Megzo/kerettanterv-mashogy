@@ -1979,6 +1979,7 @@ const PROJ = TortProj.lcc({ lon0: 21, lat0: 44, lat1: 41, lat2: 47 });
 let VIEWS = [];
 const CAM_DUR = [0, 2.6, 3.8, 1.8, 1.8];
 let camStep = -1;
+let camEnd = -1;   // a futó kamera-áttűnés vége (L.st) – a QA idle()-je ebből tudja, mikor nyugodt a kép
 const sT = new Array(9).fill(0);
 const TZ = [1.5e5, 3.5e5];          // e két nagyítás között úszik át a térkép a csatatér-vázlatba
 
@@ -2523,6 +2524,7 @@ const STEPS = [
 ];
 
 L = Lesson.create({
+  idle: (L) => L.st >= camEnd,   // QA: visszalépéskor a kamera a settle után ér a helyére (motor v2)
   content: window.LESSON_CONTENT,
   home: false,
   steps: STEPS,
@@ -2540,6 +2542,7 @@ L = Lesson.create({
       fit([20.415, 44.802, 20.487, 44.852], [30, 30, 1300, 1020]), fit([20.350, 44.815, 20.470, 44.905], [30, 120, 1300, 780]),
       fit([20.427, 44.802, 20.485, 44.835], [20, 170, 1080, 700])];
     CAM = TortMap.camera(PROJ);
+    { const go0 = CAM.go; CAM.go = (v, t, d) => { camEnd = t + (d || 0); go0(v, t, d); }; }
     P2 = TB.player([[0.4, 1440], [1.4, 1442.5], [2.6, 1444.1], [3.6, 1444.95], [4.6, 1448.85], [6.0, 1456.95]]);
     P4 = TB.player([[0.6, 0], [2.0, .3], [3.6, .62], [6.8, 1]]);
     const E = E5();

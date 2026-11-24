@@ -12,43 +12,43 @@ window.LESSON_CONTENT = {
  "steps": [
   {
    "title": "Hányféleképpen öltözhetsz fel?",
-   "html": "<p data-src=\"21\">Van 3 pólód, 2 nadrágod és 2 cipőd. Hány öltözéket állíthatsz össze? Sokan összeadnak: <span class=\"mx\">3 + 2 + 2 = 7</span>. Nézd a <b>fa-diagramot</b>: minden pólóhoz mindkét nadrág, minden ilyen párhoz mindkét cipő jár. <span class=\"key\">Egy öltözék = egy út a gyökértől egy levélig.</span> Számold meg a leveleket!</p><p class=\"note\" data-src=\"23\">Kattints egy levélre: melyik öltözék az?</p>",
+   "html": "<p data-src=\"21\">Van 3 pólód, 2 nadrágod és 2 cipőd. Hány öltözéket állíthatsz össze? Sokan összeadnak: <span class=\"mx\">3 + 2 + 2 = 7</span>. Nézd a <b>fa-diagramot</b>: minden pólóhoz mindkét nadrág, minden ilyen párhoz mindkét cipő jár. <span class=\"key\">Egy öltözék = egy út a gyökértől egy levélig.</span> Számold meg a leveleket!</p><p class=\"note\" data-src=\"23\">Kattints egy levélre: melyik öltözék az?</p>",
    "line": 20,
    "words": 46
   },
   {
    "title": "A szorzási elv",
-   "html": "<p data-src=\"48\">Minden póló után <b>ugyanaz</b> a <span class=\"mx\">2 · 2 = 4</span> ágú részfa nő ki – annyiszor, ahány póló van. <span class=\"key\">Az utak száma a lépésenkénti lehetőségek szorzata:</span> ez a <b>szorzási elv</b>. Ismétlődéssel is igaz: négyjegyű PIN-kód 10 000 van, régi rendszám (ABC-123) 17 576 000.</p>",
+   "html": "<p data-src=\"48\">Minden póló után <b>ugyanaz</b> a <span class=\"mx\">2 · 2 = 4</span> ágú részfa nő ki – annyiszor, ahány póló van. <span class=\"key\">Az utak száma a lépésenkénti lehetőségek szorzata:</span> ez a <b>szorzási elv</b>. Ismétlődéssel is igaz: négyjegyű PIN-kód 10 000 van, régi rendszám (ABC-123) 17 576 000.</p>",
    "line": 47,
    "words": 36
   },
   {
    "title": "Sorba rendezés: négy könyv a polcon",
-   "html": "<p data-src=\"74\">Négy könyvet teszel a polcra. Az első helyre 4 közül választhatsz, a másodikra már csak 3 maradt, aztán 2, végül 1. A fa szintenként ritkul: <span class=\"mx\">4 · 3 · 2 · 1 = 24</span> sorrend. <span class=\"key\">Ahány levél, annyi sorrend.</span> Ennek a szorzatnak neve is van: 4! („négy faktoriális”) – később tanulod.</p><p class=\"note\" data-src=\"76\">Húzd a csúszkát: a polcon sorra kerül mind a 24 sorrend.</p>",
+   "html": "<p data-src=\"74\">Négy könyvet teszel a polcra. Az első helyre 4 közül választhatsz, a másodikra már csak 3 maradt, aztán 2, végül 1. A fa szintenként ritkul: <span class=\"mx\">4 · 3 · 2 · 1 = 24</span> sorrend. <span class=\"key\">Ahány levél, annyi sorrend.</span> Ennek a szorzatnak neve is van: 4! („négy faktoriális”) – később tanulod.</p><p class=\"note\" data-src=\"76\">Húzd a csúszkát: a polcon sorra kerül mind a 24 sorrend.</p>",
    "line": 73,
    "words": 53
   },
   {
    "title": "Dobogó: számít a sorrend",
-   "html": "<p data-src=\"92\">8 versenyző közül hányféle lehet a dobogó? Az arany 8 versenyzőé lehet, az ezüst a maradék 7-é, a bronz 6-é: <span class=\"mx\">8 · 7 · 6 = 336</span>. Itt <span class=\"key\">számít a sorrend</span>: ha Anna arany és Bence ezüst, az más dobogó, mint fordítva. A nagy fát kötegekben rajzoljuk.</p><p class=\"note\" data-src=\"94\">Változtasd a versenyzők és a helyek számát!</p>",
+   "html": "<p data-src=\"92\">8 versenyző közül hányféle lehet a dobogó? Az arany 8 versenyzőé lehet, az ezüst a maradék 7-é, a bronz 6-é: <span class=\"mx\">8 · 7 · 6 = 336</span>. Itt <span class=\"key\">számít a sorrend</span>: ha Anna arany és Bence ezüst, az más dobogó, mint fordítva. A nagy fát kötegekben rajzoljuk.</p><p class=\"note\" data-src=\"94\">Változtasd a versenyzők és a helyek számát!</p>",
    "line": 91,
    "words": 48
   },
   {
    "title": "Bizottság: nem számít a sorrend",
-   "html": "<p data-src=\"114\">Most 3 tagú bizottságot választunk, rangok nélkül. Négy emberből (A, B, C, D) <span class=\"mx\">4 · 3 · 2 = 24</span> sorrendet kapunk, de az {A; B; C} csapat ebből 6-szor szerepel: ennyi a tagjainak sorrendje, <span class=\"mx\">3 · 2 · 1 = 6</span>. <span class=\"key\">Minden csapatot pontosan 6-szor számoltunk</span>, ezért osztunk: 8 főből <span class=\"mx\">336 : 6 = 56</span> bizottság.</p>",
+   "html": "<p data-src=\"114\">Most 3 tagú bizottságot választunk, rangok nélkül. Négy emberből (A, B, C, D) <span class=\"mx\">4 · 3 · 2 = 24</span> sorrendet kapunk, de az {A; B; C} csapat ebből 6-szor szerepel: ennyi a tagjainak sorrendje, <span class=\"mx\">3 · 2 · 1 = 6</span>. <span class=\"key\">Minden csapatot pontosan 6-szor számoltunk</span>, ezért osztunk: 8 főből <span class=\"mx\">336 : 6 = 56</span> bizottság.</p>",
    "line": 113,
    "words": 39
   },
   {
    "title": "Háromjegyű számok: esetszétválasztás",
-   "html": "<p data-src=\"136\">Hány háromjegyű szám áll három különböző jegyből? Tévhit: <span class=\"mx\">10 · 9 · 8 = 720</span> – de 0 nem állhat elöl! Elöl 9 jegy lehet, középen a maradék 9, a végén 8: <span class=\"mx\">9 · 9 · 8 = 648</span>. Páros számnál a végén álló 0 mindent megváltoztat: <span class=\"key\">két esetre bontunk</span>, és mivel kizárják egymást, <b>összeadjuk</b> őket.</p><p class=\"note\" data-src=\"138\">Mindhárom gombot próbáld ki!</p>",
+   "html": "<p data-src=\"136\">Hány háromjegyű szám áll három különböző jegyből? Tévhit: <span class=\"mx\">10 · 9 · 8 = 720</span> – de 0 nem állhat elöl! Elöl 9 jegy lehet, középen a maradék 9, a végén 8: <span class=\"mx\">9 · 9 · 8 = 648</span>. Páros számnál a végén álló 0 mindent megváltoztat: <span class=\"key\">két esetre bontunk</span>, és mivel kizárják egymást, <b>összeadjuk</b> őket.</p><p class=\"note\" data-src=\"138\">Mindhárom gombot próbáld ki!</p>",
    "line": 135,
    "words": 47
   },
   {
    "title": "Kézfogások gráfja",
-   "html": "<p data-src=\"169\">Hat ember mind kezet fog egymással. A <b>gráf</b> <b>csúcsai</b> az emberek, <b>élei</b> a kézfogások. Az első 5 új kezet ráz, a második 4-et… <span class=\"mx\">5 + 4 + 3 + 2 + 1 = 15</span>. Mindenki 5-ször fog kezet, de <span class=\"mx\">6 · 5 = 30</span>-ban <span class=\"key\">minden kézfogás kétszer szerepel</span>: <span class=\"mx\">30 : 2 = 15</span>.</p><p class=\"note\" data-src=\"171\">Bajnokságban a két irány két meccs (oda-vissza): 12 csapatnál 132.</p>",
+   "html": "<p data-src=\"169\">Hat ember mind kezet fog egymással. A <b>gráf</b> <b>csúcsai</b> az emberek, <b>élei</b> a kézfogások. Az első 5 új kezet ráz, a második 4-et… <span class=\"mx\">5 + 4 + 3 + 2 + 1 = 15</span>. Mindenki 5-ször fog kezet, de <span class=\"mx\">6 · 5 = 30</span>-ban <span class=\"key\">minden kézfogás kétszer szerepel</span>: <span class=\"mx\">30 : 2 = 15</span>.</p><p class=\"note\" data-src=\"171\">Bajnokságban a két irány két meccs (oda-vissza): 12 csapatnál 132.</p>",
    "line": 168,
    "words": 45
   },
@@ -60,7 +60,7 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "Összefoglaló",
-   "html": "<ul><li data-src=\"226\"><b>Szorzási elv:</b> egymás utáni döntéseknél a lehetőségek száma szorzódik.</li><li data-src=\"227\"><b>Számít a sorrend:</b> <span class=\"mx\">8 · 7 · 6 = 336</span> dobogó.</li><li data-src=\"228\"><b>Nem számít:</b> osztunk a sorrendek számával: <span class=\"mx\">336 : 6 = 56</span> bizottság.</li><li data-src=\"229\"><b>Esetszétválasztás:</b> a kizáró esetek összeadódnak.</li></ul><p data-src=\"231\"><span class=\"key\">A kiválasztások száma mind ott van a Pascal-háromszögben.</span> Ötöslottó (5 szám 90-ből): 43 949 268 szelvény.</p><p class=\"note\" data-src=\"233\">Kitekintés: minden szám a fölötte lévő kettő összege.</p>",
+   "html": "<ul><li data-src=\"226\"><b>Szorzási elv:</b> egymás utáni döntéseknél a lehetőségek száma szorzódik.</li><li data-src=\"227\"><b>Számít a sorrend:</b> <span class=\"mx\">8 · 7 · 6 = 336</span> dobogó.</li><li data-src=\"228\"><b>Nem számít:</b> osztunk a sorrendek számával: <span class=\"mx\">336 : 6 = 56</span> bizottság.</li><li data-src=\"229\"><b>Esetszétválasztás:</b> a kizáró esetek összeadódnak.</li></ul><p data-src=\"231\"><span class=\"key\">A kiválasztások száma mind ott van a Pascal-háromszögben.</span> Ötöslottó (5 szám 90-ből): 43 949 268 szelvény.</p><p class=\"note\" data-src=\"233\">Kitekintés: minden szám a fölötte lévő kettő összege.</p>",
    "line": 225,
    "words": 49
   }

@@ -340,7 +340,7 @@ window.LESSON_CONTENT = {
    "a": 2.0,
    "b": 1.0,
    "v": 2.0,
-   "s": "2 : 1"
+   "s": "2 : 1"
   },
   "vízgőz a levegőben": {
    "t": "range",

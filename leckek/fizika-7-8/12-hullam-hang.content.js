@@ -24,7 +24,7 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "v = λ · f",
-   "html": "<p data-src=\"75\">Egy másodperc alatt a kéz f rezgést végez, és mindegyik egy λ hosszú hullámot indít el. Ezért a hullám 1 s alatt λ · f utat tesz meg:</p><p class=\"big-fx\" data-src=\"77\">v = λ · f</p><p data-src=\"79\">Állítsd a frekvenciát! <span class=\"key\">Kétszer akkora f → fele akkora λ</span>, a sebesség nem változik: azt a kötél szabja meg.</p><p class=\"note\" data-src=\"81\">Kövesd a piros hullámhegyet!</p>",
+   "html": "<p data-src=\"75\">Egy másodperc alatt a kéz f rezgést végez, és mindegyik egy λ hosszú hullámot indít el. Ezért a hullám 1 s alatt λ · f utat tesz meg:</p><p class=\"big-fx\" data-src=\"77\">v = λ · f</p><p data-src=\"79\">Állítsd a frekvenciát! <span class=\"key\">Kétszer akkora f → fele akkora λ</span>, a sebesség nem változik: azt a kötél szabja meg.</p><p class=\"note\" data-src=\"81\">Kövesd a piros hullámhegyet!</p>",
    "line": 74,
    "words": 52
   },
@@ -48,7 +48,7 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "A húr állóhulláma",
-   "html": "<p data-src=\"161\">A húron a hullám a két rögzített vég között oda-vissza verődik. Csak az a rezgés marad meg, amelynél egész számú félhullám fér rá: ez az <b>állóhullám</b>.</p><p class=\"big-fx\" data-src=\"163\">f = n · v / (2 · L)</p><p data-src=\"165\"><span class=\"key\">Fele olyan hosszú húr → kétszer akkora frekvencia</span>: a 12. bundnál egy oktávval magasabb a hang.</p>",
+   "html": "<p data-src=\"161\">A húron a hullám a két rögzített vég között oda-vissza verődik. Csak az a rezgés marad meg, amelynél egész számú félhullám fér rá: ez az <b>állóhullám</b>.</p><p class=\"big-fx\" data-src=\"163\">f = n · v / (2 · L)</p><p data-src=\"165\"><span class=\"key\">Fele olyan hosszú húr → kétszer akkora frekvencia</span>: a 12. bundnál egy oktávval magasabb a hang.</p>",
    "line": 160,
    "words": 46
   },

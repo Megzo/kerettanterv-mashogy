@@ -12,25 +12,25 @@ window.LESSON_CONTENT = {
  "steps": [
   {
    "title": "Klasszikus valószínűség",
-   "html": "<p data-src=\"34\">Két kockával dobunk. Az <b>eseménytér</b> (Ω) mind a 36 lehetséges kimenetel: ezek az <b>elemi események</b>. Egy <b>esemény</b> ezek egy része, pl. „van hatos”. Ha az elemi események egyformán valószínűek: <span class=\"key\"><span class=\"mx\"><i>P</i>(<i>A</i>) =</span> kedvező esetek : összes eset.</span> Az <b>ellentett</b> esemény (<span class=\"mx\">Ā</span>) a többi eset: <span class=\"mx\"><i>P</i>(Ā) = 1 − <i>P</i>(<i>A</i>)</span>.</p>",
+   "html": "<p data-src=\"34\">Két kockával dobunk. Az <b>eseménytér</b> (Ω) mind a 36 lehetséges kimenetel: ezek az <b>elemi események</b>. Egy <b>esemény</b> ezek egy része, pl. „van hatos”. Ha az elemi események egyformán valószínűek: <span class=\"key\"><span class=\"mx\"><i>P</i>(<i>A</i>) =</span> kedvező esetek : összes eset.</span> Az <b>ellentett</b> esemény (<span class=\"mx\">Ā</span>) a többi eset: <span class=\"mx\"><i>P</i>(Ā) = 1 − <i>P</i>(<i>A</i>)</span>.</p>",
    "line": 33,
    "words": 42
   },
   {
    "title": "Tévhit: három eset, mindegyik <span class=\"frac\"><span class=\"fn\">1</span><span class=\"fs\">/</span><span class=\"fd\">3</span></span>?",
-   "html": "<p data-src=\"63\">Két érmét dobunk. A fejek száma 0, 1 vagy 2 – akkor mindegyik <span class=\"mx\"><span class=\"frac\"><span class=\"fn\">1</span><span class=\"fs\">/</span><span class=\"fd\">3</span></span></span>? <span class=\"key\">Nem: ez a három kimenetel nem egyformán valószínű.</span> Ha megkülönböztetjük az érméket, 4 egyforma esélyű elemi esemény van: FF, FI, IF, II. Az „1 fej” kettőt is lefed: <span class=\"mx\"><i>P</i> = <span class=\"frac\"><span class=\"fn\">2</span><span class=\"fs\">/</span><span class=\"fd\">4</span></span> = <span class=\"frac\"><span class=\"fn\">1</span><span class=\"fs\">/</span><span class=\"fd\">2</span></span></span>. Dobj, és figyeld az oszlopokat!</p>",
+   "html": "<p data-src=\"63\">Két érmét dobunk. A fejek száma 0, 1 vagy 2 – akkor mindegyik <span class=\"mx\"><span class=\"frac\"><span class=\"fn\">1</span><span class=\"fs\">/</span><span class=\"fd\">3</span></span></span>? <span class=\"key\">Nem: ez a három kimenetel nem egyformán valószínű.</span> Ha megkülönböztetjük az érméket, 4 egyforma esélyű elemi esemény van: FF, FI, IF, II. Az „1 fej” kettőt is lefed: <span class=\"mx\"><i>P</i> = <span class=\"frac\"><span class=\"fn\">2</span><span class=\"fs\">/</span><span class=\"fd\">4</span></span> = <span class=\"frac\"><span class=\"fn\">1</span><span class=\"fs\">/</span><span class=\"fd\">2</span></span></span>. Dobj, és figyeld az oszlopokat!</p>",
    "line": 62,
    "words": 47
   },
   {
    "title": "A nagy számok törvénye",
-   "html": "<p data-src=\"85\">Egy érmét dobunk sokszor. A fejek <b>relatív gyakorisága</b> egyre kisebb kilengéssel ingadozik <span class=\"mx\"><span class=\"frac\"><span class=\"fn\">1</span><span class=\"fs\">/</span><span class=\"fd\">2</span></span></span> körül: ez a <b>nagy számok törvénye</b>, és ezért mondjuk, hogy <span class=\"mx\"><i>P</i>(<i>fej</i>) = <span class=\"frac\"><span class=\"fn\">1</span><span class=\"fs\">/</span><span class=\"fd\">2</span></span></span>. De nézd a táblázatot: <span class=\"key\">a fejek száma és a várt n/2 közti eltérés nem tűnik el, sőt nőhet.</span> Az érme nem „egyenlít ki”, csak a sok dobás felhígítja az eltérést.</p>",
+   "html": "<p data-src=\"85\">Egy érmét dobunk sokszor. A fejek <b>relatív gyakorisága</b> egyre kisebb kilengéssel ingadozik <span class=\"mx\"><span class=\"frac\"><span class=\"fn\">1</span><span class=\"fs\">/</span><span class=\"fd\">2</span></span></span> körül: ez a <b>nagy számok törvénye</b>, és ezért mondjuk, hogy <span class=\"mx\"><i>P</i>(<i>fej</i>) = <span class=\"frac\"><span class=\"fn\">1</span><span class=\"fs\">/</span><span class=\"fd\">2</span></span></span>. De nézd a táblázatot: <span class=\"key\">a fejek száma és a várt n/2 közti eltérés nem tűnik el, sőt nőhet.</span> Az érme nem „egyenlít ki”, csak a sok dobás felhígítja az eltérést.</p>",
    "line": 84,
    "words": 55
   },
   {
    "title": "Végtelen sok eset: területek aránya",
-   "html": "<p data-src=\"101\">Anna és Bence 17 és 18 óra között, véletlen időpontban érkezik, és 15 percig vár a másikra. Minden érkezéspár egy pont a négyzetben. Az esetek száma végtelen, ezért a <b>területeket</b> osztjuk (<b>geometriai valószínűség</b>): <span class=\"key\">P = a sáv területe : a négyzet területe.</span> 15 percnél <span class=\"mx\">1 − (<span class=\"frac\"><span class=\"fn\">45</span><span class=\"fs\">/</span><span class=\"fd\">60</span></span>)<sup>2</sup> =</span> <span class=\"frac\"><span class=\"fn\">7</span><span class=\"fs\">/</span><span class=\"fd\">16</span></span> <span class=\"mx\">≈ 0,44</span>.</p>",
+   "html": "<p data-src=\"101\">Anna és Bence 17 és 18 óra között, véletlen időpontban érkezik, és 15 percig vár a másikra. Minden érkezéspár egy pont a négyzetben. Az esetek száma végtelen, ezért a <b>területeket</b> osztjuk (<b>geometriai valószínűség</b>): <span class=\"key\">P = a sáv területe : a négyzet területe.</span> 15 percnél <span class=\"mx\">1 − (<span class=\"frac\"><span class=\"fn\">45</span><span class=\"fs\">/</span><span class=\"fd\">60</span></span>)<sup>2</sup> =</span> <span class=\"frac\"><span class=\"fn\">7</span><span class=\"fs\">/</span><span class=\"fd\">16</span></span> <span class=\"mx\">≈ 0,44</span>.</p>",
    "line": 100,
    "words": 43
   },
@@ -48,7 +48,7 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "Születésnap-paradoxon",
-   "html": "<p data-src=\"167\">Hány ember közt valószínűbb, mint nem, hogy kettőnek egy napon van a születésnapja? Sokan 183-at tippelnek. <span class=\"key\">Már 23 embernél 50 % fölött van!</span> Mert nem a <em>te</em> napodat keressük: 23 embernek 253 párja van. Hogy <em>senkinek</em> ne egyezzen: <span class=\"mx\"><span class=\"frac\"><span class=\"fn\">365</span><span class=\"fs\">/</span><span class=\"fd\">365</span></span> · <span class=\"frac\"><span class=\"fn\">364</span><span class=\"fs\">/</span><span class=\"fd\">365</span></span> · ... · <span class=\"frac\"><span class=\"fn\">343</span><span class=\"fs\">/</span><span class=\"fd\">365</span></span> ≈ 0,49</span>.</p>",
+   "html": "<p data-src=\"167\">Hány ember közt valószínűbb, mint nem, hogy kettőnek egy napon van a születésnapja? Sokan 183-at tippelnek. <span class=\"key\">Már 23 embernél 50 % fölött van!</span> Mert nem a <em>te</em> napodat keressük: 23 embernek 253 párja van. Hogy <em>senkinek</em> ne egyezzen: <span class=\"mx\"><span class=\"frac\"><span class=\"fn\">365</span><span class=\"fs\">/</span><span class=\"fd\">365</span></span> · <span class=\"frac\"><span class=\"fn\">364</span><span class=\"fs\">/</span><span class=\"fd\">365</span></span> · ... · <span class=\"frac\"><span class=\"fn\">343</span><span class=\"fs\">/</span><span class=\"fd\">365</span></span> ≈ 0,49</span>.</p>",
    "line": 166,
    "words": 38
   },
@@ -60,7 +60,7 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "Összefoglalás",
-   "html": "<ul><li data-src=\"227\"><b>Klasszikus modell:</b> <span class=\"mx\"><i>P</i>(<i>A</i>) =</span> kedvező : összes – de csak egyformán valószínű elemi eseményekkel.</li><li data-src=\"228\"><b>Ellentett:</b> <span class=\"mx\"><i>P</i>(Ā) = 1 − <i>P</i>(<i>A</i>)</span>.</li><li data-src=\"229\"><b>Nagy számok törvénye:</b> a relatív gyakoriság beáll, az eltérés darabszámban nem tűnik el.</li><li data-src=\"230\"><b>Geometriai valószínűség:</b> terület : terület.</li><li data-src=\"231\"><span class=\"key\">A meglepő eredményt is számolással ellenőrizd</span>: Monty Hall, születésnap, rulett.</li></ul>",
+   "html": "<ul><li data-src=\"227\"><b>Klasszikus modell:</b> <span class=\"mx\"><i>P</i>(<i>A</i>) =</span> kedvező : összes – de csak egyformán valószínű elemi eseményekkel.</li><li data-src=\"228\"><b>Ellentett:</b> <span class=\"mx\"><i>P</i>(Ā) = 1 − <i>P</i>(<i>A</i>)</span>.</li><li data-src=\"229\"><b>Nagy számok törvénye:</b> a relatív gyakoriság beáll, az eltérés darabszámban nem tűnik el.</li><li data-src=\"230\"><b>Geometriai valószínűség:</b> terület : terület.</li><li data-src=\"231\"><span class=\"key\">A meglepő eredményt is számolással ellenőrizd</span>: Monty Hall, születésnap, rulett.</li></ul>",
    "line": 226,
    "words": 40
   }

@@ -42,7 +42,7 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "Mérd a reakcióidődet!",
-   "html": "<p data-src=\"175\">Kattints a képre, és várj! Amikor a mező <b>zöld</b> lesz, kattints újra, amilyen gyorsan csak tudsz. Ez a <b>reakcióidő</b>: szem → agy → döntés → kéz. Általában <span class=\"key\">kb. 0,2–0,25 s</span>, jóval több, mint a reflexé. Egy leeső vonalzó ennyi idő alatt <span class=\"mx\"><i>d</i> = <span class=\"frac\"><span class=\"fn\">1</span><span class=\"fs\">/</span><span class=\"fd\">2</span></span> · <i>g</i> · <i>t</i><sup>2</sup></span> utat tesz meg.</p><p class=\"note\" data-src=\"177\">Mérjetek többen! A gép és az egér is késik néhány tíz ms-ot.</p>",
+   "html": "<p data-src=\"175\">Kattints a képre, és várj! Amikor a mező <b>zöld</b> lesz, kattints újra, amilyen gyorsan csak tudsz. Ez a <b>reakcióidő</b>: szem → agy → döntés → kéz. Általában <span class=\"key\">kb. 0,2–0,25 s</span>, jóval több, mint a reflexé. Egy leeső vonalzó ennyi idő alatt <span class=\"mx\"><i>d</i> = <span class=\"frac\"><span class=\"fn\">1</span><span class=\"fs\">/</span><span class=\"fd\">2</span></span> · <i>g</i> · <i>t</i><sup>2</sup></span> utat tesz meg.</p><p class=\"note\" data-src=\"177\">Mérjetek többen! A gép és az egér is késik néhány tíz ms-ot.</p>",
    "line": 174,
    "words": 53
   },

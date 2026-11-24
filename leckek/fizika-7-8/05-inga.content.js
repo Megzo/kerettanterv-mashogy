@@ -18,7 +18,7 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "Periódusidő, rezgésszám, amplitúdó",
-   "html": "<p data-src=\"49\">Az <b>amplitúdó</b> a legnagyobb kitérés. A <b>periódusidő</b> (T) egy teljes lengés ideje: oda és vissza. A <b>rezgésszám</b> (f) megmutatja, hány lengés történik 1 másodperc alatt.</p><p class=\"big-fx\" data-src=\"51\">f = 1 / T</p><p data-src=\"53\">Az egyenletesen haladó papírcsíkra az inga <span class=\"key\">kirajzolja a saját mozgását</span>.</p><p class=\"note\" data-src=\"55\">A rezgésszám mértékegysége a hertz: 1 Hz = 1 lengés másodpercenként.</p>",
+   "html": "<p data-src=\"49\">Az <b>amplitúdó</b> a legnagyobb kitérés. A <b>periódusidő</b> (T) egy teljes lengés ideje: oda és vissza. A <b>rezgésszám</b> (f) megmutatja, hány lengés történik 1 másodperc alatt.</p><p class=\"big-fx\" data-src=\"51\">f = 1 / T</p><p data-src=\"53\">Az egyenletesen haladó papírcsíkra az inga <span class=\"key\">kirajzolja a saját mozgását</span>.</p><p class=\"note\" data-src=\"55\">A rezgésszám mértékegysége a hertz: 1 Hz = 1 lengés másodpercenként.</p>",
    "line": 48,
    "words": 48
   },
@@ -42,7 +42,7 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "Hosszabb kötél",
-   "html": "<p data-src=\"126\">A bal oldali inga 0,25 m hosszú. Állítsd be a jobb oldalit! <span class=\"key\">Négyszer hosszabb inga kétszer annyi idő alatt</span> leng egyet.</p><p class=\"big-fx\" data-src=\"128\">T ≈ 2π · √(l / g)</p><p data-src=\"130\">Itt l az inga hossza: a felfüggesztéstől a test közepéig.</p><p class=\"note\" data-src=\"132\">Ha a hintán felállsz, a tested közepe feljebb kerül: rövidebb lesz az inga, gyorsabb a lengés.</p>",
+   "html": "<p data-src=\"126\">A bal oldali inga 0,25 m hosszú. Állítsd be a jobb oldalit! <span class=\"key\">Négyszer hosszabb inga kétszer annyi idő alatt</span> leng egyet.</p><p class=\"big-fx\" data-src=\"128\">T ≈ 2π · √(l / g)</p><p data-src=\"130\">Itt l az inga hossza: a felfüggesztéstől a test közepéig.</p><p class=\"note\" data-src=\"132\">Ha a hintán felállsz, a tested közepe feljebb kerül: rövidebb lesz az inga, gyorsabb a lengés.</p>",
    "line": 125,
    "words": 50
   },

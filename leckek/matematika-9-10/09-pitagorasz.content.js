@@ -24,7 +24,7 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "Négy háromszög két keretben (bizonyítás)",
-   "html": "<p data-src=\"53\">Két <span class=\"mx\"><i>a</i> + <i>b</i></span> oldalú keretbe 4-4 egybevágó derékszögű háromszöget teszünk. Balra a maradék négyzet, mert <span class=\"mx\"><i>α</i> + <i>β</i> = 90°</span>. Jobbra a háromszögek csak eltolódnak: a maradék <span class=\"mx\"><i>a</i><sup>2</sup></span> és <span class=\"mx\"><i>b</i><sup>2</sup></span>. Ugyanannyit vettünk el: <span class=\"key\"><span class=\"mx\"><i>a</i><sup>2</sup> + <i>b</i><sup>2</sup> = <i>c</i><sup>2</sup></span>, minden derékszögű háromszögre.</span></p>",
+   "html": "<p data-src=\"53\">Két <span class=\"mx\"><i>a</i> + <i>b</i></span> oldalú keretbe 4-4 egybevágó derékszögű háromszöget teszünk. Balra a maradék négyzet, mert <span class=\"mx\"><i>α</i> + <i>β</i> = 90°</span>. Jobbra a háromszögek csak eltolódnak: a maradék <span class=\"mx\"><i>a</i><sup>2</sup></span> és <span class=\"mx\"><i>b</i><sup>2</sup></span>. Ugyanannyit vettünk el: <span class=\"key\"><span class=\"mx\"><i>a</i><sup>2</sup> + <i>b</i><sup>2</sup> = <i>c</i><sup>2</sup></span>, minden derékszögű háromszögre.</span></p>",
    "line": 52,
    "words": 32
   },
@@ -36,13 +36,13 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "Ha nem derékszög?",
-   "html": "<p data-src=\"89\">Állítsd a γ szöget! Az <span class=\"mx\"><i>a</i></span> és a <span class=\"mx\"><i>b</i></span> oldal marad, a <span class=\"mx\"><i>c</i></span> változik. Hegyesszögnél <span class=\"mx\"><i>c</i><sup>2</sup> &lt; <i>a</i><sup>2</sup> + <i>b</i><sup>2</sup></span> (γ = 60°: <span class=\"mx\"><i>c</i><sup>2</sup></span> = 13), tompaszögnél <span class=\"mx\"><i>c</i><sup>2</sup> &gt; <i>a</i><sup>2</sup> + <i>b</i><sup>2</sup></span> (γ = 120°: <span class=\"mx\"><i>c</i><sup>2</sup></span> = 37). <span class=\"key\">Egyenlőség csak <span class=\"mx\"><i>γ</i> = 90°</span>-nál van.</span> A mérleg mutatja, melyik oldal nagyobb. Ezt itt csak mérjük.</p>",
+   "html": "<p data-src=\"89\">Állítsd a γ szöget! Az <span class=\"mx\"><i>a</i></span> és a <span class=\"mx\"><i>b</i></span> oldal marad, a <span class=\"mx\"><i>c</i></span> változik. Hegyesszögnél <span class=\"mx\"><i>c</i><sup>2</sup> &lt; <i>a</i><sup>2</sup> + <i>b</i><sup>2</sup></span> (γ = 60°: <span class=\"mx\"><i>c</i><sup>2</sup></span> = 13), tompaszögnél <span class=\"mx\"><i>c</i><sup>2</sup> &gt; <i>a</i><sup>2</sup> + <i>b</i><sup>2</sup></span> (γ = 120°: <span class=\"mx\"><i>c</i><sup>2</sup></span> = 37). <span class=\"key\">Egyenlőség csak <span class=\"mx\"><i>γ</i> = 90°</span>-nál van.</span> A mérleg mutatja, melyik oldal nagyobb. Ezt itt csak mérjük.</p>",
    "line": 88,
    "words": 40
   },
   {
    "title": "A megfordítás",
-   "html": "<p data-src=\"110\">Fordítva is igaz: ha <span class=\"mx\"><i>a</i><sup>2</sup> + <i>b</i><sup>2</sup> = <i>c</i><sup>2</sup></span>, a háromszög derékszögű. Miért? Rajzolunk egy derékszögű segédháromszöget <span class=\"mx\"><i>a</i></span> és <span class=\"mx\"><i>b</i></span> befogóval. Átfogójára <span class=\"mx\"><i>c′</i><sup>2</sup> = <i>a</i><sup>2</sup> + <i>b</i><sup>2</sup> = <i>c</i><sup>2</sup></span>, így <span class=\"mx\"><i>c′</i> = <i>c</i></span>. A két háromszög oldalai páronként egyenlők, tehát <b>egybevágók</b>: <span class=\"key\">a γ is 90°.</span> Állítsd a <span class=\"mx\"><i>c</i></span>-t!</p><p class=\"note\" data-src=\"112\">Kőművesfogás: 60 cm és 80 cm mellé 100 cm-es átló – akkor derékszögű a sarok.</p>",
+   "html": "<p data-src=\"110\">Fordítva is igaz: ha <span class=\"mx\"><i>a</i><sup>2</sup> + <i>b</i><sup>2</sup> = <i>c</i><sup>2</sup></span>, a háromszög derékszögű. Miért? Rajzolunk egy derékszögű segédháromszöget <span class=\"mx\"><i>a</i></span> és <span class=\"mx\"><i>b</i></span> befogóval. Átfogójára <span class=\"mx\"><i>c′</i><sup>2</sup> = <i>a</i><sup>2</sup> + <i>b</i><sup>2</sup> = <i>c</i><sup>2</sup></span>, így <span class=\"mx\"><i>c′</i> = <i>c</i></span>. A két háromszög oldalai páronként egyenlők, tehát <b>egybevágók</b>: <span class=\"key\">a γ is 90°.</span> Állítsd a <span class=\"mx\"><i>c</i></span>-t!</p><p class=\"note\" data-src=\"112\">Kőművesfogás: 60 cm és 80 cm mellé 100 cm-es átló – akkor derékszögű a sarok.</p>",
    "line": 109,
    "words": 50
   },
@@ -54,13 +54,13 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "Mekkora az 55 colos tévé?",
-   "html": "<p data-src=\"157\">A tévé méretét az <b>átlójával</b> adják meg: 1 col = 2,54 cm. Itt az átló 55 col = 139,7 cm. A 16 : 9-es képnél a szélesség <span class=\"mx\">16<i>x</i></span>, a magasság <span class=\"mx\">9<i>x</i></span>, és Pitagorasz szerint <span class=\"mx\">(16<i>x</i>)<sup>2</sup> + (9<i>x</i>)<sup>2</sup> = <i>d</i><sup>2</sup></span>, vagyis <span class=\"mx\"><i>x</i> = <i>d</i> / <span class=\"rt\">√<span class=\"rad\"><span class=\"rp\">(</span>337<span class=\"rp\">)</span></span></span></span>. <span class=\"key\">Szélesség ≈ 121,8 cm, magasság ≈ 68,5 cm.</span> Húzd a csúszkát!</p><p class=\"note\" data-src=\"159\">Ugyanakkora átlónál a régi 4 : 3-as kép területe nagyobb, mint a 16 : 9-esé.</p>",
+   "html": "<p data-src=\"157\">A tévé méretét az <b>átlójával</b> adják meg: 1 col = 2,54 cm. Itt az átló 55 col = 139,7 cm. A 16 : 9-es képnél a szélesség <span class=\"mx\">16<i>x</i></span>, a magasság <span class=\"mx\">9<i>x</i></span>, és Pitagorasz szerint <span class=\"mx\">(16<i>x</i>)<sup>2</sup> + (9<i>x</i>)<sup>2</sup> = <i>d</i><sup>2</sup></span>, vagyis <span class=\"mx\"><i>x</i> = <i>d</i> / <span class=\"rt\">√<span class=\"rad\"><span class=\"rp\">(</span>337<span class=\"rp\">)</span></span></span></span>. <span class=\"key\">Szélesség ≈ 121,8 cm, magasság ≈ 68,5 cm.</span> Húzd a csúszkát!</p><p class=\"note\" data-src=\"159\">Ugyanakkora átlónál a régi 4 : 3-as kép területe nagyobb, mint a 16 : 9-esé.</p>",
    "line": 156,
    "words": 51
   },
   {
    "title": "Összefoglaló",
-   "html": "<ul><li data-src=\"184\">derékszögű háromszögben: <span class=\"mx\"><i>a</i><sup>2</sup> + <i>b</i><sup>2</sup> = <i>c</i><sup>2</sup></span>, ahol <span class=\"mx\"><i>c</i></span> az átfogó</li><li data-src=\"185\">bizonyítás: átdarabolás – a mérés nem bizonyít</li><li data-src=\"186\">megfordítás: ha <span class=\"mx\"><i>a</i><sup>2</sup> + <i>b</i><sup>2</sup> = <i>c</i><sup>2</sup></span>, a háromszög derékszögű</li><li data-src=\"187\">hegyesszögnél <span class=\"mx\"><i>c</i><sup>2</sup></span> kisebb, tompaszögnél nagyobb</li></ul><p data-src=\"189\"><span class=\"key\">Egy oldal ismeretlen? Pitagorasz kiszámolja.</span></p>",
+   "html": "<ul><li data-src=\"184\">derékszögű háromszögben: <span class=\"mx\"><i>a</i><sup>2</sup> + <i>b</i><sup>2</sup> = <i>c</i><sup>2</sup></span>, ahol <span class=\"mx\"><i>c</i></span> az átfogó</li><li data-src=\"185\">bizonyítás: átdarabolás – a mérés nem bizonyít</li><li data-src=\"186\">megfordítás: ha <span class=\"mx\"><i>a</i><sup>2</sup> + <i>b</i><sup>2</sup> = <i>c</i><sup>2</sup></span>, a háromszög derékszögű</li><li data-src=\"187\">hegyesszögnél <span class=\"mx\"><i>c</i><sup>2</sup></span> kisebb, tompaszögnél nagyobb</li></ul><p data-src=\"189\"><span class=\"key\">Egy oldal ismeretlen? Pitagorasz kiszámolja.</span></p>",
    "line": 183,
    "words": 29
   }
@@ -254,14 +254,14 @@ window.LESSON_CONTENT = {
    "a": 16.0,
    "b": 9.0,
    "v": 1.7777777777777777,
-   "s": "16 : 9"
+   "s": "16 : 9"
   },
   "régi képarány": {
    "t": "ratio",
    "a": 4.0,
    "b": 3.0,
    "v": 1.3333333333333333,
-   "s": "4 : 3"
+   "s": "4 : 3"
   },
   "tévé szélessége": {
    "v": 121.8,

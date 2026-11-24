@@ -12,7 +12,7 @@ window.LESSON_CONTENT = {
  "steps": [
   {
    "title": "Sütik téglalapban",
-   "html": "<p data-src=\"28\">Van 12 sütid. Sorokba rakod őket, hézag nélkül, <b>téglalap</b> alakban. <span class=\"key\">Tippelj előbb!</span> Hányféle téglalap jön ki? A téglalap oldalai a szám <b>osztói</b>: <span class=\"mx\">3 · 4 = 12</span>. Az elforgatott téglalap ugyanaz.</p><p class=\"note\" data-src=\"30\">Húzd a csúszkát! Melyik számból jön ki csak egy sor?</p>",
+   "html": "<p data-src=\"28\">Van 12 sütid. Sorokba rakod őket, hézag nélkül, <b>téglalap</b> alakban. <span class=\"key\">Tippelj előbb!</span> Hányféle téglalap jön ki? A téglalap oldalai a szám <b>osztói</b>: <span class=\"mx\">3 · 4 = 12</span>. Az elforgatott téglalap ugyanaz.</p><p class=\"note\" data-src=\"30\">Húzd a csúszkát! Melyik számból jön ki csak egy sor?</p>",
    "line": 27,
    "words": 37
   },
@@ -24,7 +24,7 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "Prímtényezős felbontás",
-   "html": "<p data-src=\"75\">Bontsd a számot két szám szorzatára, és a darabokat is, amíg csak prímek maradnak! Kezdheted bárhogy, például <span class=\"mx\">36 · 10</span> vagy <span class=\"mx\">8 · 45</span>. <span class=\"key\">A végén mindig ugyanazok a prímek jönnek ki.</span></p><p class=\"big-fx\" data-src=\"77\"><span class=\"mx\">360 = 2<sup>3</sup> · 3<sup>2</sup> · 5</span></p><p class=\"note\" data-src=\"79\">Próbálj másik fát és másik számot!</p>",
+   "html": "<p data-src=\"75\">Bontsd a számot két szám szorzatára, és a darabokat is, amíg csak prímek maradnak! Kezdheted bárhogy, például <span class=\"mx\">36 · 10</span> vagy <span class=\"mx\">8 · 45</span>. <span class=\"key\">A végén mindig ugyanazok a prímek jönnek ki.</span></p><p class=\"big-fx\" data-src=\"77\"><span class=\"mx\">360 = 2<sup>3</sup> · 3<sup>2</sup> · 5</span></p><p class=\"note\" data-src=\"79\">Próbálj másik fát és másik számot!</p>",
    "line": 74,
    "words": 37
   },
@@ -36,7 +36,7 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "Elég ránézni?",
-   "html": "<p data-src=\"119\">A tízes rúd, a százas lap és az ezres kocka osztható 2-vel, 5-tel, 10-zel: <span class=\"key\">csak az utolsó jegy dönt.</span> A 100 osztható 4-gyel: az utolsó két jegy dönt. 9-nél minden elemből 1 marad (<span class=\"mx\">10 = 9 + 1</span>): a <b>jegyek összege</b> dönt.</p><p class=\"note\" data-src=\"121\">6-tal osztható, ami 2-vel és 3-mal is.</p>",
+   "html": "<p data-src=\"119\">A tízes rúd, a százas lap és az ezres kocka osztható 2-vel, 5-tel, 10-zel: <span class=\"key\">csak az utolsó jegy dönt.</span> A 100 osztható 4-gyel: az utolsó két jegy dönt. 9-nél minden elemből 1 marad (<span class=\"mx\">10 = 9 + 1</span>): a <b>jegyek összege</b> dönt.</p><p class=\"note\" data-src=\"121\">6-tal osztható, ami 2-vel és 3-mal is.</p>",
    "line": 118,
    "words": 45
   },

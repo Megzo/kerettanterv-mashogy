@@ -30,37 +30,37 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "Ellentett és abszolút érték",
-   "html": "<p data-src=\"99\">Az <b>ellentett</b> a 0-ra tükrözött szám: −7 ellentettje 7, és <span class=\"mx\">−(−3) = 3</span>. Az <b>abszolút érték</b> a 0-tól mért távolság: <span class=\"mx\">|−7| = 7</span>. Nem csak „elhagyjuk a mínuszt”: <span class=\"key\">a távolság sosem negatív.</span> Húzd a pontot!</p>",
+   "html": "<p data-src=\"99\">Az <b>ellentett</b> a 0-ra tükrözött szám: −7 ellentettje 7, és <span class=\"mx\">−(−3) = 3</span>. Az <b>abszolút érték</b> a 0-tól mért távolság: <span class=\"mx\">|−7| = 7</span>. Nem csak „elhagyjuk a mínuszt”: <span class=\"key\">a távolság sosem negatív.</span> Húzd a pontot!</p>",
    "line": 98,
    "words": 31
   },
   {
    "title": "Összeadás: lépegetés",
-   "html": "<p data-src=\"113\">Az összeadás <b>lépegetés</b>. Pozitív számot adsz hozzá: a kisautó jobbra megy. Negatívat: megfordul, és balra megy. <span class=\"mx\">−3 + (−4) = −7</span>: <span class=\"key\">két negatív szám összege negatív</span>. A korongoknál egy piros és egy kékeszöld együtt 0.</p>",
+   "html": "<p data-src=\"113\">Az összeadás <b>lépegetés</b>. Pozitív számot adsz hozzá: a kisautó jobbra megy. Negatívat: megfordul, és balra megy. <span class=\"mx\">−3 + (−4) = −7</span>: <span class=\"key\">két negatív szám összege negatív</span>. A korongoknál egy piros és egy kékeszöld együtt 0.</p>",
    "line": 112,
    "words": 31
   },
   {
    "title": "Kivonás: elengedett adósság",
-   "html": "<p data-src=\"130\">Mennyi <span class=\"mx\">−3 − (−5)</span>? 3 Ft adósságod van, és <span class=\"key\">a bank elenged 5 Ft adósságot.</span> Vegyél el 5 kékeszöld korongot! Csak 3 van, ezért tegyél be 2 nulla-párt. Marad 2 piros: <span class=\"mx\">−3 − (−5) = 2</span>. Kivonásnál a kisautó tolat.</p>",
+   "html": "<p data-src=\"130\">Mennyi <span class=\"mx\">−3 − (−5)</span>? 3 Ft adósságod van, és <span class=\"key\">a bank elenged 5 Ft adósságot.</span> Vegyél el 5 kékeszöld korongot! Csak 3 van, ezért tegyél be 2 nulla-párt. Marad 2 piros: <span class=\"mx\">−3 − (−5) = 2</span>. Kivonásnál a kisautó tolat.</p>",
    "line": 129,
    "words": 34
   },
   {
    "title": "Mekkora a különbség?",
-   "html": "<p data-src=\"145\">Mennyivel melegebb a melegrekord a hidegrekordnál? A 0 °C-ig 35 fok, onnan még 41,9: <span class=\"mx\">41,9 − (−35) = 41,9 + 35</span>. <span class=\"key\">Negatív számot kivonni ugyanaz, mint az ellentettjét hozzáadni.</span> A Kékes 1444 m magasabban van a Holt-tenger vízszintjénél. Húzd a csúszkákat!</p>",
+   "html": "<p data-src=\"145\">Mennyivel melegebb a melegrekord a hidegrekordnál? A 0 °C-ig 35 fok, onnan még 41,9: <span class=\"mx\">41,9 − (−35) = 41,9 + 35</span>. <span class=\"key\">Negatív számot kivonni ugyanaz, mint az ellentettjét hozzáadni.</span> A Kékes 1444 m magasabban van a Holt-tenger vízszintjénél. Húzd a csúszkákat!</p>",
    "line": 144,
    "words": 35
   },
   {
    "title": "Szorzás: folytasd a mintát!",
-   "html": "<p data-src=\"161\">Az első tényező mindig 1-gyel csökken, a szorzat 2-vel nő. Folytasd: <span class=\"mx\">(−1) · (−2) = 2</span>! <span class=\"key\">Negatív szor negatív: pozitív.</span> Egy kádból óránként 2 liter folyik ki. 3 órával korábban 6 literrel több víz volt benne: <span class=\"mx\">(−3) · (−2) = 6</span>.</p>",
+   "html": "<p data-src=\"161\">Az első tényező mindig 1-gyel csökken, a szorzat 2-vel nő. Folytasd: <span class=\"mx\">(−1) · (−2) = 2</span>! <span class=\"key\">Negatív szor negatív: pozitív.</span> Egy kádból óránként 2 liter folyik ki. 3 órával korábban 6 literrel több víz volt benne: <span class=\"mx\">(−3) · (−2) = 6</span>.</p>",
    "line": 160,
    "words": 33
   },
   {
    "title": "Összefoglalás",
-   "html": "<ul><li data-src=\"175\">Jobbra haladva nő a szám: <span class=\"mx\">−5 &lt; −2</span>.</li><li data-src=\"176\">Ellentett: tükrözés a 0-ra. Abszolút érték: távolság.</li><li data-src=\"177\">Összeadás: lépegetés. <span class=\"key\">Kivonás: az ellentett hozzáadása.</span></li><li data-src=\"178\">Szorzásnál: azonos előjel → pozitív, különböző → negatív.</li></ul><p class=\"note\" data-src=\"180\">Számold ki a fát alulról! A részeredmény is lehet negatív.</p>",
+   "html": "<ul><li data-src=\"175\">Jobbra haladva nő a szám: <span class=\"mx\">−5 &lt; −2</span>.</li><li data-src=\"176\">Ellentett: tükrözés a 0-ra. Abszolút érték: távolság.</li><li data-src=\"177\">Összeadás: lépegetés. <span class=\"key\">Kivonás: az ellentett hozzáadása.</span></li><li data-src=\"178\">Szorzásnál: azonos előjel → pozitív, különböző → negatív.</li></ul><p class=\"note\" data-src=\"180\">Számold ki a fát alulról! A részeredmény is lehet negatív.</p>",
    "line": 174,
    "words": 35
   }

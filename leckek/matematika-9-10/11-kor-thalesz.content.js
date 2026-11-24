@@ -18,13 +18,13 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "Két egyenlő szárú háromszög (bizonyítás)",
-   "html": "<p data-src=\"46\">Húzzuk be az OC sugarat! <span class=\"mx\"><i>OA</i> = <i>OB</i> = <i>OC</i></span>, ezért az AOC és a BOC háromszög <b>egyenlő szárú</b>: alapjuknál α, α és β, β. A szögösszeg <span class=\"mx\">2<i>α</i> + 2<i>β</i> = 180°</span>, tehát <span class=\"key\"><span class=\"mx\"><i>γ</i> = <i>α</i> + <i>β</i> = 90°</span>.</span> Bármely C-re igaz.</p><p class=\"note\" data-src=\"48\">Kitekintés: az AOB középponti szög 180°, a C-nél lévő szög ennek a fele.</p>",
+   "html": "<p data-src=\"46\">Húzzuk be az OC sugarat! <span class=\"mx\"><i>OA</i> = <i>OB</i> = <i>OC</i></span>, ezért az AOC és a BOC háromszög <b>egyenlő szárú</b>: alapjuknál α, α és β, β. A szögösszeg <span class=\"mx\">2<i>α</i> + 2<i>β</i> = 180°</span>, tehát <span class=\"key\"><span class=\"mx\"><i>γ</i> = <i>α</i> + <i>β</i> = 90°</span>.</span> Bármely C-re igaz.</p><p class=\"note\" data-src=\"48\">Kitekintés: az AOB középponti szög 180°, a C-nél lévő szög ennek a fele.</p>",
    "line": 45,
    "words": 42
   },
   {
    "title": "A megfordítás: belül tompa, kívül hegyes",
-   "html": "<p data-src=\"60\">Fordítva is igaz: ha a C-nél derékszög van, a C az AB fölé írt körön van. Tükrözzük C-t az O-ra: <span class=\"mx\"><i>ACBC′</i></span> paralelogramma, mert átlói felezik egymást. Derékszöggel <b>téglalap</b>, így átlói egyenlők: <span class=\"mx\"><i>CC′</i> = <i>AB</i></span>, vagyis <span class=\"mx\"><i>OC</i> = <i>OA</i></span>. <span class=\"key\">A körön belül tompa, kívül hegyes a szög.</span></p>",
+   "html": "<p data-src=\"60\">Fordítva is igaz: ha a C-nél derékszög van, a C az AB fölé írt körön van. Tükrözzük C-t az O-ra: <span class=\"mx\"><i>ACBC′</i></span> paralelogramma, mert átlói felezik egymást. Derékszöggel <b>téglalap</b>, így átlói egyenlők: <span class=\"mx\"><i>CC′</i> = <i>AB</i></span>, vagyis <span class=\"mx\"><i>OC</i> = <i>OA</i></span>. <span class=\"key\">A körön belül tompa, kívül hegyes a szög.</span></p>",
    "line": 59,
    "words": 42
   },
@@ -36,25 +36,25 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "Szelőből érintő",
-   "html": "<p data-src=\"94\">Az egyenes az E pont körül forog. Általában két közös pontja van a körrel, E és X: ez <b>szelő</b>. <span class=\"mx\"><i>OE</i> = <i>OX</i></span>, ezért O vetülete, az F felezi EX-et. X csak akkor esik E-re, ha F = E: <span class=\"key\">az érintő merőleges az érintési pontba húzott sugárra.</span></p>",
+   "html": "<p data-src=\"94\">Az egyenes az E pont körül forog. Általában két közös pontja van a körrel, E és X: ez <b>szelő</b>. <span class=\"mx\"><i>OE</i> = <i>OX</i></span>, ezért O vetülete, az F felezi EX-et. X csak akkor esik E-re, ha F = E: <span class=\"key\">az érintő merőleges az érintési pontba húzott sugárra.</span></p>",
    "line": 93,
    "words": 43
   },
   {
    "title": "Érintő szerkesztése külső pontból",
-   "html": "<p data-src=\"113\">Hol érinti a P-ből húzott érintő a k kört? Az E érintési pontban <span class=\"mx\"><i>OE</i> ⊥ <i>PE</i></span>, vagyis E-ből az OP szakasz derékszögben látszik. <span class=\"key\">E tehát az OP fölé írt Thalész-körön van.</span> Felezzük meg OP-t, rajzoljuk meg a Thalész-kört: ahol k-t metszi, ott vannak az érintési pontok.</p>",
+   "html": "<p data-src=\"113\">Hol érinti a P-ből húzott érintő a k kört? Az E érintési pontban <span class=\"mx\"><i>OE</i> ⊥ <i>PE</i></span>, vagyis E-ből az OP szakasz derékszögben látszik. <span class=\"key\">E tehát az OP fölé írt Thalész-körön van.</span> Felezzük meg OP-t, rajzoljuk meg a Thalész-kört: ahol k-t metszi, ott vannak az érintési pontok.</p>",
    "line": 112,
    "words": 44
   },
   {
    "title": "Két egyenlő érintőszakasz",
-   "html": "<p data-src=\"126\">Az <span class=\"mx\"><i>OE</i><sub>1</sub><i>P</i></span> és az <span class=\"mx\"><i>OE</i><sub>2</sub><i>P</i></span> háromszög derékszögű, átfogójuk közös (OP), és <span class=\"mx\"><i>OE</i><sub>1</sub> = <i>OE</i><sub>2</sub> = <i>r</i></span>. Pitagorasz-tétellel <span class=\"mx\"><i>PE</i> = <span class=\"rt\">√<span class=\"rad\"><span class=\"rp\">(</span><i>OP</i><sup>2</sup> − <i>r</i><sup>2</sup><span class=\"rp\">)</span></span></span></span> – mindkettőre ugyanaz: <span class=\"key\">a külső pontból húzott két érintőszakasz egyenlő hosszú.</span> Például 5 cm sugárnál, <span class=\"mx\"><i>OP</i> =</span> 13 cm esetén <span class=\"mx\"><i>PE</i> =</span> 12 cm.</p>",
+   "html": "<p data-src=\"126\">Az <span class=\"mx\"><i>OE</i><sub>1</sub><i>P</i></span> és az <span class=\"mx\"><i>OE</i><sub>2</sub><i>P</i></span> háromszög derékszögű, átfogójuk közös (OP), és <span class=\"mx\"><i>OE</i><sub>1</sub> = <i>OE</i><sub>2</sub> = <i>r</i></span>. Pitagorasz-tétellel <span class=\"mx\"><i>PE</i> = <span class=\"rt\">√<span class=\"rad\"><span class=\"rp\">(</span><i>OP</i><sup>2</sup> − <i>r</i><sup>2</sup><span class=\"rp\">)</span></span></span></span> – mindkettőre ugyanaz: <span class=\"key\">a külső pontból húzott két érintőszakasz egyenlő hosszú.</span> Például 5 cm sugárnál, <span class=\"mx\"><i>OP</i> =</span> 13 cm esetén <span class=\"mx\"><i>PE</i> =</span> 12 cm.</p>",
    "line": 125,
    "words": 32
   },
   {
    "title": "Ív és körcikk: arányos a szöggel",
-   "html": "<p data-src=\"139\">Ha a középponti szög (α) kétszeres, az <b>ív</b> és a <b>körcikk</b> is kétszeres: arányosak a szöggel.</p><p class=\"big-fx\" data-src=\"141\"><span class=\"mx\"><i>i</i> = 2<i>r</i>π · <span class=\"frac\"><span class=\"fn\"><i>α</i></span><span class=\"fs\">/</span><span class=\"fd\">360°</span></span></span></p><p data-src=\"143\">10 cm sugárnál, 72°-nál <span class=\"mx\"><i>i</i> ≈</span> 12,57 cm, <span class=\"mx\"><i>t</i> ≈</span> 62,83 cm². <span class=\"key\">A húr nem arányos!</span></p><p class=\"note\" data-src=\"145\">Feladat: a 10 cm és 6 cm sugarú körgyűrű területe? (≈ 201,06 cm²)</p>",
+   "html": "<p data-src=\"139\">Ha a középponti szög (α) kétszeres, az <b>ív</b> és a <b>körcikk</b> is kétszeres: arányosak a szöggel.</p><p class=\"big-fx\" data-src=\"141\"><span class=\"mx\"><i>i</i> = 2<i>r</i>π · <span class=\"frac\"><span class=\"fn\"><i>α</i></span><span class=\"fs\">/</span><span class=\"fd\">360°</span></span></span></p><p data-src=\"143\">10 cm sugárnál, 72°-nál <span class=\"mx\"><i>i</i> ≈</span> 12,57 cm, <span class=\"mx\"><i>t</i> ≈</span> 62,83 cm². <span class=\"key\">A húr nem arányos!</span></p><p class=\"note\" data-src=\"145\">Feladat: a 10 cm és 6 cm sugarú körgyűrű területe? (≈ 201,06 cm²)</p>",
    "line": 138,
    "words": 39
   },

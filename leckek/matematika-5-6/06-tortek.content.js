@@ -18,7 +18,7 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "Számláló és nevező",
-   "html": "<p data-src=\"45\">A <b>nevező</b> megmondja, hány <b>egyenlő</b> részre vágtuk az egészet. A <b>számláló</b> azt, hány részt veszünk belőle. <span class=\"key\">Nagyobb nevező, kisebb darab</span>: <span class=\"mx\"><span class=\"frac\"><span class=\"fn\">1</span><span class=\"fs\">/</span><span class=\"fd\">8</span></span> &lt; <span class=\"frac\"><span class=\"fn\">1</span><span class=\"fs\">/</span><span class=\"fd\">4</span></span></span>.</p><p class=\"note\" data-src=\"47\">Mozgasd a csúszkákat – mind az öt modell ugyanazt a törtet mutatja!</p>",
+   "html": "<p data-src=\"45\">A <b>nevező</b> megmondja, hány <b>egyenlő</b> részre vágtuk az egészet. A <b>számláló</b> azt, hány részt veszünk belőle. <span class=\"key\">Nagyobb nevező, kisebb darab</span>: <span class=\"mx\"><span class=\"frac\"><span class=\"fn\">1</span><span class=\"fs\">/</span><span class=\"fd\">8</span></span> &lt; <span class=\"frac\"><span class=\"fn\">1</span><span class=\"fs\">/</span><span class=\"fd\">4</span></span></span>.</p><p class=\"note\" data-src=\"47\">Mozgasd a csúszkákat – mind az öt modell ugyanazt a törtet mutatja!</p>",
    "line": 44,
    "words": 32
   },
@@ -42,7 +42,7 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "A „hiányzik 1” csapda",
-   "html": "<p data-src=\"128\">Tévhit: a <span class=\"frac\"><span class=\"fn\">2</span><span class=\"fs\">/</span><span class=\"fd\">3</span></span> és a <span class=\"frac\"><span class=\"fn\">3</span><span class=\"fs\">/</span><span class=\"fd\">4</span></span> egyenlő, mert mindkettőből 1 rész hiányzik. De a hiányzó részek nem egyformák! Az <span class=\"frac\"><span class=\"fn\">1</span><span class=\"fs\">/</span><span class=\"fd\">2</span></span> esetén egy <b>fél</b>, a <span class=\"frac\"><span class=\"fn\">99</span><span class=\"fs\">/</span><span class=\"fd\">100</span></span> esetén csak egy <b>század</b> hiányzik. <span class=\"key\">A darab mérete számít, nem a darabszám.</span></p><p class=\"note\" data-src=\"130\">Húzd a csúszkát: <span class=\"mx\"><span class=\"frac\"><span class=\"fn\">1</span><span class=\"fs\">/</span><span class=\"fd\">2</span></span>, <span class=\"frac\"><span class=\"fn\">2</span><span class=\"fs\">/</span><span class=\"fd\">3</span></span>, <span class=\"frac\"><span class=\"fn\">3</span><span class=\"fs\">/</span><span class=\"fd\">4</span></span>…</span></p>",
+   "html": "<p data-src=\"128\">Tévhit: a <span class=\"frac\"><span class=\"fn\">2</span><span class=\"fs\">/</span><span class=\"fd\">3</span></span> és a <span class=\"frac\"><span class=\"fn\">3</span><span class=\"fs\">/</span><span class=\"fd\">4</span></span> egyenlő, mert mindkettőből 1 rész hiányzik. De a hiányzó részek nem egyformák! Az <span class=\"frac\"><span class=\"fn\">1</span><span class=\"fs\">/</span><span class=\"fd\">2</span></span> esetén egy <b>fél</b>, a <span class=\"frac\"><span class=\"fn\">99</span><span class=\"fs\">/</span><span class=\"fd\">100</span></span> esetén csak egy <b>század</b> hiányzik. <span class=\"key\">A darab mérete számít, nem a darabszám.</span></p><p class=\"note\" data-src=\"130\">Húzd a csúszkát: <span class=\"mx\"><span class=\"frac\"><span class=\"fn\">1</span><span class=\"fs\">/</span><span class=\"fd\">2</span></span>, <span class=\"frac\"><span class=\"fn\">2</span><span class=\"fs\">/</span><span class=\"fd\">3</span></span>, <span class=\"frac\"><span class=\"fn\">3</span><span class=\"fs\">/</span><span class=\"fd\">4</span></span>…</span></p>",
    "line": 127,
    "words": 41
   },
@@ -145,7 +145,7 @@ window.LESSON_CONTENT = {
     2.0,
     1.0
    ],
-   "s": "4 : 3 : 2 : 1"
+   "s": "4 : 3 : 2 : 1"
   },
   "kezdő tört": {
    "t": "frac",

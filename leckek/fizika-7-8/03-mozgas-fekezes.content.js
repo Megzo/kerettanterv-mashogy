@@ -18,7 +18,7 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "Átlagsebesség",
-   "html": "<p data-src=\"86\">Az első szakaszon 30 km/h, a másodikon 50 km/h a sebesség. Akkor az átlag a kettő átlaga? <b>Nem!</b></p><p class=\"big-fx\" data-src=\"88\">átlagsebesség = összes út / összes idő</p><p data-src=\"90\">A lassú szakaszon több időt töltesz, és a piros lámpánál is telik az idő: <span class=\"key\">a megállás is számít</span>.</p><p class=\"note\" data-src=\"92\">Egyszerűsítés: szakaszonként állandó sebesség.</p>",
+   "html": "<p data-src=\"86\">Az első szakaszon 30 km/h, a másodikon 50 km/h a sebesség. Akkor az átlag a kettő átlaga? <b>Nem!</b></p><p class=\"big-fx\" data-src=\"88\">átlagsebesség = összes út / összes idő</p><p data-src=\"90\">A lassú szakaszon több időt töltesz, és a piros lámpánál is telik az idő: <span class=\"key\">a megállás is számít</span>.</p><p class=\"note\" data-src=\"92\">Egyszerűsítés: szakaszonként állandó sebesség.</p>",
    "line": 85,
    "words": 43
   },
@@ -30,13 +30,13 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "Mi állítja meg az autót?",
-   "html": "<p data-src=\"140\">Fékezéskor az <b>út súrlódási ereje</b> hátrafelé hat a kerekekre, és lassítja az autót.</p><p class=\"big-fx\" data-src=\"142\">a = F / m</p><p data-src=\"144\">Jégen az út csak kis erővel tud fékezni, ezért <span class=\"key\">sokkal tovább tart a megállás</span>.</p><p class=\"note\" data-src=\"146\">Közben a mozgási energia belső energiává alakul: a fék felmelegszik.</p>",
+   "html": "<p data-src=\"140\">Fékezéskor az <b>út súrlódási ereje</b> hátrafelé hat a kerekekre, és lassítja az autót.</p><p class=\"big-fx\" data-src=\"142\">a = F / m</p><p data-src=\"144\">Jégen az út csak kis erővel tud fékezni, ezért <span class=\"key\">sokkal tovább tart a megállás</span>.</p><p class=\"note\" data-src=\"146\">Közben a mozgási energia belső energiává alakul: a fék felmelegszik.</p>",
    "line": 139,
    "words": 40
   },
   {
    "title": "Reakcióút + fékút",
-   "html": "<p data-src=\"156\">Amíg észreveszed a veszélyt és fékre lépsz, az autó <b>teljes sebességgel</b> halad: ez a <span class=\"key\">reakcióút</span>. Utána jön a <b>fékút</b>.</p><p class=\"big-fx\" data-src=\"158\">s = v · t<sub>r</sub> + v² / (2 · a)</p><p class=\"note\" data-src=\"160\">Próbáld ki 60 km/h-val! (Egyenletes lassulással számolunk.)</p>",
+   "html": "<p data-src=\"156\">Amíg észreveszed a veszélyt és fékre lépsz, az autó <b>teljes sebességgel</b> halad: ez a <span class=\"key\">reakcióút</span>. Utána jön a <b>fékút</b>.</p><p class=\"big-fx\" data-src=\"158\">s = v · t<sub>r</sub> + v² / (2 · a)</p><p class=\"note\" data-src=\"160\">Próbáld ki 60 km/h-val! (Egyenletes lassulással számolunk.)</p>",
    "line": 155,
    "words": 33
   },

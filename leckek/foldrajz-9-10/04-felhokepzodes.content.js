@@ -525,8 +525,8 @@ window.LESSON_CONTENT = {
    "b": 70.0,
    "v": 0.014285714285714285,
    "est": true,
-   "s0": "1 : 70",
-   "s": "kb. 1 : 70"
+   "s0": "1 : 70",
+   "s": "kb. 1 : 70"
   },
   "melegfront lejtése": {
    "t": "ratio",
@@ -534,8 +534,8 @@ window.LESSON_CONTENT = {
    "b": 200.0,
    "v": 0.005,
    "est": true,
-   "s0": "1 : 200",
-   "s": "kb. 1 : 200"
+   "s0": "1 : 200",
+   "s": "kb. 1 : 200"
   },
   "szelet szélessége": {
    "v": 1200.0,

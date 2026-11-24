@@ -2209,8 +2209,10 @@ function scene8(st, w) {
 const sT = new Array(9).fill(0);
 const SCENES = [scene0, scene1, scene2, scene3, scene4, scene5, scene6, scene7, scene8];
 let camStep = -1;
+let camEnd = -1;   // a futó kamera-áttűnés vége (L.st) – a QA idle()-je ebből tudja, mikor nyugodt a kép
 const slider = (S, k, min, max, fmtf, per) => L.slider({ label: lab(k), k, min, max, step: 1, value: min, format: fmtf, onInput: (v) => takeOver(S, v, per) });
 L = Lesson.create({
+  idle: (L) => L.st >= camEnd,   // QA: visszalépéskor a kamera a settle után ér a helyére (motor v2)
   content: window.LESSON_CONTENT,
   home: false,
   steps: [
@@ -2252,6 +2254,7 @@ L = Lesson.create({
       'becslés': K('becslés'), 'vázlatos': K('vázlatos'), 'illusztráció': K('illusztráció') });
     MAP = TortMap.create({ proj: PROJ, ancient: true, layers: [{ data: window.TORT_MAP_VILAG }, { data: window.TORT_MAP_MEDITERRAN }] });
     CAM = TortMap.camera(PROJ);
+    { const go0 = CAM.go; CAM.go = (v, t, d) => { camEnd = t + (d || 0); go0(v, t, d); }; }
     const fit = (b, r) => TortMap.fit(PROJ, b, r);
     VIEWS = { 0: fit([26.5, 25.6, 47.6, 39.0], [20, 20, 1320, 1040]), 2: fit([34.15, 31.25, 36.05, 33.2], [20, 20, 850, 860]),
       5: fit([11.8, 31.0, 37.0, 42.4], [10, 10, 1340, 1060]), 6: fit([-9.5, 28.5, 44.5, 55.0], [10, 10, 1340, 880]) };

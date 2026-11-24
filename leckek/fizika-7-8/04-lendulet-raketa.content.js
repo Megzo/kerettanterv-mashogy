@@ -12,7 +12,7 @@ window.LESSON_CONTENT = {
  "steps": [
   {
    "title": "Mi a lendület?",
-   "html": "<p data-src=\"55\">Melyiket nehezebb megállítani: a száguldó teniszlabdát vagy a lassan guruló bowlinggolyót? A mozgás „mennyiségét” a <b>lendület</b> méri:</p><p class=\"big-fx\" data-src=\"57\">p = m · v</p><p data-src=\"59\">Mértékegysége kg·m/s. A lendületnek <span class=\"key\">iránya is van</span>: ellentétes irányban negatív.</p><p class=\"note\" data-src=\"61\">Milyen gyors legyen a teniszlabda, hogy akkora legyen a lendülete, mint a golyóé?</p>",
+   "html": "<p data-src=\"55\">Melyiket nehezebb megállítani: a száguldó teniszlabdát vagy a lassan guruló bowlinggolyót? A mozgás „mennyiségét” a <b>lendület</b> méri:</p><p class=\"big-fx\" data-src=\"57\">p = m · v</p><p data-src=\"59\">Mértékegysége kg·m/s. A lendületnek <span class=\"key\">iránya is van</span>: ellentétes irányban negatív.</p><p class=\"note\" data-src=\"61\">Milyen gyors legyen a teniszlabda, hogy akkora legyen a lendülete, mint a golyóé?</p>",
    "line": 54,
    "words": 45
   },
@@ -54,7 +54,7 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "Rakéta a légüres térben",
-   "html": "<p data-src=\"184\">A rakéta nagy sebességgel lövi hátra a gázt, és <span class=\"key\">ettől gyorsul előre</span>. Elrugaszkodnia nem kell.</p><p data-src=\"186\">Az ideális rakéta modellje:</p><p class=\"big-fx\" data-src=\"188\">Δv = u · ln(m<sub>0</sub> / m<sub>1</sub>)</p><p class=\"note\" data-src=\"190\">u: a gáz sebessége, m<sub>0</sub> és m<sub>1</sub>: a tömeg indításkor és a végén. Gravitációval, légellenállással nem számolunk.</p>",
+   "html": "<p data-src=\"184\">A rakéta nagy sebességgel lövi hátra a gázt, és <span class=\"key\">ettől gyorsul előre</span>. Elrugaszkodnia nem kell.</p><p data-src=\"186\">Az ideális rakéta modellje:</p><p class=\"big-fx\" data-src=\"188\">Δv = u · ln(m<sub>0</sub> / m<sub>1</sub>)</p><p class=\"note\" data-src=\"190\">u: a gáz sebessége, m<sub>0</sub> és m<sub>1</sub>: a tömeg indításkor és a végén. Gravitációval, légellenállással nem számolunk.</p>",
    "line": 183,
    "words": 41
   },

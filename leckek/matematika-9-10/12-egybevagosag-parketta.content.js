@@ -24,13 +24,13 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "Két metsző tükör = forgatás",
-   "html": "<p data-src=\"64\">Ha a tengelyek O-ban, φ szögben metszik egymást, a két tükrözés eredménye <b>O körüli forgatás</b>. O helyben marad, és <span class=\"mx\"><i>OP</i> = <i>OP′</i> = <i>OP″</i></span>. A tükrözések a szögeket megkettőzik: 2α és 2β, ahol <span class=\"mx\"><i>α</i> + <i>β</i> = <i>φ</i></span> – <span class=\"key\">a forgásszög <span class=\"mx\">2<i>φ</i></span>.</span> Ha <span class=\"mx\"><i>φ</i> = 90°</span>, a forgatás 180°-os: ez a <b>középpontos tükrözés</b>.</p>",
+   "html": "<p data-src=\"64\">Ha a tengelyek O-ban, φ szögben metszik egymást, a két tükrözés eredménye <b>O körüli forgatás</b>. O helyben marad, és <span class=\"mx\"><i>OP</i> = <i>OP′</i> = <i>OP″</i></span>. A tükrözések a szögeket megkettőzik: 2α és 2β, ahol <span class=\"mx\"><i>α</i> + <i>β</i> = <i>φ</i></span> – <span class=\"key\">a forgásszög <span class=\"mx\">2<i>φ</i></span>.</span> Ha <span class=\"mx\"><i>φ</i> = 90°</span>, a forgatás 180°-os: ez a <b>középpontos tükrözés</b>.</p>",
    "line": 63,
    "words": 43
   },
   {
    "title": "A sokszög szögeinek összege",
-   "html": "<p data-src=\"84\">A konvex n-szög egy csúcsából húzzunk átlókat: a sokszög <span class=\"mx\"><i>n</i> − 2</span> háromszögre esik szét, és ezek szögei együtt éppen a sokszög szögeit adják. <span class=\"key\">A belső szögek összege <span class=\"mx\">(<i>n</i> − 2) · 180°</span>.</span> Minden csúcsnál belső + külső szög = 180°, ezért a <b>külső szögek összege</b> mindig 360°.</p><p class=\"note\" data-src=\"86\">Feladat: miért <span class=\"mx\"><i>n</i>(<i>n</i> − 3)/2</span> az n-szög átlóinak száma?</p>",
+   "html": "<p data-src=\"84\">A konvex n-szög egy csúcsából húzzunk átlókat: a sokszög <span class=\"mx\"><i>n</i> − 2</span> háromszögre esik szét, és ezek szögei együtt éppen a sokszög szögeit adják. <span class=\"key\">A belső szögek összege <span class=\"mx\">(<i>n</i> − 2) · 180°</span>.</span> Minden csúcsnál belső + külső szög = 180°, ezért a <b>külső szögek összege</b> mindig 360°.</p><p class=\"note\" data-src=\"86\">Feladat: miért <span class=\"mx\"><i>n</i>(<i>n</i> − 3)/2</span> az n-szög átlóinak száma?</p>",
    "line": 83,
    "words": 47
   },
@@ -42,7 +42,7 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "Bármely háromszög és négyszög parkettáz",
-   "html": "<p data-src=\"125\">Forgassuk el a négyszöget 180°-kal egy oldal felezőpontja körül: a két lap ennél az oldalnál pontosan illeszkedik. Ezt ismételve hézag nélkül lefedjük a síkot, és minden csúcsban mind a négy szög találkozik: <span class=\"key\"><span class=\"mx\"><i>α</i> + <i>β</i> + <i>γ</i> + <i>δ</i> = 360°</span>.</span> Homorú négyszögre is működik! A háromszögnél hat szög, kétszer <span class=\"mx\"><i>α</i> + <i>β</i> + <i>γ</i></span>.</p>",
+   "html": "<p data-src=\"125\">Forgassuk el a négyszöget 180°-kal egy oldal felezőpontja körül: a két lap ennél az oldalnál pontosan illeszkedik. Ezt ismételve hézag nélkül lefedjük a síkot, és minden csúcsban mind a négy szög találkozik: <span class=\"key\"><span class=\"mx\"><i>α</i> + <i>β</i> + <i>γ</i> + <i>δ</i> = 360°</span>.</span> Homorú négyszögre is működik! A háromszögnél hat szög, kétszer <span class=\"mx\"><i>α</i> + <i>β</i> + <i>γ</i></span>.</p>",
    "line": 124,
    "words": 44
   },
@@ -60,7 +60,7 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "Összefoglaló",
-   "html": "<ul><li data-src=\"190\">a tükrözés megtartja a távolságot és a szöget, de megfordítja a körüljárást</li><li data-src=\"191\">két tükrözés: párhuzamos tengelyeknél eltolás (<span class=\"mx\">2<i>d</i></span>), metszőknél forgatás (<span class=\"mx\">2<i>φ</i></span>)</li><li data-src=\"192\">a konvex n-szög belső szögeinek összege <span class=\"mx\">(<i>n</i> − 2) · 180°</span>, a külsőké 360°</li><li data-src=\"193\">szabályos sokszögből a háromszög, a négyzet és a hatszög parkettáz, de bármely háromszög és négyszög is</li></ul><p data-src=\"195\"><span class=\"key\">Parketta = egy csúcs körül pontosan 360°.</span></p>",
+   "html": "<ul><li data-src=\"190\">a tükrözés megtartja a távolságot és a szöget, de megfordítja a körüljárást</li><li data-src=\"191\">két tükrözés: párhuzamos tengelyeknél eltolás (<span class=\"mx\">2<i>d</i></span>), metszőknél forgatás (<span class=\"mx\">2<i>φ</i></span>)</li><li data-src=\"192\">a konvex n-szög belső szögeinek összege <span class=\"mx\">(<i>n</i> − 2) · 180°</span>, a külsőké 360°</li><li data-src=\"193\">szabályos sokszögből a háromszög, a négyzet és a hatszög parkettáz, de bármely háromszög és négyszög is</li></ul><p data-src=\"195\"><span class=\"key\">Parketta = egy csúcs körül pontosan 360°.</span></p>",
    "line": 189,
    "words": 53
   }

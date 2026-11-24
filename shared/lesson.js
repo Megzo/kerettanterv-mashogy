@@ -23,6 +23,10 @@
        ],
        resetCtx: true,  // ÚJ (opcionális, új leckéknek ajánlott): minden képkocka előtt alapállapotba állítja a
                         //   vásznat (globalAlpha, lineCap/Join, dash, shadow, textAlign, font…); alap: ki (régi viselkedés)
+       idle(L) { return true; },  // ÚJ (v2, opcionális): false, amíg egy L.st-hez kötött, de a lépés settle-je után
+                        //   is futó átmenet tart (pl. visszalépéskor a settle-től induló kamera-áttűnés). A QA
+                        //   a settle-kép előtt képkockánként léptet, amíg true nem lesz (max. 5 mp). A lecke
+                        //   képét nem változtatja – csak a QA tudja meg belőle, mikor nyugodt a jelenet.
        init(L) {},     // egyszer, a betűtípusok betöltése után
        draw(L) {},     // minden képkockán
      });
@@ -42,8 +46,13 @@
      L.pointer       {x, y, down, inside} logikai koordinátákban
                      ÚJ: pressed / released – volt-e lenyomás / felengedés az előző képkocka óta (egy képkockán
                      belüli gyors kattintásnál a down már újra false, a pressed mégis true); px, py – az utolsó
-                     lenyomás helye; events – [{type: 'down'|'up', x, y, button}] az előző képkocka óta.
+                     lenyomás helye; events – [{type: 'down'|'up', x, y, button, ts}] az előző képkocka óta.
                      A főciklus a draw(L) után üríti őket – a draw-ban olvasd (vagy amit a draw hív).
+                     ÚJ (v2): ts – az esemény ideje ms-ban (e.timeStamp, a performance.now() időskáláján),
+                     képkockánál pontosabb (pl. reakcióidő: ev.ts − az inger megjelenésének performance.now()-ja;
+                     L.now = az aktuális képkocka requestAnimationFrame-időbélyege, ugyanezen a skálán).
+     L.idle()        ÚJ (v2): true, ha a lecke szerint nincs folyamatban lépéstől független átmenet (lásd a
+                     Lesson.create idle opcióját); opció nélkül mindig true. A QA (--det, --back) erre vár.
 
    ÚJ — tartalom (a .md-ből, lásd leckek/SZERZODES.md):
      L.lab(k)        felirat szövege ('### Feliratok' kulcs → szöveg)
@@ -59,7 +68,9 @@
                         c: szín, ls: betűköz, max: max. szélesség (fölötte kicsinyít), k: md-kulcs(ok),
                         qa: false → a QA átfedés-vizsgálata kihagyja}. Visszaad: {w, h, x, y} (doboz).
      L.measure(s, o)    ugyanaz rajzolás nélkül → {w, h}
-     L.pill(s, x, y, o) szöveghez méretezett lekerekített doboz + szöveg; o.bg, o.bd (keret), o.pad, o.r
+     L.pill(s, x, y, o) szöveghez méretezett lekerekített doboz + szöveg; o.bg, o.bd (keret), o.pad, o.r;
+                        o.max: a szöveg max. szélessége – fölötte kicsinyít, és (v2) a doboz szélessége is a
+                        kicsinyített szöveghez igazodik (max + 2·pad); a magassága az eredeti méreté marad
      L.fonts         {D: Fraunces, B: Bricolage Grotesque, M: JetBrains Mono} — o.f értékei
    ÚJ — U.fmt(v, d)  magyar számformátum: tizedesvessző, valódi mínuszjel (−), 10 000 fölött ezres tagolás
    ÚJ — review mód:  ?review az URL-ben vagy a K billentyű → a feliratok és bekezdések fölé mutatva
@@ -105,9 +116,11 @@
     const L = {
       W, H, VW, U, cfg, steps: cfg.steps, step: 0, st: 0, sp: 0, t: 0, dt: 0, dir: 1,
       pointer: { x: 0, y: 0, down: false, inside: false, pressed: false, released: false, px: 0, py: 0, events: [] }, scale: 1, fonts: FONTS,
+      now: 0,
       content: C, marks: [], review: /[?&]review\b/.test(location.search),
     };
     L.prog = (a, b) => U.clamp((L.st - a) / (b - a));
+    L.idle = () => (cfg.idle ? !!cfg.idle(L) : true);
     L.sliders = [];
     const errors = [];
     if (cfg.content === undefined && 'content' in cfg) errors.push('Hiányzik a tartalomfájl (…content.js). Futtasd: python3 tools/build_lesson.py <lecke>.md');
@@ -269,10 +282,10 @@
     // (a down egy gyors kattintásnál a draw előtt már újra false); a főciklus a draw után üríti őket.
     stage.addEventListener('pointerdown', (e) => {
       const p = L.toStage(e), P = L.pointer; P.x = p.x; P.y = p.y; P.down = true;
-      P.pressed = true; P.px = p.x; P.py = p.y; P.events.push({ type: 'down', x: p.x, y: p.y, button: e.button });
+      P.pressed = true; P.px = p.x; P.py = p.y; P.events.push({ type: 'down', x: p.x, y: p.y, button: e.button, ts: e.timeStamp });
     });
     window.addEventListener('pointerup', (e) => {
-      const P = L.pointer; if (P.down) { const p = L.toStage(e); P.released = true; P.events.push({ type: 'up', x: p.x, y: p.y, button: e.button }); }
+      const P = L.pointer; if (P.down) { const p = L.toStage(e); P.released = true; P.events.push({ type: 'up', x: p.x, y: p.y, button: e.button, ts: e.timeStamp }); }
       P.down = false;
     });
     stage.addEventListener('pointerleave', () => { L.pointer.inside = false; });
@@ -316,14 +329,17 @@
       return { x, y, w: Math.max(...xs) - x, h: Math.max(...ys) - y };
     }
     L.pill = (s, x, y, o = {}) => {
-      const c = L.ctx, pad = o.pad == null ? 12 : o.pad, sz = o.s || 24, m = L.measure(s, o), a = o.a || 'left';
+      const c = L.ctx, pad = o.pad == null ? 12 : o.pad, sz = o.s || 24, a = o.a || 'left';
+      let m = L.measure(s, o);
+      // max: a szöveg kicsinyítése (mint az L.tx-nél) – a doboz a kicsinyített szöveghez igazodik
+      if (o.max && m.w > o.max) { o = Object.assign({}, o, { s: sz * o.max / m.w, max: undefined }); m = L.measure(s, o); }
       const w = m.w + pad * 2, h = sz * 1.3 + pad * .8;
       const x0 = a === 'center' ? x - w / 2 : a === 'right' ? x - w : x, y0 = y - h / 2;
       c.beginPath(); c.roundRect(x0, y0, w, h, o.r == null ? h / 2 : o.r);
       if (o.bg) { c.fillStyle = o.bg; c.fill(); }
       if (o.bd) { c.strokeStyle = o.bd; c.lineWidth = o.bw || 2; c.stroke(); }
       const n0 = cur.length;
-      L.tx(s, x0 + pad, y0 + h / 2 + sz * .02, Object.assign({}, o, { a: 'left', b: 'middle' }));
+      L.tx(s, x0 + pad, y0 + h / 2 + (o.s || 24) * .02, Object.assign({}, o, { a: 'left', b: 'middle' }));
       if (cur.length > n0 && (o.bg || o.bd)) {      // a pill doboza is a QA-ba kerül: ami alatta/rajta van, átfedés
         const mk = cur[cur.length - 1], q = quad(c.getTransform(), { x: x0, y: y0, w, h });
         mk.pb = aabb(q); if (mk.q) mk.pq = q;
@@ -370,7 +386,7 @@
     // ── főciklus ──
     let last = 0;
     function frame(now) {
-      const dt = Math.min(0.05, (now - last) / 1000 || 0); last = now;
+      const dt = Math.min(0.05, (now - last) / 1000 || 0); last = now; L.now = now;
       L.dt = dt; L.t += dt; L.st += dt;
       L.sp += (L.step - L.sp) * (1 - Math.exp(-dt * 5.5)); if (Math.abs(L.step - L.sp) < 0.0005) L.sp = L.step;
       if (cfg.resetCtx) resetCtx(L.ctx);

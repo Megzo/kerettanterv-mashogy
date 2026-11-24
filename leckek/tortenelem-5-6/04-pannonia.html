@@ -1475,8 +1475,10 @@ function scene9(st, w) {
 const sT = new Array(9).fill(0);
 const SCENES = [scene1, scene2, scene3, scene4, scene5, scene6, scene7, scene8, scene9];
 let camStep = -1;
+let camEnd = -1;   // a futó kamera-áttűnés vége (L.st) – a QA idle()-je ebből tudja, mikor nyugodt a kép
 const slider = (S, k, min, max, fmtY) => L.slider({ label: lab(k), k, min, max, step: 1, value: max, format: (v) => fmtY(v), onInput: (v) => takeOver(S, v) });
 L = Lesson.create({
+  idle: (L) => L.st >= camEnd,   // QA: visszalépéskor a kamera a settle után ér a helyére (motor v2)
   content: window.LESSON_CONTENT,
   home: false,
   steps: [
@@ -1529,6 +1531,7 @@ L = Lesson.create({
     VIEWS = [hills, hills, med, fit([14.0, 44.3, 25.0, 48.9], [20, 20, 1320, 1040]), fit([19.0, 47.524, 19.1, 47.590], [20, 20, 1320, 960]),
       fit([15.6, 45.75, 19.75, 48.3], [20, 110, 1040, 900]), fit([-4, 37.5, 49, 56], [10, 20, 1340, 830]), med, med];
     CAM = TortMap.camera(PROJ);
+    { const go0 = CAM.go; CAM.go = (v, t, d) => { camEnd = t + (d || 0); go0(v, t, d); }; }
     // Pannónia: a Duna a Bécsi-erdőtől Taurunumig, aztán a határpontok (vázlatos, sima görbe)
     const dn = MAP.river('Duna');
     DANUBE = TortMap.slice(dn, LL('Pannónia határa – Bécsi-erdő'), LL('Taurunum helye'));

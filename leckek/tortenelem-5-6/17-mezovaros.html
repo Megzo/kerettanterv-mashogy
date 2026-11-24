@@ -2249,6 +2249,7 @@ const PROJ = TortProj.lcc({ lon0: 18, lat0: 47, lat1: 45, lat2: 49 });
 const MAPSTEPS = [0, 4, 5, 6];
 let VIEWS = {};
 let camStep = -1;
+let camEnd = -1;   // a futó kamera-áttűnés vége (L.st) – a QA idle()-je ebből tudja, mikor nyugodt a kép
 const sT = new Array(9).fill(0);
 function mapCam() {
   if (MAPSTEPS.includes(L.step) && L.step !== camStep) {
@@ -3088,6 +3089,7 @@ const STEPS = [
 let camStepScene = -1;
 
 L = Lesson.create({
+  idle: (L) => L.st >= camEnd,   // QA: visszalépéskor a kamera a settle után ér a helyére (motor v2)
   content: window.LESSON_CONTENT,
   home: false,
   steps: STEPS,
@@ -3101,6 +3103,7 @@ L = Lesson.create({
     VIEWS = { 0: fit([15.6, 44.4, 26.2, 49.3], [20, 20, 1320, 1040]), 4: fit([10.6, 44.9, 22.4, 50.0], [30, 30, 1300, 1020]),
       5: fit([20.85, 47.33, 22.45, 48.02], [30, 30, 1300, 720]), 6: fit([9.7, 42.6, 26.6, 49.8], [30, 30, 1300, 830]) };
     CAM = TortMap.camera(PROJ);
+    { const go0 = CAM.go; CAM.go = (v, t, d) => { camEnd = t + (d || 0); go0(v, t, d); }; }
     buildTown(); buildRoutes(); buildDots7();
     SC = TortScene.create({
       L, frame: [36, 36, 1308, 1008], stampK: 'illusztráció bélyeg',
@@ -3125,7 +3128,11 @@ L = Lesson.create({
     SC.attach((id) => { if (L.step !== 1 || !id) return; S2.user = true; S2.sel = S2.sel === id ? null : id; S2.selT = L.st; });
   },
   draw(Lx) {
-    L = Lx; c = L.ctx; GA = 1; paper(); grid(.045);
+    L = Lx; c = L.ctx;
+    // a vászonállapot a 4. lépésben ne attól függjön, honnan érkeztünk (visszalépéskor a következő lépés
+    // lineCap-je szivárgott át); az érték az előre léptetés eddigi állapota → a kép nem változik
+    if (L.step === 3) c.lineCap = 'butt';
+    GA = 1; paper(); grid(.045);
     const sp = L.sp, wt = (i) => clamp(1 - Math.abs(sp - i) * 2);
     sT[L.step] = L.st;
     const wMap = Math.max(...MAPSTEPS.map(wt));

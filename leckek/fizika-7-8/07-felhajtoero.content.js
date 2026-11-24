@@ -24,13 +24,13 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "Heuréka! A kiszorított víz súlya",
-   "html": "<p data-src=\"67\">A túlfolyó edényből annyi víz folyik ki, amekkora a kő <b>térfogata</b>. Ennek súlya <span class=\"key\">pontosan annyi</span>, amennyivel kevesebbet mutat az erőmérő!</p><p class=\"big-fx\" data-src=\"69\">F<sub>fel</sub> = ρ<sub>víz</sub> · V · g</p><p data-src=\"71\">Ez <b>Arkhimédész törvénye</b>. A sokkal nehezebb acélkocka is <b>ugyanennyit</b> veszít!</p><p class=\"note\" data-src=\"73\">A legenda szerint Arkhimédész a kádban jött rá erre: „Heuréka!” (Megtaláltam!)</p>",
+   "html": "<p data-src=\"67\">A túlfolyó edényből annyi víz folyik ki, amekkora a kő <b>térfogata</b>. Ennek súlya <span class=\"key\">pontosan annyi</span>, amennyivel kevesebbet mutat az erőmérő!</p><p class=\"big-fx\" data-src=\"69\">F<sub>fel</sub> = ρ<sub>víz</sub> · V · g</p><p data-src=\"71\">Ez <b>Arkhimédész törvénye</b>. A sokkal nehezebb acélkocka is <b>ugyanennyit</b> veszít!</p><p class=\"note\" data-src=\"73\">A legenda szerint Arkhimédész a kádban jött rá erre: „Heuréka!” (Megtaláltam!)</p>",
    "line": 66,
    "words": 45
   },
   {
    "title": "Honnan jön ez az erő? A nyomásból!",
-   "html": "<p data-src=\"88\">A víz nyomása a <b>mélységgel nő</b>:</p><p class=\"big-fx\" data-src=\"90\">p = ρ · g · h</p><p data-src=\"92\">A kocka alját ezért <span class=\"key\">nagyobb nyomás</span> éri, mint a tetejét. Az oldalsó erők kiegyenlítik egymást. A felhajtóerő az alsó és a felső erő <b>különbsége</b> – ez bármilyen mélyen ugyanannyi.</p><p class=\"note\" data-src=\"94\">A légnyomás minden lapot ugyanannyival nyom, ezért kiesik. Itt csak a víz nyomását rajzoltuk.</p>",
+   "html": "<p data-src=\"88\">A víz nyomása a <b>mélységgel nő</b>:</p><p class=\"big-fx\" data-src=\"90\">p = ρ · g · h</p><p data-src=\"92\">A kocka alját ezért <span class=\"key\">nagyobb nyomás</span> éri, mint a tetejét. Az oldalsó erők kiegyenlítik egymást. A felhajtóerő az alsó és a felső erő <b>különbsége</b> – ez bármilyen mélyen ugyanannyi.</p><p class=\"note\" data-src=\"94\">A légnyomás minden lapot ugyanannyival nyom, ezért kiesik. Itt csak a víz nyomását rajzoltuk.</p>",
    "line": 87,
    "words": 52
   },

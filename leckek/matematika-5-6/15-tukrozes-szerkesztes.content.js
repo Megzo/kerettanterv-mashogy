@@ -24,7 +24,7 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "Ferde tengely, fordított körüljárás",
-   "html": "<p data-src=\"59\">Gyakori hiba: ferde tengelynél <b>vízszintesen</b> átvinni a pontot. <span class=\"key\">A <span class=\"mx\"><i>PP′</i></span> szakasz mindig merőleges a tengelyre.</span> Körzővel: két tengelypontból kört húzunk P-n át; a két kör másik metszéspontja P′. A körüljárás (<span class=\"mx\"><i>A</i> → <i>B</i> → <i>C</i></span>) megfordul!</p><p class=\"note\" data-src=\"61\">Miért jó a körző? Lásd az 5. lépést.</p>",
+   "html": "<p data-src=\"59\">Gyakori hiba: ferde tengelynél <b>vízszintesen</b> átvinni a pontot. <span class=\"key\">A <span class=\"mx\"><i>PP′</i></span> szakasz mindig merőleges a tengelyre.</span> Körzővel: két tengelypontból kört húzunk P-n át; a két kör másik metszéspontja P′. A körüljárás (<span class=\"mx\"><i>A</i> → <i>B</i> → <i>C</i></span>) megfordul!</p><p class=\"note\" data-src=\"61\">Miért jó a körző? Lásd az 5. lépést.</p>",
    "line": 58,
    "words": 40
   },
@@ -36,7 +36,7 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "Egyenlő távol A-tól és B-től",
-   "html": "<p data-src=\"104\">Hol vannak azok a pontok, amelyek <b>egyenlő távol</b> vannak A-tól és B-től? Húzd a P pontot! Ha <span class=\"mx\"><i>PA</i> = <i>PB</i></span>, P pirosra vált, és nyomot hagy. <span class=\"key\">A nyomok egy egyenest adnak: az AB <b>szakaszfelező merőlegesét</b>.</span> B éppen A tükörképe erre az egyenesre.</p>",
+   "html": "<p data-src=\"104\">Hol vannak azok a pontok, amelyek <b>egyenlő távol</b> vannak A-tól és B-től? Húzd a P pontot! Ha <span class=\"mx\"><i>PA</i> = <i>PB</i></span>, P pirosra vált, és nyomot hagy. <span class=\"key\">A nyomok egy egyenest adnak: az AB <b>szakaszfelező merőlegesét</b>.</span> B éppen A tükörképe erre az egyenesre.</p>",
    "line": 103,
    "words": 40
   },
@@ -54,7 +54,7 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "Merőleges és párhuzamos",
-   "html": "<p data-src=\"168\">Előbb <b>vázlat</b>: kézzel, nagyjából, hogy lássuk a tervet. Merőleges P-ből: körív P körül, majd az <span class=\"mx\"><i>e</i></span>-n kapott két pont felezőmerőlegese. <span class=\"key\">Párhuzamos: merőleges a merőlegesre.</span> Vonalzóval csak egyenest húzunk, nem mérünk.</p><p class=\"note\" data-src=\"170\">Ha <span class=\"mx\"><i>e</i> ⊥ <i>m</i></span> és <span class=\"mx\"><i>f</i> ⊥ <i>m</i></span>, akkor <span class=\"mx\"><i>e</i> ∥ <i>f</i></span>.</p>",
+   "html": "<p data-src=\"168\">Előbb <b>vázlat</b>: kézzel, nagyjából, hogy lássuk a tervet. Merőleges P-ből: körív P körül, majd az <span class=\"mx\"><i>e</i></span>-n kapott két pont felezőmerőlegese. <span class=\"key\">Párhuzamos: merőleges a merőlegesre.</span> Vonalzóval csak egyenest húzunk, nem mérünk.</p><p class=\"note\" data-src=\"170\">Ha <span class=\"mx\"><i>e</i> ⊥ <i>m</i></span> és <span class=\"mx\"><i>f</i> ⊥ <i>m</i></span>, akkor <span class=\"mx\"><i>e</i> ∥ <i>f</i></span>.</p>",
    "line": 167,
    "words": 36
   },

@@ -48,7 +48,7 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "Műveleti sorrend törtekkel",
-   "html": "<p data-src=\"172\">A szabály a törtekre is érvényes: <b>előbb szorzunk és osztunk</b>, aztán adunk össze és vonunk ki. <span class=\"mx\"><span class=\"frac\"><span class=\"fn\">1</span><span class=\"fs\">/</span><span class=\"fd\">2</span></span> + <span class=\"frac\"><span class=\"fn\">1</span><span class=\"fs\">/</span><span class=\"fd\">3</span></span> · <span class=\"frac\"><span class=\"fn\">3</span><span class=\"fs\">/</span><span class=\"fd\">4</span></span></span>: <span class=\"key\">előbb a szorzás!</span> Az eredmény <span class=\"frac\"><span class=\"fn\">3</span><span class=\"fs\">/</span><span class=\"fd\">4</span></span>. Balról jobbra számolva <span class=\"frac\"><span class=\"fn\">5</span><span class=\"fs\">/</span><span class=\"fd\">8</span></span> jönne ki – az rossz.</p><p class=\"note\" data-src=\"174\">Becsülj előre: 1-nél több lesz?</p>",
+   "html": "<p data-src=\"172\">A szabály a törtekre is érvényes: <b>előbb szorzunk és osztunk</b>, aztán adunk össze és vonunk ki. <span class=\"mx\"><span class=\"frac\"><span class=\"fn\">1</span><span class=\"fs\">/</span><span class=\"fd\">2</span></span> + <span class=\"frac\"><span class=\"fn\">1</span><span class=\"fs\">/</span><span class=\"fd\">3</span></span> · <span class=\"frac\"><span class=\"fn\">3</span><span class=\"fs\">/</span><span class=\"fd\">4</span></span></span>: <span class=\"key\">előbb a szorzás!</span> Az eredmény <span class=\"frac\"><span class=\"fn\">3</span><span class=\"fs\">/</span><span class=\"fd\">4</span></span>. Balról jobbra számolva <span class=\"frac\"><span class=\"fn\">5</span><span class=\"fs\">/</span><span class=\"fd\">8</span></span> jönne ki – az rossz.</p><p class=\"note\" data-src=\"174\">Becsülj előre: 1-nél több lesz?</p>",
    "line": 171,
    "words": 36
   },
@@ -441,17 +441,17 @@ window.LESSON_CONTENT = {
      2
     ],
     [
-     "/",
+     "·",
      [
-      "·",
-      [
-       "/",
-       1,
-       3
-      ],
+      "/",
+      1,
       3
      ],
-     4
+     [
+      "/",
+      3,
+      4
+     ]
     ]
    ],
    "s": "1/2 + 1/3 · 3/4"

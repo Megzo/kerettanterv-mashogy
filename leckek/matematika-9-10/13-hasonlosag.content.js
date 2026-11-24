@@ -12,37 +12,37 @@ window.LESSON_CONTENT = {
  "steps": [
   {
    "title": "Nagyítás egy pontból",
-   "html": "<p data-src=\"26\">Válassz egy <b>O</b> pontot és egy λ számot! Minden P pont képe az OP félegyenesen van, és <span class=\"mx\"><i>OP′</i> = <i>λ</i> · <i>OP</i></span>. Ez a <b>középpontos hasonlóság</b>, λ az <b>aránya</b>. Ha <span class=\"mx\"><i>λ</i> &gt; 1</span>, nagyít; ha <span class=\"mx\"><i>λ</i> &lt; 1</span>, kicsinyít – <span class=\"key\">a kicsinyítés is hasonlóság</span>. Húzd az O pontot, és állítsd a λ-t!</p><p class=\"note\" data-src=\"28\">Kérdezd meg: hol van a kép, ha O a háromszög belsejében van?</p>",
+   "html": "<p data-src=\"26\">Válassz egy <b>O</b> pontot és egy λ számot! Minden P pont képe az OP félegyenesen van, és <span class=\"mx\"><i>OP′</i> = <i>λ</i> · <i>OP</i></span>. Ez a <b>középpontos hasonlóság</b>, λ az <b>aránya</b>. Ha <span class=\"mx\"><i>λ</i> &gt; 1</span>, nagyít; ha <span class=\"mx\"><i>λ</i> &lt; 1</span>, kicsinyít – <span class=\"key\">a kicsinyítés is hasonlóság</span>. Húzd az O pontot, és állítsd a λ-t!</p><p class=\"note\" data-src=\"28\">Kérdezd meg: hol van a kép, ha O a háromszög belsejében van?</p>",
    "line": 25,
    "words": 55
   },
   {
    "title": "Mi marad meg?",
-   "html": "<p data-src=\"45\">Vektorokkal: ha <span class=\"mx\"><i>OA′</i> = <i>λ</i> · <i>OA</i></span> és <span class=\"mx\"><i>OB′</i> = <i>λ</i> · <i>OB</i></span>, akkor kivonva <span class=\"mx\"><i>A′</i><i>B′</i> = <i>λ</i> · <i>AB</i></span>. <span class=\"key\">Minden szakasz képe párhuzamos az eredetivel, és λ-szor olyan hosszú</span>, ezért a szögek sem változnak. Ha a képet még el is mozgatjuk, az eredmény <b>hasonló</b> az eredetihez: <span class=\"mx\"><i>ABC</i> ∼ <i>A″</i><i>B″</i><i>C″</i></span>.</p><p class=\"note\" data-src=\"47\">A szögek a párhuzamos szárú szögek miatt egyenlők.</p>",
+   "html": "<p data-src=\"45\">Vektorokkal: ha <span class=\"mx\"><i>OA′</i> = <i>λ</i> · <i>OA</i></span> és <span class=\"mx\"><i>OB′</i> = <i>λ</i> · <i>OB</i></span>, akkor kivonva <span class=\"mx\"><i>A′</i><i>B′</i> = <i>λ</i> · <i>AB</i></span>. <span class=\"key\">Minden szakasz képe párhuzamos az eredetivel, és λ-szor olyan hosszú</span>, ezért a szögek sem változnak. Ha a képet még el is mozgatjuk, az eredmény <b>hasonló</b> az eredetihez: <span class=\"mx\"><i>ABC</i> ∼ <i>A″</i><i>B″</i><i>C″</i></span>.</p><p class=\"note\" data-src=\"47\">A szögek a párhuzamos szárú szögek miatt egyenlők.</p>",
    "line": 44,
    "words": 44
   },
   {
    "title": "Kétszeres oldal – hányszoros terület?",
-   "html": "<p data-src=\"63\">Tippelj: ha minden oldal kétszeresére nő, hányszoros lesz a terület? A nagy háromszöget <span class=\"key\"><span class=\"mx\"><i>λ</i><sup>2</sup></span> darab kis háromszög tölti ki</span>. Az alap is, a magasság is λ-szoros, így a terület <span class=\"mx\"><i>λ</i> · <i>λ</i> = <i>λ</i><sup>2</sup></span>-szeres, a kerület csak λ-szoros. A térképen is: 1 : 50 000 mellett 1 cm → 500 m, de 1 cm² → 0,25 km².</p>",
+   "html": "<p data-src=\"63\">Tippelj: ha minden oldal kétszeresére nő, hányszoros lesz a terület? A nagy háromszöget <span class=\"key\"><span class=\"mx\"><i>λ</i><sup>2</sup></span> darab kis háromszög tölti ki</span>. Az alap is, a magasság is λ-szoros, így a terület <span class=\"mx\"><i>λ</i> · <i>λ</i> = <i>λ</i><sup>2</sup></span>-szeres, a kerület csak λ-szoros. A térképen is: 1 : 50 000 mellett 1 cm → 500 m, de 1 cm² → 0,25 km².</p>",
    "line": 62,
    "words": 46
   },
   {
    "title": "Egy nagy vagy két kicsi pizza?",
-   "html": "<p data-src=\"89\">Egy 32 cm-es vagy két 22 cm-es pizza a több? Sokan a kettőre szavaznak: <span class=\"mx\">2 · 22 = 44 &gt; 32</span>. De a <b>terület</b> számít, és az az átmérő négyzetével nő: <span class=\"mx\">32<sup>2</sup> = 1024</span>, de <span class=\"mx\">2 · 22<sup>2</sup> = 968</span>. <span class=\"key\">Az egy nagy kb. 5,8 %-kal több.</span> Állítsd be az átmérőket!</p><p class=\"note\" data-src=\"91\">Mikor egyforma? Ha <span class=\"mx\"><i>d</i><sub>1</sub> = <span class=\"rt\">√<span class=\"rad\">2</span></span> · <i>d</i><sub>2</sub></span>.</p>",
+   "html": "<p data-src=\"89\">Egy 32 cm-es vagy két 22 cm-es pizza a több? Sokan a kettőre szavaznak: <span class=\"mx\">2 · 22 = 44 &gt; 32</span>. De a <b>terület</b> számít, és az az átmérő négyzetével nő: <span class=\"mx\">32<sup>2</sup> = 1024</span>, de <span class=\"mx\">2 · 22<sup>2</sup> = 968</span>. <span class=\"key\">Az egy nagy kb. 5,8 %-kal több.</span> Állítsd be az átmérőket!</p><p class=\"note\" data-src=\"91\">Mikor egyforma? Ha <span class=\"mx\"><i>d</i><sub>1</sub> = <span class=\"rt\">√<span class=\"rad\">2</span></span> · <i>d</i><sub>2</sub></span>.</p>",
    "line": 88,
    "words": 40
   },
   {
    "title": "Miért nincs 10 méteres hangya?",
-   "html": "<p data-src=\"118\">Kétszeres élű kockába <span class=\"key\"><span class=\"mx\">2<sup>3</sup> = 8</span> kis kocka fér</span>: a térfogat – és vele a tömeg – <span class=\"mx\"><i>λ</i><sup>3</sup></span>-szeres, a lapok területe csak <span class=\"mx\"><i>λ</i><sup>2</sup></span>-szeres. Nagyítsunk egy 1 cm-es hangyát 10 m-esre (λ = 1000)! Tömege milliárdszoros, a lába keresztmetszete csak milliószoros: <span class=\"key\">minden cm²-re ezerszer több teher jut</span>.</p><p class=\"note\" data-src=\"120\">Galilei 1638-ban így érvelt: az óriások csontja nem bírná a súlyukat.</p>",
+   "html": "<p data-src=\"118\">Kétszeres élű kockába <span class=\"key\"><span class=\"mx\">2<sup>3</sup> = 8</span> kis kocka fér</span>: a térfogat – és vele a tömeg – <span class=\"mx\"><i>λ</i><sup>3</sup></span>-szeres, a lapok területe csak <span class=\"mx\"><i>λ</i><sup>2</sup></span>-szeres. Nagyítsunk egy 1 cm-es hangyát 10 m-esre (λ = 1000)! Tömege milliárdszoros, a lába keresztmetszete csak milliószoros: <span class=\"key\">minden cm²-re ezerszer több teher jut</span>.</p><p class=\"note\" data-src=\"120\">Galilei 1638-ban így érvelt: az óriások csontja nem bírná a súlyukat.</p>",
    "line": 117,
    "words": 50
   },
   {
    "title": "Milyen magas a torony?",
-   "html": "<p data-src=\"148\">Egy 1 m-es bot árnyéka 1,6 m, a toronyé 48 m. A napsugarak párhuzamosak, ezért a bot és a torony háromszögének szögei egyenlők: a két háromszög <b>hasonló</b>. Így <span class=\"mx\"><i>H</i> : 48 = 1 : 1,6</span>, vagyis <span class=\"key\">a torony 30 m magas</span>. Mozgasd a Napot: az árnyékok változnak, az eredmény nem!</p><p class=\"note\" data-src=\"150\">Csoportmunka: mérjétek meg így az iskola melletti tornyot!</p>",
+   "html": "<p data-src=\"148\">Egy 1 m-es bot árnyéka 1,6 m, a toronyé 48 m. A napsugarak párhuzamosak, ezért a bot és a torony háromszögének szögei egyenlők: a két háromszög <b>hasonló</b>. Így <span class=\"mx\"><i>H</i> : 48 = 1 : 1,6</span>, vagyis <span class=\"key\">a torony 30 m magas</span>. Mozgasd a Napot: az árnyékok változnak, az eredmény nem!</p><p class=\"note\" data-src=\"150\">Csoportmunka: mérjétek meg így az iskola melletti tornyot!</p>",
    "line": 147,
    "words": 48
   },
@@ -54,7 +54,7 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "Az A4-es lap családja",
-   "html": "<p data-src=\"199\">Félbehajtva az A4-ből A5 lesz – és pontosan hasonló az eredetihez! Minden téglalap ilyen? <span class=\"key\">Csak az <span class=\"mx\"><i>a</i> : <i>b</i> = <span class=\"rt\">√<span class=\"rad\">2</span></span></span> oldalarányú</span>: a fele akkor hasonló, ha <span class=\"mx\"><i>a</i> : <i>b</i> = <i>b</i> : (<i>a</i>/2)</span>, azaz <span class=\"mx\"><i>a</i><sup>2</sup> = 2<i>b</i><sup>2</sup></span>. Az A0 területe kb. 1 m², minden következő lap az előző fele, az arány <span class=\"mx\"><i>λ</i> = 1/<span class=\"rt\">√<span class=\"rad\">2</span></span></span>.</p>",
+   "html": "<p data-src=\"199\">Félbehajtva az A4-ből A5 lesz – és pontosan hasonló az eredetihez! Minden téglalap ilyen? <span class=\"key\">Csak az <span class=\"mx\"><i>a</i> : <i>b</i> = <span class=\"rt\">√<span class=\"rad\">2</span></span></span> oldalarányú</span>: a fele akkor hasonló, ha <span class=\"mx\"><i>a</i> : <i>b</i> = <i>b</i> : (<i>a</i>/2)</span>, azaz <span class=\"mx\"><i>a</i><sup>2</sup> = 2<i>b</i><sup>2</sup></span>. Az A0 területe kb. 1 m², minden következő lap az előző fele, az arány <span class=\"mx\"><i>λ</i> = 1/<span class=\"rt\">√<span class=\"rad\">2</span></span></span>.</p>",
    "line": 198,
    "words": 38
   },
@@ -189,7 +189,7 @@ window.LESSON_CONTENT = {
    "a": 1.0,
    "b": 50000.0,
    "v": 2e-05,
-   "s": "1 : 50 000"
+   "s": "1 : 50 000"
   },
   "1 cm a valóságban": {
    "v": 500.0,

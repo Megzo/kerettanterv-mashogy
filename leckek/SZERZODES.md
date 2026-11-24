@@ -77,14 +77,21 @@ a build hibát ad hiányzó, fölösleges, túl hosszú, rossz egységű vagy ta
 - Mutató: `L.pointer` `{x, y, down, inside}`; egy gyors (egy képkockán belüli) kattintásnál a
   `down` a `draw` előtt már újra `false` – kattintásra ezért a **`L.pointer.pressed`** (lenyomás
   volt az előző képkocka óta; `px, py`: hol), felengedésre a `released` figyeljen, vagy az
-  `events` sor (`[{type: 'down'|'up', x, y}]`); ezeket a motor a `draw` után üríti. Saját
-  `pointerdown`-figyelő nem kell.
+  `events` sor (`[{type: 'down'|'up', x, y, button, ts}]`); ezeket a motor a `draw` után üríti. Saját
+  `pointerdown`-figyelő nem kell. A `ts` az esemény ideje ms-ban (`performance.now()`-skála) – képkockánál
+  pontosabb időméréshez (reakcióidő: `ev.ts` − az inger megjelenésekor mért `performance.now()`;
+  `L.now` az aktuális képkocka időbélyege ugyanezen a skálán).
+- Nyugalom (`idle`): ha a jelenetben egy `L.st`-hez kötött átmenet a lépés `settle`-je **után** is fut
+  (tipikusan: visszalépéskor a `settle`-től induló kamera-áttűnés), add meg:
+  `Lesson.create({idle: (L) => L.st >= camEnd, …})` – a QA (`--det`, `--back`, settle-kép) addig vár.
+  A kép nem változik tőle.
 - Tartalom: `L.lab(k)` felirat · `L.num(k)` szám · `L.unit(k)` · `L.val(k, d?)` → „0,92 g/cm³”.
 - Szöveg a vásznon: **csak `L.tx(s, x, y, o)` / `L.pill(s, x, y, o)`** – ezekből tudja a QA és a
   review mód, hol van felirat. `o`: `s` px, `w` vastagság, `f` (`F.D` Fraunces, `F.B` Bricolage,
   `F.M` JetBrains Mono), `i` dőlt, `a` igazítás, `b` alapvonal, `c` szín, `ls` betűköz,
   `max` (szélesség, fölötte kicsinyít), `k` md-kulcs vagy kulcslista, `qa: false` (szándékos
-  átfedés, pl. képletjel a dobozban). `L.pill`: `bg`, `bd`, `pad`, `r` – a doboz a szöveghez méreteződik.
+  átfedés, pl. képletjel a dobozban). `L.pill`: `bg`, `bd`, `pad`, `r` – a doboz a szöveghez méreteződik;
+  `max`-szal a kicsinyített szöveghez (a doboz szélessége legfeljebb `max` + 2·`pad`).
   A QA forgatott feliratnál (`c.rotate` után `L.tx`) a forgatott téglalappal számol (függőleges
   tengelycímhez nem kell `qa: false`), és a pill dobozát is: ha egy pill egy másik feliratot takar,
   az átfedés.
@@ -182,8 +189,12 @@ python3 tools/qa_lesson.py leckek/<…>/NN-slug.html --at 1.5,settle --back --re
 - A QA ezeket is nézi (`!` = figyelmeztetés, nem rontja a kilépési kódot): a fontokból hiányzó
   karakter (glif), 300 ms-nál lassabb `enter()`, matekleckében tizedespont/kötőjel-mínusz a
   vásznon. Kapcsolók: `--det` (determinizmus: ugyanannál az `L.st`-nél oda-vissza léptetve
-  ugyanaz a kép?), `--states` (`window.__qaStates = {3: [{name: 'min', set(L) {…}}]}` – szélső
-  állapotok fotója), `--poke '{…}'` (a lecke `L.poke(o)`-ja), `--data` (az adatok listája).
+  ugyanaz a kép? – ha a lecke ad `idle`-t, a nyugalomig vár), `--states`
+  (`window.__qaStates = {3: [{name: 'min', set(L) {…}}]}`, a kulcs 1-alapú lépésszám – szélső
+  állapotok fotója; a `set(L)` közvetlenül az exponálás előtt fut, `L.st = settle` után, így
+  `S.t0 = L.st − 2` = „2 mp-cel az indítás után”; `{st: 3.2}` más időpontot, `{wait: 600}` hosszabb
+  várakozást ad; a QA figyelmeztet, ha egy állapot nem változtatott a képen),
+  `--poke '{…}'` (a lecke `L.poke(o)`-ja), `--data` (az adatok listája).
   Ha a lecke ad `L.checks()` függvényt (→ `[{name, ok, got, want}]`), minden képnél lefut.
 - **Ugrópróba** (alapból fut, `--no-jump` kihagyja, `--jump-only` csak ezt futtatja): 1. → utolsó,
   utolsó → 1., véletlen ugrások (számbillentyű: áttűnés közben a **köztes jelenetek is

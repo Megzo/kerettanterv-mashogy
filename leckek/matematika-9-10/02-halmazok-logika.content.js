@@ -18,7 +18,7 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "„És” = metszet, „vagy” = unió",
-   "html": "<p data-src=\"62\">Most csak A-t és B-t nézzük. A <b>metszet</b> (<span class=\"mx\"><i>A</i> ∩ <i>B</i></span>) elemeire igaz: „A <b>és</b> B”. Az <b>unió</b> (<span class=\"mx\"><i>A</i> ∪ <i>B</i></span>) elemeire: „A <b>vagy</b> B”. <span class=\"key\">Az igazságtábla minden sora egy tartomány a Venn-diagramon.</span> Tévhit: a „vagy” kizáró. A matekban megengedő; a kizárót így mondjuk: „vagy…, vagy…”.</p><p class=\"note\" data-src=\"64\">Kattints a táblázat egy sorára vagy egy tartományra!</p>",
+   "html": "<p data-src=\"62\">Most csak A-t és B-t nézzük. A <b>metszet</b> (<span class=\"mx\"><i>A</i> ∩ <i>B</i></span>) elemeire igaz: „A <b>és</b> B”. Az <b>unió</b> (<span class=\"mx\"><i>A</i> ∪ <i>B</i></span>) elemeire: „A <b>vagy</b> B”. <span class=\"key\">Az igazságtábla minden sora egy tartomány a Venn-diagramon.</span> Tévhit: a „vagy” kizáró. A matekban megengedő; a kizárót így mondjuk: „vagy…, vagy…”.</p><p class=\"note\" data-src=\"64\">Kattints a táblázat egy sorára vagy egy tartományra!</p>",
    "line": 61,
    "words": 50
   },
@@ -36,13 +36,13 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "„Ha…, akkor…” = részhalmaz",
-   "html": "<p data-src=\"128\">„Ha egy szám osztható 4-gyel, akkor páros.” Azaz: A <b>részhalmaza</b> B-nek (<span class=\"mx\"><i>A</i> ⊆ <i>B</i></span>). Csak akkor hamis, ha van <b>ellenpélda</b>: A-beli, de nem B-beli elem. <span class=\"key\">A „ha…, akkor…” csak az (i; h) sorban hamis.</span></p><p class=\"note\" data-src=\"130\">Nyomd meg a Megfordítás gombot is!</p>",
+   "html": "<p data-src=\"128\">„Ha egy szám osztható 4-gyel, akkor páros.” Azaz: A <b>részhalmaza</b> B-nek (<span class=\"mx\"><i>A</i> ⊆ <i>B</i></span>). Csak akkor hamis, ha van <b>ellenpélda</b>: A-beli, de nem B-beli elem. <span class=\"key\">A „ha…, akkor…” csak az (i; h) sorban hamis.</span></p><p class=\"note\" data-src=\"130\">Nyomd meg a Megfordítás gombot is!</p>",
    "line": 127,
    "words": 38
   },
   {
    "title": "Igaz-e a megfordítás?",
-   "html": "<p data-src=\"158\">„Ha <span class=\"mx\"><i>x</i> &gt; 3</span>, akkor <span class=\"mx\"><i>x</i><sup>2</sup> &gt; 9</span>” igaz: a piros félegyenes a kék halmazon belül van. A <b>megfordítás</b>: „ha <span class=\"mx\"><i>x</i><sup>2</sup> &gt; 9</span>, akkor <span class=\"mx\"><i>x</i> &gt; 3</span>” – hamis, ellenpélda: −4. Tévhit: ha egy állítás igaz, a megfordítása is az. <span class=\"key\">Ha mindkét irány igaz, ezt mondjuk: <b>akkor és csak akkor</b>.</span></p><p class=\"note\" data-src=\"160\">Húzd az x-et! Próbáld ki az <span class=\"mx\"><i>x</i><sup>3</sup> &gt; 27</span> feltételt is.</p>",
+   "html": "<p data-src=\"158\">„Ha <span class=\"mx\"><i>x</i> &gt; 3</span>, akkor <span class=\"mx\"><i>x</i><sup>2</sup> &gt; 9</span>” igaz: a piros félegyenes a kék halmazon belül van. A <b>megfordítás</b>: „ha <span class=\"mx\"><i>x</i><sup>2</sup> &gt; 9</span>, akkor <span class=\"mx\"><i>x</i> &gt; 3</span>” – hamis, ellenpélda: −4. Tévhit: ha egy állítás igaz, a megfordítása is az. <span class=\"key\">Ha mindkét irány igaz, ezt mondjuk: <b>akkor és csak akkor</b>.</span></p><p class=\"note\" data-src=\"160\">Húzd az x-et! Próbáld ki az <span class=\"mx\"><i>x</i><sup>3</sup> &gt; 27</span> feltételt is.</p>",
    "line": 157,
    "words": 50
   },
@@ -60,7 +60,7 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "Összefoglalás",
-   "html": "<ul><li data-src=\"236\">„és” = <b>metszet</b>, „vagy” = <b>unió</b>, „nem” = <b>komplementer</b>.</li><li data-src=\"237\">„Ha A, akkor B” = <span class=\"mx\"><i>A</i> ⊆ <i>B</i></span>; a <b>megfordítást</b> külön kell vizsgálni.</li><li data-src=\"238\">A „minden” tagadása: „<b>van olyan</b>, amelyre nem”.</li><li data-src=\"239\"><b>Logikai szita:</b> minden tartomány pontosan egyszer számít.</li><li data-src=\"240\"><span class=\"key\">Végtelen halmazoknál párba állítással hasonlítunk.</span></li></ul>",
+   "html": "<ul><li data-src=\"236\">„és” = <b>metszet</b>, „vagy” = <b>unió</b>, „nem” = <b>komplementer</b>.</li><li data-src=\"237\">„Ha A, akkor B” = <span class=\"mx\"><i>A</i> ⊆ <i>B</i></span>; a <b>megfordítást</b> külön kell vizsgálni.</li><li data-src=\"238\">A „minden” tagadása: „<b>van olyan</b>, amelyre nem”.</li><li data-src=\"239\"><b>Logikai szita:</b> minden tartomány pontosan egyszer számít.</li><li data-src=\"240\"><span class=\"key\">Végtelen halmazoknál párba állítással hasonlítunk.</span></li></ul>",
    "line": 235,
    "words": 35
   }

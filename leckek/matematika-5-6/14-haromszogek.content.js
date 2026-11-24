@@ -42,7 +42,7 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "Tépd le a sarkokat!",
-   "html": "<p data-src=\"116\"><b>Tippelj előbb!</b> Mennyi a három szög együtt? És egy nagyobb háromszögben? Tépd le a sarkokat: egy egyenes mentén egymás mellé illeszkednek. <span class=\"key\"><span class=\"mx\"><i>α</i> + <i>β</i> + <i>γ</i></span> = 180°, bármilyen a háromszög.</span> Húzd a csúcsokat, nagyítsd!</p><p class=\"note\" data-src=\"118\">Vágjatok ki papírból háromszöget, és tépjétek le a sarkait!</p>",
+   "html": "<p data-src=\"116\"><b>Tippelj előbb!</b> Mennyi a három szög együtt? És egy nagyobb háromszögben? Tépd le a sarkokat: egy egyenes mentén egymás mellé illeszkednek. <span class=\"key\"><span class=\"mx\"><i>α</i> + <i>β</i> + <i>γ</i></span> = 180°, bármilyen a háromszög.</span> Húzd a csúcsokat, nagyítsd!</p><p class=\"note\" data-src=\"118\">Vágjatok ki papírból háromszöget, és tépjétek le a sarkait!</p>",
    "line": 115,
    "words": 39
   },
@@ -54,13 +54,13 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "Négyszög: 360°",
-   "html": "<p data-src=\"145\">Egy <b>átló</b> a négyszöget két háromszögre vágja, ezért a szögösszeg <span class=\"mx\">2 · 180°</span> = 360°. Homorú négyszögben is! A <b>téglalap</b> minden szöge derékszög. <span class=\"key\">A négyzet is téglalap:</span> olyan téglalap, amelynek minden oldala egyenlő.</p>",
+   "html": "<p data-src=\"145\">Egy <b>átló</b> a négyszöget két háromszögre vágja, ezért a szögösszeg <span class=\"mx\">2 · 180°</span> = 360°. Homorú négyszögben is! A <b>téglalap</b> minden szöge derékszög. <span class=\"key\">A négyzet is téglalap:</span> olyan téglalap, amelynek minden oldala egyenlő.</p>",
    "line": 144,
    "words": 30
   },
   {
    "title": "Összefoglalás",
-   "html": "<ul><li data-src=\"164\">A szög a <b>forgás</b> mértéke, nem a szárak hossza.</li><li data-src=\"165\">Háromszög csak akkor lesz, ha bármely két oldal együtt hosszabb a harmadiknál.</li><li data-src=\"166\">Háromszögben <span class=\"key\"><span class=\"mx\"><i>α</i> + <i>β</i> + <i>γ</i></span> = 180°</span>, a külső szög <span class=\"mx\"><i>γ′</i> = <i>α</i> + <i>β</i></span>.</li><li data-src=\"167\">Négyszögben a szögösszeg 360°.</li></ul><p class=\"note\" data-src=\"169\">Rajzolj egy háromszöget, mérd meg a szögeit, és add össze!</p>",
+   "html": "<ul><li data-src=\"164\">A szög a <b>forgás</b> mértéke, nem a szárak hossza.</li><li data-src=\"165\">Háromszög csak akkor lesz, ha bármely két oldal együtt hosszabb a harmadiknál.</li><li data-src=\"166\">Háromszögben <span class=\"key\"><span class=\"mx\"><i>α</i> + <i>β</i> + <i>γ</i></span> = 180°</span>, a külső szög <span class=\"mx\"><i>γ′</i> = <i>α</i> + <i>β</i></span>.</li><li data-src=\"167\">Négyszögben a szögösszeg 360°.</li></ul><p class=\"note\" data-src=\"169\">Rajzolj egy háromszöget, mérd meg a szögeit, és add össze!</p>",
    "line": 163,
    "words": 42
   }

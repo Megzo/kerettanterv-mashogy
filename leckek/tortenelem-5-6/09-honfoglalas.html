@@ -2161,6 +2161,7 @@ function scene8(st, w, live) {
 const sT = new Array(9).fill(0);
 const SCENES = [scene0, scene1, scene2, scene3, scene4, scene5, scene6, scene7, scene8];
 let camStep = -1;
+let camEnd = -1;   // a futó kamera-áttűnés vége (L.st) – a QA idle()-je ebből tudja, mikor nyugodt a kép
 const yslider = (S, k, min, max) => L.slider({ label: lab(k), k, min, max, step: 1, value: max, format: (v) => String(v), onInput: (v) => takeOver(S, v) });
 function selSource(id) {
   if (S3.sel === id) return;
@@ -2168,6 +2169,7 @@ function selSource(id) {
   for (const k in S3.btn) S3.btn[k].classList.toggle('on', k === id);
 }
 L = Lesson.create({
+  idle: (L) => L.st >= camEnd,   // QA: visszalépéskor a kamera a settle után ér a helyére (motor v2)
   content: window.LESSON_CONTENT,
   home: false,
   steps: [
@@ -2226,6 +2228,7 @@ L = Lesson.create({
     const v8 = fit([-1.0, 39.6, 30.0, 54.0], [20, 140, 1320, 770]);
     VIEWS = [v4, v4, v4, v4, v5, v5, v7, v8, v8];
     CAM = TortMap.camera(PROJ);
+    { const go0 = CAM.go; CAM.go = (v, t, d) => { camEnd = t + (d || 0); go0(v, t, d); }; }
     const yb = YA('bolgár hadjárat'), yh = H0(), yd = YA('Dunántúl');
     K4 = [[0, yb - .4], [.6, yb - .4], [1.8, yb + .3], [3.0, yh + .5], [4.4, yh + 1.6], [6.4, yd]];
     K8 = [[0, YA('Brenta éve') - 1.3], [.6, YA('Brenta éve') - 1.3], [7.2, YA('arkadiopoliszi csata')]];
@@ -2238,7 +2241,11 @@ L = Lesson.create({
     DANUBE7 = TortMap.slice(MAP.river('Duna'), [14.35, 48.22], [16.85, 48.12]);
   },
   draw(Lx) {
-    L = Lx; c = L.ctx; GA = 1; paper(); L.stage.style.cursor = '';
+    L = Lx; c = L.ctx;
+    // a vászonállapot az 1. lépésben ne attól függjön, honnan érkeztünk (visszalépéskor a következő lépés
+    // lineCap-je szivárgott át); az érték az előre léptetés eddigi állapota → a kép nem változik
+    if (L.step === 0) c.lineCap = 'butt';
+    GA = 1; paper(); L.stage.style.cursor = '';
     if (L.step !== camStep) {
       const dur = camStep < 0 || !isMap(camStep) || !isMap(L.step) ? 0 : L.dir > 0 ? CAM_DUR[L.step] : .8;
       CAM.go(VIEWS[L.step], L.st, dur); camStep = L.step;

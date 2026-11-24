@@ -18,19 +18,19 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "Duplázás: a kettő hatványai",
-   "html": "<p data-src=\"88\">Minden hajtás megduplázza a rétegeket: <span class=\"mx\"><i>n</i></span> hajtás után <span class=\"mx\">2 · 2 · … · 2</span> réteg van, <span class=\"mx\"><i>n</i></span> tényezővel. Ez a <b>hatvány</b>: <span class=\"mx\">2<sup><i>n</i></sup></span>, a 2 a <em>hatványalap</em>, az <span class=\"mx\"><i>n</i></span> a <em>hatványkitevő</em>. Tévhit: „minden hajtás egy lappal vastagít” – az csak <span class=\"mx\"><i>n</i> + 1</span> lap lenne. <span class=\"key\">Tíz hajtás: <span class=\"mx\">2<sup>10</sup></span> = 1024 réteg.</span></p><p class=\"note\" data-src=\"90\"><span class=\"mx\">2<sup>10</sup> ≈ 10<sup>3</sup></span>: tíz duplázás kb. ezerszeres.</p>",
+   "html": "<p data-src=\"88\">Minden hajtás megduplázza a rétegeket: <span class=\"mx\"><i>n</i></span> hajtás után <span class=\"mx\">2 · 2 · … · 2</span> réteg van, <span class=\"mx\"><i>n</i></span> tényezővel. Ez a <b>hatvány</b>: <span class=\"mx\">2<sup><i>n</i></sup></span>, a 2 a <em>hatványalap</em>, az <span class=\"mx\"><i>n</i></span> a <em>hatványkitevő</em>. Tévhit: „minden hajtás egy lappal vastagít” – az csak <span class=\"mx\"><i>n</i> + 1</span> lap lenne. <span class=\"key\">Tíz hajtás: <span class=\"mx\">2<sup>10</sup></span> = 1024 réteg.</span></p><p class=\"note\" data-src=\"90\"><span class=\"mx\">2<sup>10</sup> ≈ 10<sup>3</sup></span>: tíz duplázás kb. ezerszeres.</p>",
    "line": 87,
    "words": 46
   },
   {
    "title": "A kitevők összeadódnak",
-   "html": "<p data-src=\"109\">Három hajtás, majd még négy: hét hajtás. <span class=\"mx\">2<sup>3</sup> · 2<sup>4</sup></span>: három kettes szorzó, majd még négy, <span class=\"key\">tehát a kitevők összeadódnak:</span> <span class=\"mx\">2<sup>3</sup> · 2<sup>4</sup> = 2<sup>7</sup></span>. A <span class=\"mx\">2<sup>12</sup></span> tévedés: az tizenkét szorzó lenne. Próbáld ki az osztást és a hatvány hatványát is!</p>",
+   "html": "<p data-src=\"109\">Három hajtás, majd még négy: hét hajtás. <span class=\"mx\">2<sup>3</sup> · 2<sup>4</sup></span>: három kettes szorzó, majd még négy, <span class=\"key\">tehát a kitevők összeadódnak:</span> <span class=\"mx\">2<sup>3</sup> · 2<sup>4</sup> = 2<sup>7</sup></span>. A <span class=\"mx\">2<sup>12</sup></span> tévedés: az tizenkét szorzó lenne. Próbáld ki az osztást és a hatvány hatványát is!</p>",
    "line": 108,
    "words": 35
   },
   {
    "title": "Visszafelé: nulla és negatív kitevő",
-   "html": "<p data-src=\"138\">Lépj visszafelé! Balra minden lépés <b>feloszt</b> az alappal: <span class=\"mx\">2<sup>3</sup> = 8</span>, <span class=\"mx\">2<sup>2</sup> = 4</span>, <span class=\"mx\">2<sup>1</sup> = 2</span>, tehát <span class=\"mx\">2<sup>0</sup> = 1</span>, <span class=\"mx\">2<sup>−1</sup> = <span class=\"frac\"><span class=\"fn\">1</span><span class=\"fs\">/</span><span class=\"fd\">2</span></span></span>. <span class=\"key\">A <span class=\"mx\">2<sup>0</sup></span> nem 0, hanem 1; a <span class=\"mx\">2<sup>−3</sup></span> nem negatív, hanem <span class=\"mx\"><span class=\"frac\"><span class=\"fn\">1</span><span class=\"fs\">/</span><span class=\"fd\">8</span></span></span>.</span> Az osztás szabálya is ezt adja: <span class=\"mx\">2<sup>3</sup> : 2<sup>3</sup> = 2<sup>0</sup> = 1</span>.</p><p class=\"note\" data-src=\"140\">Ez definíció: így maradnak érvényesek az azonosságok. Az alap nem lehet 0.</p>",
+   "html": "<p data-src=\"138\">Lépj visszafelé! Balra minden lépés <b>feloszt</b> az alappal: <span class=\"mx\">2<sup>3</sup> = 8</span>, <span class=\"mx\">2<sup>2</sup> = 4</span>, <span class=\"mx\">2<sup>1</sup> = 2</span>, tehát <span class=\"mx\">2<sup>0</sup> = 1</span>, <span class=\"mx\">2<sup>−1</sup> = <span class=\"frac\"><span class=\"fn\">1</span><span class=\"fs\">/</span><span class=\"fd\">2</span></span></span>. <span class=\"key\">A <span class=\"mx\">2<sup>0</sup></span> nem 0, hanem 1; a <span class=\"mx\">2<sup>−3</sup></span> nem negatív, hanem <span class=\"mx\"><span class=\"frac\"><span class=\"fn\">1</span><span class=\"fs\">/</span><span class=\"fd\">8</span></span></span>.</span> Az osztás szabálya is ezt adja: <span class=\"mx\">2<sup>3</sup> : 2<sup>3</sup> = 2<sup>0</sup> = 1</span>.</p><p class=\"note\" data-src=\"140\">Ez definíció: így maradnak érvényesek az azonosságok. Az alap nem lehet 0.</p>",
    "line": 137,
    "words": 45
   },
@@ -42,13 +42,13 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "Normálalak: a · 10ⁿ",
-   "html": "<p data-src=\"193\">A nagyon nagy és a nagyon kicsi számot <b>normálalakban</b> írjuk: <span class=\"mx\"><i>a</i> · 10<sup><i>n</i></sup></span>, ahol <span class=\"mx\">1 ≤ <i>a</i> &lt; 10</span> és <span class=\"mx\"><i>n</i></span> egész. A tizedesvesszőt addig léptetjük, amíg egyetlen nem nulla jegy marad előtte. <span class=\"key\">Ahány lépés, annyi a kitevő: balra lépve pozitív, jobbra negatív.</span> Válassz számot!</p><p class=\"note\" data-src=\"195\">A <span class=\"mx\">45 · 10<sup>3</sup></span> nem normálalak, mert <span class=\"mx\">45 ≥ 10</span>. Helyesen: <span class=\"mx\">4,5 · 10<sup>4</sup></span>.</p>",
+   "html": "<p data-src=\"193\">A nagyon nagy és a nagyon kicsi számot <b>normálalakban</b> írjuk: <span class=\"mx\"><i>a</i> · 10<sup><i>n</i></sup></span>, ahol <span class=\"mx\">1 ≤ <i>a</i> &lt; 10</span> és <span class=\"mx\"><i>n</i></span> egész. A tizedesvesszőt addig léptetjük, amíg egyetlen nem nulla jegy marad előtte. <span class=\"key\">Ahány lépés, annyi a kitevő: balra lépve pozitív, jobbra negatív.</span> Válassz számot!</p><p class=\"note\" data-src=\"195\">A <span class=\"mx\">45 · 10<sup>3</sup></span> nem normálalak, mert <span class=\"mx\">45 ≥ 10</span>. Helyesen: <span class=\"mx\">4,5 · 10<sup>4</sup></span>.</p>",
    "line": 192,
    "words": 47
   },
   {
    "title": "Az atomtól a galaxisig",
-   "html": "<p data-src=\"212\">Ezen a szalagon <span class=\"key\">minden osztás tízszeres</span>: egy lépés jobbra szorzás 10-zel. Így fér el egy ábrán az atom és a Tejút. Válassz két méretet! Normálalakban könnyű osztani: <span class=\"mx\">(<i>a</i> · 10<sup><i>n</i></sup>) : (<i>b</i> · 10<sup><i>k</i></sup>) = (<i>a</i> : <i>b</i>) · 10<sup><i>n</i>−<i>k</i></sup></span>. A papír vastagságában kb. 1 millió hidrogénatom fér el egymás mellett.</p>",
+   "html": "<p data-src=\"212\">Ezen a szalagon <span class=\"key\">minden osztás tízszeres</span>: egy lépés jobbra szorzás 10-zel. Így fér el egy ábrán az atom és a Tejút. Válassz két méretet! Normálalakban könnyű osztani: <span class=\"mx\">(<i>a</i> · 10<sup><i>n</i></sup>) : (<i>b</i> · 10<sup><i>k</i></sup>) = (<i>a</i> : <i>b</i>) · 10<sup><i>n</i>−<i>k</i></sup></span>. A papír vastagságában kb. 1 millió hidrogénatom fér el egymás mellett.</p>",
    "line": 211,
    "words": 37
   },
@@ -60,7 +60,7 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "Összefoglalás",
-   "html": "<ul><li data-src=\"260\"><span class=\"mx\"><i>a</i><sup><i>m</i></sup> · <i>a</i><sup><i>n</i></sup> = <i>a</i><sup><i>m</i>+<i>n</i></sup></span>, <span class=\"mx\"><i>a</i><sup><i>m</i></sup> : <i>a</i><sup><i>n</i></sup> = <i>a</i><sup><i>m</i>−<i>n</i></sup></span>, <span class=\"mx\">(<i>a</i><sup><i>m</i></sup>)<sup><i>n</i></sup> = <i>a</i><sup><i>mn</i></sup></span></li><li data-src=\"261\"><span class=\"mx\"><i>a</i><sup>0</sup> = 1</span> és <span class=\"mx\"><i>a</i><sup>−<i>n</i></sup> = <span class=\"frac\"><span class=\"fn\">1</span><span class=\"fs\">/</span><span class=\"fd\"><i>a</i><sup><i>n</i></sup></span></span></span>, ha <span class=\"mx\"><i>a</i> ≠ 0</span></li><li data-src=\"262\">normálalak: <span class=\"mx\"><i>a</i> · 10<sup><i>n</i></sup></span>, ahol <span class=\"mx\">1 ≤ <i>a</i> &lt; 10</span></li></ul><p data-src=\"264\"><span class=\"key\">Duplázás: egy hajtás. Tízszerezés: egy nagyságrend.</span> 103 hajtás után a köteg hosszabb lenne, mint a látható Világegyetem átmérője!</p>",
+   "html": "<ul><li data-src=\"260\"><span class=\"mx\"><i>a</i><sup><i>m</i></sup> · <i>a</i><sup><i>n</i></sup> = <i>a</i><sup><i>m</i>+<i>n</i></sup></span>, <span class=\"mx\"><i>a</i><sup><i>m</i></sup> : <i>a</i><sup><i>n</i></sup> = <i>a</i><sup><i>m</i>−<i>n</i></sup></span>, <span class=\"mx\">(<i>a</i><sup><i>m</i></sup>)<sup><i>n</i></sup> = <i>a</i><sup><i>mn</i></sup></span></li><li data-src=\"261\"><span class=\"mx\"><i>a</i><sup>0</sup> = 1</span> és <span class=\"mx\"><i>a</i><sup>−<i>n</i></sup> = <span class=\"frac\"><span class=\"fn\">1</span><span class=\"fs\">/</span><span class=\"fd\"><i>a</i><sup><i>n</i></sup></span></span></span>, ha <span class=\"mx\"><i>a</i> ≠ 0</span></li><li data-src=\"262\">normálalak: <span class=\"mx\"><i>a</i> · 10<sup><i>n</i></sup></span>, ahol <span class=\"mx\">1 ≤ <i>a</i> &lt; 10</span></li></ul><p data-src=\"264\"><span class=\"key\">Duplázás: egy hajtás. Tízszerezés: egy nagyságrend.</span> 103 hajtás után a köteg hosszabb lenne, mint a látható Világegyetem átmérője!</p>",
    "line": 259,
    "words": 30
   }

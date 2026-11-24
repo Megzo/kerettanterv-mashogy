@@ -470,7 +470,7 @@ window.LESSON_CONTENT = {
    "a": 105.0,
    "b": 100.0,
    "v": 1.05,
-   "s": "105 : 100"
+   "s": "105 : 100"
   },
   "világ termékenysége": {
    "v": 2.25,

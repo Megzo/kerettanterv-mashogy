@@ -36,7 +36,7 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "Ugyanaz az átlag, mégis más: a szóródás",
-   "html": "<p data-src=\"123\">Két kosaras hat meccse: átlag, medián, módusz egyaránt 16 pont. Mégis más a kettő! A <b>terjedelem</b>: legnagyobb adat − legkisebb adat. A <b>szórás</b> az átlagtól való <span class=\"mx\"><i>d</i></span> eltérések tipikus mérete: <span class=\"key\">az eltérésnégyzetek átlagának négyzetgyöke</span> (piros négyzet).</p><p class=\"big-fx\" data-src=\"125\"><span class=\"mx\"><i>σ</i> = <span class=\"rt\">√<span class=\"rad\"><span class=\"rp\">(</span><span class=\"frac\"><span class=\"fn\"><i>d</i><sub>1</sub><sup>2</sup> + … + <i>d</i><sub><i>n</i></sub><sup>2</sup></span><span class=\"fs\">/</span><span class=\"fd\"><i>n</i></span></span><span class=\"rp\">)</span></span></span></span></p>",
+   "html": "<p data-src=\"123\">Két kosaras hat meccse: átlag, medián, módusz egyaránt 16 pont. Mégis más a kettő! A <b>terjedelem</b>: legnagyobb adat − legkisebb adat. A <b>szórás</b> az átlagtól való <span class=\"mx\"><i>d</i></span> eltérések tipikus mérete: <span class=\"key\">az eltérésnégyzetek átlagának négyzetgyöke</span> (piros négyzet).</p><p class=\"big-fx\" data-src=\"125\"><span class=\"mx\"><i>σ</i> = <span class=\"rt\">√<span class=\"rad\"><span class=\"rp\">(</span><span class=\"frac\"><span class=\"fn\"><i>d</i><sub>1</sub><sup>2</sup> + … + <i>d</i><sub><i>n</i></sub><sup>2</sup></span><span class=\"fs\">/</span><span class=\"fd\"><i>n</i></span></span><span class=\"rp\">)</span></span></span></span></p>",
    "line": 122,
    "words": 38
   },

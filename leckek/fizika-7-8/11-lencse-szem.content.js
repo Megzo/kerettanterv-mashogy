@@ -18,13 +18,13 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "Gyűjtőlencse, fókusz",
-   "html": "<p data-src=\"59\">A lencse görbült, a szélén ferdébben éri a fény, ott jobban törik. A <b>gyűjtőlencse</b> így a párhuzamos napsugarakat <span class=\"key\">egy pontba, a fókuszpontba</span> gyűjti.</p><p class=\"big-fx\" data-src=\"61\">D = 1 / f</p><p data-src=\"63\">Az erősség egysége a <b>dioptria</b> (D).</p><p class=\"note\" data-src=\"65\">Egyszerűsítés: vékony lencse – a sugár egyszer, a közepén törik.</p>",
+   "html": "<p data-src=\"59\">A lencse görbült, a szélén ferdébben éri a fény, ott jobban törik. A <b>gyűjtőlencse</b> így a párhuzamos napsugarakat <span class=\"key\">egy pontba, a fókuszpontba</span> gyűjti.</p><p class=\"big-fx\" data-src=\"61\">D = 1 / f</p><p data-src=\"63\">Az erősség egysége a <b>dioptria</b> (D).</p><p class=\"note\" data-src=\"65\">Egyszerűsítés: vékony lencse – a sugár egyszer, a közepén törik.</p>",
    "line": 58,
    "words": 41
   },
   {
    "title": "Kép az ernyőn",
-   "html": "<p data-src=\"81\">A camera obscura lyuka csak vékony nyalábot enged át: halvány a kép. A lencse az összes rá eső fényt <span class=\"key\">egy pontba gyűjti</span>: a kép éles <b>és</b> világos, fejjel lefelé áll.</p><p class=\"big-fx\" data-src=\"83\">1/f = 1/t + 1/k</p><p data-src=\"85\">Keresd az éles képet! <b>Tévhit:</b> a lencse felét letakarva eltűnik a kép fele.</p><p class=\"note\" data-src=\"87\">Ernyő nélkül is ott metszik egymást.</p>",
+   "html": "<p data-src=\"81\">A camera obscura lyuka csak vékony nyalábot enged át: halvány a kép. A lencse az összes rá eső fényt <span class=\"key\">egy pontba gyűjti</span>: a kép éles <b>és</b> világos, fejjel lefelé áll.</p><p class=\"big-fx\" data-src=\"83\">1/f = 1/t + 1/k</p><p data-src=\"85\">Keresd az éles képet! <b>Tévhit:</b> a lencse felét letakarva eltűnik a kép fele.</p><p class=\"note\" data-src=\"87\">Ernyő nélkül is ott metszik egymást.</p>",
    "line": 80,
    "words": 55
   },

@@ -12,13 +12,13 @@ window.LESSON_CONTENT = {
  "steps": [
   {
    "title": "A mérleg: mindkét oldalon ugyanazt",
-   "html": "<p data-src=\"33\">A mérleg egyensúlyban van: <span class=\"mx\">3<i>x</i> + 5 = <i>x</i> + 13</span>. Vegyünk le <b>mindkét</b> tányérról egy dobozt, aztán öt golyót, végül osszuk két egyenlő részre. <span class=\"key\">Ha mindkét oldallal ugyanazt tesszük, az egyensúly megmarad</span>: <span class=\"mx\"><i>x</i> = 4</span>.</p><p class=\"note\" data-src=\"35\">Vegyél le csak az egyik oldalról: billen!</p>",
+   "html": "<p data-src=\"33\">A mérleg egyensúlyban van: <span class=\"mx\">3<i>x</i> + 5 = <i>x</i> + 13</span>. Vegyünk le <b>mindkét</b> tányérról egy dobozt, aztán öt golyót, végül osszuk két egyenlő részre. <span class=\"key\">Ha mindkét oldallal ugyanazt tesszük, az egyensúly megmarad</span>: <span class=\"mx\"><i>x</i> = 4</span>.</p><p class=\"note\" data-src=\"35\">Vegyél le csak az egyik oldalról: billen!</p>",
    "line": 32,
    "words": 35
   },
   {
    "title": "Egyenlőtlenség: mikor fordul a jel?",
-   "html": "<p data-src=\"59\"><span class=\"mx\">2 &lt; 3</span>. Szorozzuk mindkét oldalt mínusz eggyel! Ez a számegyenest a nullára tükrözi, ezért a két pont helyet cserél: <span class=\"mx\">−2 &gt; −3</span>. <span class=\"key\">Negatív számmal szorozva vagy osztva a reláció megfordul.</span> Így <span class=\"mx\">−2<i>x</i> &lt; 6</span>-ból nem <span class=\"mx\"><i>x</i> &lt; −3</span>, hanem <span class=\"mx\"><i>x</i> &gt; −3</span> lesz.</p><p class=\"note\" data-src=\"61\">Húzd a szorzót! Pozitív számnál a jel marad, negatívnál fordul.</p>",
+   "html": "<p data-src=\"59\"><span class=\"mx\">2 &lt; 3</span>. Szorozzuk mindkét oldalt mínusz eggyel! Ez a számegyenest a nullára tükrözi, ezért a két pont helyet cserél: <span class=\"mx\">−2 &gt; −3</span>. <span class=\"key\">Negatív számmal szorozva vagy osztva a reláció megfordul.</span> Így <span class=\"mx\">−2<i>x</i> &lt; 6</span>-ból nem <span class=\"mx\"><i>x</i> &lt; −3</span>, hanem <span class=\"mx\"><i>x</i> &gt; −3</span> lesz.</p><p class=\"note\" data-src=\"61\">Húzd a szorzót! Pozitív számnál a jel marad, negatívnál fordul.</p>",
    "line": 58,
    "words": 44
   },
@@ -30,31 +30,31 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "Tyúkok és nyulak: két egyenlet",
-   "html": "<p data-src=\"109\">Egy udvaron tyúkok és nyulak vannak: összesen 35 fej és 94 láb. Hány tyúk és hány nyúl? Legyen <em>x</em> a tyúkok, <em>y</em> a nyulak száma. <span class=\"key\">Két feltétel, két egyenlet</span>: <span class=\"mx\"><i>x</i> + <i>y</i> = 35</span> (fejek) és <span class=\"mx\">2<i>x</i> + 4<i>y</i> = 94</span> (lábak). Próbálgass: minden nyúl két lábbal többet ad!</p><p class=\"note\" data-src=\"111\">Ősi feladat: egy kínai számtankönyvben már szerepel, legalább 1500 éve.</p>",
+   "html": "<p data-src=\"109\">Egy udvaron tyúkok és nyulak vannak: összesen 35 fej és 94 láb. Hány tyúk és hány nyúl? Legyen <em>x</em> a tyúkok, <em>y</em> a nyulak száma. <span class=\"key\">Két feltétel, két egyenlet</span>: <span class=\"mx\"><i>x</i> + <i>y</i> = 35</span> (fejek) és <span class=\"mx\">2<i>x</i> + 4<i>y</i> = 94</span> (lábak). Próbálgass: minden nyúl két lábbal többet ad!</p><p class=\"note\" data-src=\"111\">Ősi feladat: egy kínai számtankönyvben már szerepel, legalább 1500 éve.</p>",
    "line": 108,
    "words": 51
   },
   {
    "title": "Egy egyenlet = egy egyenes",
-   "html": "<p data-src=\"136\">Az <span class=\"mx\"><i>x</i> + <i>y</i> = 35</span> egyenletnek sok megoldása van: <span class=\"mx\">(0; 35)</span>, <span class=\"mx\">(1; 34)</span>, … <span class=\"mx\">(35; 0)</span>. Ábrázolva <span class=\"key\">a megoldások egy egyenesen vannak</span>, és az egyenes minden pontja megoldás. Az udvarhoz csak a nemnegatív egész pontok illenek. A fejek száma mindenhol 35, a lábaké nem!</p><p class=\"note\" data-src=\"138\">Húzd a pontot az egyenesen, és figyeld a lábak számát.</p>",
+   "html": "<p data-src=\"136\">Az <span class=\"mx\"><i>x</i> + <i>y</i> = 35</span> egyenletnek sok megoldása van: <span class=\"mx\">(0; 35)</span>, <span class=\"mx\">(1; 34)</span>, … <span class=\"mx\">(35; 0)</span>. Ábrázolva <span class=\"key\">a megoldások egy egyenesen vannak</span>, és az egyenes minden pontja megoldás. Az udvarhoz csak a nemnegatív egész pontok illenek. A fejek száma mindenhol 35, a lábaké nem!</p><p class=\"note\" data-src=\"138\">Húzd a pontot az egyenesen, és figyeld a lábak számát.</p>",
    "line": 135,
    "words": 47
   },
   {
    "title": "A metszéspont a megoldás",
-   "html": "<p data-src=\"147\">A lábak egyenlete is egy egyenes. <span class=\"key\">A két egyenes metszéspontja mindkét egyenletet kielégíti</span>: <span class=\"mx\"><i>M</i>(23; 12)</span>. Számolva: a fejek egyenletét 2-vel szorozzuk, <span class=\"mx\">2<i>x</i> + 2<i>y</i> = 70</span>, és ezt a lábakéból kivonjuk: <span class=\"mx\">2<i>y</i> = 24</span>, tehát <span class=\"mx\"><i>y</i> = 12</span>, <span class=\"mx\"><i>x</i> = 23</span>. Ez az <b>egyenlő együtthatók</b> módszere.</p><p class=\"note\" data-src=\"149\">Behelyettesítéssel is megy: <span class=\"mx\"><i>y</i> = 35 − <i>x</i></span> a második egyenletbe.</p>",
+   "html": "<p data-src=\"147\">A lábak egyenlete is egy egyenes. <span class=\"key\">A két egyenes metszéspontja mindkét egyenletet kielégíti</span>: <span class=\"mx\"><i>M</i>(23; 12)</span>. Számolva: a fejek egyenletét 2-vel szorozzuk, <span class=\"mx\">2<i>x</i> + 2<i>y</i> = 70</span>, és ezt a lábakéból kivonjuk: <span class=\"mx\">2<i>y</i> = 24</span>, tehát <span class=\"mx\"><i>y</i> = 12</span>, <span class=\"mx\"><i>x</i> = 23</span>. Ez az <b>egyenlő együtthatók</b> módszere.</p><p class=\"note\" data-src=\"149\">Behelyettesítéssel is megy: <span class=\"mx\"><i>y</i> = 35 − <i>x</i></span> a második egyenletbe.</p>",
    "line": 146,
    "words": 42
   },
   {
    "title": "Fél nyúl? Ellenőrzés",
-   "html": "<p data-src=\"163\">95 lábnál a metszéspont <span class=\"mx\">(22,5; 12,5)</span> – fél nyúl nincs! 150 lábnál <span class=\"mx\"><i>x</i> = −5</span>: negatív tyúk sincs. <span class=\"key\">Az egyenletrendszernek van megoldása, a feladatnak mégsincs.</span> Ezért a kapott számokat mindig visszahelyettesítjük a szövegbe, és megnézzük: egész-e, nemnegatív-e?</p><p class=\"note\" data-src=\"165\">Húzd a lábak számát! Melyik lábszámnál jó a megoldás?</p>",
+   "html": "<p data-src=\"163\">95 lábnál a metszéspont <span class=\"mx\">(22,5; 12,5)</span> – fél nyúl nincs! 150 lábnál <span class=\"mx\"><i>x</i> = −5</span>: negatív tyúk sincs. <span class=\"key\">Az egyenletrendszernek van megoldása, a feladatnak mégsincs.</span> Ezért a kapott számokat mindig visszahelyettesítjük a szövegbe, és megnézzük: egész-e, nemnegatív-e?</p><p class=\"note\" data-src=\"165\">Húzd a lábak számát! Melyik lábszámnál jó a megoldás?</p>",
    "line": 162,
    "words": 42
   },
   {
    "title": "Párhuzamos és egybeeső egyenesek",
-   "html": "<p data-src=\"183\">Ha minden állat kétlábú: <span class=\"mx\">2<i>x</i> + 2<i>y</i> = 94</span>, azaz <span class=\"mx\"><i>x</i> + <i>y</i> = 47</span>. Ez párhuzamos a fejekével: <span class=\"key\">nincs metszéspont, nincs megoldás</span>. 70 lábnál a két egyenes egybeesik: végtelen sok megoldás, a második adat nem mond újat.</p><p class=\"note\" data-src=\"185\">Kapcsold vissza a nyulakat!</p>",
+   "html": "<p data-src=\"183\">Ha minden állat kétlábú: <span class=\"mx\">2<i>x</i> + 2<i>y</i> = 94</span>, azaz <span class=\"mx\"><i>x</i> + <i>y</i> = 47</span>. Ez párhuzamos a fejekével: <span class=\"key\">nincs metszéspont, nincs megoldás</span>. 70 lábnál a két egyenes egybeesik: végtelen sok megoldás, a második adat nem mond újat.</p><p class=\"note\" data-src=\"185\">Kapcsold vissza a nyulakat!</p>",
    "line": 182,
    "words": 34
   },

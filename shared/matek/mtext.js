@@ -8,6 +8,12 @@
 
    MatText.parse(s, o)          → fa. o: {frac: true (alap: 3/4 álló tört), chem: false, math: false
                                   (az egész s képlet, mint a `…` belseje), big: false (képlet: sor)}
+       v1.1 (2026-11-24) – mértékegység a képletben ÁLLÓ (ISO 80000), a változó dőlt marad. Egységnek csak a
+       SZÁM UTÁN álló egységjel számít: `5 cm`, `9,81 m/s^2`, `3 * 10^8 m/s`, `20 °C`, `72 km/h`, `5 N*m`;
+       egybetűs egység (m, s, g, l, h, N, J, W, V, A, K) csak szóközzel: `5 m` = 5 méter, `5m` = 5 · m (változó);
+       szám nélkül mindig változó: `F = m * a`, `v = s / t`. Mindig álló: °C, °F. Explicit álló szöveg a képletben:
+       "…" (pl. `"max" + x`). A t (tonna) és az a (ár) szándékosan nem egység (idő, változó). Az egységlista a
+       build UNITS-a (tools/build_lesson.py) – a kettő együtt változzon (próbák: tools/tests/mx-cases.js).
        A fa: 'szöveg' · ['i', 'x'] · ['sup', fa] · ['sub', fa] · ['frac', számláló, nevező] ·
              ['sqrt', fa] · ['mx', fa]  (`…` képletszakasz)
    MatText.draw(L, s, x, y, o)  kiírja s-t (szöveg VAGY kész fa). o mint az L.tx-nél:
@@ -61,6 +67,15 @@
   const CHARGE_RE = R('\\^(\\d*[+\\-−])(?![\\w(])'), CHEM_RE = R('(?:[A-Z][a-z]?\\d*|\\((?:[A-Z][a-z]?\\d*)+\\)\\d*)+');
   const SUBRUN = R('\\d+|[' + LET + ']+'), SQRT_TOK = R('\\d+(?:,\\d+)?|[A-Za-zα-ω]'), WORD = R('[A-Za-zÀ-ÖØ-öø-ž]+');
   const SUBD = R('[₀₁₂₃₄₅₆₇₈₉]+'), SUPD = R('[⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻]+'), BIGSLASH = R('\\s*/\\s*\\('), PRIMES = R('[′″‴]+');
+  // mértékegység a képletben (v1.1): álló, ha SZÁM UTÁN áll (lásd a fejlécet; a build UNITS-ának tükörképe)
+  const UNITS = new Set(('nm µm mm cm dm m km mg g dkg kg s ms h perc l ml cl dl hl N kN J kJ MJ W kW MW Wh kWh Pa kPa hPa MPa ' +
+    'bar V mV kV A mA K Hz kHz MHz mol cal kcal ha lx dB').split(' '));
+  const UNIT_WORD = R('[µμ]?[A-Za-z]+');
+  function afterNumber(out) {      // számra végződik-e a kimenet (szöveg számjeggyel a végén, vagy szám^kitevő)?
+    let k = out.length - 1;
+    if (k >= 0 && typeof out[k] === 'string') { if (out[k].trim()) return /\d\s*$/.test(out[k]); k--; }
+    return k > 0 && out[k][0] === 'sup' && out[k][1].every((x) => typeof x === 'string') && typeof out[k - 1] === 'string' && /\d$/.test(out[k - 1]);
+  }
 
   function matchClose(s, i) {
     let depth = 0;
@@ -88,7 +103,7 @@
 
   function Parser(frac, chem) { this.frac = frac; this.chem = chem; this.errors = []; }
   Parser.prototype.seq = function (s, math, big) {
-    const out = [], n = s.length; let i = 0;
+    const out = [], n = s.length; let i = 0, unitEnd = -1;
     while (i < n) {
       const c = s[i], prev = i ? s[i - 1] : '';
       let m;
@@ -110,7 +125,7 @@
         if ((m = at(EXP_RE, s, i))) {
           const inner = m[1] ? ['−'] : [];
           if (math && isVar(m[2])) inner.push(['i', m[2]]); else push(inner, m[2]);
-          out.push(['sup', inner]); i += m[0].length; continue;
+          out.push(['sup', inner]); if (i === unitEnd) unitEnd = i + m[0].length; i += m[0].length; continue;
         }
       }
       if (c === '_' && i + 1 < n && (IS_LET.test(prev) || math && (isDigit(prev) || prev === ')'))) {
@@ -173,6 +188,12 @@
           push(out, '('); for (const x of inner) push(out, x); push(out, ')'); i = j + 1; continue;
         }
         if (c === ')') { this.errors.push('páratlan zárójel'); push(out, ')'); i++; continue; }
+        if (c === '"') { const j = s.indexOf('"', i + 1); if (j > 0) { push(out, s.slice(i + 1, j)); i = unitEnd = j + 1; continue; } }
+        if (c === '°' && (s[i + 1] === 'C' || s[i + 1] === 'F') && !(i + 2 < n && IS_WORD.test(s[i + 2]))) { push(out, s.slice(i, i + 2)); i = unitEnd = i + 2; continue; }
+        if ((m = at(UNIT_WORD, s, i)) && UNITS.has(m[0].replace('μ', 'µ')) && !(i + m[0].length < n && (IS_WORD.test(s[i + m[0].length]) || '′″‴('.includes(s[i + m[0].length])))) {
+          const w = m[0], cont = unitEnd >= 0 && ['/', '·', '*'].includes(s.slice(unitEnd, i).trim());
+          if (cont || afterNumber(out) && (w.length > 1 || prev === ' ')) { push(out, w.replace('μ', 'µ')); i = unitEnd = i + w.length; continue; }
+        }
         if (GREEK.test(c)) {
           if (!isVar(c)) { push(out, c); i++; continue; }
           const pr = at(PRIMES, s, i + 1), t = c + (pr ? pr[0] : '');

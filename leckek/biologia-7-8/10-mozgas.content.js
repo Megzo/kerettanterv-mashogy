@@ -42,7 +42,7 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "A kar mint emelő",
-   "html": "<p data-src=\"173\">A kar <b>emelő</b>, a könyök a <b>forgáspont</b>. Az <b>erőkar</b> (k) a forgáspont távolsága az erő vonalától: az izomé kb. 5 cm, a súlyzóé 35 cm.</p><p class=\"big-fx\" data-src=\"175\">F<sub>izom</sub> · k<sub>izom</sub> = F<sub>teher</sub> · k<sub>teher</sub></p><p data-src=\"177\"><span class=\"key\">Az izom kb. 7-szer akkora erővel húz, mint a súlyzó súlya!</span></p>",
+   "html": "<p data-src=\"173\">A kar <b>emelő</b>, a könyök a <b>forgáspont</b>. Az <b>erőkar</b> (k) a forgáspont távolsága az erő vonalától: az izomé kb. 5 cm, a súlyzóé 35 cm.</p><p class=\"big-fx\" data-src=\"175\">F<sub>izom</sub> · k<sub>izom</sub> = F<sub>teher</sub> · k<sub>teher</sub></p><p data-src=\"177\"><span class=\"key\">Az izom kb. 7-szer akkora erővel húz, mint a súlyzó súlya!</span></p>",
    "line": 172,
    "words": 37
   },

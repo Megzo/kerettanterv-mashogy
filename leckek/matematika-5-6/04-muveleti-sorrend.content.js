@@ -12,13 +12,13 @@ window.LESSON_CONTENT = {
  "steps": [
   {
    "title": "Mennyi 2 + 3 · 4?",
-   "html": "<p data-src=\"29\"><span class=\"key\">Tippelj előbb!</span> Mennyi <span class=\"mx\">2 + 3 · 4</span>? Két diák ugyanazt számolta ki. Az egyik <b>balról jobbra</b> haladt, a másik előbb szorzott. Ugyanazok a számok, mégis más eredmény jött ki. <span class=\"key\">Melyik a jó?</span></p><p class=\"note\" data-src=\"31\">Szavazzatok, mielőtt megnézitek!</p>",
+   "html": "<p data-src=\"29\"><span class=\"key\">Tippelj előbb!</span> Mennyi <span class=\"mx\">2 + 3 · 4</span>? Két diák ugyanazt számolta ki. Az egyik <b>balról jobbra</b> haladt, a másik előbb szorzott. Ugyanazok a számok, mégis más eredmény jött ki. <span class=\"key\">Melyik a jó?</span></p><p class=\"note\" data-src=\"31\">Szavazzatok, mielőtt megnézitek!</p>",
    "line": 28,
    "words": 32
   },
   {
    "title": "A megállapodás",
-   "html": "<p data-src=\"43\">A számolás sorrendjét <b>megállapodás</b> rögzíti: 1. zárójel, 2. szorzás és osztás, 3. összeadás és kivonás. Azonos szinten balról jobbra haladunk. <span class=\"key\">Miért előbb a szorzás?</span> A <span class=\"mx\">3 · 4</span> egy csoport: 3 zacskó, mindegyikben 4 alma. Ha mást akarsz, tegyél zárójelet!</p>",
+   "html": "<p data-src=\"43\">A számolás sorrendjét <b>megállapodás</b> rögzíti: 1. zárójel, 2. szorzás és osztás, 3. összeadás és kivonás. Azonos szinten balról jobbra haladunk. <span class=\"key\">Miért előbb a szorzás?</span> A <span class=\"mx\">3 · 4</span> egy csoport: 3 zacskó, mindegyikben 4 alma. Ha mást akarsz, tegyél zárójelet!</p>",
    "line": 42,
    "words": 38
   },
@@ -36,31 +36,31 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "Cseréld fel, csoportosítsd!",
-   "html": "<p data-src=\"95\">Összeadásnál és szorzásnál a számok <b>felcserélhetők</b> és <b>csoportosíthatók</b>: az eredmény nem változik. <span class=\"key\">Ez fejszámolási trükk</span>: keresd a kerek párokat! <span class=\"mx\">25 · 4 = 100</span>, így <span class=\"mx\">25 · 7 · 4 = 7 · 100</span>. Hasonlóan: <span class=\"mx\">48 · 25 = 12 · 4 · 25</span>.</p>",
+   "html": "<p data-src=\"95\">Összeadásnál és szorzásnál a számok <b>felcserélhetők</b> és <b>csoportosíthatók</b>: az eredmény nem változik. <span class=\"key\">Ez fejszámolási trükk</span>: keresd a kerek párokat! <span class=\"mx\">25 · 4 = 100</span>, így <span class=\"mx\">25 · 7 · 4 = 7 · 100</span>. Hasonlóan: <span class=\"mx\">48 · 25 = 12 · 4 · 25</span>.</p>",
    "line": 94,
    "words": 24
   },
   {
    "title": "Ami nem cserélhető",
-   "html": "<p data-src=\"116\">Melyik művelet <b>cserélhető fel</b>? Próbáld ki mind a négyet a gombokkal! Összeadásnál és szorzásnál mindegy a sorrend. <span class=\"key\">A kivonás és az osztás nem cserélhető fel:</span> <span class=\"mx\">12 − 4 = 8</span>, de <span class=\"mx\">4 − 12 = −8</span>; <span class=\"mx\">12 : 4 = 3</span>, de <span class=\"mx\">4 : 12 = <span class=\"frac\"><span class=\"fn\">1</span><span class=\"fs\">/</span><span class=\"fd\">3</span></span></span>.</p>",
+   "html": "<p data-src=\"116\">Melyik művelet <b>cserélhető fel</b>? Próbáld ki mind a négyet a gombokkal! Összeadásnál és szorzásnál mindegy a sorrend. <span class=\"key\">A kivonás és az osztás nem cserélhető fel:</span> <span class=\"mx\">12 − 4 = 8</span>, de <span class=\"mx\">4 − 12 = −8</span>; <span class=\"mx\">12 : 4 = 3</span>, de <span class=\"mx\">4 : 12 = <span class=\"frac\"><span class=\"fn\">1</span><span class=\"fs\">/</span><span class=\"fd\">3</span></span></span>.</p>",
    "line": 115,
    "words": 31
   },
   {
    "title": "Széttagolás: a téglalap kettévágása",
-   "html": "<p data-src=\"139\">A <span class=\"mx\">7 · 13</span> egy 7 sorból és 13 oszlopból álló téglalap. Vágd ketté: <span class=\"mx\">7 · 10 + 7 · 3 = 70 + 21 = 91</span>. <span class=\"key\">Mindkét darabot szorozni kell!</span> A <span class=\"mx\">7 · 10 + 3</span> csak egy 3 kockás csíkot adna hozzá. Húzd a vágást: az összeg mindig ugyanannyi.</p>",
+   "html": "<p data-src=\"139\">A <span class=\"mx\">7 · 13</span> egy 7 sorból és 13 oszlopból álló téglalap. Vágd ketté: <span class=\"mx\">7 · 10 + 7 · 3 = 70 + 21 = 91</span>. <span class=\"key\">Mindkét darabot szorozni kell!</span> A <span class=\"mx\">7 · 10 + 3</span> csak egy 3 kockás csíkot adna hozzá. Húzd a vágást: az összeg mindig ugyanannyi.</p>",
    "line": 138,
    "words": 33
   },
   {
    "title": "Becsülj, aztán számolj!",
-   "html": "<p data-src=\"157\"><span class=\"key\">Tippelj előbb!</span> Mennyi lehet <span class=\"mx\">38 · 52</span>? Kerekíts: <span class=\"mx\">40 · 50 = 2000</span>. A pontos érték 1976, közel van. Ha a gép 190-et írna, a becslés rögtön szól: <span class=\"key\">elütöttél valamit!</span></p>",
+   "html": "<p data-src=\"157\"><span class=\"key\">Tippelj előbb!</span> Mennyi lehet <span class=\"mx\">38 · 52</span>? Kerekíts: <span class=\"mx\">40 · 50 = 2000</span>. A pontos érték 1976, közel van. Ha a gép 190-et írna, a becslés rögtön szól: <span class=\"key\">elütöttél valamit!</span></p>",
    "line": 156,
    "words": 24
   },
   {
    "title": "Összefoglalás",
-   "html": "<ul><li data-src=\"179\"><b>Sorrend:</b> zárójel, aztán szorzás és osztás, végül összeadás és kivonás; azonos szinten balról jobbra.</li><li data-src=\"180\"><b>Kifejezésfa:</b> alulról felfelé számolunk.</li><li data-src=\"181\">Az összeadás és a szorzás <b>felcserélhető</b> és <b>csoportosítható</b>, a kivonás és az osztás nem.</li><li data-src=\"182\"><b>Széttagolás:</b> <span class=\"mx\">7 · (10 + 3) = 7 · 10 + 7 · 3</span>.</li><li data-src=\"183\"><span class=\"key\">Előbb becsülj, aztán számolj!</span></li></ul>",
+   "html": "<ul><li data-src=\"179\"><b>Sorrend:</b> zárójel, aztán szorzás és osztás, végül összeadás és kivonás; azonos szinten balról jobbra.</li><li data-src=\"180\"><b>Kifejezésfa:</b> alulról felfelé számolunk.</li><li data-src=\"181\">Az összeadás és a szorzás <b>felcserélhető</b> és <b>csoportosítható</b>, a kivonás és az osztás nem.</li><li data-src=\"182\"><b>Széttagolás:</b> <span class=\"mx\">7 · (10 + 3) = 7 · 10 + 7 · 3</span>.</li><li data-src=\"183\"><span class=\"key\">Előbb becsülj, aztán számolj!</span></li></ul>",
    "line": 178,
    "words": 38
   }

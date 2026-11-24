@@ -18,37 +18,37 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "Nagyíts tízszer: tizedek",
-   "html": "<p data-src=\"39\">Vágjuk a 0 és 1 közötti szakaszt <b>10 egyenlő részre</b>! Egy rész neve <b>tized</b>: <span class=\"mx\"><span class=\"frac\"><span class=\"fn\">1</span><span class=\"fs\">/</span><span class=\"fd\">10</span></span> = 0,1</span>. <span class=\"key\">A tizedesvessző utáni első jegy azt mutatja, hány tized.</span> A <span class=\"mx\">0,25</span> a <span class=\"mx\">0,2</span> és a <span class=\"mx\">0,3</span> közé esik.</p>",
+   "html": "<p data-src=\"39\">Vágjuk a 0 és 1 közötti szakaszt <b>10 egyenlő részre</b>! Egy rész neve <b>tized</b>: <span class=\"mx\"><span class=\"frac\"><span class=\"fn\">1</span><span class=\"fs\">/</span><span class=\"fd\">10</span></span> = 0,1</span>. <span class=\"key\">A tizedesvessző utáni első jegy azt mutatja, hány tized.</span> A <span class=\"mx\">0,25</span> a <span class=\"mx\">0,2</span> és a <span class=\"mx\">0,3</span> közé esik.</p>",
    "line": 38,
    "words": 33
   },
   {
    "title": "Még tízszer: századok",
-   "html": "<p data-src=\"46\">Nagyítsuk a <span class=\"mx\">0,2</span> és a <span class=\"mx\">0,3</span> közötti tizedet is tízszer! Egy kis rész <b>század</b>: <span class=\"mx\"><span class=\"frac\"><span class=\"fn\">1</span><span class=\"fs\">/</span><span class=\"fd\">100</span></span> = 0,01</span>. A <span class=\"mx\">0,25</span> itt pontosan egy beosztásra esik: <span class=\"key\">2 tized és 5 század.</span> Alatta jönnek az <b>ezredek</b> – és így tovább.</p><p class=\"note\" data-src=\"48\">Húzd a pontot bármelyik szinten!</p>",
+   "html": "<p data-src=\"46\">Nagyítsuk a <span class=\"mx\">0,2</span> és a <span class=\"mx\">0,3</span> közötti tizedet is tízszer! Egy kis rész <b>század</b>: <span class=\"mx\"><span class=\"frac\"><span class=\"fn\">1</span><span class=\"fs\">/</span><span class=\"fd\">100</span></span> = 0,01</span>. A <span class=\"mx\">0,25</span> itt pontosan egy beosztásra esik: <span class=\"key\">2 tized és 5 század.</span> Alatta jönnek az <b>ezredek</b> – és így tovább.</p><p class=\"note\" data-src=\"48\">Húzd a pontot bármelyik szinten!</p>",
    "line": 45,
    "words": 39
   },
   {
    "title": "Melyik a nagyobb: 0,25 vagy 0,3?",
-   "html": "<p data-src=\"55\">Sokan a <span class=\"mx\">0,25</span>-öt mondják, mert 25 több, mint 3. Igazuk van? <span class=\"key\">Tippelj, aztán kattints!</span> Figyeld a nagyítót: hány század a <span class=\"mx\">0,3</span>?</p><p class=\"note\" data-src=\"57\">Írj nullát a rövidebb szám végére: <span class=\"mx\">0,3 = 0,30</span>. Így századot hasonlítasz századdal.</p>",
+   "html": "<p data-src=\"55\">Sokan a <span class=\"mx\">0,25</span>-öt mondják, mert 25 több, mint 3. Igazuk van? <span class=\"key\">Tippelj, aztán kattints!</span> Figyeld a nagyítót: hány század a <span class=\"mx\">0,3</span>?</p><p class=\"note\" data-src=\"57\">Írj nullát a rövidebb szám végére: <span class=\"mx\">0,3 = 0,30</span>. Így századot hasonlítasz századdal.</p>",
    "line": 54,
    "words": 32
   },
   {
    "title": "Törtből tizedes tört",
-   "html": "<p data-src=\"71\">A törtvonal osztást jelent: <span class=\"mx\"><span class=\"frac\"><span class=\"fn\">3</span><span class=\"fs\">/</span><span class=\"fd\">8</span></span> = 3 : 8</span>. Írásban osztunk, a tizedesvessző után nullákat hozunk le. Ha a maradék 0, <span class=\"key\">a tizedes tört véget ér</span>: <span class=\"frac\"><span class=\"fn\">3</span><span class=\"fs\">/</span><span class=\"fd\">8</span></span> = 0,375.</p><p class=\"note\" data-src=\"73\">Állítsd be: <span class=\"mx\"><span class=\"frac\"><span class=\"fn\">1</span><span class=\"fs\">/</span><span class=\"fd\">4</span></span></span>, <span class=\"mx\"><span class=\"frac\"><span class=\"fn\">3</span><span class=\"fs\">/</span><span class=\"fd\">10</span></span></span>, aztán <span class=\"mx\"><span class=\"frac\"><span class=\"fn\">1</span><span class=\"fs\">/</span><span class=\"fd\">7</span></span></span>! Figyeld a maradékokat a körön.</p>",
+   "html": "<p data-src=\"71\">A törtvonal osztást jelent: <span class=\"mx\"><span class=\"frac\"><span class=\"fn\">3</span><span class=\"fs\">/</span><span class=\"fd\">8</span></span> = 3 : 8</span>. Írásban osztunk, a tizedesvessző után nullákat hozunk le. Ha a maradék 0, <span class=\"key\">a tizedes tört véget ér</span>: <span class=\"frac\"><span class=\"fn\">3</span><span class=\"fs\">/</span><span class=\"fd\">8</span></span> = 0,375.</p><p class=\"note\" data-src=\"73\">Állítsd be: <span class=\"mx\"><span class=\"frac\"><span class=\"fn\">1</span><span class=\"fs\">/</span><span class=\"fd\">4</span></span></span>, <span class=\"mx\"><span class=\"frac\"><span class=\"fn\">3</span><span class=\"fs\">/</span><span class=\"fd\">10</span></span></span>, aztán <span class=\"mx\"><span class=\"frac\"><span class=\"fn\">1</span><span class=\"fs\">/</span><span class=\"fd\">7</span></span></span>! Figyeld a maradékokat a körön.</p>",
    "line": 70,
    "words": 35
   },
   {
    "title": "Soha nem ér véget",
-   "html": "<p data-src=\"91\">Az <span class=\"mx\"><span class=\"frac\"><span class=\"fn\">1</span><span class=\"fs\">/</span><span class=\"fd\">3</span></span></span> osztásakor a maradék mindig 1, ezért mindig 3-as jegy jön: <span class=\"mx\">0,333…</span> Minden nagyításnál ott van a 3, <span class=\"key\">sosem ér véget</span>. Ez a <b>szakaszos tizedes tört</b>. Ezért <span class=\"mx\"><span class=\"frac\"><span class=\"fn\">1</span><span class=\"fs\">/</span><span class=\"fd\">3</span></span> ≠ 0,3</span>, csak <span class=\"mx\"><span class=\"frac\"><span class=\"fn\">1</span><span class=\"fs\">/</span><span class=\"fd\">3</span></span> ≈</span> 0,33.</p><p class=\"note\" data-src=\"93\">Érdekesség: a <span class=\"mx\">0,1010010001…</span> sosem ismétlődik – ez nem írható fel törtként.</p>",
+   "html": "<p data-src=\"91\">Az <span class=\"mx\"><span class=\"frac\"><span class=\"fn\">1</span><span class=\"fs\">/</span><span class=\"fd\">3</span></span></span> osztásakor a maradék mindig 1, ezért mindig 3-as jegy jön: <span class=\"mx\">0,333…</span> Minden nagyításnál ott van a 3, <span class=\"key\">sosem ér véget</span>. Ez a <b>szakaszos tizedes tört</b>. Ezért <span class=\"mx\"><span class=\"frac\"><span class=\"fn\">1</span><span class=\"fs\">/</span><span class=\"fd\">3</span></span> ≠ 0,3</span>, csak <span class=\"mx\"><span class=\"frac\"><span class=\"fn\">1</span><span class=\"fs\">/</span><span class=\"fd\">3</span></span> ≈</span> 0,33.</p><p class=\"note\" data-src=\"93\">Érdekesség: a <span class=\"mx\">0,1010010001…</span> sosem ismétlődik – ez nem írható fel törtként.</p>",
    "line": 90,
    "words": 42
   },
   {
    "title": "Szorzás és osztás 10-zel",
-   "html": "<p data-src=\"109\">Tévhit: 10-zel szorozva „nullát írunk a végére”. De <span class=\"mx\">2,50 = 2,5</span>! Valójában <span class=\"key\">minden jegy egy helyi értékkel balra lép</span>: 2,5 · 10 = 25. Osztáskor jobbra: 2,5 : 10 = 0,25. A tizedesvessző helyben marad.</p><p class=\"note\" data-src=\"111\">Nyomd meg többször a gombokat!</p>",
+   "html": "<p data-src=\"109\">Tévhit: 10-zel szorozva „nullát írunk a végére”. De <span class=\"mx\">2,50 = 2,5</span>! Valójában <span class=\"key\">minden jegy egy helyi értékkel balra lép</span>: 2,5 · 10 = 25. Osztáskor jobbra: 2,5 : 10 = 0,25. A tizedesvessző helyben marad.</p><p class=\"note\" data-src=\"111\">Nyomd meg többször a gombokat!</p>",
    "line": 108,
    "words": 34
   },
@@ -60,7 +60,7 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "Összefoglalás",
-   "html": "<ul><li data-src=\"157\">tized, század, ezred: egymás utáni <b>tízszeres nagyítások</b></li><li data-src=\"158\">Összehasonlításkor helyi értékenként haladj: <span class=\"mx\">0,3 = 0,30</span>, és ez több, mint <span class=\"mx\">0,25</span>.</li><li data-src=\"159\">Tört → tizedes tört: osztás. Véges vagy <b>szakaszos</b>.</li><li data-src=\"160\"><span class=\"mx\"> · 10</span>: a jegyek balra lépnek, <span class=\"mx\">: 10</span>: jobbra.</li><li data-src=\"161\">Osztásnál <span class=\"key\">válts mértékegységet!</span></li></ul>",
+   "html": "<ul><li data-src=\"157\">tized, század, ezred: egymás utáni <b>tízszeres nagyítások</b></li><li data-src=\"158\">Összehasonlításkor helyi értékenként haladj: <span class=\"mx\">0,3 = 0,30</span>, és ez több, mint <span class=\"mx\">0,25</span>.</li><li data-src=\"159\">Tört → tizedes tört: osztás. Véges vagy <b>szakaszos</b>.</li><li data-src=\"160\"><span class=\"mx\"> · 10</span>: a jegyek balra lépnek, <span class=\"mx\">: 10</span>: jobbra.</li><li data-src=\"161\">Osztásnál <span class=\"key\">válts mértékegységet!</span></li></ul>",
    "line": 156,
    "words": 34
   }
