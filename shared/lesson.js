@@ -63,6 +63,9 @@
                      „kb.” becslés), d nélkül azt adja: 'Kr. e. 753', '1848. március 15.', 'kb. 50–70 ezer fő'
      L.dat(k)        ÚJ: a teljes adat-objektum, pl. {t:'year', v:-753, a:-752, s:'Kr. e. 753', est:true}
                      (a mezőket a tools/build_lesson.py fejléce írja le)
+     L.quote(k)      ÚJ (magyar): idézett sor szövege ('### Idézet' kulcs → szöveg, a | sormetszet-jel nélkül)
+     L.quoteDat(k)   ÚJ (magyar): {s, syl: szótagszám, v: [a szótagmagok (magánhangzók) indexei s-ben], cut: [szótag
+                     a | előtt], ci: [a metszet karakterhelye s-ben], ref: index a content.quoteSrc forráslistába}
    ÚJ — vászon-szöveg (méréssel; a QA és a review mód ebből tudja, hol van felirat):
      L.tx(s, x, y, o)   kiírja s-t; o = {s: px, w: vastagság, f: család, i: dőlt, a: igazítás, b: alapvonal,
                         c: szín, ls: betűköz, max: max. szélesség (fölötte kicsinyít), k: md-kulcs(ok),
@@ -75,7 +78,7 @@
    ÚJ — U.fmt(v, d)  magyar számformátum: tizedesvessző, valódi mínuszjel (−), 10 000 fölött ezres tagolás
    ÚJ — review mód:  ?review az URL-ben vagy a K billentyű → a feliratok és bekezdések fölé mutatva
                      kiírja a Markdown-kulcsot és a sor számát.
-   ÚJ — window.__lesson.marks: az utolsó képkocka feliratainak dobozai (a QA olvassa): {s, k, x, y, w, h, px, a, qa};
+   ÚJ — window.__lesson.marks: az utolsó képkocka feliratainak dobozai (a QA olvassa): {s, k, x, y, w, h, px, a, qa, f (font)};
                      forgatott/tükrözött feliratnál x, y, w, h a befoglaló doboz, q a 4 sarok; L.pill-nél (bg/bd)
                      pb a pill doboza (forgatva pq is) – a QA ezekkel nézi az átfedést.
    ─────────────────────────────────────────────────────────────── */
@@ -141,6 +144,8 @@
     L.val = (k, d) => { const v = dat(k); if (v.s != null && d == null) return v.s;
       return U.fmt(v.v, d == null ? v.d : d) + (v.u ? (v.u === '°' ? '' : ' ') + v.u : ''); };
     L.dat = (k) => dat(k);
+    L.quote = (k) => { const q = C && C.quotes && C.quotes[k]; if (!q) { miss(k); return '⟨' + k + '⟩'; } return q.s; };
+    L.quoteDat = (k) => { const q = C && C.quotes && C.quotes[k]; if (!q) { miss(k); return { s: '⟨' + k + '⟩', syl: 0, v: [] }; } return q; };
     const srcOf = (k) => (C && C.src && C.src[k]) || 0;
 
     // ── DOM váz ──
@@ -312,7 +317,8 @@
       if (alpha > .04 && s.trim()) {
         const m = c.getTransform(), k = L.k || 1;
         const mk = { s, k: o.k || null, x: (m.a * box.x + m.c * box.y + m.e) / k, y: (m.b * box.x + m.d * box.y + m.f) / k,
-          w: box.w * Math.hypot(m.a, m.b) / k, h: box.h * Math.hypot(m.c, m.d) / k, px: sz * Math.hypot(m.c, m.d) / k, a: alpha, qa: o.qa !== false };
+          w: box.w * Math.hypot(m.a, m.b) / k, h: box.h * Math.hypot(m.c, m.d) / k, px: sz * Math.hypot(m.c, m.d) / k, a: alpha, qa: o.qa !== false,
+          f: c.font };   // f: a betűtípus (a QA glifpróbája ebből tudja, melyik család rajzolja)
         if (m.b || m.c || m.a < 0 || m.d < 0) { const q = quad(m, box); Object.assign(mk, aabb(q)); mk.q = q; }   // forgatott/tükrözött: befoglaló doboz + sarkok
         cur.push(mk);
       }

@@ -15,7 +15,12 @@ A .md formátumát a leckek/README.md írja le. A lecke HTML-je egy
      "sources": true,                             # opcionális: minden adat mellé <!-- forrás: … --> kell
      "review": ["elsősegély"],                    # opcionális: <!-- Szakmai ellenőrzés: … --> blokk kell
      "labels": {"kulcs": 40, "másik": null},      # felirat → max. hossz (null: alapértelmezés)
-     "data":   {"kulcs": {"unit": "g/cm³", "min": 0.1, "max": 25}}}   # vagy csak "g/cm³"
+     "data":   {"kulcs": {"unit": "g/cm³", "min": 0.1, "max": 25}},   # vagy csak "g/cm³"
+     # magyar (opcionális): ### Idézet sorai – kulcs → szabály, vagy csoport (a kulcs eleje + szóköz: „jv 1/1” → „jv”)
+     "quotes": {"jv 1/1": {"syll": 12, "cut": 6}},  "quoteSets": {"jv": {"syll": 12, "cut": 6, "lines": 24}},
+     "yVowel": ["Teleky"],                        # ezekben a szavakban az y magánhangzó (alap: nem)
+     "rel": {"people": ["Gergely", "Éva"], "units": ["I", "II", "III", "IV", "V"]},   # a rel adattípushoz
+     "interpretive": true}                        # figyelmeztet, ha nincs „> értelmezés:” doboz és nyitott kérdés
 A build hibával (1-es kilépési kód, sorszámmal) áll le, ha hiányzó vagy fölösleges kulcs van,
 egy felirat túl hosszú, egy szám nem értelmezhető / rossz a mértékegysége / tartományon kívül esik.
 Figyelmeztet, ha egy lépés panelszövege a korlátnál (alap: 55 szó) hosszabb.
@@ -75,6 +80,28 @@ Adattípusok (a spec "data" bejegyzésének "type" mezője; alap: "number"):
           léteznie kell, a fejléc "id"-je egyezzen, és a .md szövegének évszámai (2024) a fejléc
           "src"/"ver" mezőjében is szerepeljenek (a szöveg maga a forrássor rövid neve).
           → {"t": "dataset", "id", "src", "ver", "s"}
+Magyar nyelv és irodalom (szöveges adat; a „kb.”/„(2025)” jelzők itt nincsenek – a "s" a normalizált alak):
+  metrum  „— ∪ ∪ | — ∪ ∪ | — ×” (- – _ = —, u ◡ ⏑ = ∪, x = ×; | versláb, || metszet) → {"t": "meter", "feet": [["—", "∪",
+          "∪"], …], "n": szótagszám, "cz": [a metszet előtti verslábak száma], "s"}; spec "line": idézetkulcs → a szótagszám
+          egyezzen (hiba), és hosszú magánhangzó (á é í ó ő ú ű) ne álljon ∪ helyen (figyelmeztetés); "feet": N.
+  rhyme   „aabb” (x = rímtelen; rövidebb képlet versszakonként ismétlődik) + spec "quotes": csoport vagy "lines": [kulcsok]
+          → {"t": "rhyme", "p": [betű soronként], "keys": [...], "s"}; figyelmeztet, ha egy rímpár sorvégi magánhangzója
+          eltér (a hosszúság nem számít: o = ó).
+  morph   „kert + ész (képző) + ek (jel) + nek (rag)”, „virág (tő) + cserép (tő) + ben (rag)”, „-ban/-ben (rag)” →
+          {"t": "morph", "s": "kertészeknek", "parts": [{"s": "kert", "k": "tő"}, …, ["alt": ["ban", "ben"]]]};
+          fajta: tő képző jel rag kötőhangzó előtag (az első elem alapból tő). Hiba: rag után jel/képző; figyelmeztet:
+          jel után képző, hangrend-eltérés (kivétel: <!-- ingadozó --> a sorban).
+  pron    „kútba [kúdba]” → {"t": "pron", "w": "kútba", "p": "kúdba", "s"}; szögletes zárójel nélkül hiba.
+  rel     „Gergely – Éva: szerelem (I–V)” → {"t": "rel", "a", "b", "kind", ["from", "to", "fi", "ti"], "s"}; kind: barát
+          ellenség család szerelem szolgál vezet; a szereplők / egységek a spec "rel" listáiból (fi, ti: index), lista
+          nélkül római vagy arab szám (fi, ti: az értéke).
+### Idézet blokk (bármely ## alatt): „- kulcs: verssor”, a sorban | = sormetszet (a megjelenített szövegből eltűnik;
+  szó szerinti |: \\|). Előtte kötelező: <!-- idézet: <szerző>: <mű> (<év>), <hely> · szöveg: <kiadás> · szerző † <év> · közkincs -->
+  (népköltészet: „gyűjtő † <év>”; jogszabály: † nélkül). Hiba, ha † + 70 ≥ az idei év. Szótagszám = a magánhangzók száma;
+  eltérés (syll, cut) hiba, kivéve <!-- szótagszám: N, … --> / <!-- eltérés: … --> a sor végén (figyelmeztetés).
+  Kimenet: content.quotes = {kulcs: {"s", "syl", "v": [a szótagmagok indexei s-ben], ["cut": [szótag a | előtt],
+  "ci": [karakterhely]], "ref": a forrás indexe}}, content.quoteSrc = [a forrásmegjegyzések]; a JS: L.quote(k), L.quoteDat(k).
+> értelmezés: … → <p class="interp"> „Egy lehetséges olvasat” fejléccel (shared/lesson.css); beleszámít a szókorlátba.
 Becslésjelző minden típuson: „kb. …”, „~ …”, „≈ …”, „… (becslés)”, évszámnál „… körül” is
   → "est": true, és "s" „kb. ”-vel kezdődik ("s0": ugyanez a jelző nélkül).
 Az adat éve és állapota (zárójeles utótag, vesszővel): „8,2 milliárd fő (2025, frissítendő)”,
@@ -119,7 +146,8 @@ UNIT_ALIASES = {"cm3": "cm³", "m3": "m³", "dm3": "dm³", "mm3": "mm³", "g/cm3
                 "kg/dm3": "kg/dm³", "fok": "°", "°c": "°C", "C°": "°C"}
 NUM_RE = re.compile(r"^([−\-+]?)(\d{1,3}(?:[ \u00a0\u202f]\d{3})+|\d+)(?:,(\d+))?(?=\s|$|%|°|/|′|')\s*(.*)$")
 TYPES = ("number", "year", "date", "coord", "range", "ago", "ratio", "frac", "list", "series", "point", "expr",
-         "formula", "equation", "utc", "dataset")
+         "formula", "equation", "utc", "dataset", "metrum", "rhyme", "morph", "pron", "rel")
+HU_TYPES = {"metrum", "rhyme", "morph", "pron", "rel"}     # magyar: nem szám, nincs becslés-/évjelző
 NB = "\u00a0"                                   # nem törő szóköz: „Kr. e. 753” ne törjön sort
 MONTHS = ["január", "február", "március", "április", "május", "június", "július", "augusztus",
           "szeptember", "október", "november", "december"]
@@ -971,12 +999,390 @@ def parse_expr(s, line, P, k, want, ctx):
             "_html": '<span class="mx">' + nobreak(mx_html(mxp.math(text))) + "</span>"}, text, False
 
 
+# ── Magyar nyelv és irodalom: idézet, verssor, szóelem, ejtés, szereplőkapcsolat ──────────────────
+# Szándékosan egyszerű, kiszámítható szabályok: a build nem elemez verset és nem ragoz. A szótagszám a
+# magánhangzók száma (megbízható); a rímképletet, a metrumot és a szóelemzést a .md adja meg kézzel, a
+# build csak az egyszerű, biztos ellentmondásokat jelzi (lásd a leckek/README.md „Magyar” szakaszát).
+HU_VOWELS = set("aáeéiíoóöőuúüűAÁEÉIÍOÓÖŐUÚÜŰ" + "õûôëäÕÛÔËÄ")     # + régi nyomdai alakok (õ, û = ő, ű)
+HU_LONG = set("áéíóőúűÁÉÍÓŐÚŰ" + "õûôÕÛÔ")
+HU_LETTERS = re.compile(r"[^\W\d_]+")
+RHYME_NORM = str.maketrans("íóúőűõûôÍÓÚŐŰÕÛÔ", "iouööööö" + "IOUÖÖÖÖÖ")   # a rímben a hosszúság (i/í, o/ó…) nem számít
+MORPH_KINDS = ("tő", "képző", "jel", "rag", "kötőhangzó", "előtag")
+MORPH_RANK = {"képző": 1, "jel": 2, "rag": 3}
+INVARIANT_SUFFIX = {"ért", "ként", "nként", "kor", "ig", "é", "ék", "éi", "né", "i", "ni", "nyi", "képp", "képpen"}
+REL_KINDS = ("barát", "ellenség", "család", "szerelem", "szolgál", "vezet")
+METER_SYM = {"—": "—", "–": "—", "-": "—", "_": "—", "∪": "∪", "u": "∪", "U": "∪", "◡": "∪", "⏑": "∪", "˘": "∪",
+             "×": "×", "x": "×", "X": "×"}
+ROMAN = re.compile(r"^(?=[IVXLC])(C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3})$")
+QUOTE_SRC = re.compile(r"^\s*idézet\s*:", re.I)
+DEATH_RE = re.compile(r"(?:(szerző|gyűjtő|lejegyző|fordító|kiadó|szerkesztő|átdolgozó)\s*)?†\s*(?:kb\.\s*|~\s*)?(\d{3,4})", re.I)
+
+
+def hu_vowels(s, yv=frozenset()):
+    """A szótagmagok (magánhangzók) indexei s-ben. Az y csak akkor magánhangzó, ha a szó (kisbetűvel) a spec
+    "yVowel" listájában van, és nem egy gy/ly/ny/ty betű része (pl. Teleky: 3 szótag; Kölcsey: 2)."""
+    out = []
+    for m in HU_LETTERS.finditer(s):
+        w, y_ok = m.group(0), m.group(0).lower() in yv
+        for j, ch in enumerate(w):
+            if ch in HU_VOWELS or y_ok and ch in "yY" and not (j and w[j - 1] in "glntGLNT"):
+                out.append(m.start() + j)
+    return out
+
+
+def roman_val(s):
+    m = ROMAN.match(s)
+    if not m or not s:
+        return None
+    v, vals = 0, {"I": 1, "V": 5, "X": 10, "L": 50, "C": 100}
+    for i, ch in enumerate(s):
+        x = vals[ch]
+        v += -x if i + 1 < len(s) and vals[s[i + 1]] > x else x
+    return v
+
+
+def harmony(w):
+    """Hangrend a toldalék-illeszkedéshez: 'mély' | 'magas' | None (nem dönthető el biztosan → nincs figyelmeztetés).
+    Csak e/é/i/í: magas (de csak i/í: None – híd, nyíl); az utolsó nem semleges magánhangzó dönt (kávé, papír:
+    mély; sofőr: magas); mély + záró e (hotel, október): ingadozó → None."""
+    vs = [c for c in w.lower() if c in HU_VOWELS]
+    if not vs:
+        return None
+    nn = [c for c in vs if c not in "eéií"]
+    if not nn:
+        return "magas" if any(c in "eé" for c in vs) else None
+    if nn[-1] in "öőüűõûô":
+        return "magas"
+    if vs[-1] == "e" and vs[-1] != nn[-1]:
+        return None
+    return "mély"
+
+
+def suffix_harmony(s):
+    if s in INVARIANT_SUFFIX:
+        return None
+    vs = [c for c in s.lower() if c in HU_VOWELS]
+    if any(c in "aáoóuú" for c in vs):
+        return "mély"
+    if any(c in "öőüűeéõûô" for c in vs):
+        return "magas"
+    return None
+
+
+def parse_metrum(s, line, P, k, want, ctx):
+    """„— ∪ ∪ | — ∪ ∪ | — — | — — | — ∪ ∪ | — ×” → {t: meter, feet: [[—, ∪, ∪], …], n, cz, s}.
+    Jelek: — (vagy - – _) hosszú, ∪ (vagy u ◡ ⏑) rövid, × (vagy x) közömbös; | versláb-határ, || sormetszet."""
+    feet, cur, cz, i = [], [], [], 0
+    while i < len(s):
+        ch = s[i]
+        if ch.isspace():
+            i += 1; continue
+        if ch == "|":
+            dbl = s[i:i + 2] == "||"
+            if cur:
+                feet.append(cur); cur = []
+            elif not feet:
+                P.err(line, f"„{k}” = {s}: a sor nem kezdődhet |-vel."); return None
+            if dbl:
+                cz.append(len(feet))
+            i += 2 if dbl else 1; continue
+        if ch not in METER_SYM:
+            P.err(line, f"„{k}” = {s}: ismeretlen jel „{ch}” (lehet: — hosszú, ∪ rövid, × közömbös, | versláb, || metszet)."); return None
+        cur.append(METER_SYM[ch]); i += 1
+    if cur:
+        feet.append(cur)
+    flat = [x for f in feet for x in f]
+    if not flat:
+        P.err(line, f"„{k}”: üres metrum."); return None
+    if "feet" in want and len(feet) != want["feet"]:
+        P.err(line, f"„{k}” = {s}: {len(feet)} versláb, {want['feet']} kell.")
+    text = " || ".join(" | ".join(" ".join(f) for f in feet[a:b]) for a, b in zip([0] + cz, cz + [len(feet)]))
+    qk = want.get("line")
+    q = ctx.get("quotes", {}).get(qk) if qk else None
+    if qk and q is None:
+        P.err(line, f"„{k}”: a spec „line” sora („{qk}”) nincs az ### Idézet alatt.")
+    if q is not None:
+        if len(flat) != q["syl"]:
+            P.err(line, f"„{k}”: a metrum {len(flat)} szótagos, a(z) „{qk}” sor {q['syl']} szótagos.")
+        else:
+            for j, (sym, vi) in enumerate(zip(flat, q["v"])):
+                if sym == "∪" and q["s"][vi] in HU_LONG:
+                    P.warn(line, f"„{k}”: a(z) {j + 1}. szótag ({q['s'][vi]}) hosszú magánhangzó, a metrum rövidnek (∪) jelöli.")
+    return {"t": "meter", "feet": feet, "n": len(flat), "cz": cz}, text, False
+
+
+def parse_rhyme(s, line, P, k, want, ctx):
+    """„aabb” (a spec "quotes": idézetcsoport vagy "lines": [kulcsok]) → {t: rhyme, p: [betű soronként], keys, s}.
+    Rövidebb képlet ciklikusan ismétlődik (versszakonként); x = rímtelen sor. Csak figyelmeztet, ha a rímpár
+    sorvégi magánhangzója eltér (a hosszúság nem számít)."""
+    pat = re.sub(r"\s+", "", s)
+    if not re.fullmatch(r"[a-z]+", pat):
+        P.err(line, f"„{k}” = {s}: a rímképlet kisbetűkből álljon (pl. aabb, abab; x = rímtelen sor)."); return None
+    qs = ctx.get("quotes", {})
+    if "lines" in want:
+        keys = list(want["lines"])
+    elif "quotes" in want:
+        g = want["quotes"]
+        keys = [q for q in qs if q == g or q.startswith(g + " ")]
+    else:
+        P.err(line, f"„{k}”: a rímképlet specjében „quotes” (idézetcsoport) vagy „lines” kell."); return None
+    miss = [q for q in keys if q not in qs]
+    if miss or not keys:
+        P.err(line, f"„{k}”: nincs ilyen idézetsor: {', '.join(miss) or want.get('quotes')}."); return None
+    if len(keys) % len(pat):
+        P.err(line, f"„{k}” = {s}: {len(pat)} betűs képlet, de {len(keys)} sor van (a sorok száma legyen a többszöröse)."); return None
+    p = [pat[j % len(pat)] for j in range(len(keys))]
+    for j0 in range(0, len(keys), len(pat)):           # versszakonként: ugyanaz a betű = ugyanaz a sorvégi magánhangzó
+        grp = {}
+        for j in range(j0, j0 + len(pat)):
+            q = qs[keys[j]]
+            if p[j] != "x" and q["v"]:
+                grp.setdefault(p[j], []).append((q["s"][q["v"][-1]].lower().translate(RHYME_NORM), keys[j]))
+        for letter, vs in grp.items():
+            if len({v for v, _ in vs}) > 1:
+                P.warn(line, f"„{k}”: a(z) „{letter}” rím sorvégei nem csengenek egybe: " +
+                       ", ".join(f"{kk} ({(HU_LETTERS.findall(qs[kk]['s']) or ['?'])[-1]})" for _, kk in vs) + " – ellenőrizd a képletet.")
+    return {"t": "rhyme", "p": p, "keys": keys}, pat, False
+
+
+def parse_morph(s, line, P, k, want, ctx):
+    """„kert + ész (képző) + ek (jel) + nek (rag)” → {t: morph, s: 'kertészeknek', parts: [{s, k}, …]};
+    „-ban/-ben (rag)” → változatlista: parts[0].alt = ['ban', 'ben']. A fajta zárt listából; az első elem
+    alapból tő. Hibát ad, ha rag után jel vagy képző jön; figyelmeztet a hangrend-eltérésre (<!-- ingadozó -->)."""
+    raw_parts = [x.strip() for x in re.split(r"\s*\+\s*", s)]
+    parts = []
+    for j, rp in enumerate(raw_parts):
+        m = re.fullmatch(r"(-?[^\s()]+?)\s*(?:\(([^()]*)\))?", rp)
+        if not m or not m.group(1).strip("-"):
+            P.err(line, f"„{k}” = {s}: nem értelmezhető szóelem „{rp}” (formátum: kert + ész (képző) + ek (jel))."); return None
+        form, kind = m.group(1), (m.group(2) or "").strip()
+        if kind and kind not in MORPH_KINDS:
+            P.err(line, f"„{k}”: ismeretlen szóelem-fajta „{kind}” (lehet: {', '.join(MORPH_KINDS)})."); return None
+        if not kind:
+            if j:
+                P.err(line, f"„{k}”: a(z) „{form}” fajtáját írd mögé zárójelben ({', '.join(MORPH_KINDS)})."); return None
+            kind = "tő"
+        alt = [a.strip().lstrip("-") for a in form.split("/")]
+        if any(not re.fullmatch(r"[^\W\d_]+", a) for a in alt):
+            P.err(line, f"„{k}”: a(z) „{form}” szóelemben csak betű állhat (változat: -ban/-ben)."); return None
+        part = {"s": "/".join(alt), "k": kind}
+        if len(alt) > 1:
+            part["alt"] = alt
+        parts.append(part)
+    if len(parts) > 1 and any("alt" in p for p in parts):
+        P.err(line, f"„{k}”: szóban a toldalék megvalósult alakját írd (kert + ben (rag)); a változatlistát (-ban/-ben) "
+                    "külön adatként add meg."); return None
+    if len(parts) > 1 and parts[0]["k"] not in ("tő", "előtag"):
+        P.err(line, f"„{k}” = {s}: a szó tővel (vagy előtaggal) kezdődjön."); return None
+    flex = any(re.search(r"\bingadozó\b", t) for t in ctx.get("cmt", {}).get(line, []))
+    rank, base = 0, ""
+    for p in parts:
+        if p["k"] in ("tő", "előtag"):
+            rank, base = 0, p["s"]; continue
+        r = MORPH_RANK.get(p["k"], rank)
+        if rank == 3 and r < 3:
+            P.err(line, f"„{k}” = {s}: rag után nem jöhet {p['k']} („{p['s']}”).")
+        elif rank == 2 and r == 1:
+            P.warn(line, f"„{k}” = {s}: jel után képző („{p['s']}”)? Ellenőrizd a sorrendet.")
+        rank = max(rank, r)
+        if p["k"] == "kötőhangzó" and not (len(p["s"]) == 1 and p["s"] in HU_VOWELS):
+            P.warn(line, f"„{k}”: a kötőhangzó egyetlen magánhangzó (a, e, o, ö), nem „{p['s']}”.")
+        hb, hs = harmony(base), suffix_harmony(p["s"])
+        if hb and hs and hb != hs and not flex and len(parts) > 1:
+            P.warn(line, f"„{k}”: a(z) „{p['s']}” ({p['k']}) {hs} hangrendű, a(z) „{base}” {hb} – illeszkedik? "
+                         "(ha a szó ingadozó vagy kivétel, írd a sor végére: <!-- ingadozó -->)")
+        base += p["s"]
+    if len(parts) > 1:
+        text = "".join(p["s"] for p in parts)
+    elif parts[0]["k"] in ("tő", "előtag"):
+        text = parts[0]["s"]
+    else:                                              # önálló toldalék: -ban/-ben, -ság
+        text = "/".join("-" + a for a in parts[0].get("alt", [parts[0]["s"]]))
+    return {"t": "morph", "parts": parts}, text, False
+
+
+IPA_LIKE = re.compile(r"[ːˈˌəɛɔøœʏɑɒæɪʊʃʒɲɟçŋθðɡχʁɾɫʔ]")
+
+
+def parse_pron(s, line, P, k, want, ctx):
+    """„kútba [kúdba]” → {t: pron, w: 'kútba', p: 'kúdba', s: 'kútba [kúdba]'}: írás + ejtés a betűk szerint."""
+    m = re.fullmatch(r"(.+?)\s*\[([^\[\]]+)\]", s)
+    if not m:
+        P.err(line, f"„{k}” = {s}: az ejtést szögletes zárójelbe írd az írott alak után: kútba [kúdba]."); return None
+    w, p = m.group(1).strip(), m.group(2).strip()
+    if w == p:
+        P.warn(line, f"„{k}”: az írás és az ejtés azonos ({w}) – szándékos?")
+    if IPA_LIKE.search(p):
+        P.warn(line, f"„{k}”: az ejtést a magyar betűk szerint írd, IPA-jelek nélkül ({p}).")
+    return {"t": "pron", "w": w, "p": p}, f"{w} [{p}]", False
+
+
+def parse_rel(s, line, P, k, want, ctx):
+    """„Gergely – Éva: szerelem (I–V)” → {t: rel, a, b, kind, from, to, fi, ti, s}. A fajta zárt listából; a
+    szereplők és az egységek a spec "rel": {"people": […], "units": […]} listájából (ha megadja)."""
+    m = re.fullmatch(r"(.+?)\s+([–—-])\s+(.+?)\s*:\s*([^\s()]+)\s*(?:\(([^()]*)\))?", s)
+    if not m:
+        P.err(line, f"„{k}” = {s}: formátum: Gergely – Éva: szerelem (I–V)."); return None
+    a, dash, b, kind, span = (x.strip() if x else x for x in m.groups())
+    if dash == "-":
+        P.warn(line, f"„{k}”: a két szereplő közé nagykötőjel (–) kell, szóközökkel.")
+    if kind not in REL_KINDS:
+        P.err(line, f"„{k}”: ismeretlen kapcsolat „{kind}” (lehet: {', '.join(REL_KINDS)})."); return None
+    if a == b:
+        P.err(line, f"„{k}”: a két szereplő ugyanaz ({a})."); return None
+    rel = ctx.get("rel", {})
+    people, units = want.get("people", rel.get("people")), want.get("units", rel.get("units"))
+    if people is not None:
+        for x in (a, b):
+            if x not in people:
+                P.err(line, f"„{k}”: ismeretlen szereplő „{x}” (a lecke szereplői: {', '.join(people)})."); return None
+    item = {"t": "rel", "a": a, "b": b, "kind": kind}
+    text = f"{a} – {b}: {kind}"
+    if span:
+        ends = [x.strip() for x in re.split(r"\s*[–—]\s*", span)]
+        if len(ends) == 1 and units is None and re.fullmatch(r"[IVXLC]+-[IVXLC]+", span):
+            ends = span.split("-")
+            P.warn(line, f"„{k}”: a tartományba nagykötőjel (–) kell: {ends[0]}–{ends[1]}.")
+        if len(ends) > 2 or not all(ends):
+            P.err(line, f"„{k}” = {s}: az időszak formátuma (I–V) vagy (III)."); return None
+        fr, to = ends[0], ends[-1]
+        if units is not None:
+            bad = [x for x in (fr, to) if x not in units]
+            if bad:
+                P.err(line, f"„{k}”: ismeretlen egység „{bad[0]}” (a lecke egységei: {', '.join(map(str, units))})."); return None
+            fi, ti = units.index(fr), units.index(to)
+        else:
+            fi, ti = (roman_val(fr) if roman_val(fr) else int(fr) if fr.isdigit() else None), \
+                     (roman_val(to) if roman_val(to) else int(to) if to.isdigit() else None)
+            if fi is None or ti is None:
+                P.err(line, f"„{k}”: „{span}”: római vagy arab szám kell, vagy add meg a spec „rel.units” listáját."); return None
+        if fi > ti:
+            P.err(line, f"„{k}” = {s}: az időszak eleje ({fr}) a vége ({to}) után van."); return None
+        item.update({"from": fr, "to": to, "fi": fi, "ti": ti})
+        text += f" ({fr}–{to})" if fr != to else f" ({fr})"
+    return item, text, False
+
+
+def quote_source(t, P, line, year):
+    """A <!-- idézet: … --> forrásmegjegyzés ellenőrzése (szerzői jog: a † év + 70 < az idei év)."""
+    t = re.sub(r"\s+", " ", t).strip()
+    body = QUOTE_SRC.sub("", t).strip()
+    folk, law = bool(re.search(r"népköltészet", body, re.I)), bool(re.search(r"jogszabály", body, re.I))
+    if not re.search(r"\bszöveg\s*:", body, re.I):
+        P.err(line, "az idézet forrásmegjegyzéséből hiányzik a kiadás: „· szöveg: <kiadás / MEK-szám / URL>”.")
+    if re.search(r"\bvédett\b", body, re.I):
+        P.err(line, "védett szöveget nem idézhetsz szó szerint – legfeljebb a címét és saját szavas összefoglalót.")
+    deaths = [(role.lower() if role else "", int(y)) for role, y in DEATH_RE.findall(body)]
+    if not deaths and not law and not folk:
+        P.err(line, "az idézet forrásmegjegyzéséből hiányzik a szerző halálának éve: „· szerző † 1849”"
+                    " (népköltészetnél „népköltészet · gyűjtő † 1898”, jogszabálynál „jogszabály”).")
+    if folk and not any(r in ("gyűjtő", "lejegyző", "kiadó", "szerkesztő") for r, _ in deaths):
+        P.err(line, "népköltészetnél a közkincs gyűjtés/kiadás kell: „· gyűjtő † <év>” (pl. Arany László † 1898).")
+    for role, y in deaths:
+        if y + 70 >= year:
+            P.err(line, f"{role or 'szerző'} † {y}: a szöveg védett ({y + 71}. január 1-jétől közkincs) – szó szerint nem "
+                        "idézhető, legfeljebb a cím és saját szavas összefoglaló (Szjt. 31. §).")
+    return body
+
+
+def build_quotes(md_path, doc, spec, P, ctx):
+    """### Idézet blokkok → content.quotes {kulcs: {s, syl, v, cut, ci, ref}} + content.quoteSrc [forrás]."""
+    lines = doc["_lines"]
+    com = md_comments(md_path)
+    year = datetime.date.today().year
+    yv = frozenset(w.lower() for w in spec["yVowel"])
+    rules, sets = spec["quotes"], spec["quoteSets"]
+    quotes, srcs = {}, []
+    for blk in doc["quoteBlocks"]:
+        lo = blk["line"] - 1
+        while lo >= 1 and not lines[lo - 1].strip():
+            lo -= 1
+        hi = blk["keys"][0][1] if blk["keys"] else blk["line"] + 1
+        cand = [(ln, t) for ln, t in com if lo < ln < hi and QUOTE_SRC.match(t)]
+        if not cand:
+            P.err(blk["line"], "az ### Idézet előtt kötelező a forrásmegjegyzés: <!-- idézet: <szerző>: <mű> (<év>), <hely> · "
+                               "szöveg: <kiadás> · szerző † <év> · közkincs -->")
+            ref = None
+        else:
+            srcs.append(quote_source(cand[-1][1], P, cand[-1][0], year))
+            ref = len(srcs) - 1
+        pos = {}
+        for k, n in blk["keys"]:
+            raw = doc["items"][k][1]
+            if not raw:
+                P.err(n, f"„{k}”: üres idézetsor."); continue
+            grp = max((g for g in sets if k == g or k.startswith(g + " ")), key=len, default=None)
+            if k not in rules and grp is None:
+                P.err(n, f"„{k}”: fölösleges idézet — a lecke nem használja (a spec „quotes” / „quoteSets” listájában nincs)."); continue
+            rule = dict(sets.get(grp) or {}, **(rules.get(k) or {}))
+            j = pos[grp] = pos.get(grp, -1) + 1
+            pieces = re.split(r"(?<!\\)\|", raw)
+            text, ci = "", []
+            for i, pc in enumerate(pieces):
+                pc = pc.replace("\\|", "|")
+                if i:
+                    gap = text.endswith(" ") or pc.startswith(" ")
+                    text = text.rstrip() + (" " if gap else "")
+                    ci.append(len(text))
+                    pc = pc.lstrip()
+                text += pc
+            text = text.strip()
+            v = hu_vowels(text, yv)
+            cut = [sum(1 for x in v if x < c) for c in ci]
+            notes = ctx["cmt"].get(n, [])
+            dev = [t for t in notes if re.match(r"\s*(szótagszám|eltérés)\s*:", t, re.I)]
+            want_syl = rule.get("syll")
+            if isinstance(want_syl, list):
+                want_syl = want_syl[j % len(want_syl)] if want_syl else None
+            if want_syl is not None and len(v) != want_syl:
+                said = [int(m.group(1)) for t in dev for m in [re.match(r"\s*szótagszám\s*:\s*(\d+)", t, re.I)] if m]
+                if said and said[0] != len(v):
+                    P.err(n, f"„{k}”: a megjegyzés szerint {said[0]} szótag, a build {len(v)}-et számolt (magánhangzók: "
+                             f"{' '.join(text[x] for x in v)}).")
+                elif dev:
+                    P.warn(n, f"„{k}”: {len(v)} szótag ({want_syl} helyett) – a megjegyzés szerint szándékos/forráshű.")
+                else:
+                    P.err(n, f"„{k}”: {len(v)} szótag, {want_syl} kellene (magánhangzók: {' '.join(text[x] for x in v)}). "
+                             "Ha a forrásban is így van: <!-- szótagszám: N, a forrásban is --> a sor végére.")
+            want_cut = rule.get("cut")
+            if want_cut is not None and ci:
+                wc = want_cut if isinstance(want_cut, list) else [want_cut]
+                if cut != wc:
+                    (P.warn if dev else P.err)(n, f"„{k}”: a sormetszet (|) {', '.join(map(str, cut))}. szótag után van, "
+                                                  f"{', '.join(map(str, wc))} kellene" + (" – a megjegyzés szerint szándékos." if dev else
+                                                  " (ha szándékos: <!-- eltérés: … -->)."))
+            q = {"s": text, "syl": len(v), "v": v}
+            if ci:
+                q.update({"cut": cut, "ci": ci})
+            if ref is not None:
+                q["ref"] = ref
+            quotes[k] = q
+    for k in rules:
+        if k not in quotes and k not in doc["items"]:
+            P.err(0, f"hiányzó idézet: „- {k}: …” (### Idézet alá)")
+    for g, r in sets.items():
+        n_ = sum(1 for k in quotes if k == g or k.startswith(g + " "))
+        if "lines" in r and n_ != r["lines"]:
+            P.err(0, f"a(z) „{g}” idézetcsoportban {n_} sor van, a lecke {r['lines']}-et vár.")
+        elif not n_ and not any(k == g or k.startswith(g + " ") for k in doc["items"]):
+            P.err(0, f"hiányzó idézetcsoport: „- {g} …: …” (### Idézet alá)")
+    return quotes, srcs
+
+
 def parse_datum(k, raw, n, want, P, ctx=None):
     """Egy ### Adatok sor értéke → (adat-dict, formázott szöveg, panel-HTML vagy None) vagy None."""
     ctx = ctx or {}
     typ = want.get("type", "number")
     if typ not in TYPES:
         return None              # a spec hibáját a read_spec már jelezte
+    if typ in HU_TYPES:          # szöveges adat: a „kb.”, „(2025)” jelzők itt nem értelmezhetők
+        fn = {"metrum": parse_metrum, "rhyme": parse_rhyme, "morph": parse_morph, "pron": parse_pron, "rel": parse_rel}[typ]
+        r = fn(raw.strip(), n, P, k, want, ctx)
+        if not r:
+            return None
+        item, text, _ = r
+        item["s"] = text
+        return item, text, None
     s0, tags = split_tags(raw.strip())
     s, est = split_est(s0)
     est = est or tags.pop("est", False)
@@ -1570,9 +1976,17 @@ def read_spec(html_path, P):
     rv = spec.get("review", [])
     if not isinstance(rv, list):
         P.err(0, f"{html_path.name}: a \"review\" lista legyen, pl. [\"elsősegély\"]."); rv = []
+    hu = {}
+    for key, kind in (("quotes", dict), ("quoteSets", dict), ("yVowel", list), ("rel", dict)):
+        v = spec.get(key, kind())
+        if isinstance(v, list) and key == "quotes":
+            v = {k: {} for k in v}
+        if not isinstance(v, kind):
+            P.err(0, f"{html_path.name}: a \"{key}\" {'lista' if kind is list else 'objektum'} legyen."); v = kind()
+        hu[key] = v
     return {"steps": spec.get("steps"), "labels": labels, "data": data, "maxWords": mw,
             "math": bool(spec.get("math")), "chem": bool(spec.get("chem")),
-            "sources": bool(spec.get("sources")), "review": rv}
+            "sources": bool(spec.get("sources")), "review": rv, "interpretive": bool(spec.get("interpretive")), **hu}
 
 
 def parse_md(path, P):
@@ -1596,7 +2010,8 @@ def parse_md(path, P):
                     out, rest, in_c = out + rest[:j], rest[j + 4:], True
         lines[i] = out.rstrip()
 
-    doc = {"title": None, "titleLine": 0, "meta": {}, "steps": [], "items": {}, "bareNotes": []}
+    doc = {"title": None, "titleLine": 0, "meta": {}, "steps": [], "items": {}, "bareNotes": [], "quoteBlocks": [],
+           "_lines": lines}
     sec = None          # None | 'common' | step dict
     sub = None          # None | 'labels' | 'data'
     para = []           # [(line, text)]
@@ -1639,9 +2054,11 @@ def parse_md(path, P):
             h = l[4:].strip().lower()
             if sec is None:
                 P.err(n, "a ### szakasz egy ## lépés vagy a ## Közös alá tartozik.")
-            sub = {"feliratok": "labels", "adatok": "data"}.get(h)
+            sub = {"feliratok": "labels", "adatok": "data", "idézet": "quotes"}.get(h)
             if not sub:
-                P.err(n, f"„### {l[4:].strip()}”: ismeretlen szakasz (lehet: ### Feliratok, ### Adatok).")
+                P.err(n, f"„### {l[4:].strip()}”: ismeretlen szakasz (lehet: ### Feliratok, ### Adatok, ### Idézet).")
+            if sub == "quotes":
+                doc["quoteBlocks"].append({"line": n, "keys": []})
             continue
         if sec is None and not doc["steps"] and not doc["meta"] and ":" in l:
             for part in re.split(r"\s+·\s+", l):
@@ -1652,19 +2069,23 @@ def parse_md(path, P):
         if sub:
             m = re.match(r"^[-*]\s+([^:]+?)\s*:\s*(.*)$", l)
             if not m:
-                P.err(n, f"a {('Feliratok' if sub == 'labels' else 'Adatok')} alatt minden sor „- kulcs: érték” alakú legyen.")
+                P.err(n, f"a {({'labels': 'Feliratok', 'data': 'Adatok'}.get(sub, 'Idézet'))} alatt minden sor „- kulcs: érték” alakú legyen.")
                 continue
             k, v = m.group(1).strip(), m.group(2).strip()
             if k in doc["items"]:
                 P.err(n, f"„{k}” kulcs kétszer szerepel (először: {doc['items'][k][2]}. sor).")
                 continue
             doc["items"][k] = (sub, v, n)
+            if sub == "quotes":
+                doc["quoteBlocks"][-1]["keys"].append((k, n))
             continue
         if sec == "common" or sec is None:
-            P.err(n, "ide csak ### Feliratok / ### Adatok kerülhet, folyó szöveg nem.")
+            P.err(n, "ide csak ### Feliratok / ### Adatok / ### Idézet kerülhet, folyó szöveg nem.")
             continue
         if l.startswith(">"):
             flush()
+            if re.match(r"(?i)^>\s*értelmezés\s*:", l):
+                sec["blocks"].append(("interp", n, re.sub(r"(?i)^>\s*értelmezés\s*:\s*", "", l))); continue
             if not re.match(r"(?i)^>\s*megjegyzés\s*:", l):
                 doc["bareNotes"].append(n)
             t = re.sub(r"^>\s*(megjegyzés\s*:)?\s*", "", l, flags=re.I)
@@ -1717,7 +2138,15 @@ def build(md_path, check_only=False, out_dir=None):
     doc = parse_md(md_path, P)
     if spec is None:
         return P
-    ctx = {"math": spec["math"], "chem": spec["chem"], "html": {}}
+    ctx = {"math": spec["math"], "chem": spec["chem"], "html": {}, "rel": spec["rel"]}
+    quotes, quote_src = {}, []
+    if doc["quoteBlocks"] or spec["quotes"] or spec["quoteSets"] or any(
+            v.get("type") in HU_TYPES for v in spec["data"].values()):
+        ctx["cmt"] = {}
+        for ln, t in md_comments(md_path):
+            ctx["cmt"].setdefault(ln, []).append(t)
+        quotes, quote_src = build_quotes(md_path, doc, spec, P, ctx)     # 0) idézetek (a metrum/rím adat hivatkozik rájuk)
+        ctx["quotes"] = quotes
 
     for k in ("tantárgy", "évfolyam", "témakör"):
         if k not in doc["meta"]:
@@ -1782,6 +2211,8 @@ def build(md_path, check_only=False, out_dir=None):
         if re.search(r"\d\.\d", text):
             P.warn(n, f"„{k}”: tizedespont? A magyar írásmód tizedesvessző (3,14).")
         labels[k] = text
+    for k in quotes:
+        src[k] = doc["items"][k][2]
     for k in spec["labels"]:
         if k not in labels and k not in doc["items"]:
             P.err(0, f"hiányzó felirat: „- {k}: …” (### Feliratok alá)")
@@ -1793,7 +2224,9 @@ def build(md_path, check_only=False, out_dir=None):
                     "frac": "3/4", "list": "2; 3; 5 " + w.get("unit", ""), "point": "(2; −1,5)",
                     "series": "0 " + w.get("ux", "") + ": 13,3 · 20 " + w.get("ux", "") + ": 31,6",
                     "expr": "x^2 − 4x + 3", "formula": "H₂O", "equation": "CH₄ + 2 O₂ → CO₂ + 2 H₂O",
-                    "utc": "UTC+1", "dataset": "<a forrás neve>"}.get(w.get("type"), "… " + w.get("unit", ""))
+                    "utc": "UTC+1", "dataset": "<a forrás neve>", "metrum": "— ∪ ∪ | — ∪ ∪ | — ×", "rhyme": "aabb",
+                    "morph": "kert + ész (képző) + ek (jel) + nek (rag)", "pron": "kútba [kúdba]",
+                    "rel": "Gergely – Éva: szerelem (I–V)"}.get(w.get("type"), "… " + w.get("unit", ""))
             P.err(0, f"hiányzó adat: „- {k}: {hint.strip()}” (### Adatok alá)")
     if spec["sources"]:
         check_sources(md_path, doc, P)
@@ -1818,9 +2251,11 @@ def build(md_path, check_only=False, out_dir=None):
                 ul.append(f'<li data-src="{n}">{h}</li>'); continue
             if ul:
                 parts.append("<ul>" + "".join(ul) + "</ul>"); ul = []
-            cls = {"note": ' class="note"', "fx": ' class="big-fx"'}.get(kind, "")
+            cls = {"note": ' class="note"', "fx": ' class="big-fx"', "interp": ' class="interp"'}.get(kind, "")
             if kind == "fx":
                 h = nobreak(h)                 # a képlet: sor egyben marad (csak relációjel után törhet)
+            if kind == "interp":               # „> értelmezés: …” – egy lehetséges olvasat (magyar irodalom)
+                h = '<span class="interp-h">Egy lehetséges olvasat</span>' + h
             parts.append(f'<p{cls} data-src="{n}">{h}</p>')
         if ul:
             parts.append("<ul>" + "".join(ul) + "</ul>")
@@ -1830,9 +2265,15 @@ def build(md_path, check_only=False, out_dir=None):
             P.warn(s["line"], f"a(z) „{s['title']}” lépés panelszövege {words} szó (ajánlott ≤ {spec['maxWords']}).")
         steps.append({"title": inline(s["title"], s["line"], P, data_fmt, ctx), "html": "".join(parts), "line": s["line"], "words": words})
 
+    if spec["interpretive"] and not any(kind == "interp" for s in doc["steps"] for kind, _, _ in s["blocks"]) and not any(
+            s["blocks"] and re.search(r"\?[”»\"')\]]*$", s["blocks"][-1][2].rstrip()) for s in doc["steps"]):
+        P.warn(0, "értelmező lecke (\"interpretive\"): legyen benne legalább egy „> értelmezés: …” doboz vagy egy "
+                  "kérdéssel végződő lépés (nyitott kérdés).")
     title = plain_title(doc["title"], doc["titleLine"], P, ctx)
     if P.errors or check_only:
         P.content = {"data": data, "labels": labels, "steps": steps, "title": title}
+        if quotes:
+            P.content["quotes"] = quotes
         return P
     meta = doc["meta"]
     content = {
@@ -1840,6 +2281,9 @@ def build(md_path, check_only=False, out_dir=None):
         "meta": {"subject": meta.get("tantárgy", ""), "grade": meta.get("évfolyam", ""), "topic": meta.get("témakör", "")},
         "steps": steps, "labels": labels, "data": data, "src": src,
     }
+    if quotes:                           # csak ha van ### Idézet (a régi leckék kimenete változatlan)
+        content["quotes"] = quotes
+        content["quoteSrc"] = quote_src
     out = (pathlib.Path(out_dir) if out_dir else md_path.parent) / (md_path.stem + ".content.js")
     out.write_text(f"/* GENERÁLT FÁJL — ne szerkeszd kézzel. Forrás: {md_path.name}\n"
                    f"   Újragenerálás: python3 tools/build_lesson.py {md_path.relative_to(ROOT).as_posix() if md_path.is_relative_to(ROOT) else md_path.name} */\n"
@@ -1874,7 +2318,8 @@ def mx_cases():
 
 def selftest():
     """A tools/tests/ próbafájljai: tort-adatok.md (hibátlan, értékek ellenőrzése), tort-hibak.md (várt hibák),
-    uj-adatok.md / uj-hibak.md (az új adattípusok), jeloles-mat.md / jeloles-kem.md (jelölés), mx-cases.js."""
+    uj-adatok.md / uj-hibak.md (az új adattípusok), jeloles-mat.md / jeloles-kem.md (jelölés), mx-cases.js,
+    magyar-adatok.md / magyar-hibak.md (idézet, verssor, metrum, rím, szóelem, ejtés, kapcsolat, értelmezés)."""
     T = ROOT / "tools" / "tests"
     fails = []
 
@@ -2064,6 +2509,69 @@ def selftest():
             fails.append("jeloles-kem: hiányzó info: H2O → H₂O")
         if not any("nyíl kell" in x for x in P.warnings):
             fails.append("jeloles-kem: hiányzó figyelmeztetés: szóegyenlet nyíl nélkül")
+
+        # ── magyar: idézet, verssor, metrum, rím, szóelem, ejtés, szereplőkapcsolat, értelmezés ──
+        P = build(T / "magyar-adatok.md", out_dir=tmp)
+        for m in P.errors + P.warnings:
+            fails.append("magyar-adatok váratlan: " + m)
+        C = getattr(P, "content", {})
+        Q, D = C.get("quotes", {}), C.get("data", {})
+        g = lambda k, f=None: D.get(k, {}) if f is None else D.get(k, {}).get(f)
+        q = lambda k, f: Q.get(k, {}).get(f)
+        check("idézet: a | eltűnik", q("jv 1/1", "s"), "Tüzesen süt le a nyári nap sugára")
+        check("idézet: szótag, metszet", (q("jv 1/1", "syl"), q("jv 1/1", "cut"), q("jv 1/1", "ci")), (12, [6], [17]))
+        check("idézet: a metszet karakterhelye", Q.get("jv 1/1", {}).get("s", "")[17:22], "nyári")
+        check("idézet: 6 sor, forrás", ([k for k in Q if k.startswith("jv ")], q("jv 1/6", "ref")),
+              (["jv 1/1", "jv 1/2", "jv 1/3", "jv 1/4", "jv 1/5", "jv 1/6"], 0))
+        check("idézet: szótagmagok", [Q["jv 1/2"]["s"][i] for i in Q.get("jv 1/2", {}).get("v", [])] if "jv 1/2" in Q else None,
+              list("Aéeeéőauáoáa"))
+        check("idézet: forrássor", (len(C.get("quoteSrc", [])), (C.get("quoteSrc") or [""])[0][:28]), (3, "Petőfi Sándor: János vitéz ("))
+        check("idézet: jogszabály († nélkül)", q("kt idézet", "ref"), 2)
+        check("idézet: review-sor (src)", C.get("src", {}).get("jv 1/1"), 14)
+        check("rím", (g("jv rímképlet", "p"), g("jv rímképlet", "s")), (list("aabbcc"), "aabbcc"))
+        check("metrum", (g("huszt 1 metrum", "n"), g("huszt 1 metrum", "feet")[2] if g("huszt 1 metrum") else None,
+                         g("huszt 1 metrum", "s")), (15, ["—", "—"], "— ∪ ∪ | — ∪ ∪ | — — | — — | — ∪ ∪ | — ×"))
+        check("metrum: - u jelek, || metszet", (g("huszt 2 metrum", "n"), g("huszt 2 metrum", "cz"), g("huszt 2 metrum", "s")),
+              (14, [3], "— ∪ ∪ | — ∪ ∪ | — || — ∪ ∪ | — ∪ ∪ | —"))
+        check("morph", (g("kertészeknek", "s"), [(x["s"], x["k"]) for x in g("kertészeknek", "parts") or []]),
+              ("kertészeknek", [("kert", "tő"), ("ész", "képző"), ("ek", "jel"), ("nek", "rag")]))
+        check("morph összetett", [x["k"] for x in g("virágcserépben", "parts") or []], ["tő", "tő", "rag"])
+        check("morph kötőhangzó", g("házakban", "s"), "házakban")
+        check("morph változatlista", (g("inessivus", "s"), (g("inessivus", "parts") or [{}])[0].get("alt")), ("-ban/-ben", ["ban", "ben"]))
+        check("pron", (g("kútba", "w"), g("kútba", "p"), g("kútba", "s")), ("kútba", "kúdba", "kútba [kúdba]"))
+        check("rel", {f: g("Gergely és Éva", f) for f in ("a", "b", "kind", "from", "to", "fi", "ti")},
+              {"a": "Gergely", "b": "Éva", "kind": "szerelem", "from": "I", "to": "V", "fi": 0, "ti": 4})
+        check("rel egy egység", (g("Dobó és Gergely", "from"), g("Dobó és Gergely", "to"), g("Dobó és Gergely", "s")),
+              ("IV", "IV", "Dobó – Gergely: vezet (IV)"))
+        hs = [s["html"] for s in C.get("steps", [])]
+        check("értelmezés-doboz", bool(hs) and '<p class="interp" data-src="10"><span class="interp-h">Egy lehetséges olvasat</span>A tűző'
+              in hs[0], True)
+        check("{ejtés} a panelen", bool(hs) and "kútba [kúdba]" in hs[0], True)
+        check("értelmezés: a szókorlátba számít", C.get("steps", [{}])[0].get("words"), 21)
+        check("szótag: Kölcsey (y nem magánhangzó)", len(hu_vowels("Kölcsey Ferenc")), 4)
+        check("szótag: yVowel", len(hu_vowels("Teleky Blanka", frozenset({"teleky"}))), 5)
+        check("szótag: gy/ny/ly/ty", len(hu_vowels("hogy nyolc folyó tyúk")), 5)
+        check("hangrend", [harmony(w) for w in ("ház", "kert", "kávé", "papír", "sofőr", "híd", "hotel", "tök")],
+              ["mély", "magas", "mély", "mély", "magas", None, None, "magas"])
+        check("római szám", [roman_val(x) for x in ("I", "IV", "IX", "XIV", "IIII", "")], [1, 4, 9, 14, None, None])
+
+        P = build(T / "magyar-hibak.md", check_only=True)
+        want = ["„jv csonka”: 9 szótag, 12 kellene", "a megjegyzés szerint 10 szótag", "a sormetszet (|) 5. szótag után",
+                "„fölösleges”: fölösleges idézet", "kötelező a forrásmegjegyzés", "szerző † 1989: a szöveg védett",
+                "népköltészetnél a közkincs gyűjtés", "hiányzik a kiadás", "hiányzó idézet: „- hiányzó sor",
+                "„kiadás nélkül” idézetcsoportban 1 sor van", "5 betűs képlet, de 8 sor", "ismeretlen jel „?”",
+                "a metrum 6 szótagos", "rag után nem jöhet jel", "„ész” fajtáját írd", "ismeretlen szóelem-fajta „képzö”",
+                "megvalósult alakját", "szögletes zárójelbe", "ismeretlen szereplő „Bornemissza”", "az időszak eleje (IV)",
+                "ismeretlen kapcsolat „rokon”", "ismeretlen egység „VI”"]
+        for w in want:
+            if not any(w in e for e in P.errors):
+                fails.append(f"magyar-hibak: hiányzó várt hiba: „{w}”")
+        if len(P.errors) != len(want):
+            fails.append(f"magyar-hibak: {len(P.errors)} hiba, várt: {len(want)}:\n    " + "\n    ".join(P.errors))
+        for w in ["„jv jelzett”: 9 szótag (12 helyett)", "„a” rím sorvégei nem csengenek", "5. szótag (é) hosszú magánhangzó",
+                  "„ban” (rag) mély hangrendű, a(z) „kert” magas", "az írás és az ejtés azonos", "értelmező lecke"]:
+            if not any(w in x for x in P.warnings):
+                fails.append(f"magyar-hibak: hiányzó figyelmeztetés: „{w}”")
 
     # ── a # cím más tárgyban: Unicode, ahol lehet; a többi változatlan ──
     Pt = Problems(T / "cím")

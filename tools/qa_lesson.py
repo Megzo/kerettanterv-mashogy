@@ -25,11 +25,20 @@
   --poke JSON    minden fotózott lépésnél meghívja a lecke L.poke(obj) függvényét (pl. '{"a": -2}')
   --data         kiírja az L.dat értékeit (évvel, frissítendő/előrejelzés/modell/becslés jelzővel) → data.json
   --no-jump      kihagyja az ugrópróbát (alapból fut, lásd lent); --jump-only: csak az ugrópróba fut
+  --glyphs       glifpróba a magyar és verstani jelekre (magyarleckében alapból fut, lásd lent)
 
 Mindig fut (visszafelé kompatibilisen; a „!” sorok figyelmeztetések, a kilépési kódot nem rontják):
   · idle: ha a lecke ad idle()-t, a settle- és a visszalépés-képek előtt megvárja (max. 5 mp);
   · glifellenőrzés: a vászon- és panelszöveg minden karaktere benne van-e a shared/lesson.css
     @font-face unicode-range-eiben (különben rendszerfontra esik vissza, gépenként eltérő szélességgel);
+    v2: a vászonfeliratot a saját családja szerint nézi (a motor a marks[].f-ben adja a fontot; régi motornál az
+    összes család együtt), és a böngészőben azt is megméri, hogy a fontfájlban tényleg van-e rajz a jelhez (a
+    unicode-range csak ígéret: pl. U+2000-206F, de a ‿ nincs benne) – ha nincs, „GLIF … tartalékfontra esik”;
+  · magyar- és verstani glifpróba (magyarlecke – content.meta.subject „Magyar…” – vagy --glyphs): ő ű Ő Ű ‚ ’ „ ” – —
+    ∪ × [ ] mind a négy fontváltozatban (Fraunces, Fraunces dőlt, Bricolage Grotesque, JetBrains Mono); tájékoztató sor;
+  · hangpróba: AudioContext csak felhasználói gesztus (kattintás) után jöhet létre („! HANG”), hangforrás (oszcillátor,
+    <audio>) nem indulhat kattintás nélkül, gépi felolvasás (speechSynthesis) nincs – ezek ✗ hibák. A QA nem kattint,
+    így minden hang, ami a QA alatt indul, „magától” indult (betöltéskor vagy lépésbelépéskor);
   · enter() futásideje: figyelmeztetés 300 ms felett;
   · ha a lecke ad L.checks() függvényt (→ [{name, ok, got, want}]), minden képnél lefut; ok: false → ✗;
   · matematikaleckében ("math": true) a vászonfeliratokon: tizedespont, kötőjel-mínusz, *, ' (figyelmeztetés);
@@ -48,6 +57,7 @@ import json
 import pathlib
 import re
 import sys
+import unicodedata
 
 from playwright.sync_api import sync_playwright
 
@@ -116,9 +126,10 @@ GLYPH_JS = r"""() => {
   const w = document.createTreeWalker(P, NodeFilter.SHOW_TEXT);
   for (let n = w.nextNode(); n; n = w.nextNode()) {
     const t = n.textContent.trim(); if (!t || !n.parentElement || n.parentElement.closest('[hidden]')) continue;
-    out.push([getComputedStyle(n.parentElement).fontFamily.split(',')[0].replace(/["']/g, '').trim(), t]);
+    const cs = getComputedStyle(n.parentElement);
+    out.push([cs.fontFamily.split(',')[0].replace(/["']/g, '').trim(), t, cs.fontStyle !== 'normal']);
   }
-  return { marks: L.marks.filter((m) => m.a > .3).map((m) => m.s), panel: out };
+  return { marks: L.marks.filter((m) => m.a > .3).map((m) => [m.s, m.f || null]), panel: out };
 }"""
 
 CHECKS_JS = r"""() => {
@@ -128,6 +139,67 @@ CHECKS_JS = r"""() => {
     (c.got !== undefined ? `: ${JSON.stringify(c.got)} ≠ várt ${JSON.stringify(c.want)}` : '')); }
   catch (e) { return ['ELLENŐRZÉS: L.checks() hibát dobott: ' + e]; }
 }"""
+
+# hangpróba: a lecke kódja előtt fut; naplózza, ha AudioContext jön létre / hang indul, és volt-e előtte (5 mp-en belül)
+# valódi felhasználói bemenet (isTrusted pointerdown / keydown / click). A navigator.userActivation itt nem jó: a
+# Playwright evaluate()-je gesztusnak számít. A QA maga nem kattint, így nála minden hang „magától” szól.
+AUDIO_INIT = r"""(() => {
+  const log = window.__qaAudio = [];
+  let last = -1e9;
+  for (const t of ['pointerdown', 'keydown', 'click', 'touchend']) window.addEventListener(t, (e) => { if (e.isTrusted) last = performance.now(); }, true);
+  const act = () => performance.now() - last < 5000;
+  for (const n of ['AudioContext', 'webkitAudioContext']) {
+    const C = window[n]; if (typeof C !== 'function') continue;
+    const W = function (...a) { log.push({ ev: 'ctx', g: act() }); return new C(...a); };
+    W.prototype = C.prototype; Object.setPrototypeOf(W, C); window[n] = W;
+  }
+  const wrap = (proto, name, ev) => { if (!proto || typeof proto[name] !== 'function') return; const f = proto[name];
+    proto[name] = function (...a) { log.push({ ev, g: act() }); return f.apply(this, a); }; };
+  if (window.AudioScheduledSourceNode) wrap(AudioScheduledSourceNode.prototype, 'start', 'start');
+  if (window.HTMLMediaElement) wrap(HTMLMediaElement.prototype, 'play', 'media');
+  if (window.speechSynthesis) wrap(Object.getPrototypeOf(window.speechSynthesis), 'speak', 'tts');
+})()"""
+AUDIO_JS = "(() => (window.__qaAudio || []).splice(0))()"
+
+
+def audio_problems(evs):
+    """A hangnapló → (hibák, figyelmeztetések). Gesztus közben (g: true) minden megengedett."""
+    probs, warns = [], []
+    bad = [e["ev"] for e in evs if not e.get("g")]
+    if "ctx" in bad:
+        warns.append(f"HANG: AudioContext felhasználói kattintás nélkül jött létre ({bad.count('ctx')}×) – csak a ▶ gomb hozza létre")
+    if "start" in bad or "media" in bad:
+        probs.append(f"HANG: hang indult kattintás nélkül ({bad.count('start') + bad.count('media')}×) – a hang csak kattintásra szólhat")
+    if "tts" in bad or any(e["ev"] == "tts" for e in evs):
+        probs.append("HANG: gépi felolvasás (speechSynthesis) – nem használható")
+    return probs, warns
+
+
+# glifpróba a böngészőben: van-e rajz a fontfájlban? (ha nincs, a "Fam", monospace és a monospace – és a serif-es pár –
+# ugyanazzal a tartalékfonttal rajzol, tehát pontosan ugyanolyan széles)
+GLYPH_REAL_JS = r"""async (items) => {
+  const c = document.createElement('canvas').getContext('2d'), out = [];
+  const w = (f, ch) => { c.font = f; return c.measureText(ch).width; };
+  for (const [fam, it, ch] of items) {
+    const st = it ? 'italic ' : '';
+    try { await document.fonts.load(`${st}40px "${fam}"`, ch); } catch (e) { /* nincs ilyen font */ }
+    if (w(`${st}40px "${fam}", monospace`, ch) === w(`${st}40px monospace`, ch) &&
+        w(`${st}40px "${fam}", serif`, ch) === w(`${st}40px serif`, ch)) out.push([fam, it, ch]);
+  }
+  return out;
+}"""
+HU_PROBE = "őűŐŰ‚’„”–—∪×[]"
+HU_FACES = [("Fraunces", False), ("Fraunces", True), ("Bricolage Grotesque", False), ("JetBrains Mono", False)]
+
+
+def font_of(css_font):
+    """'italic 500 24px "JetBrains Mono"' → ('JetBrains Mono', True); ismeretlennél (None, False)."""
+    if not css_font:
+        return None, False
+    m = re.search(r"[\d.]+px(?:/[\d.]+)?\s+(.+)$", css_font)
+    fam = m.group(1).split(",")[0].strip().strip("\"'") if m else None
+    return fam, bool(re.match(r"\s*(italic|oblique)\b", css_font))
+
 
 GO_JS = "(i) => { const t0 = performance.now(); window.__lesson.go(i, true); return performance.now() - t0; }"
 
@@ -205,6 +277,11 @@ def font_coverage():
 
 def missing_glyphs(text, rngs):
     return sorted({ch for ch in text if not ch.isspace() and ord(ch) >= 32 and not any(a <= ord(ch) <= b for a, b in rngs)})
+
+
+def drawable(text):
+    """A szöveg látható jelei (szóköz, vezérlő- és nulla szélességű jelek nélkül) – a valódi glifpróbához."""
+    return {ch for ch in text if not ch.isspace() and unicodedata.category(ch) not in ("Cc", "Cf", "Mn", "Me", "Zs")}
 
 
 def det_page(b, html, query="", console=False):
@@ -296,25 +373,53 @@ def main(argv):
     poke = json.loads(opts["--poke"]) if "--poke" in opts else None
     seen_glyph = set()
 
+    real = {}                      # (család, dőlt, jel) → van-e rajz a fontfájlban (böngészőben mérve, egyszer)
+
+    def real_missing(pg, triples):
+        todo = sorted({x for x in triples if x not in real})
+        if todo:
+            try:
+                gone = {tuple(x) for x in pg.evaluate(GLYPH_REAL_JS, [list(x) for x in todo])}
+            except Exception:
+                gone = set()
+            for x in todo:
+                real[x] = x not in gone
+        return {x for x in triples if not real.get(x, True)}
+
     def extra(pg, glyph=True):
         """Figyelmeztetések (glif, matematikai írásmód) + L.checks() hibái."""
         warns = []
         if glyph:
             g = pg.evaluate(GLYPH_JS)
-            for s_ in g["marks"]:
-                miss = [c for c in missing_glyphs(s_, allr) if c not in seen_glyph]
+            fonts = []                                  # (szöveg, család, dőlt) a valódi glifpróbához
+            for s_, f_ in g["marks"]:
+                fam, it = font_of(f_)
+                miss = [c for c in missing_glyphs(s_, cov.get(fam, allr)) if (fam, c) not in seen_glyph and c not in seen_glyph]
                 if miss:
-                    seen_glyph.update(miss)
-                    warns.append(f"GLIF: nincs a fontokban: {' '.join(miss)} ({', '.join(f'U+{ord(c):04X}' for c in miss)}) – „{s_[:28]}”")
+                    seen_glyph.update((fam, c) for c in miss)
+                    warns.append(f"GLIF: nincs a fontokban{f' ({fam})' if fam in cov else ''}: {' '.join(miss)} "
+                                 f"({', '.join(f'U+{ord(c):04X}' for c in miss)}) – „{s_[:28]}”")
+                if fam in cov:
+                    fonts.append((s_, fam, it, "vászon"))
                 if is_math:
                     for rx, msg in MATH_MARK:
                         if rx.search(s_):
                             warns.append(f"ÍRÁSMÓD: {msg} – „{s_[:28]}”")
-            for fam, t in g["panel"]:
+            for fam, t, it in g["panel"]:
                 miss = [c for c in missing_glyphs(t, cov.get(fam, allr)) if (fam, c) not in seen_glyph]
                 if miss:
                     seen_glyph.update((fam, c) for c in miss)
                     warns.append(f"GLIF (panel, {fam}): nincs a fontban: {' '.join(miss)} – „{t[:28]}”")
+                if fam in cov:
+                    fonts.append((t, fam, it, "panel"))
+            # a unicode-range szerint lefedett jelek: tényleg van-e rajzuk a fontfájlban?
+            trip = {(fam, it, c): (s_, where) for s_, fam, it, where in fonts for c in drawable(s_)
+                    if not missing_glyphs(c, cov[fam]) and ("real", fam, it, c) not in seen_glyph}
+            for fam, it, c in sorted(real_missing(pg, set(trip))):
+                seen_glyph.add(("real", fam, it, c))
+                s_, where = trip[(fam, it, c)]
+                warns.append(f"GLIF ({where}, {fam}{' dőlt' if it else ''}): a(z) {c} (U+{ord(c):04X}) nincs a fontfájlban – "
+                             f"tartalékfontra esik – „{s_[:28]}”")
         return warns, pg.evaluate(CHECKS_JS)
 
     def report(head, probs, warns, limit=12):
@@ -329,6 +434,7 @@ def main(argv):
     with sync_playwright() as p:
         b = p.chromium.launch()
         pg = b.new_page(viewport={"width": 1920, "height": 1080}, device_scale_factor=.5 if "--half" in opts else 1)
+        pg.add_init_script(AUDIO_INIT)
         errs = []
         pg.on("pageerror", lambda e: errs.append("JS-HIBA: " + str(e).split("\n")[0]))
         pg.on("console", lambda m: errs.append("KONZOL: " + m.text) if m.type == "error" else None)
@@ -357,6 +463,17 @@ def main(argv):
         open_()
         steps = pg.evaluate("window.__lesson.steps.map((s) => ({ title: s.title.replace(/<[^>]+>/g, ''), settle: s.settle || 8 }))")
         n = len(steps)
+        subject = pg.evaluate("(() => { const C = window.__lesson.content; return (C && C.meta && C.meta.subject) || ''; })()")
+        if "--glyphs" in opts or subject.lower().startswith("magyar"):
+            gone = real_missing(pg, {(f, it, c) for f, it in HU_FACES for c in HU_PROBE})
+            print("glifpróba (magyar, verstani jelek: " + " ".join(HU_PROBE) + "): " + " · ".join(
+                f"{f}{' dőlt' if it else ''} " + ("✓" if not [c for c in HU_PROBE if (f, it, c) in gone] else
+                                                  "tartalékfont: " + " ".join(c for c in HU_PROBE if (f, it, c) in gone))
+                for f, it in HU_FACES))
+        a_probs, a_warns = audio_problems(pg.evaluate(AUDIO_JS))
+        if a_probs or a_warns:
+            report("betöltés (hangpróba)  ", a_probs, a_warns)
+            total += len(a_probs); nwarn += len(a_warns)
         idx = range(n) if "--steps" not in opts else [int(s) - 1 for s in opts["--steps"].split(",")]
         ats = (opts.get("--at") or "settle").split(",")
         if "--jump-only" in opts:
@@ -396,6 +513,7 @@ def main(argv):
         for i in idx:
             for k, at in enumerate(ats):
                 errs.clear()
+                pg.evaluate(AUDIO_JS)            # az előző állapotok (__qaStates) hangja nem ehhez a lépéshez tartozik
                 ms = pg.evaluate(GO_JS, i); pg.wait_for_timeout(900)
                 if poke is not None:
                     pg.evaluate("(o) => { const L = window.__lesson; if (typeof L.poke !== 'function') throw new Error('a lecke nem ad L.poke()-ot'); L.poke(o); }", poke)
@@ -405,7 +523,9 @@ def main(argv):
                 warns, chk = extra(pg)
                 if ms > 300:
                     warns.append(f"enter(): {ms:.0f} ms (> 300 ms – iskolai gépen lassú lehet; számolj előre kevesebbet, vagy init()-ben)")
-                probs = errs + r["problems"] + chk
+                a_probs, a_warns = audio_problems(pg.evaluate(AUDIO_JS))
+                warns += a_warns
+                probs = errs + r["problems"] + chk + a_probs
                 total += len(probs); nwarn += len(warns)
                 report(f"{i + 1:02d} {steps[i]['title'][:44]:<44} t={t:<4g} feliratok:{r['marks']:>3}  ", probs, warns)
             for sn, nm in enumerate(states.get(str(i + 1), [])):
@@ -475,7 +595,7 @@ def main(argv):
             ctx2.close()
         b.close()
     if nwarn:
-        print(f"! {nwarn} figyelmeztetés (glif / enter() / írásmód) – nézd át, de nem hiba")
+        print(f"! {nwarn} figyelmeztetés (glif / enter() / írásmód / hang) – nézd át, de nem hiba")
     print(f"{'✓ nincs hiba' if not total else f'✗ {total} probléma'} · képek: {out.relative_to(ROOT) if out.is_relative_to(ROOT) else out}")
     return 1 if total else 0
 

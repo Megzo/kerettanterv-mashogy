@@ -152,6 +152,38 @@ ugyanabban vagy a következő sorban, vagy a szakasz elején egyszer
 `<!-- forrás (az alábbiakra): … -->`. Elsősegély-leckében a szakmai lektor egy
 `<!-- Szakmai ellenőrzés: <szerep>, <dátum>, <ajánlás verziója> -->` blokkot ír a végére (név nélkül).
 
+### Magyar nyelv és irodalom: idézet, verssor, szóelem
+
+**Idézett szöveg** (vers, prózarészlet) egy külön `### Idézet` blokkba kerül, soronként egy
+kulccsal. A blokk előtt mindig ott áll, honnan való a szöveg – enélkül a build nem fogadja el:
+
+```markdown
+<!-- idézet: Petőfi Sándor: János vitéz (1844), 1. fejezet 1–4. sor · szöveg: MEK 01010 · szerző † 1849 · közkincs -->
+### Idézet
+- jv 1/1: Tüzesen süt le a | nyári nap sugára
+- jv 1/2: Az ég tetejéről | a juhászbojtárra.
+```
+
+- A szöveget **betűhűen**, a megadott kiadás írásmódjával írd (régi írásmód is marad).
+- A `|` a **sormetszet** helye; a leckében nem látszik, de a lecke tudja, hol áll meg a sor.
+- A build megszámolja a szótagokat (= a magánhangzók száma), és szól, ha egy sor nem annyi, amennyit a
+  lecke vár (pl. tizenkettő). Ha a forrásban is eltér, írd a sor végére:
+  `<!-- szótagszám: 11, a forrásban is -->` – így csak figyelmeztet.
+- A † utáni évszám a szerző (népköltészetnél a gyűjtő, fordításnál a fordító) halálának éve. Ha
+  azóta még nem telt el 70 év, a szöveg védett: a build nem engedi idézni.
+
+| fajta | így írd (az `### Adatok` alatt) | megjegyzés |
+|---|---|---|
+| rímképlet | `aabb` · `abab` · `abcb` | a lecke tudja, melyik idézet sorairól szól; x = rímtelen sor. Szól, ha a „rímelő” sorok vége nem cseng össze |
+| időmérték | `— ∪ ∪ \| — ∪ ∪ \| — ×` | `—` (vagy `-`) hosszú, `∪` (vagy `u`) rövid, `×` (vagy `x`) bármelyik; `\|` versláb, `\|\|` metszet. Szól, ha a jelek száma nem egyezik a sor szótagszámával, vagy hosszú magánhangzó rövid helyen áll |
+| szóelemek | `kert + ész (képző) + ek (jel) + nek (rag)` · `virág (tő) + cserép (tő) + ben (rag)` · `-ban/-ben (rag)` | fajta: tő, képző, jel, rag, kötőhangzó, előtag. Szól, ha rag után jel vagy képző jön, vagy ha a toldalék hangrendje nem illik a tőhöz – kivételnél (pl. *célba*) írd a sor végére: `<!-- ingadozó -->` |
+| ejtés | `kútba [kúdba]` | a kiejtés szögletes zárójelben, a betűk szerint |
+| szereplőkapcsolat | `Gergely – Éva: szerelem (I–V)` | barát, ellenség, család, szerelem, szolgál, vezet; zárójelben a részek (fejezetek), amelyekben a kapcsolat áll |
+
+**Értelmezés:** ami nem tény, hanem egy lehetséges olvasat, az külön dobozba kerül:
+`> értelmezés: A tűző nap talán a juhász szerelmének képe.` – a panelen „Egy lehetséges olvasat”
+felirattal jelenik meg.
+
 ## Fejlesztőknek
 
 ```bash
@@ -166,4 +198,6 @@ python3 tools/qa_lesson.py … --jump-only                  # csak az ugróprób
 A QA képernyőképet készít minden lépésről (`build/qa/<lecke>/`), és kilistázza a JS-hibákat,
 a túlcsorduló panelszöveget, a panel alá lógó, 22 px-nél kisebb vagy egymást átfedő
 (forgatottnál a forgatott téglalap szerint, `L.pill` dobozánál a doboz szerint) feliratokat, és
-ugrópróbát futtat (1. → utolsó, vissza, véletlen ugrások, betöltés `#N`-re) JS-hiba-figyeléssel. Új lecke írásához: [`SZERZODES.md`](SZERZODES.md).
+ugrópróbát futtat (1. → utolsó, vissza, véletlen ugrások, betöltés `#N`-re) JS-hiba-figyeléssel. Figyelmeztet, ha egy
+jel nincs a lecke fontjaiban (magyarleckében külön glifpróba: ő ű „ ” ‚ ’ – — ∪ ×), és hibát ad, ha a lecke
+kattintás nélkül szólal meg. Új lecke írásához: [`SZERZODES.md`](SZERZODES.md).

@@ -187,8 +187,9 @@ python3 tools/qa_lesson.py leckek/<…>/NN-slug.html --at 1.5,settle --back --re
   tipikus hibaforrás.
 - Ellenőrizd a review módot (`review-*.png`): minden felirat lila keretes (van kulcsa).
 - A QA ezeket is nézi (`!` = figyelmeztetés, nem rontja a kilépési kódot): a fontokból hiányzó
-  karakter (glif), 300 ms-nál lassabb `enter()`, matekleckében tizedespont/kötőjel-mínusz a
-  vásznon. Kapcsolók: `--det` (determinizmus: ugyanannál az `L.st`-nél oda-vissza léptetve
+  karakter (glif – a unicode-range és a fontfájl tényleges tartalma szerint is), 300 ms-nál lassabb
+  `enter()`, matekleckében tizedespont/kötőjel-mínusz a vásznon, kattintás nélkül létrehozott
+  `AudioContext`. Hiba (`✗`): kattintás nélkül induló hang, gépi felolvasás (`speechSynthesis`). Kapcsolók: `--det` (determinizmus: ugyanannál az `L.st`-nél oda-vissza léptetve
   ugyanaz a kép? – ha a lecke ad `idle`-t, a nyugalomig vár), `--states`
   (`window.__qaStates = {3: [{name: 'min', set(L) {…}}]}`, a kulcs 1-alapú lépésszám – szélső
   állapotok fotója; a `set(L)` közvetlenül az exponálás előtt fut, `L.st = settle` után, így
@@ -552,3 +553,122 @@ test pontja, a 15. Földrajz forrássora) – ez a fejezet csak a 10–12 évese
   modell-egyszerűsítések, bizonytalan számok (honnan, mennyire bizonytalan), a tankönyvektől eltérő
   jelölés vagy beosztás (pl. a földrészek száma, a magassági színek határai). A 02-es és a 13-as
   leckében ezen felül `<!-- Szakmai ellenőrzés: <szerep>, <dátum>, <ajánlás verziója> -->` (név nélkül).
+
+## 18. Magyar nyelv és irodalom-kiegészítés (5–6. évfolyam)
+
+Magyarleckénél a fenti szabályok ezekkel együtt érvényesek. **Kötelező olvasmány:**
+`pilot/magyar-5-6/terv.md` – a saját briefed (3. fejezet) és a modulok API-vázlata (4. fejezet). A
+build-jelölések a terv 5. fejezetéhez képest egyszerűbbek: **ez a fejezet és a `leckek/README.md`
+„Magyar nyelv és irodalom” szakasza a mérvadó.**
+
+- **Mappa, fejléc:** `leckek/magyar-5-6/NN-slug.{html,md,content.js}`; metaadat-sor:
+  `tantárgy: Magyar nyelv és irodalom · évfolyam: 5–6. · témakör: N. <a kerettanterv témakörének címe>`.
+  Spec: `"maxWords": 45`, irodalomleckében `"interpretive": true`. Rövid mondatok, tegező hang, új
+  fogalom **félkövéren**, egy mondattal megmagyarázva.
+- **Build-jelölések** (részletek és példák: `leckek/README.md`; a mezők: a `tools/build_lesson.py` fejléce):
+  - `### Idézet` blokk (bármely `##` alatt), soronként `- kulcs: szöveg`; a kulcs olvasható
+    (`jv 1/1` = János vitéz 1. fejezet 1. sor). A sorban `|` = sormetszet (a megjelenő szövegből eltűnik).
+    A blokk **előtt** kötelező: `<!-- idézet: <szerző>: <mű> (<év>), <hely> · szöveg: <kiadás/MEK-szám/URL> · szerző † <év> · közkincs -->`
+    (népköltészet: `népköltészet · gyűjtő † <év>`; kerettanterv-szöveg: `jogszabály`; fordításnál a
+    `fordító † <év>` is). A build **hibát ad**, ha a forrásmegjegyzés, a `szöveg:` vagy a † év hiányzik,
+    vagy ha bármely † év + 70 ≥ az idei év (védett). A JS-ben: `L.quote(k)` (szöveg), `L.quoteDat(k)`
+    (`{s, syl, v: a magánhangzók indexei, cut, ci, ref}`); a review mód a sorát mutatja.
+  - **Verssor-ellenőrzés** a specben: `"quoteSets": {"jv": {"syll": 12, "cut": 6, "lines": 24}}` (a
+    `jv …` kulcsú sorokra; `"syll": [8, 6]` soronként váltakozik) vagy `"quotes": {"jv 1/1": {…}}`. A
+    szótagszám = a magánhangzók száma (az *y* csak a spec `"yVowel"` listájának szavaiban). Eltérés
+    (szótagszám, metszet) **hiba**, kivéve, ha a sor végén ott a `<!-- szótagszám: 11, a forrásban is -->`
+    (a számnak egyeznie kell) vagy `<!-- eltérés: … -->` megjegyzés – ekkor figyelmeztetés.
+  - **Rím és metrum kézzel jelölve**, a build nem elemez: `### Adatok` alatt `- jv rímképlet: aabb`
+    (spec `{"type": "rhyme", "quotes": "jv"}` vagy `"lines": [...]`; x = rímtelen; versszakonként
+    ismétlődik) – figyelmeztet, ha egy rímpár utolsó magánhangzója eltér. `- huszt 1 metrum: — ∪ ∪ | — ∪ ∪ | — ×`
+    (spec `{"type": "metrum", "line": "huszt 1"}`; `-` `u` `x` is írható) – hiba, ha a jelek száma ≠
+    a sor szótagszáma; figyelmeztet, ha hosszú magánhangzó (á é í ó ő ú ű) ∪ helyen áll. A
+    helyzeti hosszúságot (rövid magánhangzó + két mássalhangzó) a build **nem** számolja: azt a `.md`
+    jelöli, és a tanári review ellenőrzi.
+  - **Szóelem:** `- kertészeknek: kert + ész (képző) + ek (jel) + nek (rag)` (`{"type": "morph"}`;
+    fajta: tő, képző, jel, rag, kötőhangzó, előtag; változatlista külön adatként: `-ban/-ben (rag)`).
+    Hiba: rag után jel vagy képző; figyelmeztetés: hangrend-eltérés (kivétel, pl. *célba*: a sor végére
+    `<!-- ingadozó -->`). **Ejtés:** `- kútba: kútba [kúdba]` (`"pron"`). **Szereplőkapcsolat:**
+    `- Gergely és Éva: Gergely – Éva: szerelem (I–V)` (`"rel"`; fajta: barát, ellenség, család,
+    szerelem, szolgál, vezet; a szereplők és az egységek: spec `"rel": {"people": [...], "units": [...]}`).
+  - **`> értelmezés: …`** a panelen „Egy lehetséges olvasat” fejlécű doboz (`shared/lesson.css`
+    `.interp`), a szókorlátba beleszámít. `"interpretive": true` mellett a build figyelmeztet, ha
+    nincs a leckében ilyen doboz és kérdéssel végződő lépés sem.
+- **Szerzői jog – kötelező (a repó nyilvános).**
+  - Szó szerint csak **közkincs** szöveg idézhető: a szerző halálát követő év január 1-jétől
+    számított 70 év letelt (Szjt. 31. §), 2026-ban a legkésőbb 1955-ben elhunytaké. Közkincs pl.
+    Petőfi (†1849), Arany (†1882), Kölcsey (†1838), Vörösmarty (†1855), Csokonai (†1805), Fazekas
+    (†1828), Jókai (†1904), Ady (†1919), Gárdonyi (†1922), Móra (†1934), Juhász Gyula és József
+    Attila (†1937), Karinthy és Dsida (†1938), Reményik (†1941), Radnóti (†1944), Molnár Ferenc
+    (†1952), Ilosvai, Tinódi, Szendrey Júlia.
+  - **Védett** (legfeljebb cím + egy-két mondatos saját szavas utalás): Weöres Sándor, Kányádi
+    Sándor, Nemes Nagy Ágnes, Nagy László, Ágh István, Szabó Magda, Fekete István, Lázár Ervin,
+    Kittenberger Kálmán (†1958, 2029-től közkincs), Széchenyi Zsigmond, O. Nagy Gábor, Illyés Gyula
+    (népmese-feldolgozásai is!), és **minden mai vagy 70 éven belül elhunyt fordító fordítása**
+    (Ovidius, Saint-Exupéry, Defoe, görög mítoszok, modern Biblia-fordítások). Bibliai szöveg csak
+    Károli Gáspár 1590-es fordításából idézhető, egyébként saját összefoglaló, leíró keretben.
+  - A **népköltészet** közkincs, de a szöveg csak közkincs **gyűjtésből vagy kiadásból** vehető át
+    (pl. Arany László, Benedek Elek, Kriza János) – a gyűjtő † éve a forrásmegjegyzésben.
+  - A szöveget **két független kiadásból** vesd össze (pl. MEK + Wikisource), az eltérést a
+    megjegyzésben jelezd. Emlékezetből soha ne idézz.
+  - Filmet, rajzfilmet, előadást, illusztrációt (Jankovics, Fábri, Várkonyi stb.) csak címmel
+    említs. Kép csak saját canvas-rajz; közkincs festmény legfeljebb hivatkozásként. Térkép: a
+    `shared/tort/` adatai; utcatérkép csak saját, „vázlatos” bélyegű rajz (OSM-adat nem: ODbL).
+- **A szöveg hűsége.** Az idézet a forráskiadás írásmódjával marad (*Kukoricza*, *Taljánország*,
+  *kislyány*): ne modernizáld, ne „javítsd”; zavaró régi írásmódnál „régi írásmód” bélyeg (felirat).
+  Versszakot ne rövidíts kipontozás nélkül; kihagyás: „[…]”. A szótagszám-eltérést ne simítsd el:
+  mutasd meg, és mondd ki, hogy a költő nem gép.
+- **Helyesírás:** *A magyar helyesírás szabályai* (AkH.), 12. kiadás (2015) – vagy az épp érvényes
+  (gyártás előtt ellenőrizd); vitás esetben a HUN-REN NYTI helyesírási portálja. Szabályt a
+  pontszámával idézz a `.md` megjegyzésében (`<!-- AkH. 12. § … -->`). Kiejtés szögletes zárójelben,
+  a betűk szerint ([kúdba]), IPA-jelek nélkül (a build figyelmeztet).
+- **Nyelvtani rendszer.** A szófaji csoportosítás, a magánhangzók besorolása, a szóelemek neve
+  tankönyvenként eltér: a lecke a briefben megadott rendszert követi, a `.md` megjegyzése rögzíti,
+  és a panel egyszer kimondja: „Más tankönyvben ezt másképp is csoportosíthatják.” A modul nem ragoz
+  és nem elemez szabadon: minden alakot, szóelemzést és kivételt a `.md` ad meg (`morph`, `pron`).
+- **Nyelvi sokszínűség.** A köznyelvi normát mutatjuk be, de a nyelvjárás, a természetes kiejtés
+  és a beszélt nyelv nem „hiba”: „helytelen” helyett „a köznyelvben / a helyesírásban így írjuk”.
+  Nyelvjárást, beszédhibát, akcentust nem teszünk nevetségessé. Kitalált szót (pl. `07`) egy második
+  ember nézzen át (ne hasonlítson durva, csúfolódó vagy létező szóra).
+- **Értelmezési sokszínűség.** Ami értelmezés (rejtett üzenet, szerkezeti besorolás, motívum
+  jelentése), az `> értelmezés:` dobozban vagy „egy lehetséges olvasat” felirattal jelenik meg;
+  tényként csak a szövegből ellenőrizhető állítás. Ne írd: „a költő ezt akarta mondani”. Értelmező
+  feladatnál a gép **nem pontoz** hibának egy eltérő, de védhető választ: összeveti a `.md`
+  olvasatával, és kérdést tesz fel. Minden irodalomleckében van nyitott kérdés („Te hogyan döntenél?”).
+- **Irodalom és történelem.** Történeti eseményhez kötődő műnél (*Egri csillagok*, *Toldi*, *A walesi
+  bárdok*, *Himnusz*) válaszd el a regényt/mondát a történeti ténytől (a 11. fejezet „forrás /
+  rekonstrukció / monda” jelöléseivel), és hivatkozz a történelemleckére (`leckek/tortenelem-5-6/16-eger`),
+  ne ismételd meg. Háború, halál, kegyetlenség jelzésszerű: nincs vér, nincs égő alak; a veszteséget
+  szöveg és csend mutatja. Nemzeti jelképet (Himnusz, Szózat) nem teszünk játékká, és nem torzítunk.
+- **Hang.** Csak a `MagHang` modulon át: szintetizált dallam, magánhangzó, zörej, kopogás. Nincs
+  felvett emberi hang, gépi felolvasás (TTS), más szerző zenéje. A hang csak kattintásra indul (▶),
+  mérsékelt hangerővel; az `AudioContext` is csak a kattintáskor jön létre. **A lecke hang nélkül is
+  teljes** (dallamvonal, szótagpötty, kopogássáv). A QA hangpróbája: kattintás nélkül létrehozott
+  `AudioContext` → `!`, kattintás nélkül induló hang vagy `speechSynthesis` → `✗`.
+- **Glifek.** A QA magyarleckében glifpróbát futtat (ő ű ‚ ’ „ ” – — ∪ × [ ] mind a négy
+  fontváltozatban), és a vászon/panel minden jelét a fontfájl tényleges tartalma szerint is nézi
+  („tartalékfontra esik” → cseréld a jelet). A rövid szótag jele a ∪ (U+222A), nem a ⏑ vagy a ˘.
+- **Színkódok** (minden leckében egységesek):
+  | mit | szín |
+  |---|---|
+  | tő | tinta `#1c2440` keret, kártya-kitöltés |
+  | képző | kékeszöld `#0a6f86` |
+  | jel | okker `#8f5a0c` |
+  | rag | cinóber `#c8401c` |
+  | kötőhangzó | halvány tinta `#565d72`, kisebb betű |
+  | rímpárok | a: cinóber · b: kékeszöld · c: okker · d: lila `#7b4fa0` |
+  | magas / mély hangrend | kékeszöld / okker (vegyes: mindkettő csíkban) |
+  | szófajok (a szó aláhúzása) | ige `#c8401c` · főnév `#0a6f86` · melléknév `#7b4fa0` · számnév `#8f5a0c` · határozószó `#2a4d9b` · névmás `#6b6a12` · igenév: az ige színe szaggatva · viszonyszó, mondatszó `#565d72` |
+  A szóelemek kitöltött csempék, a szófajok aláhúzások. A rímszín a sorvég utolsó magánhangzójától a
+  sor végéig tart (`L.quoteDat(k).v` utolsó eleme).
+- **Verssor a vásznon:** legalább 26 px, a szótagpötty és az ütemjel felirata legalább 22 px; hosszú
+  sornál mindig `max`. Ha egy versszak nem fér ki, lapozz versszakonként, ne kicsinyíts. Sort ne
+  törj két képernyősorra jelölés nélkül (ha kell: behúzott folytatás + „↩”).
+- **Új közös modulok leckén belül:** a `MagText`, `MagMorph`, `MagVers`, `MagHang` és `MagStory`
+  (terv 4. fejezet) először a referencialeckében készül, külön blokkban
+  (`/* ── MODUL: Verstan (MagVers) · forrás: magyar-5-6/10-janos-vitez-vers, <dátum> ── */ … /* ── MODUL VÉGE ── */`),
+  `Mag…` névtérrel és API-leírással (16. fejezet). A történelemmodulokat (TortMap, TortGlobe,
+  TortTimeline, TortSource, TortCards, TortScene) bájtra azonosan vedd át a legfrissebb leckéből.
+- **Minden `.md`** végén `<!-- Vitatott / bizonytalan pontok: … -->` blokk a tanári review-hoz: a
+  szövegforrás(ok) és eltéréseik, a választott tankönyvi rendszer, az értelmezésként jelölt
+  állítások, a kitalált szavak listája (ha van).
