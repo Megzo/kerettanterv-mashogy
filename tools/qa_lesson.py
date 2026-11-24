@@ -16,7 +16,8 @@
                  induló kamera), mindkét képnél ugyanannyi képkockát vár tovább (a fejlécben: „+ K képkocka”).
   --states       ha a lecke megadja: window.__qaStates = {3: [{name: 'min', set(L) {…}}, …]} (kulcs: lépés
                  1-től) → minden állapotot is lefotóz (03-min.png) és ellenőriz. Sorrend (v2): a lépésre lép,
-                 L.st = settle (vagy az állapot st-je: {name, st: 2.5, set}), lefut a set(L), és wait ms (alap
+                 L.st = settle (vagy az állapot st-je: {name, st: 2.5, set}), lefut a set(L) (set nélkül –
+                 {name, st: 1.5} – csak az időt állítja: a lépés egy köztes pillanata), és wait ms (alap
                  250; {wait: 600}) múlva exponál – az L.st-t utána már nem állítja, így az L.st-hez kötött
                  állapot (S.t0 = L.st − 2 → „2 mp-cel az indítás után”) a saját idejét mutatja (± a wait).
                  Figyelmeztet („! ÁLLAPOT”), ha a vászon rögzített képkockaidővel képpontra ugyanaz, mint
@@ -28,7 +29,8 @@
   --glyphs       glifpróba a magyar és verstani jelekre (magyarleckében alapból fut, lásd lent)
 
 Mindig fut (visszafelé kompatibilisen; a „!” sorok figyelmeztetések, a kilépési kódot nem rontják):
-  · idle: ha a lecke ad idle()-t, a settle- és a visszalépés-képek előtt megvárja (max. 5 mp);
+  · idle: ha a lecke ad idle()-t, a settle- és a visszalépés-képek előtt megvárja (max. 5 mp); a --at-tal kért
+    köztes képek (--at 1.5) és az állapotképek előtt nem (azok egy mozgás közbeni pillanat fotói);
   · glifellenőrzés: a vászon- és panelszöveg minden karaktere benne van-e a shared/lesson.css
     @font-face unicode-range-eiben (különben rendszerfontra esik vissza, gépenként eltérő szélességgel);
     v2: a vászonfeliratot a saját családja szerint nézi (a motor a marks[].f-ben adja a fontot; régi motornál az
@@ -229,13 +231,15 @@ DET_JS = r"""([i, j, settle]) => {
 }"""
 
 STATE_JS = r"""([i, sn, settle]) => {         // az állapot az exponálás előtt fut: L.st = settle (vagy az állapot st-je), aztán set(L)
-  const L = window.__lesson, S = window.__qaStates[i + 1][sn];
-  L.st = S.st != null ? S.st : settle; L.sp = L.step; S.set(L);
+  const L = window.__lesson, S = window.__qaStates[i + 1][sn];   // set nélkül ({name, st}) csak az időt állítja
+  L.st = S.st != null ? S.st : settle; L.sp = L.step; if (typeof S.set === 'function') S.set(L);
 }"""
 
 STATE_EFFECT_JS = r"""([i, sn, settle]) => {   // hatott-e az állapot? rögzített képkockaidővel: kép nélküle és vele, ugyanannál az L.st-nél
-  const L = window.__lesson, T = window.__qaTick, S = window.__qaStates[i + 1][sn];
-  const shot = (on) => { L.go(i, true); T(2); L.st = S.st != null ? S.st : settle; L.t = 100; L.sp = L.step; if (on) S.set(L); T(4); return window.__qaGrab(); };
+  // (set nélküli, csak st-s állapot: a lépés settle-képéhez képest – a „hatás” itt maga az időpont)
+  const L = window.__lesson, T = window.__qaTick, S = window.__qaStates[i + 1][sn], hasSet = typeof S.set === 'function';
+  const st = (on) => (S.st != null && (on || hasSet) ? S.st : settle);
+  const shot = (on) => { L.go(i, true); T(2); L.st = st(on); L.t = 100; L.sp = L.step; if (on && hasSet) S.set(L); T(4); return window.__qaGrab(); };
   const a = shot(false), b = shot(true);
   let diff = 0; for (let k = 0; k < a.length; k += 4) if (a[k] !== b[k] || a[k + 1] !== b[k + 1] || a[k + 2] !== b[k + 2]) diff++;
   return diff;
@@ -519,7 +523,9 @@ def main(argv):
                     pg.evaluate("(o) => { const L = window.__lesson; if (typeof L.poke !== 'function') throw new Error('a lecke nem ad L.poke()-ot'); L.poke(o); }", poke)
                 t = steps[i]["settle"] if at == "settle" else float(at)
                 name = f"{i + 1:02d}" + (f"-{at}" if len(ats) > 1 else "") + ".png"
-                r = shoot(i, t, name)
+                # idle(): csak a nyugalmi (settle) kép várja meg; a --at 1.5 a köztes állapot fotója (különben a várakozás
+                # alatt továbbfutna az idő, és a kép a nyugalmat mutatná)
+                r = shoot(i, t, name, idle=at == "settle")
                 warns, chk = extra(pg)
                 if ms > 300:
                     warns.append(f"enter(): {ms:.0f} ms (> 300 ms – iskolai gépen lassú lehet; számolj előre kevesebbet, vagy init()-ben)")

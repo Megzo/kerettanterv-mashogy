@@ -133,6 +133,7 @@ szerepel (`{összeg}`), és nem egyezik a lecke számolásával, a lecke piros s
 | fajta | így írd | megjegyzés |
 |---|---|---|
 | nagy szám | `480 millió` · `4,5 millió/µl` · `38 billió` | **billió = 10¹²** (az angol *billion* = milliárd!) |
+| terület, hosszúság… szorzószóval | `530 ezer ha` · `93 ezer km²` · `1,2 millió ha` | ha a lecke mértékegység-családot kér (terület, hosszúság, tömeg…): a család bármely egysége elé írható `ezer`, `millió`, `milliárd` |
 | arány / ütem | `3 : 4 : 5` · `70/perc` · `60–100/perc` | |
 | szög | `45° 30′` | szögperc: ′, nem aposztróf |
 | tört | `3/4` · `2 1/3` · `−5/8` | ha a lecke egyszerűsített törtet kér, `6/8` hiba |
@@ -174,9 +175,9 @@ kulccsal. A blokk előtt mindig ott áll, honnan való a szöveg – enélkül a
 
 | fajta | így írd (az `### Adatok` alatt) | megjegyzés |
 |---|---|---|
-| rímképlet | `aabb` · `abab` · `abcb` | a lecke tudja, melyik idézet sorairól szól; x = rímtelen sor. Szól, ha a „rímelő” sorok vége nem cseng össze |
+| rímképlet | `aabb` · `abab` · `abcb` | a lecke tudja, melyik idézet sorairól szól; x = rímtelen sor. Szól, ha a „rímelő” sorok vége nem cseng össze. Ha csak kiejtve rímel (*Sire* [szír] – *sír*), írd a sor végére vagy alá: `<!-- rím-kivétel: 5 – indoklás -->` (5. versszak; `5/2`: az 5. versszak 2. sora; `5–7`, `5, 9` is) – azt nem ellenőrzi |
 | időmérték | `— ∪ ∪ \| — ∪ ∪ \| — ×` | `—` (vagy `-`) hosszú, `∪` (vagy `u`) rövid, `×` (vagy `x`) bármelyik; `\|` versláb, `\|\|` metszet. Szól, ha a jelek száma nem egyezik a sor szótagszámával, vagy hosszú magánhangzó rövid helyen áll |
-| szóelemek | `kert + ész (képző) + ek (jel) + nek (rag)` · `virág (tő) + cserép (tő) + ben (rag)` · `-ban/-ben (rag)` | fajta: tő, képző, jel, rag, kötőhangzó, előtag. Szól, ha rag után jel vagy képző jön, vagy ha a toldalék hangrendje nem illik a tőhöz – kivételnél (pl. *célba*) írd a sor végére: `<!-- ingadozó -->` |
+| szóelemek | `kert + ész (képző) + ek (jel) + nek (rag)` · `virág (tő) + cserép (tő) + ben (rag)` · `-ban/-ben (rag)` · `lát + j (jel) + a (rag) = lássa` | fajta: tő, képző, jel, rag, kötőhangzó, előtag. Szól, ha rag után jel vagy képző jön, vagy ha a toldalék hangrendje nem illik a tőhöz – kivételnél (pl. *célba*) írd a sor végére: `<!-- ingadozó -->`. Ha a szó írva más, mint a szóelemek egymás után (*lát + j + a* → *lássa*), az `=` után írd az írott alakot; a leckében és a `{kulcs}` helyén ez jelenik meg. Ha a kulcs maga a szó (`lássa: …`), egyeznie kell vele |
 | ejtés | `kútba [kúdba]` | a kiejtés szögletes zárójelben, a betűk szerint |
 | szereplőkapcsolat | `Gergely – Éva: szerelem (I–V)` | barát, ellenség, család, szerelem, szolgál, vezet; zárójelben a részek (fejezetek), amelyekben a kapcsolat áll |
 
@@ -193,7 +194,15 @@ python3 tools/build_lesson.py --stale                     # elavuló („frissí
 python3 tools/qa_lesson.py leckek/fizika-7-8/01-suruseg.html --back --review 6
 python3 tools/qa_lesson.py … --det --data                 # determinizmus-próba, adatlista
 python3 tools/qa_lesson.py … --jump-only                  # csak az ugrópróba (alapból is fut; --no-jump kihagyja)
+python3 tools/qa_lesson.py … --states --at 1.5,settle      # + a lecke __qaStates-állapotai, köztes és nyugalmi kép
+python3 tools/qa_lesson.py tools/tests/qa-kor3.html --states --at 1.5,settle   # a QA és a motor próbaoldala (0 hiba)
 ```
+
+- `--at 1.5`: a köztes kép nem várja meg a lecke `idle()`-jét (az a mozgás közbeni pillanat fotója); csak a nyugalmi
+  (`settle`) és a visszalépés-kép vár rá.
+- `--states`: egy állapotnak elég az `st`-je (`{name: 'korai', st: 1.5}`, `set` nélkül) – akkor csak az időt állítja.
+- Motor: `U.mix(a, b, t)` a `#rrggbb` mellett `rgb()`/`rgba()` színt is elfogad, így egymásba ágyazható
+  (`U.mix(U.mix(a, b, t), c, s)`); a kimenet `rgb(r,g,b)` marad (átlátszó `rgba()` bemenetnél `rgba(…)`).
 
 A QA képernyőképet készít minden lépésről (`build/qa/<lecke>/`), és kilistázza a JS-hibákat,
 a túlcsorduló panelszöveget, a panel alá lógó, 22 px-nél kisebb vagy egymást átfedő

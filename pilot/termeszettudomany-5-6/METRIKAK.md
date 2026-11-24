@@ -23,7 +23,7 @@ tanulságai: `pilot/EJSZAKAI-GYARTAS.md`.
 |---|---|---|---|---|---|
 | T1 | Leckesor terve (terv.md) + szerződés 17. fejezet | 11-24 10:28 | 31 p | ~142 ezer | 17 lecke |
 | D1 (közös) | Kárpát-medence domborzati rácsa (ETOPO 2022, 1′ Magyarország + 3′ Kárpát-medence), `shared/foldrajz/domborzat-karpat.js`, `build_geodata.py` domborzat-cél | 11-24 11:09 | 40 p | ~155 ezer | kész; használja: 06-terkep, 07-foldgomb, 15-hegyek, magyar 12-alfold (a 16-folyo is erre épült volna) |
-| B3 (közös) | Build/QA 3. kör | – | folyamatban | – | folyamatban – leírás: a készülő `pilot/BUILD-3-KOR.md` |
+| B3 (közös) | Build/QA 3. kör (morph felületi alak, rím-kivétel, „ezer ha”, QA `--states`/`idle`, `U.mix`) | – | 22 p | ~235 ezer | kész: 149 lecke `.content.js`-e bájtra azonos; leírás: [`pilot/BUILD-3-KOR.md`](../BUILD-3-KOR.md) |
 | T2 | 01-tocsa (sorozatminta: „Tippelj!”, bélyegek) | 11-24 11:10 | 41 p | ~271 ezer | kész: 8 lépés, QA hibátlan |
 | T3 | 03-meres (+ `TtMuszer`) | 11-24 11:11 | 43 p | ~298 ezer | kész: 8 lépés, QA hibátlan |
 | T4 | 10-erdo (+ `TtIkon`) | 11-24 11:24 | 55 p | ~136 ezer | kész: 8 lépés, QA hibátlan |
@@ -80,7 +80,7 @@ tanulságai: `pilot/EJSZAKAI-GYARTAS.md`.
 - **A sorozat saját al-ügynök-költsége** (terv + leckék, közös munkák nélkül): **11,8 óra**,
   **~4 338 ezer token**. **Az egységesítéssel (E1, E2) és a metrikaírás felével (M2):** 12,3 óra
   **~4 815 ezer token**. A közös D1 adatfájl (40 p, ~155 ezer) és a futó
-  Build/QA 3. kör egyikben sincs benne.
+  Build/QA 3. kör (~235 ezer, közös) egyikben sincs benne.
 - **Falióra:** a terv commitjától (11-24 10:28) az utolsó lecke commitjáig (11-24 15:53, 16-folyo):
   **5,4 óra** (a két sorozat párhuzamosan futott, közös 5-ös korláttal; a terv 3 párhuzamos
   szálra 4 órát becsült).

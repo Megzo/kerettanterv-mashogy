@@ -25,7 +25,7 @@ A 2026-11-24-i kétsorozatos gyártás része (Természettudomány 5–6. és Ma
 | N1 | Leckesor terve (terv.md) | 11-24 10:30 | 33 p | ~115 ezer | 17 lecke |
 | P-M | Build-bővítés: `### Idézet` blokk szerzői jogi ellenőrzéssel, verssor/metrum/`rhyme`/`morph`/`pron`/`rel` adattípus, `> értelmezés:` doboz, QA hang- és glifpróba, szerződés 18. fejezet | 11-24 10:52 | 22 p | ~280 ezer | kész |
 | D1 (közös) | Kárpát-medence domborzati rácsa (ETOPO 2022), `shared/foldrajz/domborzat-karpat.js` – a Természettudomány 5–6. sorozathoz számolva | 11-24 11:09 | 40 p | ~155 ezer | kész; e sorozatban a 12-alfold használja |
-| B3 (közös) | Build/QA 3. kör | – | folyamatban | – | folyamatban – leírás: a készülő `pilot/BUILD-3-KOR.md` |
+| B3 (közös) | Build/QA 3. kör (morph felületi alak, rím-kivétel, „ezer ha”, QA `--states`/`idle`, `U.mix`) | – | 22 p | ~235 ezer | kész: 149 lecke `.content.js`-e bájtra azonos; leírás: [`pilot/BUILD-3-KOR.md`](../BUILD-3-KOR.md) |
 | N2 | 04-toldalek (+ `MagText`, `MagMorph`) | 11-24 11:30 | 37 p | ~218 ezer | kész: 8 lépés, QA hibátlan |
 | N3 | 10-janos-vitez-vers (+ `MagVers`, `MagHang`: kopogás) | 11-24 12:01 | 31 p | ~224 ezer | kész: 8 lépés, QA hibátlan |
 | N4 | 13-pal-utcai-fiuk (+ `MagStory`) | 11-24 12:25 | 45 p | ~242 ezer | kész: 8 lépés, QA hibátlan |
@@ -82,7 +82,7 @@ A 2026-11-24-i kétsorozatos gyártás része (Természettudomány 5–6. és Ma
 - **A sorozat saját al-ügynök-költsége** (terv + build-bővítés + leckék, közös munkák nélkül):
   **11,2 óra**, **~3 822 ezer token** (a P-M nélkül: 10,9 óra, ~3 542 ezer). **Az egységesítéssel
   (E1) és a metrikaírás felével (M2):** 11,7 óra, **~4 164 ezer token**. A közös D1 adatfájl és a
-  futó Build/QA 3. kör egyikben sincs benne.
+  Build/QA 3. kör (~235 ezer, közös) egyikben sincs benne.
 - **Falióra:** a terv commitjától (11-24 10:30) az utolsó lecke commitjáig (11-24 15:01):
   **4,5 óra** (a két sorozat párhuzamosan futott, közös 5-ös korláttal).
 - **QA:** mind a 17 lecke 0 JS-hibával, 0 túlcsordulással/átfedéssel zárt (az al-ügynökök saját

@@ -76,6 +76,8 @@
                         kicsinyített szöveghez igazodik (max + 2·pad); a magassága az eredeti méreté marad
      L.fonts         {D: Fraunces, B: Bricolage Grotesque, M: JetBrains Mono} — o.f értékei
    ÚJ — U.fmt(v, d)  magyar számformátum: tizedesvessző, valódi mínuszjel (−), 10 000 fölött ezres tagolás
+   ÚJ (v2.1) — U.mix(a, b, t) a "#rrggbb" mellett "rgb()/rgba()" bemenetet is elfogad → egymásba ágyazható
+                     (U.mix(U.mix(a, b, t), c, s)); a kimenet "rgb(r,g,b)" marad (átlátszó rgba() bemenetnél "rgba(…)")
    ÚJ — review mód:  ?review az URL-ben vagy a K billentyű → a feliratok és bekezdések fölé mutatva
                      kiírja a Markdown-kulcsot és a sor számát.
    ÚJ — window.__lesson.marks: az utolsó képkocka feliratainak dobozai (a QA olvassa): {s, k, x, y, w, h, px, a, qa, f (font)};
@@ -87,6 +89,13 @@
   const W = 1920, H = 1080, VW = 1360;
   const FONTS = { D: 'Fraunces', B: '"Bricolage Grotesque"', M: '"JetBrains Mono"' };
 
+  /* "#rrggbb" | "rgb(r,g,b)" | "rgba(r,g,b,a)" → [r, g, b, a] (U.mix-hez); ismeretlen alaknál NaN-ok, mint eddig */
+  function rgbOf(x) {
+    x = String(x).trim();
+    if (x[0] === '#') { const n = parseInt(x.slice(1), 16); return [n >> 16 & 255, n >> 8 & 255, n & 255, 1]; }
+    const m = /^rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*(?:,\s*([\d.]+)\s*)?\)$/i.exec(x);
+    return m ? [+m[1], +m[2], +m[3], m[4] == null ? 1 : +m[4]] : [NaN, NaN, NaN, 1];
+  }
   const U = {
     clamp: (v, a = 0, b = 1) => Math.min(b, Math.max(a, v)),
     lerp: (a, b, t) => a + (b - a) * t,
@@ -101,8 +110,14 @@
     rng: (seed) => { let s = seed >>> 0 || 1; return () => { s ^= s << 13; s >>>= 0; s ^= s >> 17; s ^= s << 5; s >>>= 0; return s / 4294967296; }; },
     /* "#rrggbb" + alfa → rgba() */
     rgba: (hex, a = 1) => { const n = parseInt(hex.slice(1), 16); return `rgba(${n >> 16 & 255},${n >> 8 & 255},${n & 255},${a})`; },
-    /* két "#rrggbb" szín keverése */
-    mix: (h1, h2, t) => { const a = parseInt(h1.slice(1), 16), b = parseInt(h2.slice(1), 16); const c = (s) => Math.round(U.lerp(a >> s & 255, b >> s & 255, U.clamp(t))); return `rgb(${c(16)},${c(8)},${c(0)})`; },
+    /* két szín keverése: "#rrggbb", vagy (ÚJ, v2.1) "rgb(r,g,b)" / "rgba(r,g,b,a)" – így egymásba ágyazható:
+       U.mix(U.mix(a, b, t), c, s). Kimenet: "rgb(r,g,b)", mint eddig; "rgba(r,g,b,a)" csak, ha a kevert alfa < 1
+       (azaz egy rgba() bemenet átlátszó). Két "#rrggbb" bemenetnél a régi kód fut, bitre azonos eredménnyel. */
+    mix: (h1, h2, t) => {
+      if (h1[0] === '#' && h2[0] === '#') { const a = parseInt(h1.slice(1), 16), b = parseInt(h2.slice(1), 16); const c = (s) => Math.round(U.lerp(a >> s & 255, b >> s & 255, U.clamp(t))); return `rgb(${c(16)},${c(8)},${c(0)})`; }
+      const A = rgbOf(h1), B = rgbOf(h2), u = U.clamp(t), c = (i) => Math.round(U.lerp(A[i], B[i], u)), al = U.lerp(A[3], B[3], u);
+      return al < 1 ? `rgba(${c(0)},${c(1)},${c(2)},${+al.toFixed(3)})` : `rgb(${c(0)},${c(1)},${c(2)})`;
+    },
     /* magyar számformátum: U.fmt(-3.14159, 2) → '−3,14'; U.fmt(19300) → '19 300' */
     fmt: (v, d = 0) => {
       const s = Math.abs(v).toFixed(d).split('.'); let i = s[0];

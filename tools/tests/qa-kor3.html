@@ -1,0 +1,57 @@
+<!doctype html><html lang="hu"><head><meta charset="utf-8">
+<title>QA – próbaoldal (3. javítókör)</title>
+<!-- Nem lecke: a tools/qa_lesson.py és a shared/lesson.js 3. javítókörének próbája. Futtatás:
+       python3 tools/qa_lesson.py tools/tests/qa-kor3.html --states --at 1.5,settle
+     Várt eredmény: 0 hiba. Mit próbál?
+       · U.mix rgb()/rgba() bemenettel (egymásba ágyazva is) – eltérésnél piros hibasáv (QA: HIBASÁV), mint az mtext.html;
+       · --states: a csak st-s állapot ({name, st}, set nélkül) nem okoz „S.set is not a function” hibát;
+       · idle(): a lecke idle()-je 3 mp-ig false (mozgó „kamera”). A --at 1.5 kép nem várhatja meg a nyugalmat –
+         ha a QA a köztes képnél mégis lekérdezi az idle()-t, konzolhibát ír (QA: KONZOL); a settle (4 mp) kép előtt
+         a lekérdezés rendben van. -->
+<link rel="stylesheet" href="../../shared/lesson.css">
+</head><body>
+<script src="../../shared/lesson.js"></script>
+<script>
+(function () { 'use strict';
+const U = Lesson.U, F = Lesson.FONTS;
+const MIX = [
+  [U.mix('#000000', '#ffffff', .5), 'rgb(128,128,128)'],                         // a régi út: változatlan
+  [U.mix('#123456', '#abcdef', .3), 'rgb(64,98,132)'],
+  [U.mix(U.mix('#000000', '#ffffff', .5), '#ff0000', .5), 'rgb(192,64,64)'],      // egymásba ágyazva
+  [U.mix('#ff0000', U.mix('#000000', '#ffffff', .5), .5), 'rgb(192,64,64)'],
+  [U.mix('rgb(10, 20, 30)', '#1e2832', .5), 'rgb(20,30,40)'],                     // szóközös rgb()
+  [U.mix('rgba(28,36,64,1)', '#1c2440', 1), 'rgb(28,36,64)'],                    // átlátszatlan rgba → rgb
+  [U.mix('rgba(0,0,0,.5)', '#ffffff', .5), 'rgba(128,128,128,0.75)'],             // átlátszó → rgba
+  [U.mix(U.rgba('#1c2440', .3), '#1c2440', 0), 'rgba(28,36,64,0.3)'],             // U.rgba kimenete is bemenet
+  [U.mix('#000000', '#ffffff', 2), 'rgb(255,255,255)'],                           // t a [0, 1]-re vágva
+];
+const bad = MIX.filter(([g, w]) => g !== w);
+let big = false;
+const L = Lesson.create({
+  subject: 'Próba', title: 'QA – próbaoldal (3. javítókör)', home: false,
+  steps: [
+    { title: 'Mozgó kamera, idle()', settle: 4, text: '<p>A kör 3 mp alatt ér a helyére; addig az idle() false.</p>',
+      enter() { big = false; } },
+    { title: 'Második lépés', settle: 2, text: '<p>Nyugalmi kép.</p>' },
+  ],
+  init(L) {                                     // hibasáv (#lesson-error): a QA minden képnél „HIBASÁV”-ként jelzi
+    if (!bad.length) return;
+    const e = document.createElement('div'); e.id = 'lesson-error';
+    e.textContent = 'U.mix eltér: ' + bad.map(([g, w]) => g + ' ≠ ' + w).join(' | '); (L.stage || document.body).append(e);
+  },
+  idle(L) {
+    if (L.step === 0 && L.st < 2.9) console.error(`idle() a köztes képnél (L.st = ${L.st.toFixed(2)}): a --at kép ne várja meg a nyugalmat`);
+    return L.step !== 0 || L.st >= 3;
+  },
+  draw(L) {
+    const c = L.ctx;
+    c.fillStyle = '#f7f1e6'; c.fillRect(0, 0, L.W, L.H);
+    const u = L.step === 0 ? U.smooth(L.prog(0, 3)) : 1;
+    c.fillStyle = U.mix(U.mix('#1c2440', '#f7f1e6', .4), '#b3261e', u);             // egymásba ágyazott keverés
+    c.beginPath(); c.arc(200 + 800 * u, 540, big ? 160 : 80, 0, U.TAU); c.fill();
+    L.tx(`U.mix-próbák: ${MIX.length - bad.length} / ${MIX.length} egyezik`, 80, 120, { s: 32, f: F.B, w: 600, c: '#1c2440', k: 'próba' });
+  },
+});
+window.__qaStates = { 1: [{ name: 'korai', st: 1.5 }, { name: 'nagy', set() { big = true; } }] };
+})();
+</script></body></html>

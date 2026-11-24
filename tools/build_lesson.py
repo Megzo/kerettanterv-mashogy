@@ -35,7 +35,8 @@ Adattípusok (a spec "data" bejegyzésének "type" mezője; alap: "number"):
           "dim": "hosszúság" | "terület" | "térfogat" | "tömeg" | "idő" | "szög" (rövid nevek: hossz)
           → a családból bármely egység írható; kimenet + "base" (alapegységben) és "bu" (m, m², l,
           kg, s, °); a min/max ekkor az alapegységre vonatkozik, az "int" viszont a MEGADOTT egységben
-          ellenőriz („5 cm” egész, „2,5 cm” nem).
+          ellenőriz („5 cm” egész, „2,5 cm” nem). Szorzószó az egység előtt: „530 ezer ha”, „93 ezer km²”,
+          „1,2 millió ha” → v = 530000, u = "ha", base (m²), s = „530 ezer ha”; az "int" ekkor a v-re (ha) vonatkozik.
   year    „Kr. e. 753”, „i. e. 753”, „Kr. u. 476”, „i. sz. 476”, „1241” (0. év nincs → hiba)
           → {"t": "year", "v": -753, "a": -752, "s": "Kr. e. 753"}
           v = előjeles történeti év (Kr. e. 753 = −753, 0 nincs); a = csillagászati év (Kr. e. 1 = 0,
@@ -86,11 +87,18 @@ Magyar nyelv és irodalom (szöveges adat; a „kb.”/„(2025)” jelzők itt 
           egyezzen (hiba), és hosszú magánhangzó (á é í ó ő ú ű) ne álljon ∪ helyen (figyelmeztetés); "feet": N.
   rhyme   „aabb” (x = rímtelen; rövidebb képlet versszakonként ismétlődik) + spec "quotes": csoport vagy "lines": [kulcsok]
           → {"t": "rhyme", "p": [betű soronként], "keys": [...], "s"}; figyelmeztet, ha egy rímpár sorvégi magánhangzója
-          eltér (a hosszúság nem számít: o = ó).
+          eltér (a hosszúság nem számít: o = ó). Kivétel (kiejtés szerinti rím: Sire [szír] – sir): spec "except": [5, "7/2"]
+          vagy a .md-ben a sor végén / közvetlenül alatta <!-- rím-kivétel: 5, 7/2 – indoklás --> (versszak, versszak/sor,
+          1-től, a rímképlet sorai közt számolva – "quotes" csoportnál ez a vers versszaka; „5–7” is; a spec-ben idézetkulcs
+          is: "wb 5/2") → ezeket a sorokat nem ellenőrzi (a keys/p-ben maradnak), + "ex": [sorindexek]; fölösleges
+          kivételre figyelmeztet.
   morph   „kert + ész (képző) + ek (jel) + nek (rag)”, „virág (tő) + cserép (tő) + ben (rag)”, „-ban/-ben (rag)” →
           {"t": "morph", "s": "kertészeknek", "parts": [{"s": "kert", "k": "tő"}, …, ["alt": ["ban", "ben"]]]};
           fajta: tő képző jel rag kötőhangzó előtag (az első elem alapból tő). Hiba: rag után jel/képző; figyelmeztet:
           jel után képző, hangrend-eltérés (kivétel: <!-- ingadozó --> a sorban).
+          Írott alak, ha eltér az összefűzéstől: „lát + j (jel) + a (rag) = lássa” → + "surface": "lássa", s = "lássa"
+          (a parts marad: lát, j, a). Ha a kulcs egy szó, és az első két betűje a szóé, a kulcs = összefűzés vagy írott alak
+          (különben hiba: „lássa: lát + j (jel) + a (rag)” → „írd mögé: … = lássa”).
   pron    „kútba [kúdba]” → {"t": "pron", "w": "kútba", "p": "kúdba", "s"}; szögletes zárójel nélkül hiba.
   rel     „Gergely – Éva: szerelem (I–V)” → {"t": "rel", "a", "b", "kind", ["from", "to", "fi", "ti"], "s"}; kind: barát
           ellenség család szerelem szolgál vezet; a szereplők / egységek a spec "rel" listáiból (fi, ti: index), lista
@@ -416,7 +424,7 @@ def parse_range(s, line, P, k, want):
         mult, mw, unit = split_mult(rest, "", line, P)
         unit = DIM_UNIT_ALIASES.get(unit, unit)
         if unit not in fam:
-            P.err(line, f"„{k}” = {s}: {dim} mértékegysége kell ({', '.join(fam)}), nem „{unit}”.")
+            P.err(line, f"„{k}” = {s}: {dim} mértékegysége kell ({', '.join(fam)}; elé írható: ezer, millió…), nem „{unit}”.")
             return None
     else:
         mult, mw, unit = split_mult(rest, want.get("unit", ""), line, P)
@@ -476,14 +484,23 @@ def parse_number_item(s, n, P, k, want):
             return None
         bu, fam = DIMS[dim]
         u2 = DIM_UNIT_ALIASES.get(unit, unit)
+        mult, mw = 1, ""
+        if u2 not in fam:                     # szorzószó: „530 ezer ha”, „93 ezer km²”, „1,2 millió ha”
+            mult, mw, tail = split_mult(unit, "", n, P)
+            u2 = DIM_UNIT_ALIASES.get(tail, tail) if mw else u2
         if u2 not in fam:
-            P.err(n, f"„{k}” = {s}: {dim} mértékegysége kell ({', '.join(fam)}), nem „{unit}”.")
+            P.err(n, f"„{k}” = {s}: {dim} mértékegysége kell ({', '.join(fam)}; elé írható: ezer, millió…), nem „{unit}”.")
             return None
-        item = {"v": val, "u": u2, "d": d, "base": val * fam[u2], "bu": bu}
-        text = text or (fmt_num(val, d) + unit_sep(u2) + u2)
+        if mw:
+            v2 = clean(val * mult)
+            item = {"v": v2, "u": u2, "d": max(0, d - int(round(math.log10(mult)))), "base": clean(v2 * fam[u2]), "bu": bu}
+            text = fmt_num(val, d) + NB + mw + NB + u2
+        else:
+            item = {"v": val, "u": u2, "d": d, "base": val * fam[u2], "bu": bu}
+            text = text or (fmt_num(val, d) + unit_sep(u2) + u2)
         item["s"] = text
         chk = item["base"]
-        ichk = val                            # int: a megadott egységben („5 cm” egész), nem az alapegységben
+        ichk = item["v"]                      # int: a megadott egységben („5 cm” egész, „2,5 ezer ha” = 2500 ha is), nem az alapegységben
     else:
         mult, mw, unit2 = (1, "", unit)
         if unit != wu:
@@ -1111,10 +1128,37 @@ def parse_metrum(s, line, P, k, want, ctx):
     return {"t": "meter", "feet": feet, "n": len(flat), "cz": cz}, text, False
 
 
+RHYME_EX = re.compile(r"^\s*rím-kivétel\s*:\s*(.*)$", re.I | re.S)
+RHYME_EX_ITEM = re.compile(r"(\d+)(?:\s*[–-]\s*(\d+))?(?:/(\d+))?")
+
+
+def rhyme_except(items, nst, size, keys, line, P, k):
+    """A rím-kivételek (versszak: 5, „5–7”; sor: „5/2” = az 5. versszak 2. sora; vagy egy idézetkulcs) → a kihagyott
+    sorok indexei (keys szerint), versszakonként csoportosítva: {versszak-index: {sorindex, …}} vagy None (hiba)."""
+    ex = {}
+    for it in items:
+        if isinstance(it, bool) or not isinstance(it, (int, str)):
+            P.err(line, f"„{k}”: érvénytelen rím-kivétel „{it}” (versszak: 5, sor: 5/2)."); return None
+        if isinstance(it, str) and it in keys:
+            j = keys.index(it); ex.setdefault(j // size, set()).add(j); continue
+        m = RHYME_EX_ITEM.fullmatch(str(it).strip())
+        if not m:
+            P.err(line, f"„{k}”: érvénytelen rím-kivétel „{it}” (versszak: 5 vagy 5–7, sor: 5/2, vagy idézetkulcs)."); return None
+        a, b, ln = int(m.group(1)), int(m.group(2) or m.group(1)), m.group(3)
+        if not 1 <= a <= b <= nst or ln is not None and not 1 <= int(ln) <= size or ln is not None and a != b:
+            P.err(line, f"„{k}”: rím-kivétel „{it}”: nincs ilyen versszak/sor ({nst} versszak, versszakonként {size} sor)."); return None
+        for st in range(a - 1, b):
+            ex.setdefault(st, set()).update([st * size + int(ln) - 1] if ln else range(st * size, st * size + size))
+    return ex
+
+
 def parse_rhyme(s, line, P, k, want, ctx):
     """„aabb” (a spec "quotes": idézetcsoport vagy "lines": [kulcsok]) → {t: rhyme, p: [betű soronként], keys, s}.
     Rövidebb képlet ciklikusan ismétlődik (versszakonként); x = rímtelen sor. Csak figyelmeztet, ha a rímpár
-    sorvégi magánhangzója eltér (a hosszúság nem számít)."""
+    sorvégi magánhangzója eltér (a hosszúság nem számít).
+    Kivétel (kiejtés szerinti rím, pl. Sire [szír] – sir): a spec "except": [5, "7/2"] vagy a .md-ben a sor végén / a
+    következő sorban <!-- rím-kivétel: 5, 7/2 – indoklás --> (versszak, ill. versszak/sor, 1-től). A kihagyott sorok a
+    kimenetben maradnak (keys, p), nem ellenőrzi őket; + "ex": [a kihagyott sorok indexei] (csak ha van kivétel)."""
     pat = re.sub(r"\s+", "", s)
     if not re.fullmatch(r"[a-z]+", pat):
         P.err(line, f"„{k}” = {s}: a rímképlet kisbetűkből álljon (pl. aabb, abab; x = rímtelen sor)."); return None
@@ -1132,23 +1176,58 @@ def parse_rhyme(s, line, P, k, want, ctx):
     if len(keys) % len(pat):
         P.err(line, f"„{k}” = {s}: {len(pat)} betűs képlet, de {len(keys)} sor van (a sorok száma legyen a többszöröse)."); return None
     p = [pat[j % len(pat)] for j in range(len(keys))]
-    for j0 in range(0, len(keys), len(pat)):           # versszakonként: ugyanaz a betű = ugyanaz a sorvégi magánhangzó
+    exc = want.get("except") or []
+    items = list(exc) if isinstance(exc, list) else [exc]
+    lines = ctx.get("lines", [])
+    own = [line] + ([line + 1] if line < len(lines) and lines[line].lstrip().startswith("<!--") else [])
+    for ln in own:                                      # <!-- rím-kivétel: … --> a sor végén vagy közvetlenül alatta (külön sorban)
+        for t in ctx.get("cmt", {}).get(ln, []):
+            m = RHYME_EX.match(t)
+            if m:
+                lst = re.split(r"\s+[–—-]\s+|\s*[:(]", m.group(1).strip(), maxsplit=1)[0].strip(" ,;")   # „5, 7/2 – indoklás”
+                got = [x.strip() for x in re.split(r"\s*[,;]\s*", lst) if x.strip()] if lst else []
+                if not got or not all(RHYME_EX_ITEM.fullmatch(x) for x in got):
+                    P.err(ln, f"„{k}”: a rím-kivételben versszakszám (5, 5–7) vagy versszak/sor (5/2) álljon, vesszővel: "
+                              f"<!-- rím-kivétel: 5 – indoklás -->, nem „{m.group(1).strip()[:40]}”."); return None
+                items += got
+    ex = rhyme_except(items, len(keys) // len(pat), len(pat), keys, line, P, k) if items else {}
+    if ex is None:
+        return None
+
+    def bad_groups(j0, skip):
         grp = {}
         for j in range(j0, j0 + len(pat)):
             q = qs[keys[j]]
-            if p[j] != "x" and q["v"]:
+            if p[j] != "x" and q["v"] and j not in skip:
                 grp.setdefault(p[j], []).append((q["s"][q["v"][-1]].lower().translate(RHYME_NORM), keys[j]))
-        for letter, vs in grp.items():
-            if len({v for v, _ in vs}) > 1:
-                P.warn(line, f"„{k}”: a(z) „{letter}” rím sorvégei nem csengenek egybe: " +
-                       ", ".join(f"{kk} ({(HU_LETTERS.findall(qs[kk]['s']) or ['?'])[-1]})" for _, kk in vs) + " – ellenőrizd a képletet.")
-    return {"t": "rhyme", "p": p, "keys": keys}, pat, False
+        return [(letter, vs) for letter, vs in grp.items() if len({v for v, _ in vs}) > 1]
+
+    for j0 in range(0, len(keys), len(pat)):           # versszakonként: ugyanaz a betű = ugyanaz a sorvégi magánhangzó
+        skip = ex.get(j0 // len(pat), set())
+        for letter, vs in bad_groups(j0, skip):
+            P.warn(line, f"„{k}”: a(z) „{letter}” rím sorvégei nem csengenek egybe: " +
+                   ", ".join(f"{kk} ({(HU_LETTERS.findall(qs[kk]['s']) or ['?'])[-1]})" for _, kk in vs) + " – ellenőrizd a képletet.")
+        if skip and not bad_groups(j0, set()):
+            P.warn(line, f"„{k}”: a(z) {j0 // len(pat) + 1}. versszak rím-kivétele fölösleges – a betűk szerint is rímel.")
+    item = {"t": "rhyme", "p": p, "keys": keys}
+    if ex:
+        item["ex"] = sorted(j for js in ex.values() for j in js)
+    return item, pat, False
 
 
 def parse_morph(s, line, P, k, want, ctx):
     """„kert + ész (képző) + ek (jel) + nek (rag)” → {t: morph, s: 'kertészeknek', parts: [{s, k}, …]};
     „-ban/-ben (rag)” → változatlista: parts[0].alt = ['ban', 'ben']. A fajta zárt listából; az első elem
-    alapból tő. Hibát ad, ha rag után jel vagy képző jön; figyelmeztet a hangrend-eltérésre (<!-- ingadozó -->)."""
+    alapból tő. Hibát ad, ha rag után jel vagy képző jön; figyelmeztet a hangrend-eltérésre (<!-- ingadozó -->).
+    Írott (felületi) alak, ha eltér az összefűzéstől: „lát + j (jel) + a (rag) = lássa” → + "surface": "lássa", és
+    s = 'lássa' (a parts változatlan: lát, j, a). Ha a kulcs egyetlen szó, és a szóra hasonlít (az első két betűje
+    egyezik), annak az összefűzéssel vagy az írott alakkal egyeznie kell (hiba)."""
+    surface = None
+    m = re.fullmatch(r"(.*?)\s*=\s*([^=+()]*)", s)
+    if m:
+        s, surface = m.group(1).strip(), m.group(2).strip()
+        if not HU_LETTERS.fullmatch(surface):
+            P.err(line, f"„{k}”: az írott alak („= {surface}”) egyetlen szó legyen, csak betűkkel (pl. … = lássa)."); return None
     raw_parts = [x.strip() for x in re.split(r"\s*\+\s*", s)]
     parts = []
     for j, rp in enumerate(raw_parts):
@@ -1198,7 +1277,21 @@ def parse_morph(s, line, P, k, want, ctx):
         text = parts[0]["s"]
     else:                                              # önálló toldalék: -ban/-ben, -ság
         text = "/".join("-" + a for a in parts[0].get("alt", [parts[0]["s"]]))
-    return {"t": "morph", "parts": parts}, text, False
+    item = {"t": "morph", "parts": parts}
+    if surface is not None:
+        if len(parts) < 2:
+            P.err(line, f"„{k}”: írott alak („= {surface}”) csak több szóelemnél kell (lát + j (jel) + a (rag) = lássa)."); return None
+        if surface == text:
+            P.warn(line, f"„{k}”: az írott alak („= {surface}”) ugyanaz, mint az összefűzés – elhagyható.")
+        item["surface"] = surface
+    word = surface if surface is not None else text
+    if len(parts) > 1 and HU_LETTERS.fullmatch(k) and k.lower() not in (text.lower(), word.lower()) \
+            and k[:2].lower() in (text[:2].lower(), word[:2].lower()):
+        P.err(line, f"„{k}” = {s}{' = ' + surface if surface else ''}: a szóelemek összefűzve „{text}”"
+                    + (f", írva „{surface}”" if surface else "") + f" – nem „{k}”. "
+                    + ("Elírás?" if surface else f"Ha az írott alak eltér az összefűzéstől, írd mögé: … = {k}"))
+        return None
+    return item, word, False
 
 
 IPA_LIKE = re.compile(r"[ːˈˌəɛɔøœʏɑɒæɪʊʃʒɲɟçŋθðɡχʁɾɫʔ]")
@@ -2138,7 +2231,8 @@ def build(md_path, check_only=False, out_dir=None):
     doc = parse_md(md_path, P)
     if spec is None:
         return P
-    ctx = {"math": spec["math"], "chem": spec["chem"], "html": {}, "rel": spec["rel"]}
+    ctx = {"math": spec["math"], "chem": spec["chem"], "html": {}, "rel": spec["rel"],
+           "lines": md_path.read_text(encoding="utf-8").split("\n")}     # nyers sorok (a _lines-ból a megjegyzés kivéve)
     quotes, quote_src = {}, []
     if doc["quoteBlocks"] or spec["quotes"] or spec["quoteSets"] or any(
             v.get("type") in HU_TYPES for v in spec["data"].values()):
@@ -2319,7 +2413,8 @@ def mx_cases():
 def selftest():
     """A tools/tests/ próbafájljai: tort-adatok.md (hibátlan, értékek ellenőrzése), tort-hibak.md (várt hibák),
     uj-adatok.md / uj-hibak.md (az új adattípusok), jeloles-mat.md / jeloles-kem.md (jelölés), mx-cases.js,
-    magyar-adatok.md / magyar-hibak.md (idézet, verssor, metrum, rím, szóelem, ejtés, kapcsolat, értelmezés)."""
+    magyar-adatok.md / magyar-hibak.md (idézet, verssor, metrum, rím, szóelem, ejtés, kapcsolat, értelmezés),
+    kor3-adatok.md / kor3-hibak.md (3. javítókör: szóelem írott alakkal, rímkivétel, terület ezer ha / ezer km²)."""
     T = ROOT / "tools" / "tests"
     fails = []
 
@@ -2572,6 +2667,53 @@ def selftest():
                   "„ban” (rag) mély hangrendű, a(z) „kert” magas", "az írás és az ejtés azonos", "értelmező lecke"]:
             if not any(w in x for x in P.warnings):
                 fails.append(f"magyar-hibak: hiányzó figyelmeztetés: „{w}”")
+
+        # ── 3. javítókör: morph írott alakkal, rímkivétel, dim szorzószóval ──
+        P = build(T / "kor3-adatok.md", out_dir=tmp)
+        for m in P.errors + P.warnings:
+            fails.append("kor3-adatok váratlan: " + m)
+        C = getattr(P, "content", {})
+        D = C.get("data", {})
+        g = lambda k, f=None: D.get(k, {}) if f is None else D.get(k, {}).get(f)
+        check("morph írott alak", (g("lássa", "s"), g("lássa", "surface"), [x["s"] for x in g("lássa", "parts") or []]),
+              ("lássa", "lássa", ["lát", "j", "a"]))
+        check("morph írott alak (ts)", (g("tanítsa", "s"), g("tanítsa", "surface")), ("tanítsa", "tanítsa"))
+        check("morph írott alak nélkül: nincs surface", ("surface" in g("várjon"), g("várjon", "s"), g("felszólító példa", "s")),
+              (False, "várjon", "várjon"))
+        hs = "".join(s_["html"] for s_ in C.get("steps", []))
+        check("{morph} a panelen: az írott alak", "lássa" in hs and "tanítsa" in hs and "látja" not in hs, True)
+        check("rím-kivétel (megjegyzés, versszak)", (g("wb rímképlet", "ex"), len(g("wb rímképlet", "keys") or []), g("wb rímképlet", "s")),
+              ([4, 5, 6, 7], 12, "xaxa"))
+        check("rím-kivétel (spec except: 2/2 + idézetkulcs)", g("wb rím spec", "ex"), [5, 7])
+        check("rím-kivétel (sor, 2/4)", (g("wb rím sor", "ex"), g("wb rím sor", "p")), ([7], list("xaxaxaxa")))
+        check("dim millió ha", {f: g("erdők területe", f) for f in ("v", "u", "base", "bu", "s")},
+              {"v": 2.1e6, "u": "ha", "base": 2.1e10, "bu": "m²", "s": "2,1\u00a0millió\u00a0ha"})
+        check("dim ezer km²", (g("ország területe", "v"), g("ország területe", "u"), g("ország területe", "base"), g("ország területe", "s")),
+              (93000.0, "km²", 9.3e10, "93\u00a0ezer\u00a0km²"))
+        check("dim ezer ha + int", (g("park területe", "v"), g("park területe", "d")), (2500.0, 0))
+        check("dim szorzó nélkül változatlan", (D.get("kis park"), D.get("sima terület")),
+              ({"v": 530.0, "u": "ha", "d": 0, "base": 5300000.0, "bu": "m²", "s": "530\u00a0ha"},
+               {"v": 12.0, "u": "m²", "d": 0, "base": 12.0, "bu": "m²", "s": "12\u00a0m²"}))
+        check("range dim ezer ha", (g("tavak területe", "lo"), g("tavak területe", "blo"), g("tavak területe", "s")),
+              (50000.0, 5e8, "50–70\u00a0ezer\u00a0ha"))
+        check("{dim} a panelen", "93\u00a0ezer\u00a0km²" in H.unescape(hs), True)
+
+        P = build(T / "kor3-hibak.md", check_only=True)
+        want = ["„nincs írott alak”: az írott alak („= láss a”) egyetlen szó", "„lássa” = lát + j (jel) + a (rag): a szóelemek összefűzve „látja”",
+                "írd mögé: … = lássa", "írva „lássa” – nem „lássák”. Elírás?", "„egy szóelem”: írott alak („= lássa”) csak több szóelemnél",
+                "„rím rossz kivétel”: a rím-kivételben versszakszám", "„rím nincs vsz”: rím-kivétel „3”: nincs ilyen versszak",
+                "terület mértékegysége kell", "„nem egész” = 2,5555 ezer ha: egész szám kell"]
+        for w in want:
+            if not any(w in e for e in P.errors):
+                fails.append(f"kor3-hibak: hiányzó várt hiba: „{w}”")
+        if len(P.errors) != len(want) - 1:                # a „lássa” két részlete egy hibaüzenet
+            fails.append(f"kor3-hibak: {len(P.errors)} hiba, várt: {len(want) - 1}:\n    " + "\n    ".join(P.errors))
+        for w in ["„látja”: az írott alak („= látja”) ugyanaz", "1. versszak rím-kivétele fölösleges",
+                  "„rím nincs kivétel”: a(z) „a” rím sorvégei nem csengenek"]:
+            if not any(w in x for x in P.warnings):
+                fails.append(f"kor3-hibak: hiányzó figyelmeztetés: „{w}”")
+        if any("két szó" in e for e in P.errors + P.warnings):
+            fails.append("kor3-hibak: a több szavas kulcs („két szó”) nem a szó maga – nem kellene ellenőrizni")
 
     # ── a # cím más tárgyban: Unicode, ahol lehet; a többi változatlan ──
     Pt = Problems(T / "cím")
