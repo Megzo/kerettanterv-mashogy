@@ -749,13 +749,24 @@ const MagText = (() => {
 })();
 /* ── MODUL VÉGE ── */
 
-/* ── MODUL: Dokumentum és diakocka (DigDoc) · forrás: digitalis-kultura-5-6/10-formazas, 2026-11-24 ── */
+/* ── MODUL: Dokumentum és diakocka (DigDoc) · forrás: digitalis-kultura-5-6/10-formazas, 2026-11-24 · v1.1 ── */
 /* A digitális kultúra 5–6. sorozat „lapja” (terv 4.2): mért tördelés, formázás rétegenként (oldal ⊃ bekezdés ⊃ sor ⊃
    szó ⊃ karakter), rejtett jelek, stílus, kép a szövegben, elválasztás, diakocka, távolsági elmosás. Csak a Lesson
    motorra épül (L.ctx, L.tx, L.measure-rel azonos mérés, L.pointer, L.k, Lesson.U, Lesson.FONTS); a lecke kódjára nem
    hivatkozik. Minden méret mm-ben (oldal, margó, behúzás, kép) és pontban (betű, térköz) – a tördelés a képernyő-
    mérettől független (mm-ben mér: measureText, gyorsítótárral), a rajz a scale (px/mm) szerint nagyít. Windowson
    eltérő fontszélesség esetén is helyesen tördel (nincs fix doboz).
+
+   VÁLTOZÁSNAPLÓ
+   v1.1 (2026-11-24, a 11, 12 metrikasora alapján; a v1.0 hívásai változatlanul működnek):
+     · D.drag: a keepRatio csak a sarokfogóra hat, az oldalfogó mindig torzít (v1.0-ban az oldalfogóra is hatott).
+     · D.draw: a tördelés az alfa-kilépés előtt fut – láthatatlan (a ≤ 0,005) rajz után is érvényes a D.lines/D.pbox;
+       így a DigDoc.slide parts-a sem üres áttűnés közben.
+     · DigDoc.slide: x, y alapértéke 0 (v1.0-ban nélkülük NaN); új paras: [{s, k, b, col, bullet}] – bekezdések a cím
+       és a felsorolás között (id: p0, p1, …).
+     · DigDoc.blurAt: új o.n (ennyi feloldható részlet a szélességben); a sugár és a felbontás kapcsolata leírva.
+     · layout o.hyph: mindig az egész szót kapja (v1.0-ban a sortörés utáni maradékot is, pl. „útállomáson”), az
+       indexek a feltételes elválasztójel nélküli szóra vonatkoznak (v1.0-ban a jellel együtt értelmezte).
 
    BEKÖTÉS (egyszer, legfelső szinten):  DigDoc.bind({ L: () => L, ga: () => GA });   // ga: a lecke alap-alfája
    ALFA: minden rajzoló a globalAlpha-t ga() · a értékre ÁLLÍTJA (TtTipp-minta); a vonalstílust (lineCap/lineJoin/
@@ -786,7 +797,8 @@ const MagText = (() => {
         A „sorban” kép egy nagy karakter: a sor alapvonalán áll, a sor magasabb lesz tőle. A körbefuttatott kép
         mellett a sor a szélesebbik oldalon folytatódik; a „mögötte” kép a tördelést nem befolyásolja.
    D.layout(o) → lines   mért tördelés (mohó, mint a szövegszerkesztők): o.width (hasábszélesség mm, alap: a margók
-        között), o.hyph(szó) → [elválasztási helyek indexei a szóban] (pl. a MagText szótagolásából; nélküle nem
+        között), o.hyph(szó) → [elválasztási helyek indexei a szóban] (a teljes szó, feltételes elválasztójel nélkül –
+        akkor is, ha egy része már az előző sorban van; v1.1) (pl. a MagText szótagolásából; nélküle nem
         választ el, csak kötőjelnél és feltételes elválasztójelnél törhet). A sorvégi szóköz „kilóg” (nem számít a
         szélességbe), a sor eleji szóköz (szóközzel igazítás) igen. Sorkizárt: a bekezdés utolsó sora balra.
         Az opciókat megjegyzi (D.lo), a draw ugyanezzel tördel. line = {pi, top, h, base, xa, xb (a sor helye mm-ben),
@@ -815,7 +827,7 @@ const MagText = (() => {
         snap: 1 (mm), lim: {margó: [5, 60], behúzás: [-30, 80], kép: [10, 180]}, which: ['első', …] (csak ezek a fogók; alap:
         mind), on(part, h)}. Visszaad: a húzott
         rész (h) vagy null. A margót mindkét oldalon, a behúzást a rulerP (vagy hi.p) bekezdésén állítja; a képnél
-        keepRatio szerint arányosan (sarok) vagy torzítva (oldal).
+        a sarokfogó az img.keepRatio szerint arányosan (alap) vagy szabadon, az oldalfogó mindig torzítva (v1.1).
    DigDoc.width(s, run) → mm   mért szélesség (run: {font, size, b, i})
    DigDoc.spacesFor(text, run, widthMM, how: 'középre'|'jobbra') → n   hány szóköz kell elé, hogy „igazítva” látsszon
    DigDoc.spaceAlign(text, n, run) → bekezdés-leíró (align: 'balra', n szóköz a szöveg előtt) – a 10 tévhit-demója:
@@ -824,14 +836,18 @@ const MagText = (() => {
         jel alapvonala, px: a betűméret. o = {a, col}. Jelmagyarázathoz.
    DigDoc.card(L, x, y, {title: {s, k}, rows: [{s, k}], col, a, anchor: [x, y] | null, al: 'left'|'right', s: 24,
         minW}) → doboz   tulajdonságcédula (a szöveghez méreteződik), vezetővonallal az anchor-hoz.
-   DigDoc.slide(L, {x, y, w, h (alap w · 9/16), title: {s, k}, bullets: [{s, k, b, col}], img: (c, w, h) => rajz,
+   DigDoc.slide(L, {x: 0, y: 0, w, h (alap w · 9/16), title: {s, k}, paras: [{s, k, b, col, bullet}] (bekezdések a cím
+        alatt, v1.1; bullet: true → felsorolásjeles), bullets: [{s, k, b, col}], img: (c, w, h) => rajz,
         imgW: 0,4 (a kép a szélesség hányada, jobb oldalt), bg, fg, accent (a cím színe), font, titleFont,
         size: {title: 40, body: 24} (pont egy 338,7 × 190,5 mm-es, 16:9-es dián), anim: {cím, b0, b1, …, kép: kezdő
-        mp}, u (az animáció órája, mp), fx: {id: {dx, dy, a}}, a, ctx, raw, minPx}) → {rect, parts: {id: doboz px}, D}
-        diakocka ugyanezzel a tipográfiával; anim nélkül minden látszik; az elem 0,4 mp alatt úszik be.
+        mp; a bekezdéseké p0, p1, …}, u (az animáció órája, mp), fx: {id: {dx, dy, a}}, a, ctx, raw, minPx}) →
+        {rect, parts: {id: doboz px}, D}   diakocka ugyanezzel a tipográfiával; anim nélkül minden látszik; az elem
+        0,4 mp alatt úszik be. A parts a ≤ 0,005 mellett is kitöltött (v1.1).
    DigDoc.blurAt(L, draw, dist, o) – a draw(c, w, h) képe elmosva, (o.x, o.y, o.w, o.h)-ba: offscreen vászonra rajzol,
         lekicsinyíti, majd simítva felnagyítja (a ctx.filter nem kell). Az elmosás sugara px-ben: o.r (szám vagy
-        függvény: r(dist)), alap: dist. A hívó számolja a távolságból (pl. a 12 látásélesség-modellje). o.a: alfa.
+        függvény: r(dist)), alap: dist. A kép r / 1,1 px-es (logikai) cellákra kicsinyül, vagyis a szélességben
+        N = 1,1 · o.w / r részlet marad feloldható; fordítva: o.n (v1.1) megadásával r = 1,1 · o.w / o.n (felülírja
+        az o.r-t). A hívó számolja a távolságból (pl. a 12 látásélesség-modellje). o.a: alfa.
         A draw-ban a szöveg raw (pl. DigDoc.slide(L, {…, ctx: c})).
    ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
 const DigDoc = (() => {
@@ -976,7 +992,7 @@ const DigDoc = (() => {
       return out;
     }
     function sliceWord(wd, a, b, hy) {     // a szó [a, b) része (karakterhely a szón belül)
-      const nw = { t: 'w', segs: [], from: wd.from + a, w: 0 };
+      const nw = { t: 'w', segs: [], from: wd.from + a, w: 0, root: wd.root || wd.s, off: (wd.off || 0) + a };   // v1.1: root/off a hyph-nek
       let off = 0;
       for (const sg of wd.segs) {
         const s0 = off, s1 = off + sg.s.length; off = s1;
@@ -994,7 +1010,13 @@ const DigDoc = (() => {
         if (s[k - 1] === '-' && /\S/.test(s[k])) out.push({ k, hy: false });
         else if (s[k - 1] === SHY) out.push({ k, hy: true });
       }
-      if (hyph) { const h = hyph(s.replace(/­/g, '')) || []; for (const k of h) if (k > 0 && k < s.length && !out.some((b) => b.k === k)) out.push({ k, hy: true }); }
+      if (hyph) {                        // v1.1: mindig az egész szóra hív (a sortörés utáni maradékra is), és az indexeket a
+        const root = wd.root || s, off = wd.off || 0, at = [];   // feltételes elválasztójel nélküli szóból képezi vissza
+        for (let i = 0; i < root.length; i++) if (root[i] !== SHY) at.push(i);
+        at.push(root.length);
+        const h = hyph(root.replace(/­/g, '')) || [];
+        for (const k0 of h) { const k = at[k0] - off; if (k > 0 && k < s.length && !out.some((b) => b.k === k)) out.push({ k, hy: true }); }
+      }
       return out.sort((p, q) => p.k - q.k);
     }
 
@@ -1113,8 +1135,8 @@ const DigDoc = (() => {
       const L = getL(), c = ctxOf(o), raw = !!o.raw || (o.ctx && o.ctx !== L.ctx);
       const S = o.scale || D.scale, X = o.x != null ? o.x : D.x, Y = o.y != null ? o.y : D.y, A = o.a == null ? 1 : o.a;
       D.S = S; D.X = X; D.Y = Y;
+      D.layout(o.layout || null);                     // v1.1: a láthatatlan rajz is tördel (D.lines, D.pbox, slide parts)
       if (A <= .005) return;
-      D.layout(o.layout || null);
       const pw = pg.w, ph = D.ph(), m = pg.margin, minPx = o.minPx || 22, ex = clamp(o.explode || 0);
       const LY = Object.assign({ oldal: 1, bekezdés: 1, karakter: 1 }, o.layers || {});
       const bx = o.boxes || {};
@@ -1402,8 +1424,8 @@ const DigDoc = (() => {
         g.w = sn(nw); g.h = g.keepRatio ? g.w * v0.h / v0.w : clamp(sn(v0.h + dy), lim.kép[0], lim.kép[1]);
       } else if (h.part === 'kép-oldal') {
         const g = h.img;
-        if (h.which === 'jobb') { g.w = clamp(sn(v0.w + d), lim.kép[0], lim.kép[1]); if (g.keepRatio) g.h = g.w * v0.h / v0.w; }
-        else { g.h = clamp(sn(v0.h + dy), lim.kép[0], lim.kép[1]); if (g.keepRatio) g.w = g.h * v0.w / v0.h; }
+        if (h.which === 'jobb') g.w = clamp(sn(v0.w + d), lim.kép[0], lim.kép[1]);     // v1.1: az oldalfogó mindig torzít
+        else g.h = clamp(sn(v0.h + dy), lim.kép[0], lim.kép[1]);
       }
       if (o.on) o.on(h.part, h);
       if (!Pn.down) { D.dg = null; }
@@ -1415,27 +1437,28 @@ const DigDoc = (() => {
   /* ── diakocka ── */
   function slide(L, o = {}) {
     const w = o.w || 640, h = o.h || w * 9 / 16, SW = 338.67, SH = SW * h / w, S = w / SW, sz = Object.assign({ title: 40, body: 24 }, o.size || {});
-    const c = ctxOf(o), A = o.a == null ? 1 : o.a;
-    const D = create(L, { page: { w: SW, h: SH, margin: o.margin || [14, 16, 10, 16] }, scale: S, x: o.x, y: o.y });
+    const c = ctxOf(o), A = o.a == null ? 1 : o.a, X = o.x || 0, Y = o.y || 0;   // v1.1: x, y alap 0
+    const D = create(L, { page: { w: SW, h: SH, margin: o.margin || [14, 16, 10, 16] }, scale: S, x: X, y: Y });
     D.styles.Normál = { font: o.font || 'talpatlan', size: sz.body, col: o.fg || INK, after: 8, line: 1.12 };
     D.styles.Cím = { font: o.titleFont || 'talpas', size: sz.title, b: true, col: o.accent || o.fg || INK, after: 12, line: 1.05 };
     const ids = [];
     if (o.title) { D.para({ runs: [{ s: o.title.s, k: o.title.k }], style: 'Cím' }); ids.push('cím'); }
+    (o.paras || []).forEach((p, i) => { D.para({ runs: [{ s: p.s, k: p.k, b: p.b, col: p.col }], bullet: !!p.bullet, indent: p.bullet ? { left: 9, first: 0 } : { left: 0, first: 0 } }); ids.push('p' + i); });
     (o.bullets || []).forEach((b, i) => { D.para({ runs: [{ s: b.s, k: b.k, b: b.b, col: b.col }], bullet: true, indent: { left: 9, first: 0 } }); ids.push('b' + i); });
     const m = D.page.margin, imgW = o.img ? (o.imgW || .4) : 0, cw = (SW - m[1] - m[3]) * (1 - imgW) - (o.img ? 6 : 0);
     const at = (id) => (o.anim && o.anim[id] != null ? clamp(((o.u || 0) - o.anim[id]) / .4) : 1);
     const fxOf = (id) => { const f = (o.fx && o.fx[id]) || {}; return { a: at(id) * (f.a == null ? 1 : f.a), dx: (f.dx || 0) + (1 - at(id)) * 0, dy: (f.dy || 0) + (1 - at(id)) * 18 }; };
-    al(c, A); resetLine(c); c.fillStyle = o.bg || CARD; c.fillRect(o.x, o.y, w, h); c.strokeStyle = 'rgba(28,36,64,.45)'; c.lineWidth = 2; c.strokeRect(o.x, o.y, w, h);
+    if (A > .005) { al(c, A); resetLine(c); c.fillStyle = o.bg || CARD; c.fillRect(X, Y, w, h); c.strokeStyle = 'rgba(28,36,64,.45)'; c.lineWidth = 2; c.strokeRect(X, Y, w, h); }
     D.draw({ a: A, sheet: false, layout: { width: cw }, ctx: o.ctx, raw: o.raw, minPx: o.minPx, paraFx: (pi) => fxOf(ids[pi]) });
     const parts = {};
-    D.pbox.forEach((b, pi) => { parts[ids[pi]] = { x: o.x + b.x * S, y: o.y + b.y * S, w: b.w * S, h: b.h * S }; });
+    D.pbox.forEach((b, pi) => { parts[ids[pi]] = { x: X + b.x * S, y: Y + b.y * S, w: b.w * S, h: b.h * S }; });
     if (o.img) {
-      const f = fxOf('kép'), R = { x: o.x + (SW - m[1] - (SW - m[1] - m[3]) * imgW) * S + f.dx, y: o.y + m[0] * S + f.dy, w: (SW - m[1] - m[3]) * imgW * S, h: (SH - m[0] - m[2]) * S };
-      if (f.a > .005) { al(c, A * f.a); c.save(); c.beginPath(); c.rect(R.x, R.y, R.w, R.h); c.clip(); c.translate(R.x, R.y); o.img(c, R.w, R.h); c.restore(); resetLine(c); }
+      const f = fxOf('kép'), R = { x: X + (SW - m[1] - (SW - m[1] - m[3]) * imgW) * S + f.dx, y: Y + m[0] * S + f.dy, w: (SW - m[1] - m[3]) * imgW * S, h: (SH - m[0] - m[2]) * S };
+      if (A * f.a > .005) { al(c, A * f.a); c.save(); c.beginPath(); c.rect(R.x, R.y, R.w, R.h); c.clip(); c.translate(R.x, R.y); o.img(c, R.w, R.h); c.restore(); resetLine(c); }
       parts['kép'] = R;
     }
     c.globalAlpha = ga();
-    return { rect: { x: o.x, y: o.y, w, h }, parts, D };
+    return { rect: { x: X, y: Y, w, h }, parts, D };
   }
 
   /* ── távolsági elmosás ── */
@@ -1447,7 +1470,7 @@ const DigDoc = (() => {
   }
   function blurAt(L, draw, dist, o = {}) {
     const c = ctxOf(o), k = L.k || 1, A = o.a == null ? 1 : o.a; if (A <= .005) return;
-    const r = typeof o.r === 'function' ? o.r(dist) : o.r != null ? o.r : dist;
+    const r = o.n ? 1.1 * o.w / o.n : typeof o.r === 'function' ? o.r(dist) : o.r != null ? o.r : dist;
     const W = Math.max(1, Math.ceil(o.w * k)), H = Math.max(1, Math.ceil(o.h * k));
     const c1 = off('a', W, H), x1 = c1.getContext('2d');
     x1.setTransform(1, 0, 0, 1, 0, 0); x1.clearRect(0, 0, W, H); x1.setTransform(k, 0, 0, k, 0, 0); x1.globalAlpha = 1;
@@ -1607,8 +1630,6 @@ function scene1(st, a, active) {
   IMG1.w = logV(S1.log, st, (e) => e.w); IMG1.h = logV(S1.log, st, (e) => e.h);
   D1.draw({ a });
   if (active && a > .5) {
-    const P = L.pointer;
-    if (P.pressed && !D1.dg) { const h = D1.hit(P.px, P.py); if (h && h.img) h.img.keepRatio = h.part === 'kép-sarok'; }
     D1.drag({ parts: ['kép-sarok', 'kép-oldal'], lim: { kép: [30, 150] }, on: (part) => {
       pushLog(S1.log, { w: IMG1.w, h: IMG1.h, d: .04, mode: part === 'kép-sarok' ? 'sarok' : 'oldal', user: true });
     } });

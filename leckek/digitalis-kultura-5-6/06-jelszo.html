@@ -693,7 +693,7 @@ const MatGraf = (() => {
 })();
 /* ── MODUL VÉGE: Gráfok és fák (MatGraf) ── */
 
-/* ── MODUL: Bit, bájt, kód (DigBit) · forrás: digitalis-kultura-5-6/17-szamitogep, 2026-11-24 ── */
+/* ── MODUL: Bit, bájt, kód (DigBit) · forrás: digitalis-kultura-5-6/17-szamitogep, 2026-11-24 · v1.1 ── */
 /* Terv: pilot/digitalis-kultura-5-6/terv.md 4.2 („DigBit”), szerződés 16. és 19. Átvevők: 05-csomagok (bytes: az IP-cím
    négy bájtja), 06-jelszo (big, pow: nagy számok), 13-pixel (bits csatornánként, col), 14-hang-video (bytes: mintaszalag,
    size). Csak a Lesson motorra épül (L.ctx, L.tx, L.pill, L.measure, L.pointer, Lesson.U, Lesson.FONTS); a lecke kódjára
@@ -701,6 +701,12 @@ const MatGraf = (() => {
    mértékegység-jelek (kB, MB…) kódban rögzítettek. Vászonon minden betű ≥ 22 px.
    ALFA: o.a ABSZOLÚT, a modul a globalAlpha-t ga() · o.a értékre ÁLLÍTJA (nem szoroz a pillanatnyival – a TtTipp
    mintája), ga a bind()-ból (alap: () => 1). A vonalstílust és a betűállapotot save/restore állítja vissza.
+
+   VÁLTOZÁSNAPLÓ
+   v1.1 (2026-11-24, a 06 metrikasora alapján; a v1.0 hívásai sig nélkül változatlan szöveget adnak):
+     · big: megadott o.sig mellett 10⁶ (o.ezer: 10⁴) alatt is értékes jegyre kerekít (1707, sig 2 → '1700');
+       10³³ fölött a kitevő Unicode felső index ('2,9 · 10³⁹', mint a build sima szöveges alakja – a három font
+       mindegyikében megvan, shared/fonts/README); v1.0: '2,9 · 10^39'. Új mező: sci (true, ha hatványalakú).
 
    BEKÖTÉS (opcionális, egyszer): DigBit.bind({ ga: () => GA });   // a lecke jelenet-áttűnési alap-alfája
 
@@ -716,8 +722,9 @@ const MatGraf = (() => {
    DigBit.big(n, o) → {n, s, m, e, mant, words}
         nagy szám magyarul (hosszú skála: ezer 10³, millió 10⁶, milliárd 10⁹, billió 10¹², billiárd 10¹⁵, trillió 10¹⁸,
         trilliárd 10²¹, kvadrillió 10²⁴, kvadrilliárd 10²⁷, kvintillió 10³⁰). s: '218 billió' (o.sig = 3 értékes jegy),
-        10⁶ alatt U.fmt-tel ('10 000'); o.ezer: true → 10⁴ és 10⁶ között is szóval ('333 ezer'); 10³³ fölött s = mant ·
-        10^e szövegesen. m, e: n = m · 10^e (1 ≤ m < 10); mant: m magyarul, o.pd (alap 1) tizedesre ('2,2'); words: a
+        10⁶ alatt U.fmt-tel: o.sig nélkül pontosan ('10 000'), o.sig-gel kerekítve ('1700', v1.1); o.ezer: true →
+        10⁴ és 10⁶ között is szóval ('333 ezer'); 10³³ fölött s = mant · 10 + felső indexes kitevő ('2,9 · 10³⁹', v1.1),
+        sci: true. m, e: n = m · 10^e (1 ≤ m < 10); mant: m magyarul, o.pd (alap 1) tizedesre ('2,2'); words: a
         szorzószó ('billió' | '').
    DigBit.size(b, base = 1000, o) → {v, u, s}   bájtszám olvasható egységben: base 1000 → bájt, kB, MB, GB, TB, PB
         (SI, IEC 80000-13); base 1024 → bájt, KiB, MiB, GiB, TiB. s: '10,6 MB' (100 alatt 1 tizedes, a ',0' elmarad;
@@ -789,21 +796,24 @@ const DigBit = (() => {
   const WORDS = [[1e30, 'kvintillió'], [1e27, 'kvadrilliárd'], [1e24, 'kvadrillió'], [1e21, 'trilliárd'], [1e18, 'trillió'],
     [1e15, 'billiárd'], [1e12, 'billió'], [1e9, 'milliárd'], [1e6, 'millió'], [1e3, 'ezer']];
   function sigRound(v, sig) { if (v === 0) return 0; const d = Math.ceil(Math.log10(Math.abs(v))); const p = Math.pow(10, sig - d); return Math.round(v * p) / p; }
+  const sigFmt = (v) => (v >= 100 ? U.fmt(v, 0) : U.fmt(v, v >= 10 ? 1 : 2).replace(/,?0+$/, ''));
+  const SUP = '⁰¹²³⁴⁵⁶⁷⁸⁹';
+  const sup = (e) => String(e).replace(/\d/g, (d) => SUP[d]).replace('-', '⁻');
   function big(n, o = {}) {
     const sig = o.sig || 3, pd = o.pd == null ? 1 : o.pd;
     let e = n > 0 ? Math.floor(Math.log10(n) + 1e-12) : 0, m = n > 0 ? n / Math.pow(10, e) : 0;
     if (+m.toFixed(pd) >= 10) { m /= 10; e += 1; }
     const mant = U.fmt(m, pd).replace(/,0+$/, '');
-    const r = { n, m, e, mant, words: '', s: '' };
+    const r = { n, m, e, mant, words: '', s: '', sci: false };
     const lim = o.ezer ? 1e4 : 1e6;
-    if (n < lim) { r.s = U.fmt(Math.round(n)); return r; }
-    if (n >= 1e33) { r.s = mant + ' · 10^' + e; return r; }
+    if (n < lim) { r.s = o.sig ? sigFmt(sigRound(n, o.sig)) : U.fmt(Math.round(n)); return r; }   // v1.1: o.sig 10⁶ alatt is
+    if (n >= 1e33) { r.s = mant + ' · 10' + sup(e); r.sci = true; return r; }                      // v1.1: felső index
     for (let j = 0; j < WORDS.length; j++) {
       let [b, w] = WORDS[j];
       if (n >= b * (1 - 1e-12)) {
         let v = sigRound(n / b, sig);
         if (v >= 1000 && j > 0) { [b, w] = WORDS[j - 1]; v = sigRound(n / b, sig); }   // 999,6 milliárd → 1 billió
-        const t = v >= 100 ? U.fmt(v, 0) : U.fmt(v, v >= 10 ? 1 : 2).replace(/,?0+$/, '');
+        const t = sigFmt(v);
         r.words = w; r.s = t + ' ' + w;
         return r;
       }
@@ -1623,8 +1633,8 @@ function timeStr(sec) {
   if (sec < 86400) return u(sec / 3600, 'óra felirat');
   if (sec < YEAR) return u(sec / 86400, 'nap felirat');
   const y = sec / YEAR;
-  if (y < 1e6) return u(y, 'év felirat');
-  return DigBit.big(y, { ezer: true, sig: 2 }).s + ' ' + lab('év felirat');
+  if (y < 1000) return u(y, 'év felirat');
+  return DigBit.big(y, { sig: 2 }).s + ' ' + lab('év felirat');             // DigBit v1.1: 10⁶ alatt is 2 jegyre kerekít
 }
 const digits = (n) => Math.floor(Math.log10(n) + 1e-9) + 1;
 
@@ -1850,7 +1860,7 @@ function scene4(st, a) {
     al(a); L.tx('=', lb.x + lb.w + 14 + pw + 16, yb + 132, { s: 30, w: 700, f: F.M, c: MUT });
     al(a); DigBit.pow(L, N, lb.x + lb.w + 14 + pw + 50, yb + 132, { s: 30 });
   }
-  const bs = DigBit.big(N).s, named = !bs.includes('^');            // a hosszú skála szava, ha van; különben csak a jegyek száma
+  const BN = DigBit.big(N), bs = BN.s, named = !BN.sci;              // a hosszú skála szava, ha van; különben csak a jegyek száma
   let bx = 66;
   if (named) { al(a); const bw = L.tx(bs, 66, yb + 192, { s: 40, w: 700, f: F.D, c: RED, max: 330 }); bx = bw.x + bw.w + 16; }
   al(a); TN('jegyű felirat', [String(digits(N))], bx, yb + (named ? 188 : 192), { s: named ? 22 : 30, w: 600, f: F.B, c: named ? MUT : RED });

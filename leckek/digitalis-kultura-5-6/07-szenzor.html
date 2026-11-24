@@ -2858,7 +2858,10 @@ function plotRun(PL, R, t, a, th) {
   PL.axes({ a: a * GA, s: 22 });
   const pts = []; const ymax = 100;
   for (let i = 0; i < R.frames.length; i += 2) { const f = R.frames[i]; if (f.t0 > t) break; const v = sensVal(f.s1, 'távolság'); if (v != null) pts.push([f.t0, Math.min(v, ymax * 1.05)]); }
-  if (pts.length > 1) PL.line(pts, { col: TEAL, w: 3, a: a * GA });
+  if (pts.length > 1) {                       // a görbe a rajzterületen belül marad (a 100 cm fölötti ugrás a felső szélnél vágva)
+    const B = PL.box; c.save(); c.beginPath(); c.rect(B.x, B.y, B.w, B.h); c.clip();
+    PL.line(pts, { col: TEAL, w: 3, a: a * GA }); c.restore();
+  }
   if (th != null) { PL.hline(th, { col: RED, w: 3, dash: [8, 6], a: a * GA }); const [X, Y] = PL.P(PL.xa.max, th); al(a); PN('küszöb felirat', [cm(th)], X, Y - 30, { a: 'right', s: 22, w: 700, f: F.B, c: RED, bg: CARD, bd: RED, pad: 8 }); }
 }
 function scene6(st, a) {
