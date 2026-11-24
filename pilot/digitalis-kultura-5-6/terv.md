@@ -697,7 +697,7 @@ Közös minden briefben (a 7. fejezet szabályai szerint):
 - **Lépések:** Kép a szövegben: arányosan! · Sorban, körbefuttatva, mögötte · Hogyan dolgozik a
   helyesírás-ellenőrző? · Mit nem vesz észre? · Elválasztás: a gép dolga · Más szövege, más képe ·
   Hogyan jelöljük a forrást? · Összefoglalás.
-- **Adatok:** elválasztás: *A magyar helyesírás szabályai*, 12. kiadás (2015), 227–233. §
+- **Adatok:** elválasztás: *A magyar helyesírás szabályai*, 12. kiadás (2015), 223–238. pont (javítva 2026-11-24; vas-út: 234.)
   *(ellenőrizendő paragrafusszámok)*; a hivatkozás mintája (szerző: cím. kiadó, év; weboldal: cím, URL,
   a megtekintés dátuma) *(a gyártáskor egy iskolai ajánlással egyeztetendő – nincs egységes kötelező
   forma, a panel ezt kimondja)*; Creative Commons licencek léte (creativecommons.org) – csak a fogalom
