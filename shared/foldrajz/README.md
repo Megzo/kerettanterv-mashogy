@@ -1,4 +1,4 @@
-# `shared/foldrajz/` – földrajzi adatfájlok a Földrajz 9–10. leckékhez
+# `shared/foldrajz/` – földrajzi adatfájlok a Földrajz 9–10. (és a Természettudomány 5–6.) leckékhez
 
 Offline, dupla kattintással betölthető adatfájlok (sima `<script src>`, nincs fetch). Mindet a
 `tools/build_geodata.py` generálja – **kézzel ne javítsd**, a javítótáblák a szkriptben vannak.
@@ -15,10 +15,11 @@ A rajzoló modulok (FoldChoro, FoldSection, FoldChart…) nincsenek itt: azokat 
 | `rengesek.js` | `FOLD_RENGESEK` | 6992 földrengés, M ≥ 6,0, 1975–2024: dátum, hely, mélység, magnitúdó | USGS ComCat · közkincs | 02, 03 | ~135 KB |
 | `vulkanok.js` | `FOLD_VULKANOK` | 1603 holocén vulkán: hely, magasság, típus, utolsó kitörés, név | NOAA NCEI · közkincs | 02, 03 | ~49 KB |
 | `szelveny-*.js` | `FOLD_SZELVENY[id]` | domborzati szelvények: `japan`, `andok`, `atlanti`, `himalaja`, `alfold-bukk` | NOAA ETOPO 2022 · közkincs | 02, 03, 06, 08 | 3–8 KB/db |
+| `domborzat-karpat.js` | `FOLD_DOMBORZAT` | domborzati rács: Magyarország 1′ (427 × 175), Kárpát-medence 3′ (301 × 141), egész m | NOAA ETOPO 2022 · közkincs | termeszettudomany-5-6/06, 07, 16 | ~343 KB |
 | `korfa-wpp2024.js` | `FOLD_KORFA` | korfák 1950–2100 (5 évente), össznépesség 3 változatban, 10 népesedési mutató évente; világ + 5 ország | ENSZ WPP 2024 · **CC BY 3.0 IGO** | 10 | ~86 KB |
 | `fejlettseg-wdi.js` | `FOLD_WDI` | 9 mutató (GDP/fő PPP és USD, GNI/fő Atlas és PPP, várható élettartam, népesség, foglalkoztatás 3 szektorban), 217 ország + világ + EU, 1960–2025 | Világbank WDI · **CC BY 4.0** | 11, 13 | ~305 KB |
 
-Összesen kb. 0,98 MB. **Nem készült el:** `aramlasok.js` (tengeráramlások – saját „vázlatos” rajz, a 09-es
+Összesen kb. 1,3 MB. **Nem készült el:** `aramlasok.js` (tengeráramlások – saját „vázlatos” rajz, a 09-es
 lecke gyártásakor kerül a lecke `.md`-jébe koordinátákkal, hogy a tanár átnézhesse) és az opcionális
 `szel-jan-jul.js` (NCEP/NCAR szélmező – csak netCDF-ben érhető el, a stdlib-es feldolgozás nem éri meg
 egyetlen lépésért; a 05-ös lecke analitikus „vázlatos” áramlásmezőt rajzol).
@@ -125,6 +126,59 @@ valódi értéket a `.md`-ből írja ki. Helyek: Japán-árok é. sz. 38,3° (k.
 (ny. h. 80–55°), Atlanti-óceán é. sz. 30° (ny. h. 82–8°), Himalája k. h. 86,925° (é. sz. 22–40°, az Everesten
 át), Alföld–Bükk k. h. 20,5° (é. sz. 46,5–48,3°). Új szelvény: a `PROFILES` táblázat a szkriptben.
 
+**`domborzat-karpat.js`** (D1, `pilot/termeszettudomany-5-6/terv.md` 4.3) – két szabályos fokhálózati rács:
+`FOLD_DOMBORZAT.grids.hu` (belső, Magyarország: k. h. 16,0–23,1°, é. sz. 45,7–48,6°, **1′** ≈ 1,25 × 1,85 km)
+és `grids.karpat` (külső, Kárpát-medence: k. h. 13–28°, é. sz. 43,5–50,5°, **3′** ≈ 3,7 × 5,6 km). Rácsonként:
+`{n, lon0, lat0, lon1, lat1, step (fok), stepMin (ívperc), w, h, samples, zmin, zmax, z}`.
+- **Hely:** az (i, j) rácspont `lon0 + i × step`, `lat0 + j × step` fokon van; `i = 0` a **nyugati** oszlop,
+  `j = 0` a **déli** sor (a vászon y-tengelyével ellentétes!). `lon1`/`lat1` a keleti/északi szél (benne van).
+- **Érték:** egész méter, tengerszint felett +, alatt − (Adria, a Fekete-tenger nyugati széle). Egy rácspont a
+  körülötte lévő `step × step` cella ETOPO-mintáinak **átlaga** (`samples`: hu 4 db 30″-es, karpat 9 db 1′-es
+  minta) – sima, aliasingmentes felület, de a **csúcsok jóval alacsonyabbak**: Kékes ≈ 830 m (valódi 1014 m),
+  Galyatető ≈ 780 m (964), Írott-kő ≈ 760 m (882), a karpat-rácson Gerlach ≈ 1680 m (2655), Moldoveanu ≈ 2060 m
+  (2544), a karpat-rács maximuma 2465 m. A lecke a valódi csúcsmagasságot a `.md`-ből írja ki, a rácsból ne.
+  Az Alföld pontos: Szolnok 87 m, Hortobágy 89 m, Békéscsaba 89 m. A felszín DSM jellegű (az ETOPO 2022
+  szárazföldön a Copernicus felszínmodellje): erdő és város felett néhány méterrel magasabb – a Tisza Szegednél
+  ≈ 82 m, Gyálarét ≈ 81 m (valódi kb. 75–76 m). A tavak lapos vízfelszínként vannak benne (Balaton ≈ 104 m), vízmaszk
+  nincs: a tavakat és folyókat a `shared/tort/map-karpat.js` vektoraiból rajzold rá.
+- **Kódolás:** `z` lapos tömb, `w × h` elem, soronként (dél → észak) **DELTA-kódolva**: minden sor első eleme
+  abszolút, a többi az előzőhöz képest – a futó összeg **soronként újraindul**.
+- **Mintavétel:** bilineáris interpoláció a négy szomszédos rácspontból. A hu-rács a karpat-rácsba esik; a két
+  rács a közös pontokban átlagosan 0,4 m-rel tér el (szórás 22 m, a hegyekben a durvább átlag miatt). Ha egy
+  térkép Magyarországon túlra is kilóg, a hu-rácsot használd, ahol van, kívül a karpat-rácsot.
+
+```js
+// FOLD_DOMBORZAT rács → mintavevő: D.at(lon, lat) → m (bilineáris), a rácson kívül NaN
+function FoldRelief(G) {
+  const z = new Float32Array(G.w * G.h);
+  for (let j = 0; j < G.h; j++) {                     // soronkénti futó összeg
+    let v = 0;
+    for (let i = 0; i < G.w; i++) z[j * G.w + i] = (v += G.z[j * G.w + i]);
+  }
+  function at(lon, lat) {
+    const x = (lon - G.lon0) / G.step, y = (lat - G.lat0) / G.step, e = 1e-6;
+    if (x < -e || y < -e || x > G.w - 1 + e || y > G.h - 1 + e) return NaN;
+    const i = Math.max(0, Math.min(Math.floor(x), G.w - 2)), j = Math.max(0, Math.min(Math.floor(y), G.h - 2));
+    const fx = Math.min(1, Math.max(0, x - i)), fy = Math.min(1, Math.max(0, y - j)), k = j * G.w + i;
+    return (z[k] * (1 - fx) + z[k + 1] * fx) * (1 - fy) + (z[k + G.w] * (1 - fx) + z[k + G.w + 1] * fx) * fy;
+  }
+  return { z, at, G };
+}
+const HU = FoldRelief(FOLD_DOMBORZAT.grids.hu), KB = FoldRelief(FOLD_DOMBORZAT.grids.karpat);
+const h = (lon, lat) => { const v = HU.at(lon, lat); return Number.isNaN(v) ? KB.at(lon, lat) : v; };
+```
+
+Színezés és árnyékolás: a térkép minden pixelére `h(lon, lat)` → szín a magassági fokozatból (a 06-os lecke
+beosztása: alföld < 200 m zöld, dombság 200–500 m sárga/világosbarna, hegység > 500 m barna), az árnyékoláshoz a
+lejtő a szomszédos minták különbségéből: `dzdx = (h(lon + d, lat) − h(lon − d, lat)) / (2 d · 111 320 · cos φ)`,
+ugyanígy `dzdy`, majd a normális és egy északnyugati (315°, 45° magas) fény skalárszorzata. A sík vidék miatt a
+hu-rácson 3×, a karpat-rácson 1,5× függőleges túlzás mutat jól. A pixelenkénti számítás 1360 × 1080-as
+területre ~1,5 M pixel (árnyékolással pixelenként 5 mintavétel): egyszer, `init()`-ben rajzold egy rejtett vászonra (`ImageData`), és azt tedd ki
+`drawImage`-dzsel – ne képkockánként. Próbaoldal (nem a repóban): a fenti függvény, magassági színfokozat,
+árnyékolás és az országhatár (`FOLD_MEGYEK.border`); a Kárpátok íve, az Erdélyi-középhegység, az Alföld, a
+Dunántúli-középhegység (Bakony, Vértes, Gerecse, Pilis), a Balaton-felvidék, a Mecsek és az Északi-középhegység
+(Mátra, Bükk) jól felismerhető.
+
 **`korfa-wpp2024.js`** – helyek (`locs`): WLD világ, NGA Nigéria, IND India, CHN Kína, JPN Japán, HUN
 Magyarország (az ötödik ország, Kína, saját választás: a brief négyet nevez meg). `pyr[hely].m/.f`: ezer fő × 10,
 `[év-index × 21 + korcsoport]`, `years` 1950–2100 5 évente, `ages` 0–4 … 100+. 2024-től **előrejelzés**
@@ -162,10 +216,14 @@ python3 -I tools/build_geodata.py --download            # minden forrás (kb. 15
 python3 -I tools/build_geodata.py --download usgs etopo  # csak ezek
 python3 -I tools/build_geodata.py                        # minden shared/foldrajz/*.js újragenerálása
 python3 -I tools/build_geodata.py korfa wdi              # csak ezek (orszagok megyek idozonak lemezhatarok
-                                                         #  rengesek vulkanok szelveny korfa wdi)
+                                                         #  rengesek vulkanok szelveny domborzat korfa wdi)
 ```
 
 Az ETOPO-letöltés az ERD ERDDAP-szerverét kérdezi (gyakori a 503 „temporary problem” – a szkript
 háromszor próbálkozik, utána az ETOPO1-re (PacIOOS ERDDAP) vált, és ezt a manifest és a fejléc `ver` mezője
-rögzíti). Frissítéskor (új WDI- vagy WPP-kiadás) a `ver`/`asOf` változik: nézd át a leckék `.md`-jének
+rögzíti). A domborzati rács (`GRIDS` a szkriptben) csak a 15″-es ETOPO 2022-ből jön (a csomópont-számítás erre a
+rácsra szól), szélességi sávokban (`domborzat-hu-01…03.csv`, `domborzat-karpat-01…06.csv`, összesen kb. 30 MB,
+sávonként 2–4 perc); a `--download etopo` a már meglévő (a manifest SHA-256-jával egyező) fájlokat nem kéri újra,
+és a manifestet minden fájl után kiírja, így egy megszakadt letöltés folytatható. A manifest fájlonként rögzíti
+a letöltés napját (`downloaded`); a fejléc `asOf` mezője ebből jön. Frissítéskor (új WDI- vagy WPP-kiadás) a `ver`/`asOf` változik: nézd át a leckék `.md`-jének
 `dataset` sorát és a „frissítendő” jelölésű számokat.

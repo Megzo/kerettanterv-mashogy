@@ -9,7 +9,8 @@ Források (a --download után a forrás neve szűkít, pl. `--download usgs etop
   usgs          USGS ComCat FDSN (közkincs, USA szövetségi): M ≥ 6,0 földrengések 1975–2024, CSV
   noaavolc      NOAA NCEI Volcano Location Database (közkincs, USA szövetségi), JSON-API
   pb2002        PB2002 lemezhatár-modell (Bird 2003), a fraxen/tectonicplates GeoJSON-tükörből – ODC-BY 1.0
-  etopo         NOAA ETOPO 2022 (15″), az ERD ERDDAP-szerveréről, szelvényenként egy sor / oszlop, CSV
+  etopo         NOAA ETOPO 2022 (15″), az ERD ERDDAP-szerveréről, CSV: szelvényenként egy sor / oszlop, és a
+                Kárpát-medence domborzati rácsa (GRIDS) szélességi sávokban, lépésközzel (stride); ami megvan, nem tölti újra
   wpp2024       ENSZ World Population Prospects 2024, CSV (gz) – CC BY 3.0 IGO
   worldbank     Világbank WDI, API v2 (JSON) – CC BY 4.0
 
@@ -64,6 +65,16 @@ PROFILES = [
      "lon", 86.925, 22.0, 40.0, 1.0),
     ("alfold-bukk", "Alföld – Bükk (k. h. 20,5°: Tisza-vidék, Mátraalja, Bükk-fennsík)", "lon", 20.5, 46.5, 48.3, 0.25),
 ]
+
+# ── domborzati rácsok (D1, shared/foldrajz/domborzat-karpat.js): (kulcs, magyar név, ny, k, d, é (fok),
+#    rácsköz (ívperc), letöltési lépésköz a 15″-es ETOPO-rácson, sávonként hány kimeneti sor)
+#    A rácspont értéke a körülötte lévő rácsköz × rácsköz cella mintáinak átlaga (1′: 2 × 2 db 30″-es,
+#    3′: 3 × 3 db 1′-es minta). A letöltés szélességi sávokban megy (kisebb kérések, ritkább 503).
+GRIDS = [
+    ("hu", "Magyarország (belső rács)", 16.0, 23.1, 45.7, 48.6, 1, 2, 60),
+    ("karpat", "Kárpát-medence (külső rács)", 13.0, 28.0, 43.5, 50.5, 3, 4, 24),
+]
+ETOPO_RES = 240   # az ETOPO 2022 15″-es rácsa: csomópontok a (k + ½) / 240 fokokon (cellaközép)
 
 # ── WPP 2024: korfa-országok (ISO3 → magyar név). A brief (10) négy országot + a világot kéri; az ötödik Kína
 #    (az egykepolitika és a gyors öregedés miatt „harmadik sors” a korfán) – a koordinátor döntése nélkül választva.
@@ -162,15 +173,57 @@ ETOPO_SERVERS = [  # (ERDDAP-adatkészlet, változó, verzió) – az első, ame
 ]
 
 
+def grid_bands(g):
+    """A rács (GRIDS-sor) letöltési sávjai: [(fájlnév, első kimeneti sor, sorok száma, ERDDAP-lekérés)].
+    Csak a 15″-es ETOPO-rácsra (ETOPO_SERVERS[0]) értelmes; a lekérés pontosan a csomópontok fokait kéri."""
+    key, _n, w_, e_, s_, n_, step_min, stride, band = g
+    k = step_min * 4 // stride                   # minta / cella / tengely (1′: 2, 3′: 3)
+    st = step_min / 60
+    nx, ny = round((e_ - w_) / st) + 1, round((n_ - s_) / st) + 1
+    node = lambda x: x + 1 / (2 * ETOPO_RES)     # noqa: E731  (a cella bal / alsó széle → első csomópont)
+    lon_a = node(w_ - st / 2)
+    lon_b = lon_a + (nx * k - 1) * stride / ETOPO_RES
+    out = []
+    for r0 in range(0, ny, band):
+        nr = min(band, ny - r0)
+        lat_a = node(s_ + r0 * st - st / 2)
+        lat_b = lat_a + (nr * k - 1) * stride / ETOPO_RES
+        q = f"z[({lat_a:.9f}):{stride}:({lat_b:.9f})][({lon_a:.9f}):{stride}:({lon_b:.9f})]"
+        out.append((f"domborzat-{key}-{r0 // band + 1:02d}.csv", r0, nr, q))
+    return out
+
+
 def dl_etopo():
+    """Szelvények (PROFILES) és domborzati rácsok (GRIDS). Ami már le van töltve (a fájl megvan, és a manifest
+    SHA-256-ja egyezik), azt nem kéri újra – a manifest bejegyzése (letöltési nappal) marad."""
     import time
-    d, files = SRC / "etopo", []
+    d = SRC / "etopo"
     d.mkdir(parents=True, exist_ok=True)
-    used = set()
+    old = {}
+    if (d / "manifest.json").exists():
+        om = json.loads((d / "manifest.json").read_text(encoding="utf-8"))
+        for fe in om.get("files", []):
+            p = d / fe["file"]
+            if p.exists() and hashlib.sha256(p.read_bytes()).hexdigest() == fe["sha256"]:
+                old[fe["file"]] = dict(fe, downloaded=fe.get("downloaded", om.get("downloaded")))
+    jobs = []   # (fájlnév, [(szerver, változó, verzió, lekérés)])
     for pid, _t, axis, fix, a, b, _s in PROFILES:
+        jobs.append((f"szelveny-{pid}.csv", [
+            (base, var, ver, f"{var}[({fix})][({a}):1:({b})]" if axis == "lat" else f"{var}[({a}):1:({b})][({fix})]")
+            for base, var, ver in ETOPO_SERVERS]))
+    for g in GRIDS:   # a rácsot csak a 15″-es ETOPO 2022-ből (a csomópont-számítás erre a rácsra szól)
+        base, var, ver = ETOPO_SERVERS[0]
+        for fname, _r0, _nr, q in grid_bands(g):
+            jobs.append((fname, [(base, var, ver, q)]))
+    files, used = [], set()
+    for fname, tries in jobs:
+        if fname in old:
+            files.append(old[fname])
+            used.add(old[fname].get("dataset", ""))
+            print(f"  {fname}: megvan (letöltve {old[fname]['downloaded']})")
+            continue
         raw = None
-        for base, var, ver in ETOPO_SERVERS:
-            q = f"{var}[({fix})][({a}):1:({b})]" if axis == "lat" else f"{var}[({a}):1:({b})][({fix})]"
+        for base, var, ver, q in tries:
             url = base + ".csv?" + urllib.parse.quote(q, safe="():,")
             for attempt in range(3):
                 try:
@@ -182,11 +235,19 @@ def dl_etopo():
             if raw:
                 break
         if not raw:
-            sys.exit(f"ETOPO: egyik szerver sem válaszolt ({pid})")
-        save(d, f"szelveny-{pid}.csv", url, raw, files)
-        files[-1]["dataset"] = ver
+            sys.exit(f"ETOPO: egyik szerver sem válaszolt ({fname})")
+        save(d, fname, url, raw, files)
+        files[-1].update(dataset=ver, downloaded=TODAY)
         used.add(ver)
-    manifest(d, files, source="; ".join(sorted(used)), servers=[s[0] for s in ETOPO_SERVERS],
+        done = {x["file"] for x in files}   # a manifest minden fájl után frissül (megszakadt letöltés folytatható)
+        write_man(files + [e for f, e in old.items() if f not in done], used)
+    write_man(files, used)
+
+
+def write_man(files, used):
+    """Az etopo/manifest.json (a dl_etopo hívja fájlonként és a végén)."""
+    manifest(SRC / "etopo", files, source="; ".join(sorted(u for u in used if u)),
+             servers=[s[0] for s in ETOPO_SERVERS],
              licence="public domain (U.S. federal government work); "
              "ERDDAP: 'may be used and redistributed for free but is not intended for legal use'")
 
@@ -899,12 +960,71 @@ def build_szelvenyek():
         along = "szélességi kör (nyugat → kelet)" if axis == "lat" else "délkör (dél → észak)"
         write_js(f"szelveny-{pid}.js", "FOLD_SZELVENY",
                  meta(f"szelveny-{pid}", ver.split(",")[0], ver, "közkincs (USA szövetségi kormányzati mű)",
-                      fe["url"].split(".csv?")[0], m["downloaded"]),
+                      fe["url"].split(".csv?")[0], fe.get("downloaded", m["downloaded"])),
                  f"""Domborzati / batimetriai szelvény: {title} (window.FOLD_SZELVENY['{pid}'])
    A szelvény egy {along} mentén fut, {a}° → {b}°, {step_km} km-enként (= {step:.5f}°) a cella-átlag magassága
    méterben (tengerszint felett +, alatt −). z: DELTA-kódolva (futó összeg). i. pont helye: from + i × step fok.
    Legmélyebb / legmagasabb pont a mintavétel után: {min(z)} m / {max(z)} m (a valódi szélsőérték ennél nagyobb lehet).""",
                  data, registry=pid)
+
+
+# ─────────────────────────────────────────────── domborzati rácsok (ETOPO, D1)
+def build_domborzat():
+    m = man("etopo")
+    byfile = {f["file"]: f for f in m["files"]}
+    grids, dates, url, ver = {}, set(), None, None
+    for g in GRIDS:
+        key, name, w_, e_, s_, n_, step_min, stride, _band = g
+        k = step_min * 4 // stride
+        st = step_min / 60
+        nx, ny = round((e_ - w_) / st) + 1, round((n_ - s_) / st) + 1
+        acc = [[0.0, 0] for _ in range(nx * ny)]
+        for fname, r0, nr, _q in grid_bands(g):
+            fe = byfile.get(fname)
+            if not fe:
+                sys.exit(f"hiányzik a manifestből: {fname} — futtasd: python3 -I tools/build_geodata.py --download etopo")
+            dates.add(fe.get("downloaded", m["downloaded"]))
+            url, ver = fe["url"].split(".csv?")[0], fe.get("dataset", m.get("source", "ETOPO"))
+            with raw_path("etopo", fname).open(encoding="utf-8", newline="") as f:
+                rows = csv.reader(f)
+                head = next(rows)
+                if head[:3] != ["latitude", "longitude", "z"]:
+                    sys.exit(f"{fname}: váratlan fejléc {head[:3]}")
+                next(rows)   # mértékegység-sor
+                cnt = 0
+                for r in rows:
+                    lat, lon, z = float(r[0]), float(r[1]), r[2]
+                    if z in ("", "NaN"):
+                        continue
+                    i, j = round((lon - w_) / st), round((lat - s_) / st)
+                    if not (0 <= i < nx and r0 <= j < r0 + nr):
+                        sys.exit(f"{fname}: rácson kívüli minta ({lat}, {lon})")
+                    a = acc[j * nx + i]
+                    a[0] += float(z); a[1] += 1
+                    cnt += 1
+                if cnt != nr * k * nx * k:
+                    sys.exit(f"{fname}: {cnt} minta, várt {nr * k * nx * k}")
+        z = [round(s / c) for s, c in acc]
+        rowsd = []   # soronként delta: minden sor első értéke abszolút
+        for j in range(ny):
+            rowsd += d1(z[j * nx:(j + 1) * nx])
+        grids[key] = {"n": name, "lon0": w_, "lat0": s_, "lon1": e_, "lat1": n_, "step": st,
+                      "stepMin": step_min, "w": nx, "h": ny, "samples": k * k,
+                      "zmin": min(z), "zmax": max(z), "z": rowsd}
+        print(f"  {key}: {nx} × {ny} = {nx * ny} pont, {min(z)} … {max(z)} m")
+    write_js("domborzat-karpat.js", "FOLD_DOMBORZAT",
+             meta("domborzat-karpat", ver.split(",")[0], ver, "közkincs (USA szövetségi kormányzati mű)", url,
+                  max(dates)),
+             """Domborzati rács: Magyarország (1′) és a Kárpát-medence (3′), egész méterben (window.FOLD_DOMBORZAT)
+   grids.hu: 16,0–23,1° K, 45,7–48,6° É, 1′-es rácsköz (≈ 1,25 km K–Ny, 1,85 km É–D); grids.karpat: 13–28° K,
+   43,5–50,5° É, 3′-es rácsköz. Rácspont (i, j) helye: lon0 + i × step, lat0 + j × step (j = 0 a DÉLI sor,
+   i = 0 a nyugati oszlop); értéke a körülötte lévő step × step cella ETOPO-mintáinak átlaga (hu: 4 db 30″-es,
+   karpat: 9 db 1′-es minta), ezért a csúcsok jóval alacsonyabbak a valóságosnál (Kékes a hu-rácson ≈ 830 m
+   a valódi 1014 m, a Gerlach a karpat-rácson ≈ 1680 m a valódi 2655 m helyett) – a valódi csúcsmagasságot a lecke
+   a .md-ből írja ki. A felszín DSM jellegű (Copernicus): erdő és város felett néhány méterrel magasabb. z: w × h egész, soronként (dél → észak) DELTA-kódolva: minden sor első eleme abszolút, a többi az
+   előzőhöz képest (futó összeg soronként újraindul). Tengerszint alatt negatív (Adria, Fekete-tenger széle).
+   Tavak: a vízfelszín magassága (Balaton ≈ 105 m). Dekódolás és bilineáris mintavétel: shared/foldrajz/README.md.""",
+             {"grids": grids})
 
 
 # ─────────────────────────────────────────────── korfa (ENSZ WPP 2024)
@@ -1064,7 +1184,8 @@ def build_wdi(countries110):
              data)
 
 
-BUILDS = ["orszagok", "megyek", "idozonak", "lemezhatarok", "rengesek", "vulkanok", "szelveny", "korfa", "wdi"]
+BUILDS = ["orszagok", "megyek", "idozonak", "lemezhatarok", "rengesek", "vulkanok", "szelveny", "domborzat",
+          "korfa", "wdi"]
 
 
 def main(argv):
@@ -1091,6 +1212,8 @@ def main(argv):
             build_vulkanok()
         elif b == "szelveny":
             build_szelvenyek()
+        elif b == "domborzat":
+            build_domborzat()
         elif b == "korfa":
             build_korfa()
         elif b == "wdi":
