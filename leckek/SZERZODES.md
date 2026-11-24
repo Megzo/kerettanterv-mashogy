@@ -470,3 +470,85 @@ határok” réteg.
   fájljait is újraírná. QA a saját `--out` mappába (vagy az alapértelmezett `build/qa/<lecke>/`-ba).
 - **Build- vagy QA-igény** (új adattípus, jelölés, QA-ellenőrzés) a jelentésbe kerül, nem a
   `tools/`-ba; addig a lecke a meglévő típusokkal és egy `<!-- -->` megjegyzéssel old meg mindent.
+
+## 17. Természettudomány-kiegészítés (5–6. évfolyam)
+
+**Kötelező olvasmány:** `pilot/termeszettudomany-5-6/terv.md` – a saját briefed (3. fejezet), a
+modulok és a forrásleckék (4. fejezet). Ahol a lecke más sorozat modulját vagy témáját használja, ott
+annak a tantárgyi fejezete is érvényes (pl. a 13. Kémia biztonsági pontja, a 14. Biológia emberi
+test pontja, a 15. Földrajz forrássora) – ez a fejezet csak a 10–12 évesekre vonatkozó eltéréseket
+és kiegészítéseket adja.
+
+- **Mappa, fejléc:** `leckek/termeszettudomany-5-6/NN-slug.{html,md,content.js}`; metaadat-sor:
+  `tantárgy: Természettudomány · évfolyam: 5–6. · témakör: N. <a kerettanterv témakörének címe>`.
+  Spec: `"maxWords": 45`; ha a lecke valódi mért adatot mutat diagramon vagy térképen:
+  `"sources": true`; a 02-es leckében `"review": ["tűzvédelem"]`, a 13-asban `"review": ["egészség"]`.
+- **Nyelv 10–12 éveseknek.** Rövid mondatok (legfeljebb kb. 15 szó), tegező, kérdező hang. Lépésenként
+  egy új fogalom, **félkövéren**, egy egyszerű mondattal megmagyarázva. Csak a kerettanterv
+  fogalomlistájának szintjén: ami ott nincs (pl. elektron, fotoszintézis, szublimáció, LAI), az
+  legfeljebb a `> megjegyzés:`-ben kerül elő, „ezt majd 7–8. osztályban tanulod” formában. Nagy
+  számot hasonlattal is adj („kb. 230 kg – mint három felnőtt”). A hasonlat is tényadat, ezért a kód
+  számolja ki, vagy az `### Adatok` alatt szerepel. Latin fajnév csak a `.md` megjegyzésében. Idegen szó
+  helyett a magyar („ásványi anyag”, nem „minerál”).
+- **„Tippelj!” → kísérlet → magyarázat.** Minden leckében legalább egy jóslat a kísérlet előtt:
+  2–4 `L.button` a `.md` `tipp …` kulcsaival (a felirat-kulcsok vége `… tipp`, `… gomb`). A
+  választásig a megoldás nem látszik; utána a vásznon „a te tipped” jel (cinóber keret) és a helyes
+  válasz. Ha rossz volt a tipp, nem jár érte szidás, a panel így folytatja: „Sokan gondolják így – nézzük meg!”.
+  Az állapot a lépés `enter(L)`-jében törlődik. QA: `__qaStates` `tipp-jó` és `tipp-rossz` állapottal.
+- **Kísérlet-bélyegek** (a KemGHS bélyegstílusával, a szöveg a `.md`-ből): „otthon is kipróbálhatod”
+  (kékeszöld keret) – csak veszélytelen, konyhai anyaggal; „felnőttel együtt” (okker `#8f5a0c`) –
+  forró víz, kés, üveg, vízpart; „tanári bemutató” – tűz, sav, áram; „NE PRÓBÁLD KI” (`#b3261e`) –
+  amit a lecke csak a veszély megértéséért mutat. Minden valódi kísérlet rajzán legyen pontosan egy
+  bélyeg.
+- **Biztonsági elv.** Veszélyes kísérletet a lecke soha nem mutat követendőként: nincs
+  mennyiség, lépéssor, látványos robbanás vagy lángolás. A veszély okát mutatja meg (pl. a vízcsepp
+  gőzzé robban a forró olajban), és a helyes cselekvést írja le (fedő, gázcsap, 112, szellőztetés,
+  kimenni). Kötelező mondatok, ahol a téma előkerül: a konnektorral (230 V) nem kísérletezünk; a
+  Napba soha nem nézünk (szemüveggel, távcsővel, telefonnal sem); kis erős mágnes nem kerül a
+  szánkba; villámláskor nem állunk fa alá, és kijövünk a vízből; a jégre és a vízpartra csak felnőttel;
+  a gombát és a bogyót nem kóstoljuk meg; vegyszert nem szagolunk és nem kóstolunk. A tűz ábrázolása
+  jelzésszerű: nincs égő ember, sérült, áldozat; a füst stilizált. Segélyhívó: 112.
+- **Élőlények ábrázolása.** Saját, stilizált rajz (`TtIkon`), felismerhető hazai fajok a hivatalos
+  magyar nevükkel (az `.md`-ben). Nincs emberi arc, ruha, mosoly, rajzfilmszem, és nincs antropomorf
+  szó („a róka gonosz”, „a növény szeretne”, „a hóvirág bátor”): a „siet” vagy „keres” szót csak
+  idézőjelben vagy magyarázattal használjuk (a hóvirág „siet” = korán virágzik, amíg fény jut le). A
+  ragadozás jelzésszerű: a zsákmány halványul vagy eltűnik, nincs vér, tetem, szenvedés. A pusztuló
+  halak halványulnak. Az arányok nem méretarányosak – ha félrevezető lehet, „nem méretarányos”
+  bélyeg. A „kártevő”, „gyom” szó mellett egyszer elhangzik: „az ember szempontjából”. Védett fajnál
+  a „ne szedd le / ne zavard” üzenet indoklással szerepel, nem tiltásként. Élő állattal végzett
+  kísérletet a lecke nem mutat. Ha a kerettanterv megfigyelést javasol (giliszta, csiga), a megjegyzés
+  kíméletes, rövid megfigyelést és visszaengedést kér.
+- **Az ember ábrázolása.** A Biológia-kiegészítés (14.) emberi test pontja érvényes (semleges
+  `BioBody`, több alkat, egyik sem „ideális”, semleges bőrtónus, szervrendszer-színkód). A
+  10–12 évesekre vonatkozó kiegészítések: nincs testsúly-, BMI-, kalória- vagy „ideális” méretcél, és
+  ételt sem minősítünk „rossz”-nak. Az étrendet a hivatalos ajánlás arányaival mutatjuk, pontozás
+  nélkül. Kamaszkorról csak a növekedési ugrás és az, hogy „mindenkinél máskor kezdődik”. Nemi jelleg
+  nem jelenik meg, a lelki változásokról egy semleges, támogató mondat szól. Egyéni tanácsot a lecke nem
+  ad („ha valami aggaszt, kérdezd meg az orvost, a védőnőt vagy a szüleidet”). Egészségügyi szám
+  csak forrással és tartománnyal, megnevezve, kire vonatkozik (10–12 évesek, felnőttek).
+- **A modell becsületessége.** Minden egyszerűsített szimuláció (növekedés, erózió, szukcesszió,
+  eutrofizáció, füst, futás, energiafalu, homokasztal) „modell” bélyeget kap, és a panel egy
+  mondatban kimondja, mit hagy el. A kitalált helyszín és adat (Tóvölgy, a kitalált nap, a falu)
+  `<!-- kitalált példa -->` és a vásznon „kitalált” bélyeg. A részecskék csak a nagyítóban
+  („nagyítás · szemléltetés”, Kémia-kiegészítés) jelennek meg.
+- **Adatok, források.** A valódi adat forrással, évvel, és ahol kell, „frissítendő” jelöléssel
+  szerepel (a Földrajz-kiegészítés szerint; a forrássor a vásznon diagramnál és tematikus térképnél
+  kötelező). Ugyanaz a tény a sorozatokban ugyanaz a szám: ha egy másik lecke már tartalmazza (pl. a
+  tengelyferdeség, Budapest éghajlati adatai, a Föld kora, a papucsállatka mérete), vedd át onnan, és
+  a megjegyzésben nevezd meg a leckét. A kerekítést a panel jelzi („kb.”).
+- **Kapcsolódás más sorozatokhoz.** Ahol a téma 7–10. osztályos változata már elkészült (a terv.md
+  1. fejezetének táblázata), ott ne ismételd a részleteit. A `> megjegyzés:` egy mondatban nevezze
+  meg a folytatást („7. osztályban a fizikában…”).
+- **Kulcsnevek** (a Feliratok és az Adatok közös névtérben vannak): az adatkulcs egy főnévi
+  kifejezés a mennyiséggel („jég sűrűsége”, „Budapest hőmérséklete”); a felirat-kulcs végén a szerepe
+  áll („… cím”, „… gomb”, „… csúszka”, „… tipp”, „… bélyeg”, „… felirat”). Kettőspont nem lehet a
+  kulcsban.
+- **Modulok:** a `TtIkon` (referencia: `10-erdo`) és a `TtMuszer` (referencia: `03-meres`) a
+  16. fejezet szerint, a terv 4.2 pontjának API-jával. A blokkhatár egységesen
+  `/* ── MODUL: <név> (<Névtér>) · forrás: termeszettudomany-5-6/NN-slug, <dátum> ── */` …
+  `/* ── MODUL VÉGE: <név> ── */`. A többi modult (4.1 táblázat) bájtra azonosan vedd át. A SKY
+  („ÉGBOLT-MODUL”) blokkot a saját, nem szabványos jelölőivel együtt másold.
+- **Minden `.md`** végén `<!-- Tanári megjegyzések és források: … -->` blokk: kitalált példák,
+  modell-egyszerűsítések, bizonytalan számok (honnan, mennyire bizonytalan), a tankönyvektől eltérő
+  jelölés vagy beosztás (pl. a földrészek száma, a magassági színek határai). A 02-es és a 13-as
+  leckében ezen felül `<!-- Szakmai ellenőrzés: <szerep>, <dátum>, <ajánlás verziója> -->` (név nélkül).
