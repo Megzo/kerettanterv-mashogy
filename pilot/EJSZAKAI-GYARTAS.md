@@ -46,3 +46,22 @@ Kész közös munkák összesen: 1,7 óra, ~828 ezer token.
 6. **Az áttűnés és a visszaugrás külön próbát kér.** A közvetlen lépésugrásnál a köztes jelenetek is rajzolódnak, ezért az állapotot az `init()`-ben is be kell állítani (J3: 7 lecke javítva). A `globalAlpha`-t egyes modulok abszolút állítják, mások szorozzák (2 metrikasor). Az ugrópróba a J2 óta a QA része.
 7. **Az al-ügynökök a briefet is ellenőrzik.** 10 metrikasor ír tudatos eltérést a brieftől vagy hibát a briefben. Példák: a Thalész-kör belül tompa, kívül hegyes (a brief fordítva írta); 12 %-os bornál nincs 78 °C-os plató; az újraélesztésnél az ERC 2025 sorrendje; Semmelweis 9,9/3,9 %-a. A koordinátori brief tehát nem megbízható forrás: a tanári review-nak ezeket kell először látnia.
 8. **A review lett a szűk keresztmetszet.** 432 review-pont gyűlt össze (5,5/lecke). 3 lecke (újraélesztés, járvány, magzat) szakmai lektor nélkül nem használható. Licenckérdés: a GFN-adatok CC BY-SA 4.0 licencűek (15-okologiai-labnyom: csak kerekített értékek; a felhasználó döntése (2026-11-24): külön adatfájl nem kell, maradnak a kerekített értékek), a WUP 2018 licence (CC BY 3.0 IGO, 10-nepesseg) ellenőrizendő. Működési tanulság még: két al-ügynök ugyanazt a scratchpad-almappát használta, és felülírták egymás félkész kódját – ügynökönként egyedi munkamappa kell.
+
+## Kerethasználat (előfizetési limit)
+
+Mérés a felhasználó becslése alapján (2026-11-24): a gyártás előtt heti limit-reset volt, egy este után
+a heti keret **41 %**-on állt; párhuzamos egyéb munkák mellett ebből legalább **~35 %** ez a projekt.
+Előfizetés: Claude Ultra (200 $/hó), modell: Opus 5.5, high thinking. Ebbe beletartozik minden: az 5 terv,
+a közös előkészítés (fontok, build, geoadat, motor), a 79 lecke, a javító- és egységesítő körök és a
+koordinátor.
+
+| Egység | Heti keret (kb.) |
+|---|---|
+| 1 lecke | **~0,45 %** (35 % / 79) |
+| 1 sorozat (15–18 lecke, tervvel, közös modulokkal) | **~7 %** |
+| 10 % keret | ~22 lecke |
+
+Ökölszabály a folytatáshoz: a reset környékén megmaradó szabad keretből egy-egy sorozat (vagy néhány
+lecke) gyártható; egy új sorozat ~7 %, egy meglévő sorozat további leckéje (kész modulokkal) ennél
+olcsóbb. A becslés egyetlen mérésből és a felhasználó kerekítéséből származik – a következő
+gyártásoknál érdemes újra mérni (keret % a gyártás előtt és után).
