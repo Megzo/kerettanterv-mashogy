@@ -1324,6 +1324,13 @@ const LBL_REAL = {
   falu: [16, -14, 'left'], puszta: [12, 28, 'left'], erdő: [12, -12, 'left'], huszárok: [14, -12, 'left'], Tatárország: [16, -12, 'left'],
   Taljánország: [0, 36, 'center'], Lengyelország: [16, -12, 'left'], India: [16, -12, 'left'], Franciaország: [-16, -12, 'right'], tenger: [0, 32, 'center'],
 };
+// helynév papírszínű halóval: a szaggatott útvonal és a határvonalak ne fussanak át a betűkön (a TortMap nem ad rá opciót)
+const HALO = 'rgba(250,245,234,.92)';
+function haloTx(s, x, y, o) {
+  c.save(); c.font = `${o.i ? 'italic ' : ''}${o.w || 500} ${o.s || 24}px ${o.f || F.B}`; c.textAlign = o.a || 'left'; c.textBaseline = 'alphabetic';
+  c.lineJoin = 'round'; c.lineWidth = (o.s || 24) * .4; c.strokeStyle = HALO; c.strokeText(String(s), x, y); c.restore();
+  return L.tx(s, x, y, o);
+}
 const LBL_REAL_HU = { falu: [-16, -14, 'right'], puszta: [0, 34, 'center'], erdő: [16, -12, 'left'] };
 function stationLabels(X, o) {
   const b = X.b, k = b.k, s = o.s || 24, sh = o.showLbl || o.show;
@@ -1350,10 +1357,10 @@ function stationLabels(X, o) {
     }
     ga(a * la);
     const col = m > .5 && BLOB[id] && BLOB[id].lc ? BLOB[id].lc : INK;
-    L.tx(nm, p[0] + dx, p[1] + dy, { s: sz, w: 700, a: al, c: col, k: NAMEK(id), f: m > .5 ? F.D : F.B });
+    haloTx(nm, p[0] + dx, p[1] + dy, { s: sz, w: 700, a: al, c: col, k: NAMEK(id), f: m > .5 ? F.D : F.B });
     if (o.sub && L.content.labels[id + ' sub'] != null && (1 - m) > .02) {
       ga(a * la * (1 - m) * (typeof o.sub === 'function' ? o.sub(id) : 1));
-      L.tx(lab(id + ' sub'), p[0] + dx, p[1] + dy + 28, { s: 22, w: 500, a: al, c: MUTED, i: true, k: id + ' sub' });
+      haloTx(lab(id + ' sub'), p[0] + dx, p[1] + dy + 28, { s: 22, w: 500, a: al, c: MUTED, i: true, k: id + ' sub' });
     }
   });
 }

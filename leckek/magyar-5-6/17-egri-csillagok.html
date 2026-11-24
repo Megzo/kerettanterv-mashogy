@@ -314,9 +314,12 @@
 <script>
 (function () {
 'use strict';
-/* ── MODUL: Szöveg (MagText) · forrás: magyar-5-6/04-toldalek, 2026-11-24 ── */
+/* ── MODUL: Szöveg (MagText) · v1.1 · forrás: magyar-5-6/04-toldalek, 2026-11-24 ── */
 /* Magyar szöveg betű / szótag / szó szinten: tokenekre bontás, mért elrendezés, kiemelés, csempe, áttűnés.
    Csak a Lesson motorra épül (Lesson.U, Lesson.FONTS); minden felirat L.tx-szel kerül a vászonra (QA, review mód).
+   v1.1 (2026-11-24): a T.layout sorszélessége külön kulcs: maxW. A w mindenhol (create, layout, tile) a betűvastagság.
+   (v1.0-ban a layout a w-t sorszélességnek ÉS vastagságnak is vette: 1000 fölött érvénytelen font, alatta némán
+   átállt a vastagság.) Átálláskor a régi T.layout(…, {w: 900}) sorszélesség-hívásokat írd át maxW-re.
    Statikus (nem rajzol):
      MagText.ABC                 a 44 betűs magyar ábécé sorrendben: a, á, b, c, cs, d, dz, dzs, e, é, … z, zs
      MagText.clean(s)            s a jelölők nélkül: „|” (szóelemhatár), „·” (kézi szótaghatár)
@@ -343,9 +346,10 @@
      T.tokens(s, 'szó'|'szótag'|'betű', {k}) → [{s, i, kind, wi, si}]   kind: 'w' szó · 'syl' szótag · 'v'/'c' betű ·
                                  's' szóköz · 'p' írásjel; wi: a szó sorszáma, si: a szótag/betű helye a szóban; k: md-kulcs.
                                  Saját token is betehető (pl. {kind: 'slot', fw: 300} helyőrző egy csempés szónak).
-     T.layout(tokens, {x, y, w, a, gap, s, f, lh}) → lay   mért elrendezés, tördelés szóközön (nincs fix doboz); a: 'left' |
-                                 'center' | 'right' – x a sorok bal széle / közepe / jobb széle, y az első sor alapvonala;
-                                 w: legnagyobb sorszélesség; gap: köz a szón belüli tokenek (szótag, betű) között, px.
+     T.layout(tokens, {x, y, maxW, a, gap, s, f, w, i, lh}) → lay   mért elrendezés, tördelés szóközön (nincs fix doboz);
+                                 a: 'left' | 'center' | 'right' – x a sorok bal széle / közepe / jobb széle, y az első sor
+                                 alapvonala; maxW: legnagyobb sorszélesség, px (nincs: nem tördel); s, f, w (vastagság), i:
+                                 a font (alap: a példányé); gap: köz a szón belüli tokenek (szótag, betű) között, px.
                                  lay = {tokens (+ x, y, w), lines, x, y, w, h, s, f}
      T.draw(lay, {hi, dim, reveal, under, a, c, tile, off, k})   hi: {tokenindex: szín} vagy fn(t) → szín | null; a nem
                                  kiemelt token dim alfájú (alap .25; hi nélkül nincs halványítás); reveal 0..1: a tokenek
@@ -458,7 +462,7 @@ const MagText = (() => {
       return out;
     };
     T.layout = (tokens, o = {}) => {
-      const f = fo(o), s = f.s, gap = o.gap || 0, maxW = o.w || 1e9, lh = s * (o.lh || base.lh);
+      const f = fo(o), s = f.s, gap = o.gap || 0, maxW = o.maxW || 1e9, lh = s * (o.lh || base.lh);
       const sp = L.measure(' ', f).w;
       tokens.forEach((t) => { t.w = t.fw != null ? t.fw : t.kind === 's' ? sp : L.measure(t.s, f).w; });
       const units = []; let u = [];

@@ -65,9 +65,12 @@
 (function () {
 'use strict';
 
-/* ── MODUL: Szöveg (MagText) · forrás: magyar-5-6/04-toldalek, 2026-11-24 ── */
+/* ── MODUL: Szöveg (MagText) · v1.1 · forrás: magyar-5-6/04-toldalek, 2026-11-24 ── */
 /* Magyar szöveg betű / szótag / szó szinten: tokenekre bontás, mért elrendezés, kiemelés, csempe, áttűnés.
    Csak a Lesson motorra épül (Lesson.U, Lesson.FONTS); minden felirat L.tx-szel kerül a vászonra (QA, review mód).
+   v1.1 (2026-11-24): a T.layout sorszélessége külön kulcs: maxW. A w mindenhol (create, layout, tile) a betűvastagság.
+   (v1.0-ban a layout a w-t sorszélességnek ÉS vastagságnak is vette: 1000 fölött érvénytelen font, alatta némán
+   átállt a vastagság.) Átálláskor a régi T.layout(…, {w: 900}) sorszélesség-hívásokat írd át maxW-re.
    Statikus (nem rajzol):
      MagText.ABC                 a 44 betűs magyar ábécé sorrendben: a, á, b, c, cs, d, dz, dzs, e, é, … z, zs
      MagText.clean(s)            s a jelölők nélkül: „|” (szóelemhatár), „·” (kézi szótaghatár)
@@ -94,9 +97,10 @@
      T.tokens(s, 'szó'|'szótag'|'betű', {k}) → [{s, i, kind, wi, si}]   kind: 'w' szó · 'syl' szótag · 'v'/'c' betű ·
                                  's' szóköz · 'p' írásjel; wi: a szó sorszáma, si: a szótag/betű helye a szóban; k: md-kulcs.
                                  Saját token is betehető (pl. {kind: 'slot', fw: 300} helyőrző egy csempés szónak).
-     T.layout(tokens, {x, y, w, a, gap, s, f, lh}) → lay   mért elrendezés, tördelés szóközön (nincs fix doboz); a: 'left' |
-                                 'center' | 'right' – x a sorok bal széle / közepe / jobb széle, y az első sor alapvonala;
-                                 w: legnagyobb sorszélesség; gap: köz a szón belüli tokenek (szótag, betű) között, px.
+     T.layout(tokens, {x, y, maxW, a, gap, s, f, w, i, lh}) → lay   mért elrendezés, tördelés szóközön (nincs fix doboz);
+                                 a: 'left' | 'center' | 'right' – x a sorok bal széle / közepe / jobb széle, y az első sor
+                                 alapvonala; maxW: legnagyobb sorszélesség, px (nincs: nem tördel); s, f, w (vastagság), i:
+                                 a font (alap: a példányé); gap: köz a szón belüli tokenek (szótag, betű) között, px.
                                  lay = {tokens (+ x, y, w), lines, x, y, w, h, s, f}
      T.draw(lay, {hi, dim, reveal, under, a, c, tile, off, k})   hi: {tokenindex: szín} vagy fn(t) → szín | null; a nem
                                  kiemelt token dim alfájú (alap .25; hi nélkül nincs halványítás); reveal 0..1: a tokenek
@@ -209,7 +213,7 @@ const MagText = (() => {
       return out;
     };
     T.layout = (tokens, o = {}) => {
-      const f = fo(o), s = f.s, gap = o.gap || 0, maxW = o.w || 1e9, lh = s * (o.lh || base.lh);
+      const f = fo(o), s = f.s, gap = o.gap || 0, maxW = o.maxW || 1e9, lh = s * (o.lh || base.lh);
       const sp = L.measure(' ', f).w;
       tokens.forEach((t) => { t.w = t.fw != null ? t.fw : t.kind === 's' ? sp : L.measure(t.s, f).w; });
       const units = []; let u = [];
@@ -523,13 +527,14 @@ const MagVers = (() => {
 })();
 /* ── MODUL VÉGE ── */
 
-/* ── MODUL: Hang (MagHang) · forrás: magyar-5-6/10-janos-vitez-vers (kopogás), magyar-5-6/02-beszedhang (szintézis, metszet), 2026-11-24 ── */
+/* ── MODUL: Hang (MagHang) · v1.1 · forrás: magyar-5-6/10-janos-vitez-vers (kopogás), magyar-5-6/02-beszedhang (szintézis, metszet), magyar-5-6/01-kommunikacio (dúdolás), 2026-11-24 ── */
 /* Szintetizált hang Web Audióval. A hang CSAK kattintásra szól: az AudioContext az első unlock() hívásakor jön létre,
    és az unlock()-ot kizárólag felhasználói kattintás (gomb) kezelőjéből szabad hívni. A rajz soha nem függhet a hangtól
    (a QA headless, hang nélkül fut): a lecke hang nélkül is teljes. Nincs felvett emberi hang, nincs gépi felolvasás.
    Változatok: 10-janos-vitez-vers – ütemkopogás (click); 02-beszedhang – formánsszintézis (vowel), zörej (noise),
    szájüreg-metszet (tract), hangszalagok felülről (folds), magánhangzó-négyszög (vowelChart), szűrőgörbe (response,
-   spectrum). Fenntartott név a 01 leckének: MagHang.hum (dallam) – visszafelé kompatibilis bővítéssel kerül ide.
+   spectrum); 01-kommunikacio – dúdolás (hum).
+   v1.1 (2026-11-24): + MagHang.hum (a 01 leckekódjából), + o.at kezdőidő-eltolás a vowel/noise-nál; a többi változatlan.
    ─ hang ─
      MagHang.ready()            → true, ha már van hangkontextus (a rajz NE függjön tőle)
      MagHang.unlock()           → AudioContext | null; létrehozza / folytatja – csak kattintáskezelőből!
@@ -539,15 +544,24 @@ const MagVers = (() => {
      MagHang.click(times, o)    → {ac0, perf0} kopogás: times = [mp a kezdéstől], o.strong: [bool] vagy fn(i) (erős:
                                  mélyebb, hangosabb koppanás), o.lead (mp, alap .15) – a kezdés (0. mp) AudioContext-ideje
                                  (ac0) és performance-ideje (perf0, ms). Hang nélkül (nincs kontextus): null.
-     MagHang.stop()             a beütemezett hangok leállítása (kopogás, magánhangzó, zörej)
+     MagHang.stop()             a beütemezett hangok leállítása (kopogás, magánhangzó, zörej, dúdolás – a még el nem
+                                 indultak is)
      MagHang.vowel(o)           → hang-fogantyú | null (nincs kontextus). Forrás–szűrő modell: fűrészfog-zönge (o.f0 Hz,
                                  enyhe vibrátóval) → 3 sorba kötött rezonátor (o.F = [F1, F2, F3] Hz, o.B = [B1, B2, B3]
                                  sávszélesség, alap [80, 90, 150]) + egy rögzített 4. (3500 Hz) a természetesebb hangszínért.
                                  o.dur: mp (null → tart, amíg h.stop()); o.vol (alap .8); o.raw: true → szűrő nélkül (nyers
-                                 zönge, csak tompítva); o.path: [[mp, {F, f0}], …] menet közbeni csúszás (pl. i → u).
+                                 zönge, csak tompítva); o.path: [[mp, {F, f0}], …] menet közbeni csúszás (pl. i → u);
+                                 o.at: mp, késleltetett indítás (a hang most + 0,02 + at mp-kor szól; a path ideje is ettől
+                                 számít); o.solo: false → nem állítja le a többi tartott hangot (alap: leállítja).
      MagHang.noise(o)           → fogantyú | null. Réshang: fehér zaj sáváteresztővel (o.band = [lo, hi] Hz); o.voiced:
                                  + zönge (o.f0) – a zörejt a zönge üteme modulálja, és egy mély zümmögés (o.F = [F1, F2],
                                  alap [300, 1400]) szól alatta; o.nvol: a zörej hangereje (alap .5); o.dur, o.vol mint fent.
+     MagHang.hum(notes, o)      → {ac0, perf0, T} | null: dúdolás – zümmögő hangok egymás után, pontosan beütemezve
+                                 (setTimeout nélkül). notes = [{t (mp a kezdéstől), dur (alap .23), f0: Hz | [Hz, …] (tömb:
+                                 egyenletes csúszás a hang hosszán – a dallamvonal mintái), vol}]; o.F: hangszín (alap [300,
+                                 950, 2350]: „mmm”-szerű), o.B, o.vol (alap .75), o.att (.025), o.rel (.06), o.lead (mp, alap 0).
+                                 Előbb stop()-ot hív. ac0 / perf0: a 0. mp AudioContext- és performance-ideje; T: a vége, mp.
+                                 Hang nélkül (nincs kontextus) null – a rajz (pl. a dallamkurzor) ne függjön tőle.
      fogantyú h                 h.set({F, f0, band, voiced}, ramp mp) – folyamatos hang menet közbeni hangolása (új
                                  hangforrás nem indul); h.stop(rel mp) – lecsengés és leállás; h.alive → bool
      MagHang.render(kind, o, sec) → Promise<Float32Array>: ugyanaz a hang OfflineAudioContextben (hangszóró nélkül;
@@ -639,7 +653,7 @@ const MagHang = (() => {
     lfo.connect(lg); lg.connect(o.frequency); nodes.push(o, lfo); return { o, lg };
   }
   function build(cx, dest, kind, o) {
-    const t0 = cx.currentTime + .02, nodes = [], f0 = o.f0 || 120, B = o.B || BDEF;
+    const t0 = cx.currentTime + .02 + Math.max(0, o.at || 0), nodes = [], f0 = o.f0 || 120, B = o.B || BDEF;
     const out = cx.createGain(); out.connect(bus(cx, dest));
     const h = { alive: true, kind, cx, set: null, stop: null, srcs: nodes };
     if (kind === 'vowel') {
@@ -703,6 +717,20 @@ const MagHang = (() => {
     const h = build(ac, master, kind, o); held.push(h); return h;
   }
   const vowel = (o = {}) => play('vowel', o), noise = (o = {}) => play('noise', o);
+  const HUMF = [300, 950, 2350];                                      // zümmögő, „mmm”-szerű hangszín
+  function hum(notes, o = {}) {
+    if (!ac || ac.state === 'closed') return null;
+    stop();
+    const lead = Math.max(0, o.lead || 0), ac0 = ac.currentTime + .02 + lead; let T = 0;
+    (notes || []).forEach((n) => {
+      const fs = Array.isArray(n.f0) ? n.f0 : [n.f0 || 120], dur = n.dur || .23, t = Math.max(0, n.t || 0);
+      const path = fs.slice(1).map((f, j) => [dur * (j + 1) / (fs.length - 1), { f0: f }]);
+      play('vowel', { F: o.F || HUMF, B: o.B, f0: fs[0], dur, at: lead + t, path, solo: false,
+        vol: n.vol != null ? n.vol : o.vol == null ? .75 : o.vol, att: o.att == null ? .025 : o.att, rel: o.rel == null ? .06 : o.rel });
+      T = Math.max(T, t + dur);
+    });
+    return { ac0, perf0: perfAt(ac0), T };
+  }
   function render(kind, o, sec = 1, sr = 44100) {
     const OC = window.OfflineAudioContext || window.webkitOfflineAudioContext;
     if (!OC) return Promise.resolve(null);
@@ -982,7 +1010,7 @@ const MagHang = (() => {
   return {
     ready: () => !!ac, unlock, perfAt, click, stop,
     vol: (v) => { volume = Lesson.U.clamp(v); if (master) master.gain.value = volume; },
-    vowel, noise, render, response, spectrum, formants, tract, tongueAt, folds, lipsFront, vowelChart, geom,
+    vowel, noise, hum, render, response, spectrum, formants, tract, tongueAt, folds, lipsFront, vowelChart, geom,
   };
 })();
 /* ── MODUL VÉGE ── */
