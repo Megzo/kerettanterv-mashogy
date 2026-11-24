@@ -672,3 +672,111 @@ build-jelölések a terv 5. fejezetéhez képest egyszerűbbek: **ez a fejezet �
 - **Minden `.md`** végén `<!-- Vitatott / bizonytalan pontok: … -->` blokk a tanári review-hoz: a
   szövegforrás(ok) és eltéréseik, a választott tankönyvi rendszer, az értelmezésként jelölt
   állítások, a kitalált szavak listája (ha van).
+
+## 19. Digitális kultúra-kiegészítés (5–6. évfolyam)
+
+Digitális kultúra-leckénél a fenti szabályok ezekkel együtt érvényesek. **Kötelező olvasmány:**
+`pilot/digitalis-kultura-5-6/terv.md` – a saját briefed (3. fejezet), a modulok API-vázlata (4. fejezet).
+A 17. fejezet (Természettudomány) „Tippelj!”-pontja és nyelvi pontja itt is érvényes, az alábbi
+eltérésekkel.
+
+- **Mappa, fejléc:** `leckek/digitalis-kultura-5-6/NN-slug.{html,md,content.js}`; metaadat-sor:
+  `tantárgy: Digitális kultúra · évfolyam: 5–6. · témakör: N. <a kerettanterv témakörének címe>`.
+  Spec: `"maxWords": 45`; valódi adatnál `"sources": true`; a 06, 15, 16 leckében
+  `"review": ["online biztonság"]`. A slug az egész repóban egyedi (a QA-mappa `build/qa/<slug>/`).
+- **Fogalom, nem kezelés.** A lecke nem szoftverkezelési útmutató: nincs menüút, gyorsbillentyű,
+  valódi program vagy weboldal képernyőképe, logója. A vászon a mögöttes működést mutatja (réteg, szám,
+  csomag, próbálkozás); a valódi programra a `> megjegyzés:` egy mondattal utal („az órán használt
+  programban ezt a … beállításnál találod” – programnév nélkül).
+- **Nyelv 10–12 éveseknek.** Rövid mondatok, tegező hang, új fogalom **félkövéren**, egy mondattal. A
+  kerettanterv szavait használjuk (fájl, mappa, felhőszolgáltatás, blokkprogramozás, prezentáció,
+  rasztergrafika); angol szakszó csak a megjegyzésben, egyszer, zárójelben. Gépre, robotra nem
+  mondunk emberi igét: a robot nem „lát”, „gondolkodik”, „akar” – **érzékel, mér, a program szerint
+  dönt**; a kereső nem „tudja” – **keres, sorba rendez**.
+- **„Tippelj!” → kipróbálom → magyarázat.** Minden leckében legalább egy jóslat a futtatás előtt, a
+  TtTipp modullal (17. fejezet). Programleckében a tipp jellemzően: „mit rajzol / hová kerül / kijut-e”.
+  QA: `__qaStates` `tipp-jó` és `tipp-rossz`.
+- **Blokknyelv (DigBlock).** Saját vizuális nyelv: papír alapú blokk tinta szöveggel, bal oldalt
+  kategóriasáv rajzolt ikonnal, a tartalmazó blokk behúzással, kategóriaszínű sínnel és „… vége” záró
+  sávval. **Tilos:** a Scratch (vagy más környezet) neve a vásznon és a panelen, macskája, kirakós-fülei,
+  kategóriaszínei, fehér betű színes blokkon. A blokkfelirat magyar felszólító ige a `.md`-ből
+  (`<op> blokk` kulcs, `#` a paraméterhely). Ugyanaz a program mindenhol ugyanúgy néz ki: lecke-saját
+  blokkrajz nincs.
+- **Determinisztikus futás.** A program nyomvonalát (`DigBlock.run`, `DigRobot.motor`) a lecke a
+  programból és a világból számolja ki egyszer, és **az időből** rajzol (`R.at(t)`, a futás órája
+  `L.st`-ből – `DigBlock.clock`). Nincs képkockánként halmozott állapot, nincs `Math.random` (csak
+  seedelt `U.rng`). Minden futás léptethető („egy lépés”), és van lépéskorlát (végtelen ciklusnál
+  „végtelen ciklus?” jelzés, nem lefagyás). A futó blokk cinóber keretet kap, a feltétel kiírja: IGAZ /
+  HAMIS. A lépés `enter()`-je visszaállítja a lépés alapprogramját (a diák módosítása nem viszi át a
+  következő lépésre). QA-állapotok: `fut-közben`, `fut-vége`, és ahol van: `hibás-program`, `töréspont`,
+  `korlát`.
+- **A robot (DigRobot).** Felülnézeti, műszaki rajz: kör test, két kerék, irányjelző ék, a szenzorok a
+  helyükön. **Nincs arc, szem, mosoly**, és az ultrahangos szenzor sem két kör („szem”). Ütközés:
+  stilizált koccanás, semmi nem törik. A szimuláció „modell” bélyeget kap, és a panel egyszer kimondja,
+  mit hagy el (súrlódás, akkumulátor, kerékcsúszás).
+- **Online biztonság és etika (05, 06, 15, 16, és ahol előkerül).**
+  - **Hangnem:** tájékoztat, nem ijesztget. Nincs sötét alak, figyelő szem, „ragadozó”, „hacker” mint
+    figura, áldozatot hibáztató mondat. A veszély a másolhatóság, az összerakhatóság és a próbálgatás –
+    nem egy gonosz szereplő.
+  - **Segítségkérés:** ahol zaklatás, gyanús üzenet vagy kellemetlen tartalom előkerül, ott egy mondat:
+    „Szólj egy felnőttnek, akiben megbízol.” A 15-ös leckében a Kék Vonal (116-111) is – a szám
+    érvényességét gyártáskor ellenőrizd, és írd a forrást a megjegyzésbe. A szemlélőt is megszólítjuk
+    („ne továbbítsd, szólj”).
+  - **Zaklatás ábrázolása:** a bántó üzenet szövege nem jelenik meg – elmosott buborék (`DigUI.blurMsg`).
+  - **Kitalált világ:** személy csak kitalált keresztnévvel és monogramos körrel (nincs arc, fotó);
+    webcím csak `.example` (RFC 2606); IP-cím csak 192.0.2.x, 198.51.100.x, 203.0.113.x (RFC 5737);
+    e-mail-cím csak `…@pelda.example`; telefonszám csak a 112 és a 116-111. Valódi cég, termék, közösségi
+    oldal, kereső neve, logója, színvilága a vásznon nem jelenik meg; a tanári megjegyzésben csak
+    forrásként, semlegesen.
+  - **Jelszó:** a lecke soha nem mutat valódi, ismert vagy gyakori jelszót (a „123456”-típusú listát
+    sem – az legfeljebb a tanári megjegyzésben). A példajelszó generált (seedelt), mellette a felirat:
+    „ezt ne használd – mostantól nem titok”. Beviteli mező nincs: a jelszó csempékből épül. A
+    próbálgatási sebesség „modell” bélyegű, nagyságrendi forrással.
+  - **Álhír, keresés:** csak kitalált, ártalmatlan, iskolai témájú példa; nincs valódi hír, médium,
+    közszereplő, politikai, egészségügyi vagy vallási téma. A terjesztőt nem minősítjük („hazug”,
+    „buta”).
+  - **Életkor, jog:** korhatárt (GDPR, szolgáltatói szabály) csak forrással, „szolgáltatónként eltér”
+    kitétellel. Jogi tanácsot a lecke nem ad.
+- **Szerzői jog.** Minden kép saját canvas-rajz; valódi fotó, képernyőkép, ikonkészlet nincs. Fontok: csak
+  a projekt három fontja (a „talpas / talpatlan / egyenlő szélességű” bemutatása is ezekkel). Hang: csak
+  szintetizált, a MagHang szabályai szerint (18. fejezet „Hang” pontja: csak kattintásra, mérsékelten,
+  hang nélkül is teljes; az `AudioContext` csak a kattintáskor jön létre). Zene, felvett hang nincs. Ha a
+  lecke a szerzői jogról szól (11), a példa forrásai kitaláltak.
+- **Ikonok és jelek.** Minden ikon (▶, szünet, lakat, kuka, mappa, pipa, X, ¶, ·, →) **rajzolt útvonal**,
+  nem Unicode-jel vagy emoji – a három fontban nincsenek benne, tartalékfontra esnének. Emoji sehol.
+- **Számok, egységek.** 1 kB = 1000 bájt (SI); az 1024-es váltás (KiB) csak a megjegyzésben. A „bit” és a
+  „bájt” kiírva; kB, MB, GB, TB nagy B-vel, a „k” kicsi. Nagy szám: hatványalak és szó („2,2 · 10¹⁴ –
+  218 billió”, `DigBit.big`; hosszú skála: billió = 10¹²). Számolt érték (kombinációk, fájlméret, idő)
+  mindig a kódból jön a `.md` alapadataiból (jelkészlet, sebesség, felbontás) – kézzel kiírt eredmény
+  nincs (9. fejezet). A modellsebesség és a kitalált adat bélyeget kap.
+- **Színkódok** (minden leckében egységesek):
+  | mit | szín |
+  |---|---|
+  | blokk: esemény | tinta `#1c2440` |
+  | blokk: mozgás | kékeszöld `#0a6f86` |
+  | blokk: toll | lila `#7b4fa0` |
+  | blokk: vezérlés (ciklus, elágazás, várj) | okker `#8f5a0c` |
+  | blokk: érzékelés | kék `#2a4d9b` |
+  | blokk: adat (változó) | olíva `#6b6a12` |
+  | blokk: művelet | halvány tinta `#565d72` |
+  | blokk: kimenet, bemenet (mondd, kérdezd) | bordó `#8a2f5b` |
+  | blokk: saját (lecke-definiált lépés) | tinta keret, okker sáv halványan |
+  | futó blokk, „a te tipped”, hiba | cinóber `#c8401c` |
+  | IGAZ / HAMIS | kékeszöld / halvány tinta |
+  | RGB-csatornák | vörös `#c62828` · zöld `#2e7d32` · kék `#1e5bc6` |
+  | aktív / passzív lábnyom (15) | cinóber / kékeszöld |
+- **Kapcsolódás.** Ha a téma más sorozatban megvan (fizika-7-8/12 hang, 13 színek; matematika-5-6/02 kettes
+  számrendszer; matematika-9-10/03 fa-diagram; magyar-5-6/01 kommunikáció), ugyanaz a szám ugyanaz
+  (pl. a hangsebesség 343 m/s), és a `> megjegyzés:` egy mondatban hivatkozik. A 7–8. évfolyamos
+  folytatást („eljárás”, „vektorgrafika csomópontjai”, „tömörítés”) csak megnevezzük.
+- **Modulok:** a `DigBlock` és a `DigRobot` (ref. `02-ciklus`; a DigRobot v1.1 szenzorai: `07-szenzor`), a
+  `DigDoc` (ref. `10-formazas`), a `DigPixel` (ref. `13-pixel`), a `DigBit` (ref. `17-szamitogep`) és a
+  `DigUI` (ref. `15-labnyom`) a 16. fejezet szerint, a terv 4.2 pontjának API-jával. A blokkhatár
+  egységesen `/* ── MODUL: <név> (<Névtér>) · forrás: digitalis-kultura-5-6/NN-slug, <dátum> ── */` …
+  `/* ── MODUL VÉGE: <név> ── */`. A többi modult (terv 4.1: TtTipp, MatGraf, TortCards, TortTimeline,
+  TortMap, MagText, MagHang, BioPlot) bájtra azonosan vedd át, az ott megadott md5-tel ellenőrizve.
+- **Minden `.md`** végén `<!-- Tanári megjegyzések és források: … -->` blokk: kitalált példák és
+  személyek, modell-egyszerűsítések (a robot, a próbálgató gép, a kereső pontozása), a bizonytalan számok
+  forrása és bizonytalansága, és az, hogy a lecke blokknyelve miben tér el az órán használt
+  környezettől. A 06, 15, 16 leckében ezen felül `<!-- Szakmai ellenőrzés: <szerep>, <dátum> -->` (név
+  nélkül).
