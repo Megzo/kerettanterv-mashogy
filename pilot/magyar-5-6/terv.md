@@ -342,7 +342,7 @@ miért szabad (7. fejezet). Az „Adatok” értékei a `### Adatok` rétegbe, a
   szövegekben” · Fogalmak (4.): „hangkapcsolódási szabályszerűségek”.
 - **Tévhitek:** „Úgy írunk, ahogy beszélünk.” „A [kúdba] kiejtés hibás vagy tájszólás.” (Ez a
   természetes, köznyelvi kiejtés.) „Az *ly* azért van, hogy nehezebb legyen.” (Hagyomány: régen
-  más hangot jelölt *(ellenőrizendő a tankönyvi megfogalmazással)*.) „A *sakkör* elírás.” (Az
+  más hangot jelölt *(ellenőrizendő a tankönyvi megfogalmazással)*.) „A *sakkal* (sakk + val) elírás.” (Az
   egyszerűsítés elve: három azonos betű helyett kettő.)
 - **Kulcsvizuál:** két hangcsempe (*t* és *b*) halad egymás felé, mindkettőn jelvények: zöngés?,
   hol képződik? Ütközéskor az első átveszi a második zöngéjét (a *t*-ből *d* lesz), alatta a
@@ -351,7 +351,7 @@ miért szabad (7. fejezet). Az „Adatok” értékei a `### Adatok` rétegbe, a
 - **Interaktív:** **Hasonulás-gép:** a diák kiválaszt egy szópárt, és lépésenként nézi, melyik
   tulajdonság terjed át. Utána ő dönti el: „hogyan írjuk?” – a gép a négy elv egyikével felel.
   **Négy doboz (TortCards):** 12 szót kell a négy elv dobozába rendezni (*ház*, *kútba*,
-  *látja*, *Kossuth*, *folyó*, *sakkör*, *tollal*, *Mariannal*, *egészség*, *kép*, *Széchenyi*,
+  *látja*, *Kossuth*, *folyó*, *sakk-kör*, *tollal*, *Mariann-nal*, *egészség*, *kép*, *Széchenyi*,
   *rossz*).
 - **Lépések:** Írjuk így, mondjuk úgy · A száj előre készül · Részleges hasonulás · Teljes
   hasonulás: jelölt és jelöletlen · Összeolvadás, rövidülés, kiesés · Miért nem írjuk, ahogy
@@ -362,8 +362,8 @@ miért szabad (7. fejezet). Az „Adatok” értékei a `### Adatok` rétegbe, a
   teljes, jelölt: *kéz + vel → kézzel*, *az + ban → abban*; összeolvadás: *barátság*
   [baráccság], *látja* [láttya], *adja* [aggya]; rövidülés: *jobbra* [jobra], *tollban*
   [tolban]; kiesés: *mondta* [monta], *mindnyájan* [minnyájan] *(a kiesés példáit ellenőrizni
-  a tankönyvvel)*. Egyszerűsítés: *sakk + kör → sakkör*, *toll + val → tollal*, *Mariann + val
-  → Mariannal*, *sz + sz → ssz* (*rossz*), *gy + gy → ggy* (*meggy*). Hagyomány: *ly*
+  a tankönyvvel)*. Egyszerűsítés: *toll + val → tollal* (de: *sakk-kör*, *Mariann-nal* kötőjellel, AkH. 12. 61., 93. – javítva 2026-11-24 a 05-ös lecke nyomán), *sakk + val
+  → sakkal*, *sz + sz → ssz* (*rossz*), *gy + gy → ggy* (*meggy*). Hagyomány: *ly*
   (*folyó*), régi családnevek (*Kossuth*, *Széchenyi*, *Batthyány*). A szabálypontok számát a
   `.md` megjegyzése rögzíti *(ellenőrizendő: AkH. 12.)*.
 - **Szöveg és jog:** csak szavak.

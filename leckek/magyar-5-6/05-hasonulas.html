@@ -1,0 +1,1822 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kútba vagy [kúdba]? — Magyar nyelv és irodalom</title>
+<link rel="stylesheet" href="../../shared/lesson.css">
+<style>
+  .lp-text b { color: var(--ink); }
+</style>
+<!-- A lecke által várt tartalomkulcsok. A tools/build_lesson.py ez alapján ellenőrzi a .md-t. -->
+<script type="application/json" id="lesson-spec">
+{
+ "steps": 8,
+ "maxWords": 45,
+ "labels": {
+  "adathiba felirat": 40, "írjuk felirat": 16, "mondjuk felirat": 16, "írás gomb": 20, "kiejtés gomb": 20,
+  "modell bélyeg": 40, "zöngés mássalhangzók": 60, "zöngétlen párjuk": 60, "ajakhangok": 30,
+  "kérdés felirat": 40, "nem mindig felirat": 24,
+  "zönge sor": 16, "ajak sor": 16, "nyelv sor": 16, "zár felirat": 8, "előre felirat": 24,
+  "gondosan gomb": 32, "természetesen gomb": 32, "gondosan felirat": 32, "természetesen felirat": 32,
+  "zöngétlen t felirat": 40, "zöngés t felirat": 40,
+  "zöngés jelvény": 16, "zöngétlen jelvény": 16, "nyelvhegy jelvény": 16, "két ajak jelvény": 16,
+  "zönge szabály": 48, "hely szabály": 48, "nem jelöli felirat": 32,
+  "jelöletlen cím": 26, "jelöletlen alcím": 32, "jelölt cím": 26, "jelölt alcím": 32, "újra gomb": 24,
+  "összeolvadás név": 16, "összeolvadás leírás": 40, "rövidülés név": 16, "rövidülés leírás": 40,
+  "kiesés név": 16, "kiesés leírás": 40,
+  "hogyan felirat": 24, "ahogy mondjuk gomb": 32, "szóelemzés gomb": 32, "ahogy mondjuk felirat": 24,
+  "szóelemzéssel felirat": 24, "tő felirat": 16, "két tő felirat": 60, "egy tő felirat": 60,
+  "kiejtés név": 16, "kiejtés leírás": 32, "szóelemzés név": 16, "szóelemzés leírás": 32,
+  "hagyomány név": 16, "hagyomány leírás": 32, "egyszerűsítés név": 16, "egyszerűsítés leírás": 32,
+  "kiejtés szavak": 60, "szóelemzés szavak": 60, "hagyomány szavak": 60, "egyszerűsítés szavak": 60,
+  "húzd felirat": 40, "pont felirat": 32, "megoldás gomb": 32, "keverés gomb": 32,
+  "lánc 1 felirat": 32, "lánc 2 felirat": 32, "lánc 3 felirat": 32, "kivétel felirat": 40
+ },
+ "data": {
+  "kútba": {"type": "pron"}, "egészség": {"type": "pron"}, "látja": {"type": "pron"}, "színpad": {"type": "pron"},
+  "népdal": {"type": "pron"}, "zsákban": {"type": "pron"}, "vízpart": {"type": "pron"}, "különben": {"type": "pron"},
+  "anyja": {"type": "pron"}, "kéz vel": {"type": "morph"}, "kézzel": {"type": "morph"},
+  "az ban": {"type": "morph"}, "abban": {"type": "morph"},
+  "adja": {"type": "pron"}, "barátság": {"type": "pron"}, "jobbra": {"type": "pron"}, "tollban": {"type": "pron"},
+  "mondta": {"type": "pron"}, "mindnyájan": {"type": "pron"},
+  "kútba szóelemek": {"type": "morph"}, "kútból szóelemek": {"type": "morph"}, "kútnál szóelemek": {"type": "morph"},
+  "kútból": {"type": "pron"}
+ }
+}
+</script>
+</head>
+<body>
+<script src="05-hasonulas.content.js"></script>
+<script src="../../shared/lesson.js"></script>
+<script>
+(function () {
+'use strict';
+
+/* ── MODUL: Szöveg (MagText) · forrás: magyar-5-6/04-toldalek, 2026-11-24 ── */
+/* Magyar szöveg betű / szótag / szó szinten: tokenekre bontás, mért elrendezés, kiemelés, csempe, áttűnés.
+   Csak a Lesson motorra épül (Lesson.U, Lesson.FONTS); minden felirat L.tx-szel kerül a vászonra (QA, review mód).
+   Statikus (nem rajzol):
+     MagText.ABC                 a 44 betűs magyar ábécé sorrendben: a, á, b, c, cs, d, dz, dzs, e, é, … z, zs
+     MagText.clean(s)            s a jelölők nélkül: „|” (szóelemhatár), „·” (kézi szótaghatár)
+     MagText.split(s)            → [{s, t, i, n, kind: 'v'|'c'|'x', long, dbl}] a betűk: s a betű (pl. 'sz'), t az írott
+                                 darab, i/n a helye a tiszta szövegben; többjegyű betű egy elem (dzs > dz > d); kettőzött
+                                 többjegyű (ssz, ggy, ccs, lly, nny, tty, zzs) két betű: 'sz' (t: 's', dbl) + 'sz';
+                                 a „|” felülírja a felismerést (kis|szék: s + sz); kind 'x': szóköz, írásjel
+     MagText.letters(s)          → ['cs', 'i', 'g', 'a'] (csak a betűk)
+     MagText.isVowel(ch)         a, á, e, é, i, í, o, ó, ö, ő, u, ú, ü, ű (+ régi õ, û, ô, ë, ä); az y nem
+     MagText.vowels(s)           → [{i, v, long, h: 'mély'|'magas', round}] (i: hely a tiszta szövegben)
+     MagText.harmony(s)          → 'mély' | 'magas' | 'vegyes' | null (nincs magánhangzó) – csak a betűk szerint
+     MagText.syllabify(s)        → ['asz', 'szony']: magánhangzónként egy szótag; egy mássalhangzó a következő szótagba
+                                 kerül, torlódásnál csak az utolsó; két magánhangzó között választ (fi-a-tal); a többjegyű
+                                 betű nem válik szét, a kettőzött igen (asz-szony); „·” kézi szótaghatár (vas·út);
+                                 szóközös szövegnél szavanként (a sorokon átívelő verstani szótagolás a MagVers dolga)
+     MagText.cmp(a, b)           → {r: −1|0|1, i, pass}: magyar betűrend (AkH. 12.): 1. menet a betűk sorrendje (a rövid és a
+                                 hosszú magánhangzó egyenértékű), 2. menet rövid < hosszú, 3. menet kisbetű < nagybetű;
+                                 i: a döntő betű indexe (MagText.letters szerint), pass: melyik menet döntött (0: egyenlő);
+                                 a szóköz, kötőjel, írásjel nem számít. Régi írásmódú betűkapcsolatot (ch, cz, th) nem kezel.
+     MagText.collate(a, b)       → −1 | 0 | 1 (rendezéshez: tömb.sort(MagText.collate))
+     MagText.diff(a, b)          → [[ia, ib], …] a két betűsor (MagText.letters) leghosszabb közös részsorozata
+   Példány:
+     const T = MagText.create(L, {f, s, w, i, c, lh})   alapfont (alap: Fraunces, 44 px, 560, tinta), lh: sormagasság × s
+     T.tokens(s, 'szó'|'szótag'|'betű', {k}) → [{s, i, kind, wi, si}]   kind: 'w' szó · 'syl' szótag · 'v'/'c' betű ·
+                                 's' szóköz · 'p' írásjel; wi: a szó sorszáma, si: a szótag/betű helye a szóban; k: md-kulcs.
+                                 Saját token is betehető (pl. {kind: 'slot', fw: 300} helyőrző egy csempés szónak).
+     T.layout(tokens, {x, y, w, a, gap, s, f, lh}) → lay   mért elrendezés, tördelés szóközön (nincs fix doboz); a: 'left' |
+                                 'center' | 'right' – x a sorok bal széle / közepe / jobb széle, y az első sor alapvonala;
+                                 w: legnagyobb sorszélesség; gap: köz a szón belüli tokenek (szótag, betű) között, px.
+                                 lay = {tokens (+ x, y, w), lines, x, y, w, h, s, f}
+     T.draw(lay, {hi, dim, reveal, under, a, c, tile, off, k})   hi: {tokenindex: szín} vagy fn(t) → szín | null; a nem
+                                 kiemelt token dim alfájú (alap .25; hi nélkül nincs halványítás); reveal 0..1: a tokenek
+                                 sorban beúsznak; under: {i: szín | {c, dash}} aláhúzás (pl. szófaj); tile: true | fn(t) →
+                                 {bg, bd} csempe a token mögé; off: fn(t) → {dx, dy, a}; a: alfa; c: alapszín
+     T.morph(layA, layB, u, {hi, a})   két betűszintű elrendezés áttűnése (írás ↔ [ejtés]): a közös betűk (diff) a helyükre
+                                 úsznak, a kiesők lefelé halványulnak, az újak felülről úsznak be (hi: az új betűk színe)
+     T.pick(lay, px, py)         → a pont alatti token (szóköz nélkül) vagy null
+     T.tile(s, x, y, o)          → {x, y, w, h}: szöveghez méretezett csempe; o: s, f, w, c (betű), bg, bd, lw, pad, r, dash,
+                                 minW, a ('center': x a közép | 'left'), k; y az alapvonal
+*/
+const MagText = (() => {
+  const U = Lesson.U, F = Lesson.FONTS;
+  const ABC = ['a', 'á', 'b', 'c', 'cs', 'd', 'dz', 'dzs', 'e', 'é', 'f', 'g', 'gy', 'h', 'i', 'í', 'j', 'k', 'l', 'ly', 'm',
+    'n', 'ny', 'o', 'ó', 'ö', 'ő', 'p', 'q', 'r', 's', 'sz', 't', 'ty', 'u', 'ú', 'ü', 'ű', 'v', 'w', 'x', 'y', 'z', 'zs'];
+  const RANK = {}; ABC.forEach((b, i) => { RANK[b] = i; });
+  const DI = ['dzs', 'cs', 'dz', 'gy', 'ly', 'ny', 'sz', 'ty', 'zs'];
+  const VOW = 'aáeéiíoóöőuúüűõûôëä', LONGV = 'áéíóőúűõûô', DEEP = 'aáoóuú', ROUND = 'öőüűõûô';
+  const SHORT = { 'á': 'a', 'é': 'e', 'í': 'i', 'ó': 'o', 'ő': 'ö', 'ú': 'u', 'ű': 'ü', 'õ': 'ö', 'û': 'ü', 'ô': 'ö' };
+  const isL = (ch) => /\p{L}/u.test(ch);
+  const isVowel = (ch) => !!ch && ch.length === 1 && VOW.includes(ch.toLowerCase());
+  const clean = (s) => String(s).replace(/[|·]/g, '');
+
+  function split(s) {
+    s = String(s); const out = []; let i = 0, ci = 0;
+    while (i < s.length) {
+      const ch = s[i];
+      if (ch === '|' || ch === '·') { i++; continue; }
+      if (!isL(ch)) { out.push({ s: ch, t: ch, i: ci, n: 1, kind: 'x' }); i++; ci++; continue; }
+      const lo = s.slice(i, i + 4).toLowerCase();
+      let d = null;
+      if (lo[1] === lo[0] && (d = DI.find((x) => x[0] === lo[0] && lo.startsWith(x, 1)))) {      // ssz → sz + sz
+        const a = s[i], b = s.slice(i + 1, i + 1 + d.length);
+        out.push({ s: a + b.slice(1), t: a, i: ci, n: 1, kind: 'c', dbl: true });
+        out.push({ s: b, t: b, i: ci + 1, n: d.length, kind: 'c' });
+        i += 1 + d.length; ci += 1 + d.length; continue;
+      }
+      d = DI.find((x) => lo.startsWith(x));
+      const n = d ? d.length : 1, t = s.slice(i, i + n), v = !d && isVowel(ch);
+      out.push({ s: t, t, i: ci, n, kind: v ? 'v' : 'c', long: v && LONGV.includes(ch.toLowerCase()) });
+      i += n; ci += n;
+    }
+    return out;
+  }
+  const letters = (s) => split(s).filter((x) => x.kind !== 'x').map((x) => x.s);
+  const vowels = (s) => split(s).filter((x) => x.kind === 'v').map((x) => {
+    const lo = x.t.toLowerCase();
+    return { i: x.i, v: x.t, long: !!x.long, h: DEEP.includes(lo) ? 'mély' : 'magas', round: ROUND.includes(lo) };
+  });
+  function harmony(s) {
+    const v = vowels(s); if (!v.length) return null;
+    const d = v.some((x) => x.h === 'mély'), f = v.some((x) => x.h === 'magas');
+    return d && f ? 'vegyes' : d ? 'mély' : 'magas';
+  }
+  function syl1(seg) {
+    const t = split(seg); if (!t.length) return [];
+    const V = []; t.forEach((x, j) => { if (x.kind === 'v') V.push(j); });
+    if (V.length < 2) return [t.map((x) => x.t).join('')];
+    const cuts = [];
+    for (let j = 0; j + 1 < V.length; j++) { const a = V[j], b = V[j + 1]; cuts.push(b - a - 1 >= 1 ? b - 1 : b); }
+    const out = []; let p = 0;
+    cuts.concat([t.length]).forEach((q) => { out.push(t.slice(p, q)); p = q; });
+    return out.map((arr) => arr.map((x, m) => (x.dbl && m === arr.length - 1 ? x.s : x.t)).join(''));
+  }
+  function syllabify(s) {
+    s = String(s);
+    if (/\s/.test(s)) return s.split(/\s+/).filter(Boolean).reduce((a, w) => a.concat(syllabify(w)), []);
+    return s.split('·').reduce((a, seg) => a.concat(syl1(seg)), []);
+  }
+  function key(s) {
+    return split(s).filter((x) => x.kind !== 'x').map((x) => {
+      const lo = x.s.toLowerCase(), b = SHORT[lo] || lo;
+      return { r: RANK[b] != null ? RANK[b] : 100 + b.charCodeAt(0), long: !!SHORT[lo], up: x.s !== lo };
+    });
+  }
+  function cmp(a, b) {
+    const A = key(a), B = key(b), n = Math.min(A.length, B.length);
+    for (let j = 0; j < n; j++) if (A[j].r !== B[j].r) return { r: A[j].r < B[j].r ? -1 : 1, i: j, pass: 1 };
+    if (A.length !== B.length) return { r: A.length < B.length ? -1 : 1, i: n, pass: 1 };
+    for (let j = 0; j < n; j++) if (A[j].long !== B[j].long) return { r: A[j].long ? 1 : -1, i: j, pass: 2 };
+    for (let j = 0; j < n; j++) if (A[j].up !== B[j].up) return { r: A[j].up ? 1 : -1, i: j, pass: 3 };
+    return { r: 0, i: -1, pass: 0 };
+  }
+  const collate = (a, b) => cmp(a, b).r;
+  function diff(a, b) {
+    const A = letters(a).map((x) => x.toLowerCase()), B = letters(b).map((x) => x.toLowerCase());
+    const n = A.length, m = B.length, D = [];
+    for (let i = 0; i <= n; i++) { D.push(new Array(m + 1).fill(0)); }
+    for (let i = n - 1; i >= 0; i--) for (let j = m - 1; j >= 0; j--) D[i][j] = A[i] === B[j] ? D[i + 1][j + 1] + 1 : Math.max(D[i + 1][j], D[i][j + 1]);
+    const out = []; let i = 0, j = 0;
+    while (i < n && j < m) { if (A[i] === B[j]) { out.push([i, j]); i++; j++; } else if (D[i + 1][j] >= D[i][j + 1]) i++; else j++; }
+    return out;
+  }
+
+  function create(L, o0 = {}) {
+    const base = Object.assign({ f: F.D, s: 44, w: 560, i: false, c: null, lh: 1.3 }, o0);
+    const fo = (o) => ({ f: o.f || base.f, s: o.s || base.s, w: o.w || base.w, i: o.i != null ? o.i : base.i });
+    const T = { base };
+    T.tokens = (s, level = 'szó', o = {}) => {
+      const out = []; let wi = -1;
+      (String(s).match(/[\p{L}|·]+|\s+|[^\p{L}|·\s]+/gu) || []).forEach((p) => {
+        if (/^\s+$/.test(p)) { out.push({ s: ' ', kind: 's', wi }); return; }
+        if (!/\p{L}/u.test(p)) { out.push({ s: p, kind: 'p', wi }); return; }
+        wi++;
+        if (level === 'szó') out.push({ s: clean(p), kind: 'w', wi, si: 0 });
+        else if (level === 'szótag') syl1(p.replace(/·/g, '·')).length && syllabify(p).forEach((y, si) => out.push({ s: y, kind: 'syl', wi, si }));
+        else split(p).forEach((x, si) => out.push({ s: x.t, kind: x.kind, wi, si, l: x.s }));
+      });
+      out.forEach((t, i) => { t.i = i; if (o.k) t.k = o.k; });
+      return out;
+    };
+    T.layout = (tokens, o = {}) => {
+      const f = fo(o), s = f.s, gap = o.gap || 0, maxW = o.w || 1e9, lh = s * (o.lh || base.lh);
+      const sp = L.measure(' ', f).w;
+      tokens.forEach((t) => { t.w = t.fw != null ? t.fw : t.kind === 's' ? sp : L.measure(t.s, f).w; });
+      const units = []; let u = [];
+      tokens.forEach((t) => { if (t.kind === 's') { if (u.length) units.push(u); units.push([t]); u = []; } else u.push(t); });
+      if (u.length) units.push(u);
+      const inner = (a, b) => (a && b && a.kind !== 'p' && b.kind !== 'p' && a.kind !== 'slot' && b.kind !== 'slot' ? gap : 0);
+      const uw = (v) => v.reduce((acc, t, j) => acc + t.w + (j ? inner(v[j - 1], t) : 0), 0);
+      const lines = []; let line = [], lw = 0;
+      units.forEach((v) => {
+        if (v[0].kind === 's') { if (line.length) { line.push(v[0]); lw += v[0].w; } return; }
+        const w = uw(v);
+        if (line.length && lw + w > maxW) { while (line.length && line[line.length - 1].kind === 's') { lw -= line.pop().w; } lines.push({ t: line, w: lw }); line = []; lw = 0; }
+        v.forEach((t, j) => { line.push(t); lw += t.w + (j ? inner(v[j - 1], t) : 0); });
+      });
+      while (line.length && line[line.length - 1].kind === 's') { lw -= line.pop().w; }
+      if (line.length) lines.push({ t: line, w: lw });
+      const a = o.a || 'left', x = o.x || 0, y = o.y || 0;
+      let W = 0, minX = 1e9;
+      lines.forEach((ln, li) => {
+        let xx = a === 'center' ? x - ln.w / 2 : a === 'right' ? x - ln.w : x; minX = Math.min(minX, xx);
+        ln.t.forEach((t, j) => { if (j) xx += inner(ln.t[j - 1], t); t.x = xx; t.y = y + li * lh; t.h = s; xx += t.w; });
+        ln.y = y + li * lh; W = Math.max(W, ln.w);
+      });
+      tokens.forEach((t) => { if (t.x == null) { t.x = -1e4; t.y = -1e4; } });
+      return { tokens, lines, x: lines.length ? minX : x, y, w: W, h: lines.length * lh, s, f, lh };
+    };
+    T.draw = (lay, o = {}) => {
+      const c = L.ctx, A0 = c.globalAlpha, aa = o.a == null ? 1 : o.a, f = lay.f;
+      const vis = lay.tokens.filter((t) => t.kind !== 's' && t.kind !== 'slot' && t.x > -1e3), nV = vis.length;
+      vis.forEach((t, idx) => {
+        let a = aa, dy = 0, dx = 0;
+        if (o.reveal != null) { const r = U.clamp(o.reveal * nV - idx); a *= U.smooth(r); dy = (1 - U.out(r)) * lay.s * .35; }
+        const hc = typeof o.hi === 'function' ? o.hi(t) : o.hi ? o.hi[t.i] : null;
+        if (o.hi && !hc) a *= o.dim == null ? .25 : o.dim;
+        if (o.off) { const q = o.off(t); if (q) { dx += q.dx || 0; dy += q.dy || 0; if (q.a != null) a *= q.a; } }
+        if (a <= .003) return;
+        c.globalAlpha = A0 * a;
+        const x = t.x + dx, y = t.y + dy;
+        if (o.tile) {
+          const tl = typeof o.tile === 'function' ? o.tile(t) : { bg: '#fffaf1', bd: 'rgba(28,36,64,.35)' };
+          if (tl) { const p = lay.s * .14; c.beginPath(); c.roundRect(x - p, y - lay.s * .88, t.w + 2 * p, lay.s * 1.2, lay.s * .18);
+            if (tl.bg) { c.fillStyle = tl.bg; c.fill(); } if (tl.bd) { c.lineWidth = tl.lw || 2; c.strokeStyle = tl.bd; c.stroke(); } }
+        }
+        L.tx(t.s, x, y, Object.assign({}, f, { c: hc || o.c || base.c || undefined, k: t.k || o.k }));
+        const ud = o.under && o.under[t.i];
+        if (ud) {
+          const uc = typeof ud === 'string' ? ud : ud.c; c.strokeStyle = uc; c.lineWidth = Math.max(3, lay.s * .07); c.lineCap = 'round';
+          c.setLineDash(ud.dash ? [lay.s * .22, lay.s * .16] : []); c.beginPath(); c.moveTo(x + 2, y + lay.s * .2); c.lineTo(x + t.w - 2, y + lay.s * .2); c.stroke(); c.setLineDash([]);
+        }
+      });
+      c.globalAlpha = A0;
+    };
+    T.morph = (A, B, u, o = {}) => {
+      const c = L.ctx, A0 = c.globalAlpha, aa = o.a == null ? 1 : o.a, e = U.inOut(u);
+      const tx = (t, x, y, a, col, lay) => { if (a <= .003) return; c.globalAlpha = A0 * aa * a; L.tx(t.s, x, y, Object.assign({}, lay.f, { c: col || base.c || undefined, k: t.k || o.k })); };
+      const ta = A.tokens.filter((t) => t.kind === 'v' || t.kind === 'c'), tb = B.tokens.filter((t) => t.kind === 'v' || t.kind === 'c');
+      A.tokens.forEach((t) => { if (t.kind === 'p' && t.x > -1e3) tx(t, t.x, t.y, 1 - U.smooth(u * 2), null, A); });   // írásjel, [ ]
+      B.tokens.forEach((t) => { if (t.kind === 'p' && t.x > -1e3) tx(t, t.x, t.y, U.smooth(u * 2 - 1), null, B); });
+      const pairs = diff(ta.map((t) => t.l || t.s).join('|'), tb.map((t) => t.l || t.s).join('|'));
+      const ma = new Set(pairs.map((p) => p[0])), mb = new Set(pairs.map((p) => p[1]));
+      pairs.forEach(([i, j]) => { const p = ta[i], q = tb[j], t = e < .5 ? p : q; tx(t, U.lerp(p.x, q.x, e), U.lerp(p.y, q.y, e), 1, null, e < .5 ? A : B); });
+      ta.forEach((t, i) => { if (!ma.has(i)) tx(t, t.x, t.y + e * A.s * .5, 1 - U.smooth(u * 2), null, A); });
+      tb.forEach((t, j) => { if (!mb.has(j)) tx(t, t.x, t.y - (1 - e) * B.s * .5, U.smooth(u * 2 - 1), o.hi, B); });
+      c.globalAlpha = A0;
+    };
+    T.pick = (lay, px, py) => {
+      for (const t of lay.tokens) {
+        if (t.kind === 's' || t.x < -1e3) continue;
+        if (px >= t.x - 4 && px <= t.x + t.w + 4 && py >= t.y - lay.s * .85 && py <= t.y + lay.s * .3) return t;
+      }
+      return null;
+    };
+    T.tile = (s, x, y, o = {}) => {
+      const f = fo(o), c = L.ctx, pad = o.pad == null ? f.s * .3 : o.pad, tw = L.measure(s, f).w;
+      const w = Math.max(o.minW || 0, tw + pad * 2), h = f.s * 1.28, x0 = o.a === 'left' ? x : x - w / 2, y0 = y - f.s * .92;
+      c.beginPath(); c.roundRect(x0, y0, w, h, o.r == null ? f.s * .22 : o.r);
+      if (o.bg) { c.fillStyle = o.bg; c.fill(); }
+      if (o.bd) { c.lineWidth = o.lw || 2; c.strokeStyle = o.bd; c.setLineDash(o.dash || []); c.stroke(); c.setLineDash([]); }
+      L.tx(s, x0 + (w - tw) / 2, y, Object.assign({}, f, { c: o.c || base.c || undefined, k: o.k }));
+      return { x: x0, y: y0, w, h };
+    };
+    return T;
+  }
+  return { ABC, clean, split, letters, isVowel, vowels, harmony, syllabify, cmp, collate, diff, create };
+})();
+/* ── MODUL VÉGE ── */
+
+/* ── MODUL: Szóelem (MagMorph) · forrás: magyar-5-6/04-toldalek, 2026-11-24 ── */
+/* Színkódolt szóelem-csempék, láncoló, illeszkedés („kaméleon” toldalék), hasonulás-jelvény. Függ: Lesson, MagText.
+   A MODUL NEM RAGOZ: minden alakot és szóelemzést a .md ad meg (morph adattípus); a modul mutat, a sorrendet
+   ellenőrzi, és a toldalék .md-beli változatai (-ban/-ben) közül a hangrend szabálya szerint választ.
+   Statikus:
+     MagMorph.KINDS              fajta → {c (szín), bg, tc (betűszín), lw, small}: tő, előtag (tinta keret, kártya),
+                                 képző (kékeszöld), jel (okker), rag (cinóber), kötőhangzó (halvány tinta, kisebb betű),
+                                 '?' (szürke, szaggatott: még ismeretlen fajta – „Tippelj!” pillanathoz)
+     MagMorph.HARM               {mély: okker, magas: kékeszöld} – a hangrend színe (szerződés 18.)
+     MagMorph.word(x)            → {s, parts: [{s, k, alt?}]} a build morph adatából (L.dat(k)), egy {parts} objektumból
+                                 vagy szövegből („kert + ész (képző) + nek (rag)”, mint a .md-ben)
+     MagMorph.check(parts)       → {ok, code, at}: sorrend tő/előtag < képző* < jel* < rag; code: 'tő' (nem tővel kezdődik),
+                                 'rag-után' (rag után képző/jel/rag), 'jel-után-képző'; a kötőhangzó nem számít; új tő/előtag
+                                 (összetétel: halász + lé) újraindítja a sort
+     MagMorph.pick(szó, alts, ex) → {alt, alts, rule, h, at: {pi, ci}, v, compound}: illeszkedés. szó: morph szó vagy szöveg;
+                                 alts: ['ban', 'ben'] vagy változatlista-adat; ex: {flex: [ingadozó tövek], deep: [mély
+                                 toldalékos kivételek]}. A szabály: az utolsó tő/előtag és az utána álló szóelemek
+                                 magánhangzói közül az utolsó dönt, de az i, í, é nem számít; ha csak i, í, é van: magas; magas
+                                 szónál ö, ő, ü, ű után az ö-s változat (-höz), ha van. rule: 'mély' | 'magas' | 'semleges' |
+                                 'csak-semleges' | 'kerek' | 'ingadozó' (két változat) | 'kivétel'; at: a döntő magánhangzó
+                                 (szóelem- és betűindex); compound: összetett szó (az utótag dönt)
+   Példány:  const M = MagMorph.create(L, {font: {f, s, w}, names: {fajta: feliratkulcs, utótag: kulcs}, why: {code: kulcs}})
+     M.name(fajta) → {s, k} | null   M.why(code, '#'-be írt szöveg) → {s, k} | null
+     M.layout(w, {x, y, s, a, open, gap, minW}) → lay   y: alapvonal; a: 'center' | 'left' | 'right'; open 0..1: 0 = egybeírt
+                                 szó, 1 = szétnyitott csempék; minW: [szóelemenkénti min. csempeszélesség] (oszlopba igazításhoz).
+                                 lay = {boxes: [{i, part, x, w, cx, tx (betű bal széle), tw, f}], x, y, w, end, top, h, s}
+     M.draw(w, {…layout, hi, dim, labels, labelS, from, lamp, a})  → lay. hi: {i: szín} keret a csempe körül (a többi dim);
+                                 labels 0..1: a fajta neve a csempe alatt (ütközésnél lejjebb, vezetővonallal); from: {i0, x, y,
+                                 u} az i0-tól kezdődő szóelemek (x, y)-ból úsznak a helyükre; lamp: {i, ci, c, u} a döntő
+                                 magánhangzó „lámpája” (fénykör a betű mögött, a betű színes) – lay.lamp = {x, y}
+     M.charX(lay, i, ci)         → {x, w}: az i. szóelem ci. karakterének közepe és szélessége
+     M.tile(part, cx, cy, {s, pre, a, ring, minW, k, lamp: {ci, c, u}})  → box: egy csempe (cx, cy a közepe)
+     M.variant(alts, cx, cy, {s, kind, pick, u, pre, k, ring, a})  → box: változatcsempe (-ban / -ben egymás alatt); pick:
+                                 [index] vagy null; u 0..1: a választott változat kinő, a többi elfogy („átpattanás”)
+     M.lamp({x, y, c, u, to: {x, y, h}, beam, arc})   fénysugár a lámpától a toldalékig (a fénykört a draw lamp-ja rajzolja);
+                                 arc: px → a szó fölött ívelő szaggatott nyíl (a betű tetejétől a toldalék tetejéig), a szót nem
+                                 takarja; arc nélkül egyenes, elkeskenyedő fénysáv (a betűk fölé kerül, ha a szó után rajzolod)
+     M.chain({x, y, s, ts, stem, tiles: [{id, part, home: {x, y}}], resolve(ids) → morph adat | null, accept?(ids, tile),
+              pick?(szó, alts), ex, R, onChange}) → ch   húzható csempék: kattintás vagy húzás a szó végére; jó sorrendnél a
+                                 resolve adja az új alakot (a .md-ből), rossz sorrendnél a csempe odaugrik, megremeg, visszapattan,
+                                 és ch.rej.code mondja, miért (whyAt: az indok, miután a csempe visszaért). ch.update() a draw elején (mutató), ch.draw({labels, whyAt: {x, y},
+                                 hint: kulcs}) → lay; ch.add(id, {t0, from}) programból; ch.reset(stem); ch.word, ch.ids
+     M.assim({x, y, s, a: {s, badge: {s, k}}, b: {…}, out: {…}, c, t, k}) → két hangcsempe (a, b) összeér, a b tulajdonság-
+                                 jelvénye (pl. „zöngés”) fénypontként átmegy az a-ra, és az a betűje out-tá válik (t 0..1)
+*/
+const MagMorph = (() => {
+  const U = Lesson.U, F = Lesson.FONTS, INK = '#1c2440';
+  const KINDS = {
+    'tő': { c: '#1c2440', bg: '#fffaf1', tc: '#1c2440', lw: 3 },
+    'előtag': { c: '#1c2440', bg: '#fffaf1', tc: '#1c2440', lw: 3 },
+    'képző': { c: '#0a6f86', bg: '#0a6f86', tc: '#fffaf1', lw: 0 },
+    'jel': { c: '#8f5a0c', bg: '#8f5a0c', tc: '#fffaf1', lw: 0 },
+    'rag': { c: '#c8401c', bg: '#c8401c', tc: '#fffaf1', lw: 0 },
+    'kötőhangzó': { c: '#565d72', bg: '#ebe5da', tc: '#565d72', lw: 2, small: .74 },
+    '?': { c: '#565d72', bg: '#ece7dd', tc: '#1c2440', lw: 2.5, dash: [8, 6] },
+  };
+  const HARM = { 'mély': '#8f5a0c', 'magas': '#0a6f86' };
+  const RANKS = { 'képző': 1, 'jel': 2, 'rag': 3 };
+  const isTag = (k) => k === 'tő' || k === 'előtag';
+
+  function parse(str) {
+    const parts = String(str).split(/\s*\+\s*/).map((rp, j) => {
+      const m = rp.trim().match(/^(-?[^\s()]+?)\s*(?:\(([^()]*)\))?$/); if (!m) return null;
+      const alt = m[1].split('/').map((a) => a.replace(/^-/, ''));
+      const p = { s: alt.join('/'), k: (m[2] || (j ? '?' : 'tő')).trim() }; if (alt.length > 1) p.alt = alt; return p;
+    }).filter(Boolean);
+    return { s: parts.length > 1 ? parts.map((p) => p.s).join('') : parts[0] ? parts[0].s : '', parts };
+  }
+  function word(x) {
+    if (x == null) return { s: '', parts: [] };
+    if (typeof x === 'string') return parse(x);
+    const parts = (x.parts || []).map((p) => Object.assign({}, p));
+    return { s: x.s != null && parts.length > 1 ? x.s : parts.map((p) => p.s).join(''), parts };
+  }
+  function check(parts) {
+    if (!parts.length || !isTag(parts[0].k)) return { ok: false, code: 'tő', at: 0 };
+    let rank = 0;
+    for (let i = 1; i < parts.length; i++) {
+      const k = parts[i].k;
+      if (isTag(k)) { rank = 0; continue; }
+      const r = RANKS[k]; if (r == null) continue;
+      if (rank === 3) return { ok: false, code: 'rag-után', at: i };
+      if (r < rank) return { ok: false, code: r === 1 ? 'jel-után-képző' : 'sorrend', at: i };
+      rank = r;
+    }
+    return { ok: true, code: null, at: -1 };
+  }
+  function altClass(a) {
+    const v = MagText.vowels(a);
+    return v.some((x) => x.h === 'mély') ? 'mély' : v.some((x) => x.round) ? 'kerek' : v.length ? 'réses' : null;
+  }
+  function pick(stem, alts, ex = {}) {
+    const w = typeof stem === 'string' ? { s: stem, parts: [{ s: stem, k: 'tő' }] } : word(stem);
+    if (!Array.isArray(alts)) { const p = word(alts).parts[0] || { s: '' }; alts = p.alt || [p.s]; }
+    let ti = 0; w.parts.forEach((p, i) => { if (isTag(p.k)) ti = i; });
+    const tail = w.parts.slice(ti), str = tail.map((p) => p.s).join('');
+    const chars = []; tail.forEach((p, j) => { for (let ci = 0; ci < p.s.length; ci++) chars.push({ pi: ti + j, ci }); });
+    const vs = MagText.vowels(str), last = vs[vs.length - 1];
+    const deep = alts.filter((a) => altClass(a) === 'mély'), fr = alts.filter((a) => altClass(a) === 'réses'), rd = alts.filter((a) => altClass(a) === 'kerek');
+    const inList = (lst) => (lst || []).some((x) => x && (x === str || x === w.parts[ti].s));
+    const res = { tail: str, ti, alts: [], rule: null, h: null, at: null, v: null, compound: ti > 0 };
+    const at = (v) => (v ? Object.assign({}, chars[v.i] || { pi: ti, ci: 0 }) : null);
+    if (inList(ex.flex)) {
+      res.alts = [deep[0], fr[0] || rd[0]].filter(Boolean); res.rule = 'ingadozó'; res.h = 'vegyes'; res.at = at(last); res.v = last && last.v;
+    } else if (inList(ex.deep)) {
+      res.alts = [deep[0] || alts[0]]; res.rule = 'kivétel'; res.h = 'mély'; res.at = at(last); res.v = last && last.v;
+    } else if (!vs.length) {
+      res.alts = [alts[0]]; res.rule = null;
+    } else {
+      const nn = vs.filter((x) => !'iíéIÍÉ'.includes(x.v)), dv = nn.length ? nn[nn.length - 1] : last;
+      res.h = nn.length ? dv.h : 'magas';
+      res.rule = !nn.length ? 'csak-semleges' : dv === last ? res.h : 'semleges';
+      if (res.h === 'mély') res.alts = [deep[0] || alts[0]];
+      else if (last.round && rd.length) { res.alts = [rd[0]]; res.rule = 'kerek'; res.at = at(last); res.v = last.v; }
+      else res.alts = [fr[0] || rd[0] || alts[0]];
+      if (!res.at) { res.at = at(dv); res.v = dv.v; }
+    }
+    res.alt = res.alts[0];
+    return res;
+  }
+
+  function create(L, o0 = {}) {
+    const base = Object.assign({ f: F.D, s: 56, w: 560 }, o0.font || {});
+    const names = o0.names || {}, whys = o0.why || {};
+    const M = { KINDS, HARM };
+    const font = (s) => ({ f: base.f, s, w: base.w });
+    M.name = (k) => (names[k] ? { s: L.lab(names[k]), k: names[k] } : null);
+    M.why = (code, fill) => (whys[code] ? { s: L.lab(whys[code]).replace('#', fill == null ? '' : fill), k: whys[code] } : null);
+
+    function rect(c, x, y, w, h, K, a, ring, sh) {
+      c.save(); c.globalAlpha *= a; const r = Math.min(h * .2, 16);
+      if (sh) { c.fillStyle = 'rgba(28,36,64,.13)'; c.beginPath(); c.roundRect(x + 2, y + 4, w, h, r); c.fill(); }
+      c.beginPath(); c.roundRect(x, y, w, h, r); c.fillStyle = K.bg; c.fill();
+      if (K.lw) { c.lineWidth = K.lw; c.strokeStyle = K.c; c.setLineDash(K.dash || []); c.stroke(); c.setLineDash([]); }
+      c.restore();
+      if (ring) { c.save(); c.lineWidth = 4; c.strokeStyle = ring; c.beginPath(); c.roundRect(x - 6, y - 6, w + 12, h + 12, r + 5); c.stroke(); c.restore(); }
+    }
+    function glow(c, x, y, r, col, u) {
+      if (u <= 0) return; c.save();
+      const g = c.createRadialGradient(x, y, 0, x, y, r); g.addColorStop(0, U.rgba(col, .5 * u)); g.addColorStop(.6, U.rgba(col, .2 * u)); g.addColorStop(1, U.rgba(col, 0));
+      c.fillStyle = g; c.beginPath(); c.arc(x, y, r, 0, U.TAU); c.fill(); c.restore();
+    }
+    /* a szóelem szövege; lamp: {ci, c, u} → a ci. betű színes és fénykör van mögötte */
+    function ptext(txt, x, y, f, col, k, lamp) {
+      if (!lamp || lamp.ci == null || lamp.ci >= txt.length) { L.tx(txt, x, y, Object.assign({}, f, { c: col, k })); return null; }
+      const pre = txt.slice(0, lamp.ci), ch = txt[lamp.ci], post = txt.slice(lamp.ci + 1);
+      const w0 = L.measure(pre, f).w, w1 = L.measure(ch, f).w, cx = x + w0 + w1 / 2, cy = y - f.s * .3;
+      glow(L.ctx, cx, cy, f.s * .78, lamp.c, U.clamp(lamp.u == null ? 1 : lamp.u));
+      if (pre) L.tx(pre, x, y, Object.assign({}, f, { c: col, k }));
+      L.tx(ch, x + w0, y, Object.assign({}, f, { c: U.mix(col.startsWith('#') ? col : INK, lamp.c, U.clamp(lamp.u == null ? 1 : lamp.u)), k }));
+      if (post) L.tx(post, x + w0 + w1, y, Object.assign({}, f, { c: col, k }));
+      return { x: cx, y: cy };
+    }
+    M.layout = (w, o = {}) => {
+      w = w.parts ? w : word(w);
+      const s = o.s || base.s, open = o.open == null ? 1 : U.clamp(o.open);
+      const pad = s * .2 * open, gap = (o.gap == null ? s * .14 : o.gap) * open;
+      const boxes = w.parts.map((p, i) => {
+        const K = KINDS[p.k] || KINDS['?'], fs = s * (K.small ? U.lerp(1, K.small, open) : 1), f = font(fs);
+        const tw = L.measure(p.s, f).w; let bw = tw + pad * 2;
+        if (o.minW && o.minW[i]) bw = Math.max(bw, U.lerp(tw, o.minW[i], open));
+        return { i, part: p, K, f, tw, w: bw };
+      });
+      const total = boxes.reduce((a, b) => a + b.w, 0) + gap * Math.max(0, boxes.length - 1);
+      const a = o.a || 'center', x = o.x || 0, y = o.y || 0;
+      let xx = a === 'left' ? x : a === 'right' ? x - total : x - total / 2; const x0 = xx;
+      boxes.forEach((b) => { b.x = xx; b.cx = xx + b.w / 2; b.tx = xx + (b.w - b.tw) / 2; xx += b.w + gap; });
+      return { boxes, x: x0, y, w: total, end: x0 + total, top: y - s * .9, h: s * 1.26, s, open, word: w };
+    };
+    M.charX = (lay, i, ci) => {
+      const b = lay.boxes[i]; if (!b) return { x: lay.x, w: 0 };
+      const t = b.part.s, w0 = L.measure(t.slice(0, ci), b.f).w, w1 = L.measure(t[ci] || '', b.f).w;
+      return { x: b.tx + w0 + w1 / 2, w: w1 };
+    };
+    const kindName = (w, i) => { const p = w.parts[i]; if (p.k === 'tő' && w.parts.slice(0, i).some((q) => q.k === 'előtag')) return 'utótag'; return p.k; };
+    M.draw = (w, o = {}) => {
+      w = w.parts ? w : word(w);
+      const c = L.ctx, A0 = c.globalAlpha, aa = o.a == null ? 1 : o.a;
+      const lay = M.layout(w, o), s = lay.s, op = lay.open;
+      lay.boxes.forEach((b) => {
+        let a = aa, dx = 0, dy = 0;
+        const hc = o.hi ? o.hi[b.i] : null; if (o.hi && !hc) a *= o.dim == null ? .3 : o.dim;
+        if (o.from && b.i >= o.from.i0) { const u = U.clamp(o.from.u); dx = (1 - u) * (o.from.x - b.cx); dy = (1 - u) * (o.from.y - (lay.y - s * .27)); a *= U.lerp(.6, 1, u); }
+        c.globalAlpha = A0 * a;
+        if (op > .01) rect(c, b.x + dx, lay.top + dy, b.w, lay.h, b.K, op, hc && hc !== true ? hc : hc ? '#c8401c' : null, op > .5);
+        const col = op > 0 ? U.mix(INK, b.K.tc, op) : INK;
+        const lp = o.lamp && o.lamp.i === b.i ? o.lamp : null;
+        const pt = ptext(b.part.s, b.tx + dx, lay.y + dy, b.f, col, o.k, lp);
+        if (pt) lay.lamp = pt;
+      });
+      if (o.labels) {
+        const ls = o.labelS || U.clamp(s * .34, 22, 28), rows = [];
+        const order = lay.boxes.filter((b) => b.part.k !== 'kötőhangzó').concat(lay.boxes.filter((b) => b.part.k === 'kötőhangzó'));
+        order.forEach((b) => {
+          const nm = M.name(kindName(w, b.i)); if (!nm) return;
+          const f = { f: F.B, s: ls, w: 600 }, lw = L.measure(nm.s, f).w, x0 = b.cx - lw / 2 - 8, x1 = b.cx + lw / 2 + 8;
+          let r = 0; while (r < 3 && (rows[r] || []).some(([p, q]) => !(x1 < p || x0 > q))) r++;
+          (rows[r] = rows[r] || []).push([x0, x1]);
+          const bot = lay.top + lay.h, ly = bot + ls * 1.1 + r * ls * 1.3, col = b.K.c;
+          c.globalAlpha = A0 * aa * U.clamp(o.labels);
+          if (r) { c.strokeStyle = U.rgba(col, .55); c.lineWidth = 2; c.setLineDash([4, 4]); c.beginPath(); c.moveTo(b.cx, bot + 4); c.lineTo(b.cx, ly - ls * .82); c.stroke(); c.setLineDash([]); }
+          L.tx(nm.s, b.cx, ly, Object.assign({}, f, { a: 'center', c: col, k: nm.k }));
+        });
+        lay.labelRows = rows.length;
+      }
+      c.globalAlpha = A0;
+      return lay;
+    };
+    M.tile = (part, x, y, o = {}) => {
+      const c = L.ctx, A0 = c.globalAlpha, K = KINDS[part.k] || KINDS['?'], s = o.s || base.s, fs = s * (K.small ? K.small : 1), f = font(fs);
+      const txt = (o.pre || '') + part.s, tw = L.measure(txt, f).w, pad = s * .2, w = Math.max(tw + pad * 2, o.minW || 0), h = s * 1.26;
+      const x0 = x - w / 2, y0 = y - h / 2;
+      c.globalAlpha = A0 * (o.a == null ? 1 : o.a);
+      rect(c, x0, y0, w, h, K, 1, o.ring, true);
+      const pt = ptext(txt, x0 + (w - tw) / 2, y + s * .27, f, K.tc, o.k, o.lamp ? Object.assign({}, o.lamp, { ci: o.lamp.ci + (o.pre || '').length }) : null);
+      c.globalAlpha = A0;
+      return { x: x0, y: y0, w, h, cx: x, cy: y, lamp: pt };
+    };
+    M.variant = (alts, x, y, o = {}) => {
+      const c = L.ctx, A0 = c.globalAlpha, s = o.s || base.s * .8, K = KINDS[o.kind || 'rag'] || KINDS['?'];
+      const e = U.inOut(U.clamp(o.u || 0)), pre = o.pre == null ? '-' : o.pre, pk = o.pick ? new Set(o.pick) : null;
+      const items = alts.map((a, i) => {
+        const on = !pk || pk.has(i), s0 = s * (alts.length > 1 ? .72 : 1);
+        const sz = on ? U.lerp(s0, s, pk ? e : 0) : Math.max(22, U.lerp(s0, s * .45, e)), al = on ? 1 : 1 - e;
+        const f = font(sz); return { a: pre + a, on, sz, al, hh: sz * 1.12 * (on ? 1 : 1 - e), f, w: L.measure(pre + a, f).w };
+      });
+      const pad = s * .22, vis = items.filter((it) => it.al > .02);
+      const bw = Math.max(...vis.map((it) => it.w)) + pad * 2, bh = items.reduce((a, it) => a + it.hh, 0) + pad * .8;
+      const x0 = x - bw / 2, y0 = y - bh / 2;
+      c.globalAlpha = A0 * (o.a == null ? 1 : o.a);
+      rect(c, x0, y0, bw, bh, K, 1, o.ring, true);
+      let yy = y0 + pad * .4;
+      items.forEach((it) => {
+        if (it.al > .04 && it.hh > 1) { c.globalAlpha = A0 * (o.a == null ? 1 : o.a) * it.al; L.tx(it.a, x, yy + it.hh * .76, Object.assign({}, it.f, { a: 'center', c: K.tc, k: o.k })); }
+        yy += it.hh;
+      });
+      c.globalAlpha = A0;
+      return { x: x0, y: y0, w: bw, h: bh, cx: x, cy: y };
+    };
+    M.lamp = (o) => {
+      const c = L.ctx, u = U.clamp(o.u == null ? 1 : o.u), b = U.clamp(o.beam == null ? 1 : o.beam) * u;
+      if (b <= 0 || !o.to) return;
+      if (o.arc) {
+        const x0 = o.x, y0 = o.y - (o.r || 40), x1 = o.to.x, y1 = o.to.y - (o.to.h || 60) / 2 - 8, cy = Math.min(y0, y1) - o.arc, n = 40;
+        c.save(); c.lineCap = 'round';
+        c.strokeStyle = U.rgba(o.c, .16 * b); c.lineWidth = 16; c.beginPath(); c.moveTo(x0, y0); c.quadraticCurveTo((x0 + x1) / 2, cy, x1, y1); c.stroke();
+        c.strokeStyle = U.rgba(o.c, .9 * b); c.lineWidth = 3.5; c.setLineDash([10, 8]); c.beginPath(); c.moveTo(x0, y0); c.quadraticCurveTo((x0 + x1) / 2, cy, x1, y1); c.stroke(); c.setLineDash([]);
+        const q = (t) => ({ x: (1 - t) * (1 - t) * x0 + 2 * (1 - t) * t * (x0 + x1) / 2 + t * t * x1, y: (1 - t) * (1 - t) * y0 + 2 * (1 - t) * t * cy + t * t * y1 });
+        const pA = q(1 - 1 / n), ang = Math.atan2(y1 - pA.y, x1 - pA.x), hd = 16;
+        c.fillStyle = U.rgba(o.c, .9 * b); c.beginPath(); c.moveTo(x1, y1); c.lineTo(x1 - Math.cos(ang - .45) * hd, y1 - Math.sin(ang - .45) * hd); c.lineTo(x1 - Math.cos(ang + .45) * hd, y1 - Math.sin(ang + .45) * hd); c.closePath(); c.fill();
+        c.restore(); return;
+      }
+      const tx = o.to.x, ty = o.to.y, hh = (o.to.h || 60) * .42, ang = Math.atan2(ty - o.y, tx - o.x), nx = -Math.sin(ang), ny = Math.cos(ang);
+      c.save();
+      const g = c.createLinearGradient(o.x, o.y, tx, ty); g.addColorStop(0, U.rgba(o.c, .34 * b)); g.addColorStop(1, U.rgba(o.c, .1 * b));
+      c.fillStyle = g; c.beginPath(); c.moveTo(o.x + nx * 7, o.y + ny * 7); c.lineTo(tx + nx * hh, ty + ny * hh); c.lineTo(tx - nx * hh, ty - ny * hh); c.lineTo(o.x - nx * 7, o.y - ny * 7); c.closePath(); c.fill();
+      c.strokeStyle = U.rgba(o.c, .55 * b); c.lineWidth = 2.5; c.setLineDash([3, 7]); c.lineCap = 'round'; c.beginPath(); c.moveTo(o.x, o.y); c.lineTo(tx, ty); c.stroke(); c.setLineDash([]);
+      c.restore();
+    };
+
+    M.chain = (o) => {
+      const s = o.s || base.s, ts = o.ts || s * .64;
+      const ch = { o, ids: [], word: null, drag: null, rej: null, last: null, lay: null };
+      ch.tiles = o.tiles.map((t, i) => ({ id: t.id, part: t.part, home: t.home, at: 'tray', ret: null, i, box: null }));
+      const byId = (id) => ch.tiles.find((t) => t.id === id);
+      const alts = (t) => t.part.alt || [t.part.s];
+      ch.reset = (stem) => {
+        if (stem) o.stem = stem; ch.word = word(o.stem); ch.ids = []; ch.drag = null; ch.rej = null; ch.last = null;
+        ch.tiles.forEach((t) => { t.at = 'tray'; t.ret = null; }); ch.lay = null;
+      };
+      ch.pickOf = (t, w) => {
+        if (!t.part.alt) return [0];
+        const r = (o.pick || ((ww, a) => pick(ww, a, o.ex)))(w || ch.word, alts(t));
+        return r.alts.map((a) => alts(t).indexOf(a)).filter((i) => i >= 0);
+      };
+      const accept = (ids, t) => {
+        if (o.accept) return o.accept(ids, t, ch);
+        const r = check(ch.word.parts.concat([{ s: t.part.s, k: t.part.k }]));
+        if (!r.ok) return { ok: false, code: r.code };
+        const w = o.resolve ? o.resolve(ids) : null;
+        return w ? { ok: true, word: word(w) } : { ok: false, code: 'nincs' };
+      };
+      ch.dropPt = () => { const lay = ch.lay || M.layout(ch.word, { x: o.x, y: o.y, s, a: 'left' }); return { x: lay.end + ts * 1.1, y: o.y - s * .27 }; };
+      ch.tpos = (t) => {
+        const r = t.ret; if (!r) return t.home;
+        const k = L.st - r.t0;
+        if (r.rej) {                                    // rossz sorrend: oda – remeg – vissza
+          if (k < .3) { const e = U.out(k / .3); return { x: U.lerp(r.from.x, r.to.x, e), y: U.lerp(r.from.y, r.to.y, e) }; }
+          if (k < .9) { const q = (k - .3) / .6; return { x: r.to.x + Math.sin(q * 30) * 10 * (1 - q), y: r.to.y }; }
+          const e = U.outBack(U.clamp((k - .9) / .55)); return { x: U.lerp(r.to.x, t.home.x, e), y: U.lerp(r.to.y, t.home.y, e) };
+        }
+        const e = U.outBack(U.clamp(k / .5)); return { x: U.lerp(r.from.x, t.home.x, e), y: U.lerp(r.from.y, t.home.y, e) };
+      };
+      ch.add = (id, q = {}) => {
+        const t = byId(id); if (!t || t.at !== 'tray') return false;
+        const t0 = q.t0 == null ? L.st : q.t0, from = q.from || ch.tpos(t), pk = ch.pickOf(t);
+        const ids2 = ch.ids.concat([id]), r = accept(ids2, t);
+        if (r.ok) {
+          const n0 = ch.word.parts.length; ch.ids = ids2; ch.word = r.word; t.at = 'word'; t.ret = null;
+          ch.last = { id, n0, t0, from, pick: pk }; ch.rej = null; if (o.onChange) o.onChange(ch); return true;
+        }
+        ch.rej = { id, code: r.code, t0 }; t.ret = { t0, from, to: ch.dropPt(), rej: true }; return false;
+      };
+      ch.hit = (x, y) => {
+        for (const t of ch.tiles) { const b = t.box; if (t.at === 'tray' && b && x >= b.x - 6 && x <= b.x + b.w + 6 && y >= b.y - 6 && y <= b.y + b.h + 6) return t; }
+        return null;
+      };
+      ch.update = () => {
+        const P = L.pointer;
+        if (P.pressed && !ch.drag && P.px < L.VW) {
+          const t = ch.hit(P.px, P.py);
+          if (t) { const p = ch.tpos(t); ch.drag = { id: t.id, dx: P.px - p.x, dy: P.py - p.y, sx: P.px, sy: P.py, moved: false }; t.ret = null; }
+        }
+        if (ch.drag) {
+          const d = ch.drag, t = byId(d.id);
+          if (Math.hypot(P.x - d.sx, P.y - d.sy) > 12) d.moved = true;
+          if (!P.down) {
+            ch.drag = null; const pos = { x: P.x - d.dx, y: P.y - d.dy }, dp = ch.dropPt();
+            if (!d.moved) ch.add(d.id);
+            else if (Math.hypot(pos.x - dp.x, pos.y - dp.y) < (o.R || 190)) ch.add(d.id, { from: pos });
+            else t.ret = { t0: L.st, from: pos };
+          }
+        }
+        const h = !ch.drag && P.inside ? ch.hit(P.x, P.y) : null;
+        if (L.stage) L.stage.style.cursor = ch.drag ? 'grabbing' : h ? 'grab' : '';
+      };
+      const drawTile = (t, p, u, ring) => {
+        const pk = u > 0 ? ch.pickOf(t) : null;
+        return t.part.alt ? M.variant(alts(t), p.x, p.y, { s: ts, kind: t.part.k, pick: pk, u, ring, k: o.k })
+          : M.tile(t.part, p.x, p.y, { s: ts, pre: '-', ring, k: o.k });
+      };
+      ch.draw = (q = {}) => {
+        const c = L.ctx, P = L.pointer;
+        let from = null;
+        if (ch.last) { const k = U.clamp((L.st - ch.last.t0) / .45); if (k < 1) from = { i0: ch.last.n0, x: ch.last.from.x, y: ch.last.from.y, u: U.out(k) }; }
+        const rk = ch.rej ? L.st - ch.rej.t0 : 99, shake = rk > .3 && rk < .9 ? Math.sin((rk - .3) * 40) * 7 * (1 - (rk - .3) / .6) : 0;
+        ch.lay = M.draw(ch.word, { x: o.x + shake, y: o.y, s, a: 'left', open: 1, labels: q.labels, from });
+        const left = ch.tiles.some((t) => t.at === 'tray');
+        if (left) {                                      // a célhely: szaggatott keret a szó végén
+          const dp = ch.dropPt(), hot = ch.drag ? U.clamp(1 - (Math.hypot(P.x - ch.drag.dx - dp.x, P.y - ch.drag.dy - dp.y) - 60) / 260) : 0;
+          c.save(); c.strokeStyle = U.rgba('#565d72', .45 + .4 * hot); c.lineWidth = 2.5; c.setLineDash([9, 7]);
+          c.beginPath(); c.roundRect(dp.x - ts * 1.0, dp.y - s * .63, ts * 2.0, s * 1.26, 14); c.stroke(); c.setLineDash([]); c.restore();
+          if (q.hint) L.tx(L.lab(q.hint), dp.x, dp.y + s * .63 + 32, { s: 24, w: 600, a: 'center', c: '#565d72', k: q.hint });
+        }
+        ch.tiles.forEach((t) => {
+          if (t.at !== 'tray' || (ch.drag && ch.drag.id === t.id)) return;
+          const rj = ch.rej && ch.rej.id === t.id && rk < .9;
+          t.box = drawTile(t, ch.tpos(t), rj ? 1 : 0, rj ? '#b3261e' : null);
+        });
+        if (ch.drag) {
+          const t = byId(ch.drag.id), p = { x: P.x - ch.drag.dx, y: P.y - ch.drag.dy }, dp = ch.dropPt();
+          const u = U.clamp(1 - (Math.hypot(p.x - dp.x, p.y - dp.y) - 50) / 300);
+          t.box = drawTile(t, p, u, null);
+        }
+        if (ch.rej && rk > 1.2 && rk < 5.5 && q.whyAt) {   // az indok, amikor a csempe már visszaért
+          const w = M.why(ch.rej.code);
+          if (w) { const c2 = L.ctx, A0 = c2.globalAlpha; c2.globalAlpha = A0 * U.smooth((rk - 1.2) / .3) * (1 - U.smooth((rk - 5) / .5));
+            L.pill(w.s, q.whyAt.x, q.whyAt.y, { a: 'center', s: 28, w: 600, bg: '#fffaf1', bd: '#b3261e', bw: 3, pad: 16, c: '#b3261e', k: w.k, max: 1180 }); c2.globalAlpha = A0; }
+        }
+        return ch.lay;
+      };
+      ch.reset();
+      return ch;
+    };
+
+    M.assim = (o) => {
+      const c = L.ctx, A0 = c.globalAlpha, s = o.s || base.s, t = U.clamp(o.t || 0), col = o.c || '#c8401c';
+      const app = U.inOut(t / .35), mv = U.clamp((t - .35) / .3), sw = U.smooth((t - .65) / .3);
+      const gap = U.lerp(s * 1.6, s * .1, app), wA = Math.max(L.measure(o.a.s, font(s)).w, L.measure(o.out ? o.out.s : '', font(s)).w) + s * .5, wB = L.measure(o.b.s, font(s)).w + s * .5;
+      const xa = o.x - gap / 2 - wA / 2, xb = o.x + gap / 2 + wB / 2, cy = o.y - s * .27, h = s * 1.26;
+      const KA = { c: U.mix('#1c2440', col, sw), bg: '#fffaf1', lw: 3 }, KB = KINDS['tő'];
+      rect(c, xa - wA / 2, cy - h / 2, wA, h, KA, 1, null, true); rect(c, xb - wB / 2, cy - h / 2, wB, h, KB, 1, null, true);
+      const f = font(s);
+      c.globalAlpha = A0 * (1 - sw); L.tx(o.a.s, xa, o.y, Object.assign({}, f, { a: 'center', k: o.k }));
+      if (o.out) { c.globalAlpha = A0 * sw; L.tx(o.out.s, xa, o.y, Object.assign({}, f, { a: 'center', c: col, k: o.k })); }
+      c.globalAlpha = A0; L.tx(o.b.s, xb, o.y, Object.assign({}, f, { a: 'center', k: o.k }));
+      // jelvények a csempék alatt; ha a két jelvény összeérne, a közös élhez igazodnak (a balra, b jobbra)
+      const by = cy + h / 2 + 34, bo = { s: 22, w: 600, bg: '#fffaf1', pad: 10 }, joint = (xa + wA / 2 + xb - wB / 2) / 2;
+      const bw = (bd) => L.measure(bd.s, bo).w + 20, bxA = (bd) => Math.min(xa + bw(bd) / 2, joint - 5);
+      if (o.b.badge) L.pill(o.b.badge.s, Math.max(xb - bw(o.b.badge) / 2, joint + 5), by, Object.assign({}, bo, { a: 'left', bd: col, c: col, k: o.b.badge.k }));
+      if (o.a.badge) { c.globalAlpha = A0 * (1 - sw); L.pill(o.a.badge.s, bxA(o.a.badge), by, Object.assign({}, bo, { a: 'right', bd: '#565d72', c: '#565d72', k: o.a.badge.k })); }
+      if (o.out && o.out.badge) { c.globalAlpha = A0 * sw; L.pill(o.out.badge.s, bxA(o.out.badge), by, Object.assign({}, bo, { a: 'right', bd: col, c: col, k: o.out.badge.k })); }
+      c.globalAlpha = A0;
+      if (mv > 0 && mv < 1) { const e = U.inOut(mv), px = U.lerp(xb, xa, e), py = by - Math.sin(Math.PI * e) * s * .9; glow(c, px, py, 26, col, 1); c.fillStyle = col; c.beginPath(); c.arc(px, py, 8, 0, U.TAU); c.fill(); }
+      return { a: { x: xa - wA / 2, y: cy - h / 2, w: wA, h }, b: { x: xb - wB / 2, y: cy - h / 2, w: wB, h } };
+    };
+    return M;
+  }
+  return { KINDS, HARM, word, parse, check, pick, create };
+})();
+/* ── MODUL VÉGE ── */
+
+/* ── MODUL: Kártyák (TortCards) ────────────────────────────────────────────────────
+   G modul (pilot/tortenelem-5-6/terv.md, 5. fejezet): „húzd a helyére” – kártyák rendezése zónákba
+   (pl. két oszlop: falu / város), azonnali visszajelzéssel. Referencia: 07-kozepkori-varos.
+   Később változtatás nélkül átemelhető: shared/tort/cards.js. Csak a Lesson motorra épül
+   (L.ctx, L.tx, L.measure, L.pointer, L.stage, L.st, L.VW).
+
+   const g = TortCards.create(L, {
+     zones: [{id, x, y, w, h, title: {s, k}, sub?: {s, k}, head?: 110}], // célterületek; head: a fejléc magassága
+     cards: [{id, label: {s, k}, zone}],      // zone: a helyes zóna id-ja (a kódban rögzített megoldás)
+     tray: {x, y, w, h, pad?: 24, top?: 56},  // a kártyák kiinduló helye: sorfolytonosan, soronként középre
+     font?: {f, s, w},                        // kártyafelirat (alap: Bricolage 24 / 600)
+     gap?: 14, ease?: .45,                    // térköz px; a mozgás hossza mp
+     decor?: (zone, alpha) => {}              // opcionális: saját rajz a zóna fejlécébe
+   });
+   g.reset()                  minden kártya a tálcára, animáció nélkül (a lépés enter()-jében hívd)
+   g.place(id, zoneId, t0?)   kártya egy zónába (zoneId null → vissza a tálcára); a mozgás t0-tól (L.st) indul
+   g.solve(t0?)               minden kártya a helyes zónába, kissé lépcsőzetesen
+   g.update()                 minden képkockán, a rajzolás előtt, csak az aktív lépésben: húzás, kurzor
+   g.draw({a})                zónák, kártyák (a húzott legfelül), visszajelzés: zöld keret + pipa / piros + kereszt
+   g.score() → {ok, placed, total}   ·   g.touched: a felhasználó már húzott   ·   g.cards, g.zones
+   Az állapot zárt képletű: a kártya helye = lerp(from, cél, inOut((L.st − t0) / ease)).
+   ──────────────────────────────────────────────────────────────────────────────── */
+const TortCards = (() => {
+  const F = Lesson.FONTS, U = Lesson.U;
+  const INK = '#1c2440', MUT = '#565d72', CARD = '#fffaf1', GOOD = '#1d7a45', BAD = '#b3261e', RED = '#c8401c';
+
+  function create(L, cfg) {
+    const FT = Object.assign({ f: F.B, s: 24, w: 600 }, cfg.font || {});
+    const gap = cfg.gap || 14, ease = cfg.ease || .45, PX = 18, H = FT.s + 30, ICON = 30;
+    const zones = cfg.zones.map((z) => Object.assign({ head: 110 }, z));
+    const cards = cfg.cards.map((q, i) => ({ id: q.id, label: q.label, zone: q.zone, i, at: null, ord: 0, from: null, tgt: null, t0: -99 }));
+    const g = { zones, cards, touched: false, drag: null, _pd: false, _ord: 0, _hov: null };
+    const byId = (id) => cards.find((q) => q.id === id);
+    const zoneAt = (x, y) => zones.find((z) => x >= z.x && x <= z.x + z.w && y >= z.y && y <= z.y + z.h) || null;
+    const cw = (q) => L.measure(q.label.s, FT).w + PX * 2 + ICON;
+    const ez = (t) => (t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+
+    /* sorfolytonos elhelyezés egy téglalapban; center: a sorok középre igazítva */
+    function flow(list, x, y, w, center) {
+      const rows = [[]]; let cx = 0;
+      for (const q of list) { const ww = cw(q); if (cx > 0 && cx + ww > w) { rows.push([]); cx = 0; } rows[rows.length - 1].push({ q, ww, x: cx }); cx += ww + gap; }
+      const out = {};
+      rows.forEach((r, ri) => {
+        const rw = r.length ? r[r.length - 1].x + r[r.length - 1].ww : 0, off = center ? (w - rw) / 2 : 0;
+        r.forEach((e) => { out[e.q.id] = { x: x + off + e.x, y: y + ri * (H + gap), w: e.ww }; });
+      });
+      return out;
+    }
+    let traySlots = null;
+    const tray = () => { const t = cfg.tray, p = t.pad == null ? 24 : t.pad; return { x: t.x + p, y: t.y + (t.top == null ? 56 : t.top), w: t.w - p * 2 }; };
+    function target(q) {
+      if (!q.at) { if (!traySlots) { const t = tray(); traySlots = flow(cards, t.x, t.y, t.w, true); } return traySlots[q.id]; }
+      const z = zones.find((zz) => zz.id === q.at), list = cards.filter((c2) => c2.at === q.at).sort((a, b) => a.ord - b.ord);
+      return flow(list, z.x + 20, z.y + z.head, z.w - 40, false)[q.id];
+    }
+    function disp(q) {
+      const T = target(q);
+      if (!q.tgt || Math.abs(T.x - q.tgt.x) > .5 || Math.abs(T.y - q.tgt.y) > .5) {   // új cél (pl. átrendeződés): onnan, ahol most van
+        q.from = q.tgt ? cur(q) : null; q.t0 = q.tgt ? L.st : -99; q.tgt = { x: T.x, y: T.y };
+      }
+      return Object.assign(cur(q), { w: T.w });
+    }
+    function cur(q) {
+      if (!q.from) return { x: q.tgt.x, y: q.tgt.y };
+      const k = ez(U.clamp((L.st - q.t0) / ease));
+      return { x: U.lerp(q.from.x, q.tgt.x, k), y: U.lerp(q.from.y, q.tgt.y, k) };
+    }
+
+    g.reset = () => { cards.forEach((q) => { q.at = null; q.ord = 0; q.from = null; q.tgt = null; q.t0 = -99; }); traySlots = null; g.drag = null; g.touched = false; g._ord = 0; };
+    g.place = (id, zid, t0, from) => {
+      const q = typeof id === 'string' ? byId(id) : id; if (!q) return;
+      const p = from || (q.tgt ? cur(q) : target(q));
+      q.at = zid || null; q.ord = ++g._ord;
+      const T = target(q); q.from = { x: p.x, y: p.y }; q.tgt = { x: T.x, y: T.y }; q.t0 = t0 == null ? L.st : t0;
+    };
+    g.solve = (t0) => { const t = t0 == null ? L.st : t0; cards.filter((q) => q.at !== q.zone).forEach((q, i) => g.place(q, q.zone, t + i * .08)); };
+    g.score = () => ({ ok: cards.filter((q) => q.at && q.at === q.zone).length, placed: cards.filter((q) => q.at).length, total: cards.length });
+
+    g.update = () => {
+      const p = L.pointer, edge = p.down && !g._pd; g._pd = p.down;
+      const hit = () => { for (let i = cards.length - 1; i >= 0; i--) { const q = order()[i], d = disp(q); if (p.x >= d.x && p.x <= d.x + d.w && p.y >= d.y && p.y <= d.y + H) return { q, d }; } return null; };
+      if (edge && p.x < L.VW && !g.drag) { const h = hit(); if (h) { g.drag = { q: h.q, dx: p.x - h.d.x, dy: p.y - h.d.y }; g.touched = true; } }
+      if (g.drag && !p.down) {
+        const d = g.drag, x = p.x - d.dx, y = p.y - d.dy, z = zoneAt(p.x, p.y), t = cfg.tray;
+        const inTray = p.x >= t.x && p.x <= t.x + t.w && p.y >= t.y && p.y <= t.y + t.h;
+        if (z) g.place(d.q, z.id, L.st, { x, y });
+        else if (inTray) g.place(d.q, null, L.st, { x, y });
+        else { d.q.from = { x, y }; d.q.t0 = L.st; }                  // máshová ejtve: vissza a helyére
+        g.drag = null;
+      }
+      const h = g.drag ? null : (p.inside && p.x < L.VW ? hit() : null);
+      g._hov = h ? h.q : null;
+      if (L.stage) L.stage.style.cursor = g.drag ? 'grabbing' : h ? 'grab' : '';
+    };
+    const order = () => cards.slice().sort((a, b) => (a === (g.drag && g.drag.q) ? 1 : 0) - (b === (g.drag && g.drag.q) ? 1 : 0) || (a.at ? 1 : 0) - (b.at ? 1 : 0) || a.ord - b.ord || a.i - b.i);
+
+    function mark(c, ok, x, y) {        // pipa / kereszt (rajz, nem szöveg)
+      c.save(); c.lineCap = 'round'; c.lineJoin = 'round'; c.lineWidth = 4; c.strokeStyle = ok ? GOOD : BAD; c.beginPath();
+      if (ok) { c.moveTo(x - 9, y); c.lineTo(x - 3, y + 7); c.lineTo(x + 10, y - 8); } else { c.moveTo(x - 7, y - 7); c.lineTo(x + 7, y + 7); c.moveTo(x + 7, y - 7); c.lineTo(x - 7, y + 7); }
+      c.stroke(); c.restore();
+    }
+    function card(c, q, d, lift) {
+      const placed = !!q.at, ok = placed && q.at === q.zone, hov = g._hov === q;
+      c.save();
+      if (lift) { c.shadowColor = 'rgba(70,50,20,.28)'; c.shadowBlur = 22; c.shadowOffsetY = 8; }
+      c.beginPath(); c.roundRect(d.x, d.y, d.w, H, 10); c.fillStyle = CARD; c.fill(); c.shadowColor = 'transparent';
+      if (placed && !lift) { c.fillStyle = U.rgba(ok ? GOOD : BAD, .08); c.fill(); }
+      c.lineWidth = placed && !lift ? 3 : 2; c.strokeStyle = placed && !lift ? (ok ? GOOD : BAD) : hov || lift ? RED : U.rgba(INK, .45); c.stroke();
+      L.tx(q.label.s, d.x + PX, d.y + H / 2 + 1, Object.assign({}, FT, { b: 'middle', c: INK, k: q.label.k }));
+      const ix = d.x + d.w - PX - 8, iy = d.y + H / 2;
+      if (placed && !lift) mark(c, ok, ix, iy);
+      else { c.fillStyle = U.rgba(INK, .4); for (let r = -1; r <= 1; r++) for (let s = 0; s < 2; s++) { c.beginPath(); c.arc(ix - 3 + s * 7, iy + r * 7, 2.2, 0, Math.PI * 2); c.fill(); } }
+      c.restore();
+    }
+    g.draw = (o = {}) => {
+      const c = L.ctx, A = o.a == null ? 1 : o.a; if (A <= .01) return;
+      c.save(); c.globalAlpha *= A;
+      for (const z of zones) {
+        c.beginPath(); c.roundRect(z.x, z.y, z.w, z.h, 16); c.fillStyle = 'rgba(255,250,241,.82)'; c.fill();
+        c.setLineDash([10, 7]); c.lineWidth = 2.5; c.strokeStyle = U.rgba(INK, .5); c.stroke(); c.setLineDash([]);
+        L.tx(z.title.s, z.x + 22, z.y + 54, { f: F.D, s: 40, w: 600, c: INK, k: z.title.k });
+        if (z.sub) L.tx(z.sub.s, z.x + 22, z.y + 88, { f: F.B, s: 22, w: 500, c: MUT, k: z.sub.k });
+        if (cfg.decor) { c.save(); cfg.decor(z, c.globalAlpha); c.restore(); }
+      }
+      const t = cfg.tray; c.beginPath(); c.roundRect(t.x, t.y, t.w, t.h, 16); c.fillStyle = 'rgba(28,36,64,.05)'; c.fill();
+      c.lineWidth = 2; c.strokeStyle = U.rgba(INK, .25); c.stroke();
+      const p = L.pointer;
+      for (const q of order()) {
+        if (g.drag && g.drag.q === q) continue;
+        card(c, q, disp(q), q.from && L.st - q.t0 < ease);
+      }
+      if (g.drag) { const q = g.drag.q, d = disp(q); card(c, q, { x: p.x - g.drag.dx, y: p.y - g.drag.dy, w: d.w }, true); }
+      c.restore();
+    };
+    return g;
+  }
+  return { create };
+})();
+/* ── MODUL VÉGE: Kártyák ── */
+
+/* ── MODUL: Hang (MagHang) · forrás: magyar-5-6/10-janos-vitez-vers (kopogás), magyar-5-6/02-beszedhang (szintézis, metszet), 2026-11-24 ── */
+/* Szintetizált hang Web Audióval. A hang CSAK kattintásra szól: az AudioContext az első unlock() hívásakor jön létre,
+   és az unlock()-ot kizárólag felhasználói kattintás (gomb) kezelőjéből szabad hívni. A rajz soha nem függhet a hangtól
+   (a QA headless, hang nélkül fut): a lecke hang nélkül is teljes. Nincs felvett emberi hang, nincs gépi felolvasás.
+   Változatok: 10-janos-vitez-vers – ütemkopogás (click); 02-beszedhang – formánsszintézis (vowel), zörej (noise),
+   szájüreg-metszet (tract), hangszalagok felülről (folds), magánhangzó-négyszög (vowelChart), szűrőgörbe (response,
+   spectrum). Fenntartott név a 01 leckének: MagHang.hum (dallam) – visszafelé kompatibilis bővítéssel kerül ide.
+   ─ hang ─
+     MagHang.ready()            → true, ha már van hangkontextus (a rajz NE függjön tőle)
+     MagHang.unlock()           → AudioContext | null; létrehozza / folytatja – csak kattintáskezelőből!
+     MagHang.vol(v)             fő hangerő 0..1 (alap .35, mérsékelt)
+     MagHang.perfAt(acT)        → az AudioContext-idő (mp) a performance.now() skáláján (ms) – az időméréshez
+                                 (L.pointer.events[].ts, L.now ugyanezen a skálán van)
+     MagHang.click(times, o)    → {ac0, perf0} kopogás: times = [mp a kezdéstől], o.strong: [bool] vagy fn(i) (erős:
+                                 mélyebb, hangosabb koppanás), o.lead (mp, alap .15) – a kezdés (0. mp) AudioContext-ideje
+                                 (ac0) és performance-ideje (perf0, ms). Hang nélkül (nincs kontextus): null.
+     MagHang.stop()             a beütemezett hangok leállítása (kopogás, magánhangzó, zörej)
+     MagHang.vowel(o)           → hang-fogantyú | null (nincs kontextus). Forrás–szűrő modell: fűrészfog-zönge (o.f0 Hz,
+                                 enyhe vibrátóval) → 3 sorba kötött rezonátor (o.F = [F1, F2, F3] Hz, o.B = [B1, B2, B3]
+                                 sávszélesség, alap [80, 90, 150]) + egy rögzített 4. (3500 Hz) a természetesebb hangszínért.
+                                 o.dur: mp (null → tart, amíg h.stop()); o.vol (alap .8); o.raw: true → szűrő nélkül (nyers
+                                 zönge, csak tompítva); o.path: [[mp, {F, f0}], …] menet közbeni csúszás (pl. i → u).
+     MagHang.noise(o)           → fogantyú | null. Réshang: fehér zaj sáváteresztővel (o.band = [lo, hi] Hz); o.voiced:
+                                 + zönge (o.f0) – a zörejt a zönge üteme modulálja, és egy mély zümmögés (o.F = [F1, F2],
+                                 alap [300, 1400]) szól alatta; o.nvol: a zörej hangereje (alap .5); o.dur, o.vol mint fent.
+     fogantyú h                 h.set({F, f0, band, voiced}, ramp mp) – folyamatos hang menet közbeni hangolása (új
+                                 hangforrás nem indul); h.stop(rel mp) – lecsengés és leállás; h.alive → bool
+     MagHang.render(kind, o, sec) → Promise<Float32Array>: ugyanaz a hang OfflineAudioContextben (hangszóró nélkül;
+                                 csak tesztre / elemzésre – a QA ezt is hangindításnak látja, a leckéből ne hívd)
+   ─ modell (rajz és hang ugyanabból) ─
+     MagHang.response(f, F, B)  → a szűrő erősítése f Hz-en (a 4 rezonátor szorzata, lineáris)
+     MagHang.spectrum(f0, F, B, fmax) → [{n, f, src, flt, out}] a zönge felharmonikusai (src = 1/n, fűrészfog), a szűrő
+                                 erősítése (flt) és a kijövő hang (out = src · flt)
+     MagHang.formants(fb, hl, lips, vowels) → {F: [F1, F2, F3], near: [legközelebbi magánhangzó(k)], d}: a megadott
+                                 magánhangzók (vowels = [{v, fb, hl, lips, F}]) távolsággal súlyozott átlaga a (fb, hl, lips)
+                                 pontban; egy magánhangzó helyén pontosan az ő értékei. fb: 0 elöl … 1 hátul, hl: 0 fent …
+                                 1 lent, lips: 0 réses … 1 kerek. Azonos helyű párok (i, í) együtt „legközelebbiek”.
+   ─ rajz (minden felirat L.tx / L.pill; a színek a világos téma szerint) ─
+     MagHang.tract(L, o)        → g: oldalnézeti fejmetszet (arc balra). o: {x, y, s, fb, hl, lips, velum (0 leengedve,
+                                 orron át lélegzik … 1 felemelve), voiced 0..1, t (mp, a rezgés rajzához), cons: null | 'alv'
+                                 (sz, z) | 'post' (s, zs) | 'labdent' (f, v), body: true (nyak, törzs, tüdő), air: 0..1 (a
+                                 levegő pöttyeinek alfája), airT (mp, a pöttyök ideje), hi: {rész: szín} (kiemelés: nyelv,
+                                 ajak, gége, tüdő, orr, száj, garat, szájpadlás), a}. Feliratot nem ír: a g pontjaihoz a lecke
+                                 húz vezetővonalat. g = {pt: {rész: [x, y]}, air: [[x, y], …] (a levegő útja), toStage(x, y),
+                                 tongueTop: [x, y], s}. A metszet MODELL: a nyelv egy körív, az állkapocs egy pont körül fordul.
+     MagHang.tongueAt(g, px, py) → {fb, hl}: melyik nyelvállás teszi a nyelvhát tetejét a (px, py) pontra (húzáshoz)
+     MagHang.folds(L, o)        hangszalagok felülnézetben: o = {x, y, s, open 0..1 (nyugalmi rés), voiced 0..1, ph (rezgés
+                                 fázisa, mp · rezgésszám), a}; → {x, y, w, h}
+     MagHang.lipsFront(L, o)    az ajak elölről: o = {x, y, s, lips 0..1, hl 0..1, a}
+     MagHang.vowelChart(L, o)   → ch: magánhangzó-négyszög. o = {x, y, w, h, vowels: [{v, fb, hl, lips}], pt: [fb, hl] |
+                                 null (a nyelv pöttye), col: fn(v) → szín, hi: fn(v) → bool, dim (.3), font, rows: [{s, k}×3]
+                                 (fent, középen, lent; + c, a), cols: [{s, k}×2] (elöl, hátul), mark: fn(v) → háttérszín |
+                                 null (kitöltött jelölés), a}. Réses balra, kerek jobbra a cellán belül; azonos helyű párok
+                                 (i, í) egymás mellett. ch = {at(fb, hl) → [x, y] (a betűk / a pötty helye), inv(x, y) →
+                                 [fb, hl], box: {v: {x, y, w, h}}, pick(px, py) → v | null, inside(px, py) → bool}
+*/
+const MagHang = (() => {
+  let ac = null, master = null, live = [], volume = .35;
+  const AC = () => window.AudioContext || window.webkitAudioContext;
+  function unlock() {
+    try {
+      if (!ac) { const C = AC(); if (!C) return null; ac = new C(); master = ac.createGain(); master.gain.value = volume; master.connect(ac.destination); }
+      if (ac.state === 'suspended') ac.resume();
+      return ac;
+    } catch (e) { return null; }
+  }
+  function perfAt(acT) {
+    if (!ac) return null;
+    const ts = ac.getOutputTimestamp ? ac.getOutputTimestamp() : null;
+    if (ts && ts.performanceTime > 0) return ts.performanceTime + (acT - ts.contextTime) * 1000;
+    return performance.now() + (acT - ac.currentTime - (ac.outputLatency || ac.baseLatency || 0)) * 1000;
+  }
+  function blip(t, strong) {
+    const o = ac.createOscillator(), g = ac.createGain();
+    o.type = 'triangle'; o.frequency.setValueAtTime(strong ? 740 : 1250, t); o.frequency.exponentialRampToValueAtTime(strong ? 380 : 900, t + .05);
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(strong ? .9 : .32, t + .004); g.gain.exponentialRampToValueAtTime(0.0001, t + (strong ? .11 : .06));
+    o.connect(g); g.connect(master); o.start(t); o.stop(t + .14); live.push(o);
+    o.onended = () => { live = live.filter((x) => x !== o); };
+  }
+  function click(times, o = {}) {
+    if (!ac) return null;
+    stop();
+    const ac0 = ac.currentTime + (o.lead == null ? .15 : o.lead);
+    const st = typeof o.strong === 'function' ? o.strong : (i) => !!(o.strong && o.strong[i]);
+    times.forEach((t, i) => blip(ac0 + t, st(i)));
+    return { ac0, perf0: perfAt(ac0) };
+  }
+  function stop() { live.forEach((x) => { try { x.stop(); } catch (e) { /* már leállt */ } }); live = []; held.slice().forEach((h) => h.stop(.04)); }
+
+  /* ── szintézis (02-beszedhang) ── */
+  const U = Lesson.U, F4 = 3500, B4 = 250, BDEF = [80, 90, 150];
+  let held = [], vbus = null, noiseBuf = null;
+  const qdb = (f, b) => 20 * Math.log10(Math.max(.3, f / b));     // a lowpass biquad Q-ja dB-ben (Web Audio): csúcs = F/B
+  function bus(cx, dest) {                                           // magánhangzó-sín: kompresszor → fő hangerő
+    if (cx === ac && vbus) return vbus;
+    const k = cx.createDynamicsCompressor(); k.threshold.value = -18; k.knee.value = 12; k.ratio.value = 4; k.attack.value = .005; k.release.value = .15;
+    k.connect(dest); if (cx === ac) vbus = k; return k;
+  }
+  function nbuf(cx) {
+    if (cx === ac && noiseBuf) return noiseBuf;
+    const n = Math.round(cx.sampleRate * 2), b = cx.createBuffer(1, n, cx.sampleRate), d = b.getChannelData(0), r = U.rng(9001);
+    for (let i = 0; i < n; i++) d[i] = r() * 2 - 1;
+    if (cx === ac) noiseBuf = b; return b;
+  }
+  function env(cx, g, t0, o, peak) {                                  // felfutás – (tartás) – lecsengés
+    const att = o.att || .04, rel = o.rel || .12;
+    g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(peak, t0 + att);
+    if (o.dur) { const te = t0 + Math.max(att + .02, o.dur); g.gain.setValueAtTime(peak, te - rel); g.gain.exponentialRampToValueAtTime(0.0001, te); return te + .02; }
+    return null;
+  }
+  function voiceSrc(cx, t0, f0, nodes) {                              // fűrészfog + 5 Hz-es, ±0,6 %-os vibrátó
+    const o = cx.createOscillator(), lfo = cx.createOscillator(), lg = cx.createGain();
+    o.type = 'sawtooth'; o.frequency.setValueAtTime(f0, t0); lfo.frequency.value = 5; lg.gain.value = f0 * .006;
+    lfo.connect(lg); lg.connect(o.frequency); nodes.push(o, lfo); return { o, lg };
+  }
+  function build(cx, dest, kind, o) {
+    const t0 = cx.currentTime + .02, nodes = [], f0 = o.f0 || 120, B = o.B || BDEF;
+    const out = cx.createGain(); out.connect(bus(cx, dest));
+    const h = { alive: true, kind, cx, set: null, stop: null, srcs: nodes };
+    if (kind === 'vowel') {
+      const { o: src, lg } = voiceSrc(cx, t0, f0, nodes), pre = cx.createGain(); pre.gain.value = o.raw ? .05 : .16;
+      src.connect(pre); let last = pre; const rs = [];
+      const FF = o.F || [500, 1500, 2500];
+      if (o.raw) { const lp = cx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 2600; lp.Q.value = -3; last.connect(lp); last = lp; }
+      else [FF[0], FF[1], FF[2], F4].forEach((f, i) => {
+        const r = cx.createBiquadFilter(); r.type = 'lowpass'; r.frequency.setValueAtTime(f, t0); r.Q.setValueAtTime(qdb(f, i < 3 ? B[i] : B4), t0);
+        last.connect(r); last = r; rs.push(r);
+      });
+      last.connect(out);
+      const tune = (p, t, ramp) => {
+        if (p.f0) { src.frequency.setTargetAtTime(p.f0, t, ramp / 3 + .001); lg.gain.setTargetAtTime(p.f0 * .006, t, ramp / 3 + .001); }
+        if (p.F && rs.length) p.F.forEach((f, i) => { rs[i].frequency.setTargetAtTime(f, t, ramp / 3 + .001); rs[i].Q.setTargetAtTime(qdb(f, B[i]), t, ramp / 3 + .001); });
+      };
+      (o.path || []).forEach(([dt, p]) => {
+        if (p.F && rs.length) p.F.forEach((f, i) => { rs[i].frequency.linearRampToValueAtTime(f, t0 + dt); rs[i].Q.linearRampToValueAtTime(qdb(f, B[i]), t0 + dt); });
+        if (p.f0) src.frequency.linearRampToValueAtTime(p.f0, t0 + dt);
+      });
+      h.set = (p, ramp = .08) => { if (h.alive) tune(p, cx.currentTime, ramp); };
+    } else {                                                          // zörej (réshang), zöngével vagy anélkül
+      const ns = cx.createBufferSource(); ns.buffer = nbuf(cx); ns.loop = true; nodes.push(ns);
+      const hp = cx.createBiquadFilter(), lp = cx.createBiquadFilter(), hp2 = cx.createBiquadFilter(), am = cx.createGain(), ng = cx.createGain();
+      hp.type = hp2.type = 'highpass'; lp.type = 'lowpass'; hp.Q.value = hp2.Q.value = lp.Q.value = -3;
+      const band = o.band || [4000, 8000];
+      hp.frequency.value = hp2.frequency.value = band[0]; lp.frequency.value = Math.min(band[1], cx.sampleRate / 2 - 500);
+      ns.connect(hp); hp.connect(hp2); hp2.connect(lp); lp.connect(am); am.connect(ng); ng.connect(out);
+      ng.gain.value = o.nvol == null ? .5 : o.nvol;
+      const { o: src, lg } = voiceSrc(cx, t0, f0, nodes);              // a zönge: zörej-moduláció + mély zümmögés
+      const mod = cx.createGain(), hum = cx.createGain(), r1 = cx.createBiquadFilter(), r2 = cx.createBiquadFilter();
+      const FF = o.F || [300, 1400];
+      r1.type = r2.type = 'lowpass'; r1.frequency.value = FF[0]; r1.Q.value = qdb(FF[0], 70); r2.frequency.value = FF[1]; r2.Q.value = qdb(FF[1], 120);
+      src.connect(mod); mod.connect(am.gain); src.connect(hum); hum.connect(r1); r1.connect(r2); r2.connect(out);
+      const voice = (v, t, ramp) => {
+        am.gain.setTargetAtTime(v ? .55 : 1, t, ramp / 3 + .001); mod.gain.setTargetAtTime(v ? .45 : 0, t, ramp / 3 + .001);
+        hum.gain.setTargetAtTime(v ? .22 : 0, t, ramp / 3 + .001);
+      };
+      am.gain.value = o.voiced ? .55 : 1; mod.gain.value = o.voiced ? .45 : 0; hum.gain.value = o.voiced ? .22 : 0;
+      h.set = (p, ramp = .08) => {
+        if (!h.alive) return; const t = cx.currentTime;
+        if (p.voiced != null) voice(p.voiced, t, ramp);
+        if (p.f0) { src.frequency.setTargetAtTime(p.f0, t, ramp / 3 + .001); lg.gain.setTargetAtTime(p.f0 * .006, t, ramp / 3 + .001); }
+        if (p.band) { hp.frequency.setTargetAtTime(p.band[0], t, ramp / 3 + .001); hp2.frequency.setTargetAtTime(p.band[0], t, ramp / 3 + .001); lp.frequency.setTargetAtTime(Math.min(p.band[1], cx.sampleRate / 2 - 500), t, ramp / 3 + .001); }
+      };
+    }
+    const vol = o.vol == null ? .8 : o.vol, te = env(cx, out, t0, o, vol);
+    nodes.forEach((n) => n.start(t0));
+    if (te) nodes.forEach((n) => n.stop(te));
+    h.stop = (rel = .12) => {
+      if (!h.alive) return; h.alive = false; held = held.filter((x) => x !== h);
+      const t = cx.currentTime; out.gain.cancelScheduledValues(t); out.gain.setValueAtTime(Math.max(.0001, out.gain.value), t);
+      out.gain.exponentialRampToValueAtTime(0.0001, t + rel); nodes.forEach((n) => { try { n.stop(t + rel + .02); } catch (e) { /* már leállt */ } });
+    };
+    if (te) nodes[0].onended = () => { h.alive = false; held = held.filter((x) => x !== h); };
+    return h;
+  }
+  function play(kind, o) {
+    if (!ac || ac.state === 'closed') return null;
+    if (o.solo !== false) held.slice().forEach((x) => x.stop(.05));
+    const h = build(ac, master, kind, o); held.push(h); return h;
+  }
+  const vowel = (o = {}) => play('vowel', o), noise = (o = {}) => play('noise', o);
+  function render(kind, o, sec = 1, sr = 44100) {
+    const OC = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+    if (!OC) return Promise.resolve(null);
+    const cx = new OC(1, Math.round(sr * sec), sr);
+    build(cx, cx.destination, kind, Object.assign({ dur: sec - .05 }, o));
+    return cx.startRendering().then((b) => b.getChannelData(0));
+  }
+
+  /* ── a modell: ugyanaz a szűrő a rajzon, mint a hangban (analóg közelítés: kétpólusú rezonátorok sorban) ── */
+  function response(f, F, B = BDEF) {
+    let g = 1;
+    [F[0], F[1], F[2], F4].forEach((Fi, i) => { const x = f / Fi, q = Fi / (i < 3 ? B[i] : B4); g /= Math.sqrt((1 - x * x) ** 2 + (x / q) ** 2); });
+    return g;
+  }
+  function spectrum(f0, F, B, fmax = 4000) {
+    const out = [];
+    for (let n = 1; n * f0 <= fmax; n++) { const f = n * f0, src = 1 / n, flt = F ? response(f, F, B) : 1; out.push({ n, f, src, flt, out: src * flt }); }
+    return out;
+  }
+  function formants(fb, hl, lips, vowels) {
+    let sw = 0; const acc = [0, 0, 0]; let best = 1e9, near = [];
+    for (const v of vowels) {
+      const d = Math.hypot(fb - v.fb, hl - v.hl, (lips - v.lips) * .8);
+      if (d < best - 1e-6) { best = d; near = [v.v]; } else if (Math.abs(d - best) <= 1e-6) near.push(v.v);
+    }
+    const exact = vowels.filter((v) => Math.hypot(fb - v.fb, hl - v.hl, (lips - v.lips) * .8) < 1e-6);
+    const use = exact.length ? exact : vowels;
+    for (const v of use) { const d = Math.hypot(fb - v.fb, hl - v.hl, (lips - v.lips) * .8), w = exact.length ? 1 : 1 / Math.pow(d, 3); sw += w; for (let i = 0; i < 3; i++) acc[i] += w * v.F[i]; }
+    return { F: acc.map((x) => x / sw), near, d: best };
+  }
+
+  /* ── rajz: a fejmetszet (helyi koordináták, arc balra; az állkapocs az ízülete körül fordul) ── */
+  const INK = '#1c2440', CARD = '#fffaf1';
+  const COL = { skin: '#f3dccb', skinD: '#9a5b45', air: '#fffaf1', tongue: '#e4867b', tongueD: '#8e2f28', bone: '#ece3d2', tooth: '#fffdf8', lung: '#f0c4bb', soft: '#eab7a6', lip: '#e39a8a' };
+  const PIV = [285, 35];
+  const PAL = [[44, 90], [56, 76], [82, 60], [118, 50], [160, 46], [200, 48], [232, 54]];
+  const WALL = [[296, 22], [306, 70], [312, 150], [314, 240], [310, 320], [300, 342], [296, 420], [296, 560]];
+  const lerp = U.lerp, clamp = U.clamp;
+  const lerpP = (a, b, t) => [lerp(a[0], b[0], t), lerp(a[1], b[1], t)];
+  function rotJ(p, a) { const vx = p[0] - PIV[0], vy = p[1] - PIV[1], co = Math.cos(a), si = Math.sin(a); return [PIV[0] + vx * co + vy * si, PIV[1] - vx * si + vy * co]; }
+  function cub(p0, p1, p2, p3, n = 10) { const o = []; for (let i = 1; i <= n; i++) { const t = i / n, u = 1 - t; o.push([u * u * u * p0[0] + 3 * u * u * t * p1[0] + 3 * u * t * t * p2[0] + t * t * t * p3[0], u * u * u * p0[1] + 3 * u * u * t * p1[1] + 3 * u * t * t * p2[1] + t * t * t * p3[1]]); } return o; }
+  function crs(P, n = 8) {                                            // Catmull–Rom: P[1] … P[len−2] között, a pontokon át
+    const o = [];
+    for (let i = 1; i < P.length - 2; i++) {
+      const p0 = P[i - 1], p1 = P[i], p2 = P[i + 1], p3 = P[i + 2];
+      for (let j = i === 1 ? 0 : 1; j <= n; j++) {
+        const t = j / n, t2 = t * t, t3 = t2 * t;
+        o.push([0, 1].map((k) => .5 * (2 * p1[k] + (-p0[k] + p2[k]) * t + (2 * p0[k] - 5 * p1[k] + 4 * p2[k] - p3[k]) * t2 + (-p0[k] + 3 * p1[k] - 3 * p2[k] + p3[k]) * t3)));
+      }
+    }
+    return o;
+  }
+  function geom(o) {
+    const fb = clamp(o.fb == null ? .5 : o.fb), hl = clamp(o.hl == null ? .5 : o.hl), lips = clamp(o.lips || 0);
+    const cons = o.cons || null, velum = o.velum == null ? 1 : o.velum;
+    const ja = (cons ? 1.5 : 1.5 + 8 * hl) * Math.PI / 180;
+    const J = (p) => rotJ(p, ja);
+    // nyelv: a nyelvhát Catmull–Rom-görbe a nyelvhegytől a gyökig; a „kupola” (D) helye a nyelvállásból
+    const D = rotJ([lerp(128, 208, fb), lerp(70, 116, hl)], ja * .55), C = D, r = 0;
+    let tip = J([44, 142]);
+    if (cons === 'alv') tip = [50, 100]; else if (cons === 'post') tip = [58, 98];
+    const Bl = cons === 'post' ? [80, 74] : cons === 'alv' ? [86, 110] : [lerp(tip[0], D[0], .5) - 4, lerp(tip[1], D[1], .78)];
+    const K = [D[0] + 56, D[1] + 30], K2 = [lerp(234, 280, fb) + 12 * hl * fb, 222], root = [256, 300];
+    const dors = crs([J([36, 168]), tip, Bl, D, K, K2, root, [250, 330]], 8);
+    const floor = [J([200, 262]), J([120, 252]), J([62, 206]), J([40, 166])];
+    const tongue = dors.concat(floor);
+    let top = D; dors.forEach((p) => { if (p[1] < top[1] && p[0] > tip[0] + 10) top = p; });
+    // ajkak: kerekítésnél előre tolódnak és összébb zárnak; f, v: az alsó ajak a felső fogak éléhez
+    const pr = -14 * lips, close = 10 * lips * hl;
+    const ulip = [[6, 82], [-4 + pr, 98], [-5 + pr, 114 + close * .4], [10 + pr * .5, 121 + close * .4], [26, 114], [26, 94]];
+    let llip = [[26, 128], [10 + pr * .5, 124 - close * .6], [-4 + pr, 128 - close * .6], [-4 + pr, 144], [8, 156], [26, 150]].map(J);
+    if (cons === 'labdent') llip = [[36, 120], [30, 113], [18, 116], [12, 136], [16, 154], [32, 148]].map((p) => rotJ(p, 1.5 * Math.PI / 180));
+    const uteeth = [[29, 88], [41, 86], [46, 118], [39, 123], [32, 114]];
+    const lteeth = [[32, 124], [42, 122], [46, 152], [34, 156]].map(J);
+    const velTip = lerpP([284, 122], [300, 74], velum), velCtl = lerpP([262, 74], [268, 58], velum);
+    const face = [[412, 340], [436, 250], [458, 100], [452, -80], [404, -212], [300, -292], [170, -302], [82, -262], [40, -200], [30, -112], [14, -70], [-30, 18], [-22, 42], [10, 56], [4, 78], [-6 + pr, 100], [-5 + pr, 118]]
+      .concat([[-5 + pr, 130], [-4 + pr, 150], [12, 168], [6, 200], [22, 236], [82, 250], [180, 256], [240, 264]].map(J), [[262, 300], [266, 600], [408, 600]]);
+    const nasal = [[-10, 46], [4, 26], [40, 8], [120, -2], [220, 2], [282, 18], [300, 40], [302, 64], [272, 52], [232, 42], [160, 34], [90, 38], [40, 46], [12, 52]];
+    const pharynx = [[270, 40], [296, 22]].concat(WALL, [[246, 560], [246, 420], [240, 342], [254, 300], [232, 240], [236, 120], [250, 60]]);
+    const mouth = [[-6 + pr, 120], [14, 121], [40, 120], [30, 92]].concat(PAL, [[270, 60], [306, 70], [312, 150], [300, 260], [254, 300]], floor.slice(0, 3), [J([36, 126]), J([14, 126]), J([-4 + pr, 128])]);
+    // a levegő útja: légcső → gége → garat → a szájüreg közepe (szájpadlás és nyelv között) → ajkak → ki
+    const PV = PAL.concat([[lerp(232, velTip[0], .5), lerp(60, velTip[1] + 10, .5)], [velTip[0] - 2, velTip[1] + 12], [velTip[0] + 30, velTip[1] + 12]]);
+    const palY = (x) => { if (x <= PV[0][0]) return PV[0][1]; for (let i = 1; i < PV.length; i++) if (x <= PV[i][0]) return lerp(PV[i - 1][1], PV[i][1], (x - PV[i - 1][0]) / (PV[i][0] - PV[i - 1][0])); return PV[PV.length - 1][1]; };
+    const tonY = (x) => { let y = 1e9; for (let i = 1; i < tongue.length; i++) { const p = tongue[i - 1], q = tongue[i]; if ((p[0] - x) * (q[0] - x) <= 0 && p[0] !== q[0]) y = Math.min(y, lerp(p[1], q[1], (x - p[0]) / (q[0] - p[0]))); } return y; };
+    const lipY = (ulip[3][1] + llip[2][1]) / 2;
+    const air = [[271, 900], [271, 560], [271, 420], [271, 346], [276, 300]];
+    const backX = (y) => { let xm = -1e9; for (let i = 1; i < tongue.length; i++) { const p = tongue[i - 1], q = tongue[i]; if ((p[1] - y) * (q[1] - y) <= 0 && p[1] !== q[1]) xm = Math.max(xm, lerp(p[0], q[0], (y - p[1]) / (q[1] - p[1]))); } return xm; };
+    for (let y = 260; y >= Math.max(120, velTip[1] + 40); y -= 28) { const bx = backX(y), wx = lerp(314, 306, (150 - y) / 80); air.push([bx > -1e8 ? (Math.max(bx, 232) + wx) / 2 : (240 + wx) / 2, y]); }
+    for (let x = Math.min(280, velTip[0] - 16); x >= 40; x -= 20) { const yt = tonY(x), yp = palY(x); air.push([x, yt > 1e8 ? yp + 26 : (yp + Math.min(yt, yp + 120)) / 2]); }
+    air.push([12, lipY], [-30 + pr, lipY], [-150, lipY]);
+    const pt = {
+      lips: [-6 + pr, lipY], teeth: [38, 104], palate: [140, 40], velum: velTip, tongue: [D[0] - 10, D[1] + 48], top, nose: [-24, 22],
+      nasal: [150, 18], mouth: [lerp(90, 150, fb), (palY(120) + Math.min(tonY(120), palY(120) + 80)) / 2], pharynx: [300, 200], larynx: [270, 342], glottis: [270, 342],
+      trachea: [271, 470], lungs: [271, 880], alv: [46, 90], post: [62, 72], labdent: [36, 118], jaw: J([40, 236]),
+    };
+    return { fb, hl, lips, cons, velum, ja, D, tongue, top, ulip, llip, uteeth, lteeth, velTip, velCtl, face, nasal, pharynx, mouth, air, pt, palY, tonY };
+  }
+  function path(c, pts, close = true) { c.beginPath(); c.moveTo(pts[0][0], pts[0][1]); for (let i = 1; i < pts.length; i++) c.lineTo(pts[i][0], pts[i][1]); if (close) c.closePath(); }
+  function smoothPath(c, pts, close = true) {
+    const n = pts.length; c.beginPath();
+    const mid = (a, b) => [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
+    if (close) { let m = mid(pts[n - 1], pts[0]); c.moveTo(m[0], m[1]); for (let i = 0; i < n; i++) { const p = pts[i], q = mid(p, pts[(i + 1) % n]); c.quadraticCurveTo(p[0], p[1], q[0], q[1]); } c.closePath(); }
+    else { c.moveTo(pts[0][0], pts[0][1]); for (let i = 1; i < n - 1; i++) { const q = mid(pts[i], pts[i + 1]); c.quadraticCurveTo(pts[i][0], pts[i][1], q[0], q[1]); } c.lineTo(pts[n - 1][0], pts[n - 1][1]); }
+  }
+  function tract(L, o) {
+    const c = L.ctx, g = geom(o), s = o.s || 1, X = o.x || 0, Y = o.y || 0, A0 = c.globalAlpha, hi = o.hi || {}, a = o.a == null ? 1 : o.a;
+    const toStage = (x, y) => [X + x * s, Y + y * s];
+    g.s = s; g.toStage = toStage;
+    const ST = {}; Object.keys(g.pt).forEach((k) => { ST[k] = toStage(g.pt[k][0], g.pt[k][1]); }); g.st = ST;
+    g.airSt = g.air.map((p) => toStage(p[0], p[1]));
+    if (a <= .003) return g;
+    c.save(); c.globalAlpha = A0 * a; c.translate(X, Y); c.scale(s, s); c.lineJoin = 'round'; c.lineCap = 'round';
+    const lw = (px) => px / s;
+    const glow = (k, fn) => { if (!hi[k]) return; c.save(); c.globalAlpha = A0 * a * .32; c.fillStyle = hi[k]; fn(); c.fill(); c.restore(); };
+    const LUNG = [[[244, 700], [170, 730], [130, 860], [150, 1020], [246, 1040], [262, 760]], [[298, 700], [372, 730], [412, 860], [392, 1020], [296, 1040], [280, 760]]];
+    if (o.body) {                                                       // törzs, légcső, tüdő (az egész alakos nézetben)
+      c.fillStyle = COL.skin; c.strokeStyle = COL.skinD; c.lineWidth = lw(2.5);
+      smoothPath(c, [[268, 560], [264, 640], [130, 700], [40, 760], [10, 1000], [20, 1130], [540, 1130], [550, 1000], [530, 760], [430, 700], [410, 640], [408, 560]], false); c.fill(); c.stroke();
+      c.fillStyle = COL.lung; c.strokeStyle = '#a2483c';
+      LUNG.forEach((p) => { smoothPath(c, p); c.fill(); c.stroke(); });
+      glow('tüdő', () => { c.beginPath(); LUNG.forEach((p) => { c.moveTo(p[0][0], p[0][1]); p.forEach((q) => c.lineTo(q[0], q[1])); c.closePath(); }); });
+      c.fillStyle = COL.air; c.strokeStyle = COL.skinD; c.lineWidth = lw(2.5);
+      path(c, [[246, 540], [248, 760], [216, 812], [228, 822], [258, 778], [284, 778], [314, 822], [326, 812], [294, 760], [296, 540]]); c.fill(); c.stroke();
+    }
+    // fej
+    c.fillStyle = COL.skin; c.strokeStyle = COL.skinD; c.lineWidth = lw(3);
+    smoothPath(c, g.face); c.fill(); c.stroke();
+    // üregek (levegő): orrüreg, garat + gége + légcső, szájüreg
+    c.fillStyle = COL.air;
+    smoothPath(c, g.nasal); c.fill(); glow('orr', () => smoothPath(c, g.nasal));
+    path(c, g.pharynx); c.fill(); glow('garat', () => path(c, g.pharynx));
+    path(c, g.mouth); c.fill(); glow('száj', () => path(c, g.mouth));
+    c.strokeStyle = 'rgba(154,91,69,.7)'; c.lineWidth = lw(2.2); smoothPath(c, g.nasal); c.stroke();
+    path(c, WALL, false); c.stroke();
+    path(c, [[246, 560], [246, 420], [240, 342], [254, 300]], false); c.stroke();
+    // kemény szájpadlás (csont) és lágy szájpadlás
+    const palB = PAL.concat([[232, 42], [160, 34], [90, 38], [44, 48], [32, 66]]);
+    c.fillStyle = COL.bone; c.strokeStyle = INK; c.lineWidth = lw(2.5);
+    path(c, palB); c.fill(); c.stroke(); glow('szájpadlás', () => path(c, palB));
+    c.fillStyle = COL.soft; c.strokeStyle = COL.skinD;
+    c.beginPath(); c.moveTo(232, 42); c.quadraticCurveTo(g.velCtl[0] + 4, g.velCtl[1] - 12, g.velTip[0] + 2, g.velTip[1] - 8);
+    c.quadraticCurveTo(g.velTip[0] + 6, g.velTip[1] + 4, g.velTip[0] - 4, g.velTip[1] + 6);
+    c.quadraticCurveTo(g.velCtl[0] - 6, g.velCtl[1] + 10, 232, 56); c.closePath(); c.fill(); c.stroke();
+    glow('lágy', () => { c.beginPath(); c.moveTo(232, 42); c.quadraticCurveTo(g.velCtl[0] + 4, g.velCtl[1] - 12, g.velTip[0] + 2, g.velTip[1] - 8); c.lineTo(g.velTip[0] - 4, g.velTip[1] + 6); c.quadraticCurveTo(g.velCtl[0] - 6, g.velCtl[1] + 10, 232, 56); c.closePath(); });
+    // gégefedő és hangszalagok
+    c.fillStyle = COL.soft; c.beginPath(); c.moveTo(252, 302); c.quadraticCurveTo(256, 268, 272, 246); c.lineTo(278, 250); c.quadraticCurveTo(264, 272, 262, 304); c.closePath(); c.fill(); c.stroke();
+    const vo = clamp(o.voiced || 0), tt = o.t || 0;
+    if (hi['gége']) { c.save(); c.globalAlpha = A0 * a * .3; c.fillStyle = hi['gége']; c.beginPath(); c.ellipse(270, 342, 46, 24, 0, 0, U.TAU); c.fill(); c.restore(); }
+    c.strokeStyle = hi['gége'] || INK; c.lineWidth = lw(5);
+    const wob = vo * 2.5 * Math.sin(tt * U.TAU * 9);
+    c.beginPath(); c.moveTo(241, 342); c.lineTo(265, 342 + wob); c.moveTo(300, 342); c.lineTo(276, 342 - wob); c.stroke();
+    if (vo > .01) {                                                      // a zönge rezgése: hullámvonalak a gége két oldalán
+      c.save(); c.globalAlpha = A0 * a * vo; c.strokeStyle = '#c8401c'; c.lineWidth = lw(3);
+      for (const sx of [-1, 1]) { c.beginPath(); for (let k = 0; k <= 14; k++) { const yy = 318 + k * 3.6, xx = 270 + sx * (56 + 6 * Math.sin(k * 1.4 + tt * U.TAU * 6)); if (k) c.lineTo(xx, yy); else c.moveTo(xx, yy); } c.stroke(); }
+      c.restore();
+    }
+    // nyelv
+    c.fillStyle = COL.tongue; c.strokeStyle = COL.tongueD; c.lineWidth = lw(3);
+    smoothPath(c, g.tongue); c.fill(); c.stroke();
+    if (hi['nyelv']) { c.save(); c.globalAlpha = A0 * a * .35; c.fillStyle = hi['nyelv']; smoothPath(c, g.tongue); c.fill(); c.lineWidth = lw(4.5); c.strokeStyle = hi['nyelv']; c.globalAlpha = A0 * a; c.stroke(); c.restore(); }
+    // fogak, ajkak
+    c.fillStyle = COL.tooth; c.strokeStyle = INK; c.lineWidth = lw(2);
+    smoothPath(c, g.uteeth); c.fill(); c.stroke(); smoothPath(c, g.lteeth); c.fill(); c.stroke();
+    c.fillStyle = COL.lip; c.strokeStyle = COL.skinD; c.lineWidth = lw(2.5);
+    smoothPath(c, g.ulip); c.fill(); c.stroke(); smoothPath(c, g.llip); c.fill(); c.stroke();
+    if (hi['ajak']) { c.save(); c.globalAlpha = A0 * a * .5; c.fillStyle = hi['ajak']; smoothPath(c, g.ulip); c.fill(); smoothPath(c, g.llip); c.fill(); c.restore(); }
+    // szem
+    c.strokeStyle = INK; c.lineWidth = lw(3); c.beginPath(); c.arc(100, -128, 15, Math.PI * .12, Math.PI * .88); c.stroke();
+    c.restore();
+    // a levegő pöttyei a levegő útján (zárt képlet az időből)
+    const aa = clamp(o.air == null ? 0 : o.air);
+    if (aa > .003) {
+      const P = g.airSt, seg = []; let tot = 0;
+      for (let i = 1; i < P.length; i++) { const d = Math.hypot(P[i][0] - P[i - 1][0], P[i][1] - P[i - 1][1]); seg.push(d); tot += d; }
+      const n = Math.max(8, Math.round(tot / (30 * Math.max(.6, s)))), sp = 150 * s, T = (o.airT || 0) * sp;
+      c.save(); c.fillStyle = o.airC || '#0a6f86';
+      for (let i = 0; i < n; i++) {
+        let d = ((T + i * tot / n) % tot + tot) % tot, j = 0;
+        while (j < seg.length - 1 && d > seg[j]) { d -= seg[j]; j++; }
+        const u = seg[j] ? d / seg[j] : 0, x = lerp(P[j][0], P[j + 1][0], u), y = lerp(P[j][1], P[j + 1][1], u);
+        const fade = Math.min(1, (j + u) / 1.2, (P.length - 1 - (j + u)) / 1.5);
+        c.globalAlpha = A0 * a * aa * clamp(fade) * .85; c.beginPath(); c.arc(x, y, 5 * Math.max(.8, s), 0, U.TAU); c.fill();
+      }
+      c.restore();
+    }
+    c.globalAlpha = A0;
+    return g;
+  }
+  function tongueAt(g, px, py) {     // a nyelvhát legmagasabb pontja ide kerüljön (közelítő inverz, 2 Newton-lépés)
+    const s = g.s, X = g.toStage(0, 0), lx = (px - X[0]) / s, ly = (py - X[1]) / s;
+    let fb = clamp((lx - 128) / 80), hl = clamp((ly - 70) / 46);
+    for (let it = 0; it < 6; it++) {
+      const q = geom({ fb, hl, lips: g.lips }), ex = lx - q.top[0], ey = ly - q.top[1];
+      fb = clamp(fb + ex / 100); hl = clamp(hl + ey / 75);
+    }
+    return { fb, hl };
+  }
+  function folds(L, o) {
+    const c = L.ctx, s = o.s || 1, x = o.x, y = o.y, A0 = c.globalAlpha, a = o.a == null ? 1 : o.a;
+    const W = 300 * s, H = 360 * s, vo = clamp(o.voiced || 0);
+    const vib = .5 + .5 * Math.sin(U.TAU * (o.ph || 0));                    // 0 zárt … 1 nyitott
+    const gap = lerp(clamp(o.open == null ? 1 : o.open), vib * .45, vo);   // a rés szélessége (0..1)
+    c.save(); c.globalAlpha = A0 * a; c.lineJoin = 'round';
+    c.fillStyle = '#eab7a6'; c.strokeStyle = COL.skinD; c.lineWidth = 3;
+    c.beginPath(); c.ellipse(x, y, W / 2, H / 2, 0, 0, U.TAU); c.fill(); c.stroke();
+    c.fillStyle = '#3a2a33'; c.beginPath(); c.ellipse(x, y, W * .36, H * .4, 0, 0, U.TAU); c.fill();
+    const top = y - H * .36, bot = y + H * .34, half = gap * W * .2 + 1.5;
+    const fold = (sx) => {
+      c.beginPath(); c.moveTo(x, top); c.quadraticCurveTo(x + sx * (half * .9 + 2), y, x + sx * half, bot);
+      c.lineTo(x + sx * W * .34, bot + 6 * s); c.quadraticCurveTo(x + sx * W * .38, y, x + sx * 6 * s, top - 4 * s); c.closePath();
+      c.fillStyle = '#f6efe6'; c.fill(); c.strokeStyle = INK; c.lineWidth = 2.5; c.stroke();
+    };
+    fold(-1); fold(1);
+    c.restore(); c.globalAlpha = A0;
+    return { x: x - W / 2, y: y - H / 2, w: W, h: H, gap };
+  }
+  function lipsFront(L, o) {
+    const c = L.ctx, s = o.s || 1, x = o.x, y = o.y, A0 = c.globalAlpha, a = o.a == null ? 1 : o.a;
+    const lp = clamp(o.lips || 0), hl = clamp(o.hl == null ? .5 : o.hl);
+    const ow = lerp(120, 52, lp) * s, oh = (lerp(14, 54, hl) * (1 - .25 * lp) + 18 * lp) * s;
+    c.save(); c.globalAlpha = A0 * a;
+    c.fillStyle = '#e9a191'; c.strokeStyle = COL.skinD; c.lineWidth = 3;
+    c.beginPath(); c.ellipse(x, y, ow / 2 + 30 * s, oh / 2 + 26 * s, 0, 0, U.TAU); c.fill(); c.stroke();
+    c.fillStyle = '#3a2a33'; c.beginPath(); c.ellipse(x, y, ow / 2, oh / 2, 0, 0, U.TAU); c.fill();
+    c.restore(); c.globalAlpha = A0;
+    return { x: x - ow / 2 - 30 * s, y: y - oh / 2 - 26 * s, w: ow + 60 * s, h: oh + 52 * s };
+  }
+
+  /* ── magánhangzó-négyszög ── */
+  function vowelChart(L, o) {
+    const c = L.ctx, A0 = c.globalAlpha, a = o.a == null ? 1 : o.a;
+    const x0 = o.x, y0 = o.y, w = o.w, h = o.h, sh = w * .28;     // a bal alsó sarok beljebb: lent a nyelv hátrébb fér el
+    const edge = (fb, hl) => [lerp(lerp(x0, x0 + sh, hl), x0 + w, fb), lerp(y0, y0 + h, hl)];
+    const at = (fb, hl) => edge(.2 + .6 * clamp(fb), .14 + .72 * clamp(hl));   // a betűk és a pötty helye (belül)
+    const inv = (px, py) => { const hh = (py - y0) / h, hl = clamp((hh - .14) / .72), xl = lerp(x0, x0 + sh, hh); return [clamp(((px - xl) / (x0 + w - xl) - .2) / .6), hl]; };
+    const font = Object.assign({ f: Lesson.FONTS.D, s: 44, w: 600 }, o.font || {});
+    const ch = { at, inv, edge, box: {} };
+    c.save(); c.globalAlpha = A0 * a;
+    c.fillStyle = 'rgba(255,250,241,.94)'; c.strokeStyle = INK; c.lineWidth = 2.5; c.lineJoin = 'round';
+    const P = [edge(0, 0), edge(1, 0), edge(1, 1), edge(0, 1)];
+    c.beginPath(); c.moveTo(P[0][0], P[0][1]); P.slice(1).forEach((p) => c.lineTo(p[0], p[1])); c.closePath(); c.fill(); c.stroke();
+    c.strokeStyle = 'rgba(28,36,64,.2)'; c.lineWidth = 2; c.setLineDash([8, 8]); c.beginPath();
+    [1 / 3, 2 / 3].forEach((t) => { const p = edge(0, t), q = edge(1, t); c.moveTo(p[0], p[1]); c.lineTo(q[0], q[1]); });
+    const p5 = edge(.5, 0), q5 = edge(.5, 1); c.moveTo(p5[0], p5[1]); c.lineTo(q5[0], q5[1]); c.stroke(); c.setLineDash([]);
+    (o.rows || []).forEach((r, i) => { if (!r) return; const p = at(0, i / 2), xl = edge(0, (p[1] - y0) / h)[0]; c.globalAlpha = A0 * a * (r.a == null ? 1 : r.a); L.tx(r.s, xl - 18, p[1] + 9, { s: 24, f: Lesson.FONTS.B, w: 600, a: 'right', c: r.c || '#565d72', k: r.k }); });
+    (o.cols || []).forEach((r, i) => { if (!r) return; const p = edge(i, 0); c.globalAlpha = A0 * a * (r.a == null ? 1 : r.a); L.tx(r.s, p[0], y0 - 22, { s: 24, f: Lesson.FONTS.B, w: 700, a: i ? 'right' : 'left', c: r.c || '#565d72', k: r.k, max: w * .48 }); });
+    // betűk cellánként: réses a pont bal, kerek a jobb oldalán; azonos helyűek (i, í) egymás mellett
+    const cells = {};
+    (o.vowels || []).forEach((v) => { const key = v.fb + '|' + v.hl + '|' + v.lips; (cells[key] = cells[key] || []).push(v); });
+    Object.values(cells).forEach((vs) => {
+      const v0 = vs[0], p = at(v0.fb, v0.hl);
+      const ws = vs.map((v) => L.measure(v.v, font).w), gap = font.s * .24, tw = ws.reduce((s2, x) => s2 + x, 0) + gap * (vs.length - 1);
+      let xx = v0.lips ? p[0] + 18 : p[0] - 18 - tw;
+      const yy = p[1] + font.s * .34;
+      vs.forEach((v, i) => {
+        const col = o.col ? o.col(v.v) : INK, on = !o.hi || o.hi(v.v);
+        c.globalAlpha = A0 * a * (on ? 1 : (o.dim == null ? .3 : o.dim));
+        if (o.mark && o.mark(v.v)) { const m = o.mark(v.v); c.fillStyle = m; c.beginPath(); c.roundRect(xx - 7, yy - font.s * .82, ws[i] + 14, font.s * 1.12, 10); c.fill(); }
+        L.tx(v.v, xx, yy, Object.assign({}, font, { c: o.mark && o.mark(v.v) ? CARD : col, k: v.k }));
+        ch.box[v.v] = { x: xx, y: yy - font.s * .8, w: ws[i], h: font.s * 1.05 };
+        xx += ws[i] + gap;
+      });
+    });
+    c.globalAlpha = A0 * a;
+    if (o.pt) {
+      const p = at(o.pt[0], o.pt[1]);
+      c.fillStyle = '#c8401c'; c.strokeStyle = CARD; c.lineWidth = 4;
+      c.beginPath(); c.arc(p[0], p[1], 13, 0, U.TAU); c.fill(); c.stroke();
+      ch.ptXY = p;
+    }
+    c.restore(); c.globalAlpha = A0;
+    ch.pick = (px, py) => { for (const [v, b] of Object.entries(ch.box)) if (px >= b.x - 8 && px <= b.x + b.w + 8 && py >= b.y - 6 && py <= b.y + b.h + 6) return v; return null; };
+    ch.inside = (px, py) => { const hh = (py - y0) / h; if (hh < -.05 || hh > 1.05) return false; const xl = edge(0, clamp(hh))[0]; return px >= xl - 20 && px <= x0 + w + 20; };
+    return ch;
+  }
+
+  return {
+    ready: () => !!ac, unlock, perfAt, click, stop,
+    vol: (v) => { volume = Lesson.U.clamp(v); if (master) master.gain.value = volume; },
+    vowel, noise, render, response, spectrum, formants, tract, tongueAt, folds, lipsFront, vowelChart, geom,
+  };
+})();
+/* ── MODUL VÉGE ── */
+
+/* ═════════ a lecke ═════════ */
+const U = Lesson.U, F = Lesson.FONTS;
+const INK = '#1c2440', MUTED = '#565d72', CIN = '#c8401c', TEAL = '#0a6f86', OCH = '#8f5a0c', LILA = '#7b4fa0', CARD = '#fffaf1', GOOD = '#1d7a45', BAD = '#b3261e';
+const clamp = U.clamp;
+let L, c, T, TB, M, CARDS = null, GA = 1;
+const lab = (k) => L.lab(k), dat = (k) => L.dat(k);
+const W = (k) => MagMorph.word(L.dat(k));
+const ga = (a) => { c.globalAlpha = GA * a; };
+const list = (k) => lab(k).split(',').map((x) => x.trim()).filter(Boolean);
+const pron = (k) => { const d = k ? dat(k) : null; return d && d.t === 'pron' ? d : null; };
+const lo = (s) => s.toLowerCase();
+
+function background() {
+  const g = c.createRadialGradient(680, 470, 80, 680, 540, 1250); g.addColorStop(0, '#f7f1e6'); g.addColorStop(1, '#efe6d6');
+  c.fillStyle = g; c.fillRect(0, 0, 1920, 1080);
+  c.strokeStyle = 'rgba(28,36,64,.045)'; c.lineWidth = 1; c.beginPath();
+  for (let x = 0; x <= 1920; x += 40) { c.moveTo(x + .5, 0); c.lineTo(x + .5, 1080); }
+  for (let y = 0; y <= 1080; y += 40) { c.moveTo(0, y + .5); c.lineTo(1920, y + .5); }
+  c.stroke();
+}
+function arrow(x1, y1, x2, y2, col, lw = 3, hd = 14) {
+  const a = Math.atan2(y2 - y1, x2 - x1);
+  c.strokeStyle = col; c.fillStyle = col; c.lineWidth = lw; c.lineCap = 'round';
+  c.beginPath(); c.moveTo(x1, y1); c.lineTo(x2 - Math.cos(a) * hd * .6, y2 - Math.sin(a) * hd * .6); c.stroke();
+  c.beginPath(); c.moveTo(x2, y2); c.lineTo(x2 - Math.cos(a - .45) * hd, y2 - Math.sin(a - .45) * hd); c.lineTo(x2 - Math.cos(a + .45) * hd, y2 - Math.sin(a + .45) * hd); c.closePath(); c.fill();
+}
+function pillNote(k, x, y, o = {}) {
+  return L.pill(o.s0 || lab(k), x, y, Object.assign({ a: 'center', s: 26, w: 600, bg: CARD, bd: 'rgba(28,36,64,.22)', pad: 14, k }, o));
+}
+function card(x, y, w, h, o = {}) {
+  c.save(); c.fillStyle = o.bg || 'rgba(255,250,241,.85)'; c.strokeStyle = o.bd || 'rgba(28,36,64,.16)'; c.lineWidth = o.lw || 2;
+  c.beginPath(); c.roundRect(x, y, w, h, o.r || 20); c.fill(); c.stroke(); c.restore();
+}
+function tick(cx, cy, col = GOOD) { c.save(); c.strokeStyle = col; c.lineWidth = 6; c.lineCap = 'round'; c.lineJoin = 'round'; c.beginPath(); c.moveTo(cx - 14, cy); c.lineTo(cx - 4, cy + 11); c.lineTo(cx + 16, cy - 12); c.stroke(); c.restore(); }
+
+/* ── írás ↔ ejtés: a betűk összevetése (MagText.diff) ── */
+function wordLay(TT, s, x, y, o = {}) { return TT.layout(TT.tokens(s, 'betű', { k: o.k }), { x, y, a: o.a || 'center', s: o.s }); }
+/* a lay betűtokenjei közül azok, amelyek nincsenek a másik alakban (a változó betűk) → {tokenindex: szín} */
+function changedHi(lay, other, col, mine) {
+  const letters = lay.tokens.filter((t) => t.kind === 'v' || t.kind === 'c');
+  const pairs = mine === 'a' ? MagText.diff(letters.map((t) => t.l || t.s).join('|'), other) : MagText.diff(other, letters.map((t) => t.l || t.s).join('|'));
+  const keep = new Set(pairs.map((p) => (mine === 'a' ? p[0] : p[1])));
+  const hi = {}; letters.forEach((t, j) => { hi[t.i] = keep.has(j) ? INK : col; });
+  lay.tokens.forEach((t) => { if (t.kind === 'p') hi[t.i] = MUTED; });
+  return hi;
+}
+/* írott ↔ ejtett szó áttűnése: u = 0 írás, 1 [ejtés]; a változó betűk cinóberek */
+function morphWord(TT, k, x, y, s, u, a = 1, cap = 0) {
+  const p = pron(k); if (!p) return;
+  const A = wordLay(TT, p.w, x, y, { k, s }), B = wordLay(TT, '[' + p.p + ']', x, y, { k, s });
+  const A0 = c.globalAlpha; c.globalAlpha = A0 * a;
+  if (u <= .001) TT.draw(A, { hi: changedHi(A, p.p, CIN, 'a'), dim: 1 });
+  else if (u >= .999) { TT.draw(B, { hi: changedHi(B, p.w, CIN, 'b'), dim: 1 }); caret(B, p, y, s); }
+  else TT.morph(A, B, u, { hi: CIN });
+  if (cap && u > .5) { c.globalAlpha = A0 * a * U.smooth(u * 2 - 1); L.tx(p.w, x, y - s * 1.02, { s: cap, f: F.D, i: true, w: 500, a: 'center', c: MUTED, k }); }
+  c.globalAlpha = A0;
+  return u < .5 ? A : B;
+}
+
+/* kiesett / megrövidült hang helye az ejtett alakban (ha nincs új betű): kis cinóber ék a betűk között */
+function caret(B, p, y, s) {
+  const pairs = MagText.diff(p.w, p.p), nA = MagText.letters(p.w).length, nB = MagText.letters(p.p).length;
+  if (pairs.length !== nB || nA === nB) return;
+  const bl = B.tokens.filter((t) => t.kind === 'v' || t.kind === 'c'), ma = new Set(pairs.map((q) => q[0]));
+  for (let ia = 0; ia < nA; ia++) {
+    if (ma.has(ia)) continue;
+    const nx = pairs.find((q) => q[0] > ia); if (!nx) continue;
+    const tk = bl[nx[1]], xx = tk.x - 1, yy = y + s * .3;
+    c.fillStyle = CIN; c.beginPath(); c.moveTo(xx, yy - 12); c.lineTo(xx + 10, yy + 6); c.lineTo(xx - 10, yy + 6); c.closePath(); c.fill();
+  }
+}
+
+/* ═════════ 1. Írjuk így, mondjuk úgy ═════════ */
+const W1 = ['kútba', 'egészség', 'látja', 'színpad'];
+const P1 = [[370, 450], [990, 450], [370, 720], [990, 720]];
+const S1 = { t0: -99, from: [0, 0, 0, 0], tgt: 1 };
+function u1(i, t) {
+  if (S1.t0 > -50) return U.lerp(S1.from[i], S1.tgt, U.inOut((L.st - S1.t0 - i * .12) / .9));
+  return U.inOut((t - 2.0 - i * .45) / .9);
+}
+function go1(v) { S1.from = W1.map((_, i) => u1(i, L.st)); S1.tgt = v; S1.t0 = L.st; }
+function scene1(t) {
+  let mean = 0;
+  W1.forEach((k, i) => {
+    const a = U.smooth((t - .2 - i * .25) / .5); if (a <= 0) return;
+    const u = u1(i, t); mean += u / W1.length;
+    ga(a); morphWord(T, k, P1[i][0], P1[i][1], 96, u, 1, 38);
+  });
+  // a két mód jelzője
+  ga(U.smooth(t / .5));
+  const m = U.clamp(mean), wA = L.measure(lab('írjuk felirat'), { f: F.D, s: 40, w: 600, i: true }).w, wB = L.measure(lab('mondjuk felirat'), { f: F.D, s: 40, w: 600, i: true }).w;
+  [['írjuk felirat', 680 - 30 - wA / 2 - 22, 1 - m], ['mondjuk felirat', 680 + 30 + wB / 2 + 22, m]].forEach(([k, x, on]) => {
+    L.pill(lab(k), x, 190, { a: 'center', s: 40, f: F.D, i: true, w: 600, pad: 20, bg: on > .5 ? INK : CARD, c: on > .5 ? CARD : MUTED, bd: on > .5 ? INK : 'rgba(28,36,64,.3)', bw: 2.5, k });
+  });
+  arrow(650, 205, 712, 205, MUTED, 3, 14);
+  c.strokeStyle = 'rgba(28,36,64,.18)'; c.lineWidth = 2; c.setLineDash([8, 8]); c.beginPath(); c.moveTo(680, 300); c.lineTo(680, 790); c.stroke(); c.setLineDash([]);
+  const qa = U.smooth((t - 4.4) / .6);
+  if (qa > 0) { ga(qa); pillNote('kérdés felirat', 680, 900, { s: 36, f: F.D, i: true, w: 500, bd: INK, bw: 2.5, pad: 20 }); }
+  const na = U.smooth((t - 5.6) / .5);
+  if (na > 0) { ga(na); L.tx(lab('nem mindig felirat'), 680, 1010, { s: 40, f: F.D, w: 700, a: 'center', c: CIN, k: 'nem mindig felirat' }); }
+}
+
+/* ═════════ 2. A száj előre készül (a „lusta száj”) ═════════ */
+/* Egyszerűsített mozdulat-kotta: hangonként a hangszalag (zönge), az ajkak és a nyelv zárja. A betűk tulajdonságai
+   (zöngés / ajakhang) a .md listáiból jönnek; a metszet a MagHang.tract modell. */
+const S2 = { t0: -99, from: 0, tgt: 1 };
+const X2 = 800, CW2 = 88, GAP2 = 56, ROW2 = { z: 330, a: 430, n: 530 };
+let VOICED = [], VLESS = [], LABIAL = [];
+const SONOR = ['j', 'l', 'ly', 'm', 'n', 'ny', 'r'], TONGUE = ['t', 'd', 'n', 'k', 'g', 'ty', 'gy', 'l', 'ny'];
+const isVoiced = (x) => MagText.isVowel(x) || VOICED.includes(lo(x)) || SONOR.includes(lo(x));
+/* a mozdulat-kotta oszlopai: az írott és az ejtett szó betűi (azonos betűszám) */
+function score2() {
+  const p = pron('kútba'), A = MagText.letters(p.w), B = MagText.letters(p.p);
+  let j = -1; A.forEach((x, i) => { if (j < 0 && B[i] !== x) j = i; });
+  return { A, B, j, ok: A.length === B.length && j >= 0 && j + 1 < A.length };
+}
+function nat2(t) { return S2.t0 > -50 ? U.lerp(S2.from, S2.tgt, U.inOut((L.st - S2.t0) / 1.1)) : U.inOut((t - 2.6) / 1.2); }
+function go2(v) { S2.from = nat2(L.st); S2.tgt = v; S2.t0 = L.st; }
+/* oszlop bal széle; a gondos kiejtésben a j. és j+1. hang között szünet van */
+function colX(i, sc, nat) { return X2 + i * CW2 + (i > sc.j ? GAP2 * (1 - nat) : 0); }
+/* a hang állapota (a metszethez) betűnként – modellértékek, nem mérések */
+const ART = { 'k': { fb: .95, hl: .05, lips: .1 }, 'g': { fb: .95, hl: .05, lips: .1 }, 'ú': { fb: 1, hl: 0, lips: 1 }, 'u': { fb: 1, hl: 0, lips: 1 },
+  't': { fb: .3, hl: .35, lips: .2, cons: 'alv' }, 'd': { fb: .3, hl: .35, lips: .2, cons: 'alv' }, 'b': { fb: .6, hl: .6, lips: .7 }, 'p': { fb: .6, hl: .6, lips: .7 },
+  'a': { fb: .85, hl: 1, lips: .5 }, 'á': { fb: .6, hl: 1, lips: 0 } };
+function scene2(t, act) {
+  const sc = score2(); if (!sc.ok) return;
+  const nat = nat2(t), n = sc.A.length, xEnd = colX(n, sc, nat);
+  const per = 3.4, ph = ((t % per) + per) % per, run = clamp((ph - .3) / 2.6), px = U.lerp(X2, xEnd, run);
+  let ci = -1; for (let i = 0; i < n; i++) if (px >= colX(i, sc, nat) && px < colX(i, sc, nat) + CW2) ci = i;
+  // zönge: a j. hang (a t) zöngés lesz, amint a száj „előre készül” a j+1.-re
+  const vAt = (i) => (i === sc.j ? nat * (isVoiced(sc.A[i + 1]) ? 1 : 0) + (1 - nat) * (isVoiced(sc.A[i]) ? 1 : 0) : isVoiced(sc.A[i]) ? 1 : 0);
+  const lipAt = (i) => (LABIAL.includes(lo(sc.A[i])) ? 1 : 0), tonAt = (i) => (TONGUE.includes(lo(sc.A[i])) ? 1 : 0);
+  ga(U.smooth(t / .5));
+  // fejléc: mód
+  const mk = nat > .5 ? 'természetesen felirat' : 'gondosan felirat';
+  L.tx(lab(mk), (X2 + xEnd) / 2, 140, { s: 34, f: F.D, i: true, w: 600, a: 'center', c: INK, k: mk });
+  // írott betűk az oszlopok fölött
+  sc.A.forEach((x, i) => { L.tx(x, colX(i, sc, nat) + CW2 / 2, 235, { s: 62, f: F.D, w: 600, a: 'center', c: i === sc.j ? CIN : INK, k: 'kútba' }); });
+  // sorok
+  const rows = [['z', 'zönge sor', CIN], ['a', 'ajak sor', TEAL], ['n', 'nyelv sor', OCH]];
+  rows.forEach(([r, k, col]) => {
+    const y = ROW2[r];
+    L.tx(lab(k), X2 - 24, y + 9, { s: 28, w: 650, a: 'right', c: col, k });
+    c.strokeStyle = 'rgba(28,36,64,.15)'; c.lineWidth = 2; c.beginPath(); c.moveTo(X2, y + 30); c.lineTo(xEnd, y + 30); c.stroke();
+  });
+  for (let i = 0; i < n; i++) {
+    const x0 = colX(i, sc, nat) + 3, w = CW2 - 6;
+    // zönge: hullámzó sáv
+    const v = vAt(i);
+    if (v > .01) {
+      const grow = i === sc.j ? v : 1, xa = i === sc.j ? x0 + w * (1 - grow) : x0;
+      c.save(); c.globalAlpha *= i === sc.j ? 1 : 1; c.fillStyle = U.rgba(CIN, .16); c.beginPath(); c.roundRect(xa, ROW2.z - 22, w * grow + (i === sc.j ? 6 : 0), 44, 8); c.fill();
+      c.strokeStyle = CIN; c.lineWidth = 3; c.beginPath();
+      for (let xx = xa + 4; xx <= xa + w * grow - 2; xx += 2) { const yy = ROW2.z + Math.sin((xx - X2) / 5 + t * 18) * 12; if (xx === xa + 4) c.moveTo(xx, yy); else c.lineTo(xx, yy); }
+      c.stroke(); c.restore();
+    }
+    if (lipAt(i)) { c.fillStyle = TEAL; c.beginPath(); c.roundRect(x0, ROW2.a - 22, w, 44, 8); c.fill(); L.tx(lab('zár felirat'), x0 + w / 2, ROW2.a + 9, { s: 24, w: 650, a: 'center', c: CARD, k: 'zár felirat' }); }
+    if (tonAt(i)) { c.fillStyle = OCH; c.beginPath(); c.roundRect(x0, ROW2.n - 22, w, 44, 8); c.fill(); L.tx(lab('zár felirat'), x0 + w / 2, ROW2.n + 9, { s: 24, w: 650, a: 'center', c: CARD, k: 'zár felirat' }); }
+  }
+  // „előre készül”: ív a j+1. hang zöngéjétől vissza a j.-ig
+  if (nat > .02) {
+    ga(U.smooth(t / .5) * U.smooth(nat * 1.4));
+    const xb = colX(sc.j + 1, sc, nat) + CW2 / 2, xa = colX(sc.j, sc, nat) + CW2 * .3, yt = ROW2.z - 40;
+    c.strokeStyle = CIN; c.lineWidth = 3; c.setLineDash([8, 6]); c.beginPath(); c.moveTo(xb, yt); c.quadraticCurveTo((xa + xb) / 2, yt - 44, xa + 6, yt - 2); c.stroke(); c.setLineDash([]);
+    arrow(xa + 18, yt - 14, xa + 4, yt, CIN, 3, 13);
+    L.tx(lab('előre felirat'), xa - 6, yt - 10, { s: 24, w: 650, a: 'right', c: CIN, k: 'előre felirat' });
+    ga(U.smooth(t / .5));
+  }
+  // lejátszófej
+  if (run > 0 && run < 1) { c.strokeStyle = U.rgba(INK, .55); c.lineWidth = 3; c.beginPath(); c.moveTo(px, 270); c.lineTo(px, 575); c.stroke(); c.fillStyle = INK; c.beginPath(); c.moveTo(px - 9, 268); c.lineTo(px + 9, 268); c.lineTo(px, 280); c.closePath(); c.fill(); }
+  // az ejtés: [k ú d b a]
+  L.tx(lab('mondjuk felirat'), X2 - 24, 680, { s: 30, f: F.D, i: true, w: 600, a: 'right', c: MUTED, k: 'mondjuk felirat' });
+  L.tx('[', colX(0, sc, nat) - 6, 680, { s: 62, f: F.D, w: 600, a: 'center', c: MUTED, k: 'kútba' });
+  L.tx(']', colX(n - 1, sc, nat) + CW2 + 6, 680, { s: 62, f: F.D, w: 600, a: 'center', c: MUTED, k: 'kútba' });
+  sc.A.forEach((x, i) => {
+    const cx = colX(i, sc, nat) + CW2 / 2;
+    if (i !== sc.j) { L.tx(sc.B[i], cx, 680, { s: 62, f: F.D, w: 600, a: 'center', c: INK, k: 'kútba' }); return; }
+    const A0 = c.globalAlpha;
+    if (nat < .99) { c.globalAlpha = A0 * (1 - U.smooth(nat * 2 - .5)); L.tx(x, cx, 680, { s: 62, f: F.D, w: 600, a: 'center', c: INK, k: 'kútba' }); }
+    if (nat > .01) { c.globalAlpha = A0 * U.smooth(nat * 2 - .5); L.tx(sc.B[i], cx, 680, { s: 62, f: F.D, w: 600, a: 'center', c: CIN, k: 'kútba' }); }
+    c.globalAlpha = A0;
+  });
+  const fk = nat > .5 ? 'zöngés t felirat' : 'zöngétlen t felirat';
+  pillNote(fk, (X2 + xEnd) / 2, 790, { s: 28, bd: nat > .5 ? CIN : MUTED, c: nat > .5 ? CIN : MUTED, bw: 2.5 });
+  // a metszet: a lejátszófej alatti hang
+  const st = (i) => Object.assign({ fb: .5, hl: .5, lips: .2, cons: null }, ART[lo(sc.A[i])] || {});
+  let o = { fb: .55, hl: .55, lips: .2, cons: null }, voiced = 0, hi = {};
+  if (ci >= 0) {
+    const f = (px - colX(ci, sc, nat)) / CW2, s0 = st(ci), nx = ci + 1 < n ? st(ci + 1) : s0, bl = U.smooth((f - .7) / .3);
+    o = { fb: U.lerp(s0.fb, nx.fb, bl), hl: U.lerp(s0.hl, nx.hl, bl), lips: U.lerp(s0.lips, nx.lips, bl), cons: s0.cons || null };
+    voiced = vAt(ci) > .5 ? 1 : 0;
+    if (voiced) hi['gége'] = CIN; if (lipAt(ci)) hi['ajak'] = TEAL; if (tonAt(ci)) hi['nyelv'] = OCH;
+  }
+  drawTract({ x: 150, y: 330, s: .92, fb: o.fb, hl: o.hl, lips: o.lips, cons: o.cons, voiced, t, hi, air: run > 0 && run < 1 && ci >= 0 ? .7 : 0, airT: t });
+  L.pill(lab('modell bélyeg'), 60, 1010, { s: 24, w: 600, bg: CARD, bd: 'rgba(28,36,64,.3)', bw: 2, c: MUTED, pad: 12, k: 'modell bélyeg' });
+}
+/* a szájüreg-metszet (MagHang.tract a 02-beszedhang leckéből) */
+function drawTract(o) {
+  MagHang.tract(L, { x: o.x, y: o.y, s: o.s, fb: o.fb, hl: o.hl, lips: o.lips, cons: o.cons, velum: 1, voiced: o.voiced, t: o.t, hi: o.hi, air: o.air, airT: o.airT });
+}
+
+/* ═════════ 3. Részleges hasonulás – a hasonulás-gép ═════════ */
+const W3 = ['kútba', 'népdal', 'zsákban', 'vízpart', 'színpad', 'különben'];
+const S3 = { i: 0, t0: 0 };
+/* az írott és az ejtett alak betűinek összevetése: hol tér el (j), mivé lesz (out), mi követi (b), és miért */
+function analyse3(k) {
+  const p = pron(k); if (!p) return null;
+  const A = MagText.letters(p.w), B = MagText.letters(p.p);
+  if (A.length !== B.length) return null;
+  const d = []; A.forEach((x, i) => { if (lo(B[i]) !== lo(x)) d.push(i); });
+  if (d.length !== 1 || d[0] + 1 >= A.length) return null;
+  const j = d[0], a = lo(A[j]), out = lo(B[j]), b = lo(A[j + 1]);
+  const pairOK = (VOICED.indexOf(a) >= 0 && VOICED.indexOf(a) === VLESS.indexOf(out)) || (VLESS.indexOf(a) >= 0 && VLESS.indexOf(a) === VOICED.indexOf(out));
+  let kind = null;
+  if (pairOK && isVoiced(out) === isVoiced(b) && isVoiced(a) !== isVoiced(b)) kind = 'zönge';
+  else if (a === 'n' && out === 'm' && LABIAL.includes(b)) kind = 'hely';
+  return { p, A, B, j, a: A[j], out: B[j], b: A[j + 1], kind };
+}
+function set3(i) { S3.i = i; S3.t0 = L.st; }
+function scene3(t, act) {
+  const k = W3[S3.i], r = analyse3(k); if (!r || !r.kind) return;
+  const tt = (act ? L.st : t) - S3.t0, u = clamp((tt - .5) / 2.6);
+  ga(U.smooth(t / .5));
+  // írjuk:
+  const A = wordLay(T, r.p.w, 0, 0, { k, s: 80 }), w = A.w, x0 = 680 - w / 2 + 70;
+  const Al = wordLay(T, r.p.w, x0, 200, { k, s: 80, a: 'left' });
+  const lt = Al.tokens.filter((q) => q.kind === 'v' || q.kind === 'c'), hiA = {};
+  lt.forEach((q, j) => { hiA[q.i] = j === r.j ? CIN : j === r.j + 1 ? TEAL : INK; });
+  T.draw(Al, { hi: hiA, dim: 1 });
+  L.tx(lab('írjuk felirat'), x0 - 26, 200, { s: 34, f: F.D, i: true, w: 600, a: 'right', c: MUTED, k: 'írjuk felirat' });
+  // a gép
+  const badge = (x) => (r.kind === 'zönge' ? (isVoiced(x) ? { s: lab('zöngés jelvény'), k: 'zöngés jelvény' } : { s: lab('zöngétlen jelvény'), k: 'zöngétlen jelvény' })
+    : (lo(x) === 'n' ? { s: lab('nyelvhegy jelvény'), k: 'nyelvhegy jelvény' } : { s: lab('két ajak jelvény'), k: 'két ajak jelvény' }));
+  L.tx(r.a + ' → ' + r.out, 680, 340, { s: 34, f: F.D, i: true, w: 600, a: 'center', c: CIN, k });
+  M.assim({ x: 680, y: 520, s: 150, a: { s: r.a, badge: badge(r.a) }, b: { s: r.b, badge: badge(r.b) }, out: { s: r.out, badge: badge(r.out) }, c: CIN, t: u, k });
+  // mondjuk:
+  const ra = U.smooth((u - .75) / .25);
+  if (ra > 0) {
+    ga(ra);
+    const B = wordLay(T, '[' + r.p.p + ']', 0, 0, { k, s: 80 }), xb = 680 - B.w / 2 + 70;
+    const Bl = wordLay(T, '[' + r.p.p + ']', xb, 790, { k, s: 80, a: 'left' });
+    const bt = Bl.tokens.filter((q) => q.kind === 'v' || q.kind === 'c'), hiB = {};
+    bt.forEach((q, j) => { hiB[q.i] = j === r.j ? CIN : INK; }); Bl.tokens.forEach((q) => { if (q.kind === 'p') hiB[q.i] = MUTED; });
+    T.draw(Bl, { hi: hiB, dim: 1 });
+    L.tx(lab('mondjuk felirat'), xb - 26, 790, { s: 34, f: F.D, i: true, w: 600, a: 'right', c: MUTED, k: 'mondjuk felirat' });
+    const rk = r.kind === 'zönge' ? 'zönge szabály' : 'hely szabály';
+    const pb = L.pill(lab(rk), 680, 925, { a: 'center', s: 28, w: 650, bg: CARD, bd: CIN, bw: 2.5, c: CIN, pad: 16, k: rk, max: 760 });
+    L.tx(lab('nem jelöli felirat'), 680, pb.y + pb.h + 40, { s: 26, w: 600, a: 'center', c: MUTED, k: 'nem jelöli felirat' });
+  }
+}
+
+/* ═════════ 4. Teljes hasonulás: jelölt és jelöletlen ═════════ */
+const S4 = { t0: 0 };
+/* a hasonult betű a szóelemekben: az első eltérés (i: szóelem, ci: betű), és a forrás: a szomszédos azonos betű */
+function changed4(kA, kB) {
+  const A = W(kA).parts, B = W(kB).parts;
+  for (let i = 0; i < Math.min(A.length, B.length); i++) {
+    const a = A[i].s, b = B[i].s;
+    for (let ci = 0; ci < Math.max(a.length, b.length); ci++) if (a[ci] !== b[ci]) {
+      const ch = b[ci], flat = B.map((p) => p.s).join(''), pos = B.slice(0, i).reduce((s, p) => s + p.s.length, 0) + ci;
+      const src = flat[pos - 1] === ch && !(pos - 1 >= 0 && A.map((p) => p.s).join('')[pos - 1] !== ch) ? pos - 1 : flat[pos + 1] === ch ? pos + 1 : -1;
+      let si = 0, sci = src; while (si < B.length && sci >= B[si].s.length) { sci -= B[si].s.length; si++; }
+      return { i, ci, from: a[ci], to: ch, src: src >= 0 ? { i: si, ci: sci } : null };
+    }
+  }
+  return null;
+}
+function scene4(t, act) {
+  const tt = (act ? L.st : t) - S4.t0;
+  ga(U.smooth(t / .5));
+  card(50, 110, 600, 880); card(710, 110, 600, 880);
+  [['jelöletlen cím', 'jelöletlen alcím', 350, MUTED], ['jelölt cím', 'jelölt alcím', 1010, CIN]].forEach(([k1, k2, x, col]) => {
+    L.tx(lab(k1), x, 185, { s: 42, f: F.D, w: 600, a: 'center', c: INK, k: k1 });
+    L.pill(lab(k2), x, 245, { a: 'center', s: 24, w: 600, bg: CARD, bd: col, bw: 2, c: col, pad: 12, k: k2 });
+  });
+  // bal: csak a kiejtés változik
+  [['egészség', 430], ['anyja', 740]].forEach(([k, y], r) => {
+    const p = pron(k); if (!p) return;
+    const ra = U.smooth((tt - .4 - r * 1.3) / .5), rb = U.smooth((tt - 1.0 - r * 1.3) / .5);
+    ga(ra);
+    const A = wordLay(T, p.w, 380, y, { k, s: 76 }); T.draw(A, { hi: changedHi(A, p.p, CIN, 'a'), dim: 1 });
+    L.tx(lab('írjuk felirat'), 80, y, { s: 26, f: F.D, i: true, w: 600, a: 'left', c: MUTED, k: 'írjuk felirat' });
+    ga(rb);
+    const B = wordLay(T, '[' + p.p + ']', 380, y + 105, { k, s: 76 }); T.draw(B, { hi: changedHi(B, p.w, CIN, 'b'), dim: 1 });
+    L.tx(lab('mondjuk felirat'), 80, y + 105, { s: 26, f: F.D, i: true, w: 600, a: 'left', c: MUTED, k: 'mondjuk felirat' });
+  });
+  // jobb: az írás is követi
+  [['kéz vel', 'kézzel', 400], ['az ban', 'abban', 715]].forEach(([kA, kB, y], r) => {
+    const ch = changed4(kA, kB); if (!ch) return;
+    const ra = U.smooth((tt - .6 - r * 1.3) / .5), rb = clamp((tt - 1.2 - r * 1.3) / .8);
+    ga(ra);
+    M.draw(W(kA), { x: 1010, y, s: 60, open: 1, hi: { [ch.i]: true }, dim: 1 });
+    if (rb > 0) {
+      ga(U.smooth(rb * 2));
+      const Y = y + 145, lay = M.draw(W(kB), { x: 1010, y: Y, s: 60, open: 1, hi: { [ch.i]: CIN }, dim: 1 });
+      const cx = M.charX(lay, ch.i, ch.ci), K = MagMorph.KINDS[W(kB).parts[ch.i].k] || MagMorph.KINDS['tő'];
+      c.strokeStyle = K.tc; c.lineWidth = 4; c.lineCap = 'round'; c.beginPath(); c.moveTo(cx.x - cx.w / 2, Y + 12); c.lineTo(cx.x + cx.w / 2, Y + 12); c.stroke();
+      if (ch.src) {
+        const sx = M.charX(lay, ch.src.i, ch.src.ci).x;
+        M.lamp({ x: sx, y: Y - 60 * .3, r: 60 * .62, c: CIN, u: U.smooth(rb), arc: 40, to: { x: cx.x, y: Y - 60 * .27, h: 60 * 1.26 } });
+      }
+    }
+  });
+}
+
+/* ═════════ 5. Összeolvadás, rövidülés, kiesés ═════════ */
+const R5 = [['összeolvadás', ['látja', 'adja', 'barátság'], 250], ['rövidülés', ['jobbra', 'tollban'], 530], ['kiesés', ['mondta', 'mindnyájan'], 810]];
+const X5 = { 3: [570, 840, 1130], 2: [640, 1010] };
+const S5 = { t0: -99, from: [1, 1, 1], tgt: 1 };
+function u5(r, t) { if (S5.t0 > -50) return U.lerp(S5.from[r], S5.tgt, U.inOut((L.st - S5.t0 - r * .12) / .9)); return U.inOut((t - 1.4 - r * 1.1) / .9); }
+function go5(v) { S5.from = R5.map((_, r) => u5(r, L.st)); S5.tgt = v; S5.t0 = L.st; }
+function scene5(t) {
+  R5.forEach(([nm, ws, y], r) => {
+    const a = U.smooth((t - .2 - r * .5) / .5); if (a <= 0) return;
+    ga(a);
+    card(40, y - 115, 1280, 230);
+    L.tx(lab(nm + ' név'), 70, y - 30, { s: 40, f: F.D, w: 600, a: 'left', c: CIN, k: nm + ' név' });
+    const g = TB.layout(TB.tokens(lab(nm + ' leírás'), 'szó', { k: nm + ' leírás' }), { x: 70, y: y + 18, w: 330, a: 'left', s: 26 });
+    TB.draw(g, { c: MUTED });
+    const u = u5(r, t), xs = X5[ws.length];
+    ws.forEach((k, i) => morphWord(T, k, xs[i], y + 45, 56, u, 1, 30));
+  });
+}
+
+/* ═════════ 6. Miért nem írjuk, ahogy mondjuk? ═════════ */
+const R6 = [['kútba szóelemek', 'kútba', 390], ['kútból szóelemek', 'kútból', 560], ['kútnál szóelemek', null, 730]];
+const S6 = { t0: -99, from: 0, tgt: 1, ch: [] };
+function u6(t) { return S6.t0 > -50 ? U.lerp(S6.from, S6.tgt, U.inOut((L.st - S6.t0) / .8)) : U.inOut((t - 3.4) / .8); }
+function go6(v) { S6.from = u6(L.st); S6.tgt = v; S6.t0 = L.st; }
+/* a sor két írásmódja: [ahogy mondjuk, szóelemzéssel] – a tő és a rag */
+function forms6(mk, pk) {
+  const w = W(mk), rag = w.parts[w.parts.length - 1].s, stem = w.parts.slice(0, -1).map((p) => p.s).join('');
+  const p = pron(pk), say = p ? p.p : w.s;
+  const sStem = say.endsWith(rag) ? say.slice(0, say.length - rag.length) : null;
+  return { stem, rag, sStem, w };
+}
+function well(x, y) {
+  c.save(); c.translate(x, y); c.lineJoin = 'round'; c.lineCap = 'round'; c.lineWidth = 3;
+  c.fillStyle = '#d9c9ad'; c.strokeStyle = '#6b5a3e';
+  c.beginPath(); c.roundRect(-80, 20, 160, 90, 8); c.fill(); c.stroke();
+  for (let k = 0; k < 3; k++) { c.beginPath(); c.moveTo(-80, 50 + k * 30); c.lineTo(80, 50 + k * 30); c.stroke(); }
+  for (let k = 0; k < 4; k++) { const ox = (k % 2) * 26; c.beginPath(); c.moveTo(-60 + ox + k * 0, 20 + Math.floor(k / 2) * 0); c.stroke(); }
+  c.fillStyle = 'rgba(70,150,215,.45)'; c.strokeStyle = '#1b5a94'; c.beginPath(); c.ellipse(0, 20, 80, 16, 0, 0, U.TAU); c.fill(); c.stroke();
+  c.strokeStyle = '#6b5a3e'; c.lineWidth = 6; c.beginPath(); c.moveTo(-70, 20); c.lineTo(-70, -110); c.moveTo(70, 20); c.lineTo(70, -110); c.stroke();
+  c.fillStyle = '#a24a2a'; c.strokeStyle = '#6b2f1a'; c.lineWidth = 3; c.beginPath(); c.moveTo(-100, -100); c.lineTo(0, -160); c.lineTo(100, -100); c.closePath(); c.fill(); c.stroke();
+  c.strokeStyle = INK; c.lineWidth = 4; c.beginPath(); c.moveTo(-70, -70); c.lineTo(70, -70); c.stroke();
+  c.lineWidth = 2; c.beginPath(); c.moveTo(0, -70); c.lineTo(0, -16); c.stroke();
+  c.fillStyle = '#8fb0c8'; c.strokeStyle = '#1b5a94'; c.lineWidth = 3; c.beginPath(); c.moveTo(-18, -16); c.lineTo(18, -16); c.lineTo(14, 12); c.lineTo(-14, 12); c.closePath(); c.fill(); c.stroke();
+  c.restore();
+}
+function scene6(t, act) {
+  const u = u6(t);
+  ga(U.smooth(t / .5));
+  L.tx(lab('hogyan felirat'), 680, 135, { s: 50, f: F.D, w: 600, a: 'center', c: INK, k: 'hogyan felirat' });
+  // a két mód kapcsolója (kattintható is)
+  const opts = [['ahogy mondjuk felirat', 470, 0], ['szóelemzéssel felirat', 890, 1]]; S6.ch = [];
+  opts.forEach(([k, x, v]) => {
+    const on = v ? u : 1 - u, col = v ? TEAL : CIN;
+    const pb = L.pill(lab(k), x, 235, { a: 'center', s: 32, w: 650, pad: 18, bg: on > .5 ? col : CARD, c: on > .5 ? CARD : col, bd: col, bw: 2.5, k });
+    S6.ch.push({ x: pb.x, y: pb.y, w: pb.w, h: pb.h, v });
+  });
+  if (act && L.pointer.pressed) { const P = L.pointer, h = S6.ch.find((b) => P.px >= b.x && P.px <= b.x + b.w && P.py >= b.y && P.py <= b.y + b.h); if (h) go6(h.v); }
+  well(190, 640);
+  const stems = [];
+  R6.forEach(([mk, pk, y], r) => {
+    const f = forms6(mk, pk); if (f.sStem == null) return;
+    const a = U.smooth((t - .4 - r * .35) / .5); if (a <= 0) return;
+    ga(a);
+    const st = u < .5 ? f.sStem : f.stem, pop = 1 + .08 * Math.sin(Math.PI * clamp(Math.abs(u - .5) < .5 ? 1 - Math.abs(u - .5) * 2 : 0));
+    stems.push(st);
+    c.save(); c.translate(420, y - 20); c.scale(pop, pop); c.translate(-420, -(y - 20));
+    const lay = M.draw({ s: st + f.rag, parts: [{ s: st, k: 'tő' }, { s: f.rag, k: 'rag' }] }, { x: 420, y, s: 76, a: 'left', open: 1 });
+    c.restore();
+    const diff = st !== f.stem;
+    const pp = pron(pk); L.tx('[' + (pp ? pp.p : f.w.s) + ']', 840, y - 4, { s: 32, f: F.D, w: 500, a: 'center', c: MUTED, k: pk || mk });
+    L.pill(lab('tő felirat').replace('#', st), 950, y - 22, { a: 'left', s: 30, w: 650, pad: 14, bg: CARD, bd: diff ? CIN : TEAL, bw: 2.5, c: diff ? CIN : TEAL, k: 'tő felirat' });
+    void lay;
+  });
+  // a következtetés
+  const ra = U.smooth((t - 1.6) / .5);
+  if (ra > 0 && stems.length) {
+    ga(ra);
+    const two = new Set(stems).size > 1, k = two ? 'két tő felirat' : 'egy tő felirat';
+    const pb = pillNote(k, 680, 900, { s: 30, bd: two ? BAD : GOOD, c: two ? BAD : GOOD, bw: 3, pad: 18, max: 1180 });
+    if (!two) tick(pb.x - 28, pb.y + pb.h / 2);
+  }
+}
+
+/* ═════════ 7. Négy elv, négy doboz (TortCards) ═════════ */
+const PR = [['kiejtés', TEAL], ['szóelemzés', CIN], ['hagyomány', OCH], ['egyszerűsítés', LILA]];
+function makeCards() {
+  const zones = PR.map(([p], i) => ({ id: p, x: 40 + i * 324, y: 335, w: 308, h: 690, head: 112, title: { s: lab(p + ' név'), k: p + ' név' }, sub: { s: lab(p + ' leírás'), k: p + ' leírás' } }));
+  const cards = []; PR.forEach(([p]) => list(p + ' szavak').forEach((w) => cards.push({ id: 'c' + cards.length, label: { s: w, k: p + ' szavak' }, zone: p })));
+  // kevert sorrend (determinisztikus)
+  const r = U.rng(5); for (let i = cards.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); const x = cards[i]; cards[i] = cards[j]; cards[j] = x; }
+  CARDS = TortCards.create(L, {
+    zones, cards, tray: { x: 40, y: 120, w: 1280, h: 190, top: 40 }, font: { f: F.D, s: 30, w: 560 },
+    decor: (z) => { const col = PR.find((q) => q[0] === z.id)[1]; c.fillStyle = col; c.beginPath(); c.roundRect(z.x + 22, z.y + 100, 60, 5, 2.5); c.fill(); },
+  });
+}
+function scene7(t, act) {
+  if (!CARDS) return;
+  if (act) CARDS.update();
+  ga(U.smooth(t / .5));
+  CARDS.draw({});
+  const sc = CARDS.score();
+  if (sc.placed === 0) L.tx(lab('húzd felirat'), 680, 82, { s: 28, w: 600, a: 'center', c: MUTED, k: 'húzd felirat' });
+  else {
+    const all = sc.ok === sc.total;
+    const pb = L.pill(lab('pont felirat').replace('#', sc.ok + ' / ' + sc.total), 680, 72, { a: 'center', s: 28, w: 650, bg: CARD, bd: all ? GOOD : INK, bw: 2.5, c: all ? GOOD : INK, pad: 14, k: 'pont felirat' });
+    if (all) tick(pb.x - 26, pb.y + pb.h / 2);
+  }
+}
+
+/* ═════════ 8. Összefoglaló ═════════ */
+function scene8(t) {
+  ga(U.smooth(t / .5));
+  // a lánc
+  const ks = ['lánc 1 felirat', 'lánc 2 felirat', 'lánc 3 felirat'], cols = [INK, CIN, TEAL], fo = { s: 28, w: 650 };
+  const ws = ks.map((k) => L.measure(lab(k), fo).w + 36), gap = 70, tot = ws.reduce((a, b) => a + b, 0) + gap * 2;
+  let x = 680 - tot / 2;
+  ks.forEach((k, i) => {
+    const a = U.smooth((t - .3 - i * .6) / .5); ga(a);
+    L.pill(lab(k), x, 150, Object.assign({ bg: CARD, bd: cols[i], bw: 2.5, c: cols[i], pad: 18, k }, fo));
+    x += ws[i];
+    if (i < 2) { ga(U.smooth((t - .6 - i * .6) / .5)); arrow(x + 12, 172, x + gap - 12, 172, MUTED, 3, 14); x += gap; }
+  });
+  // a négy elv
+  PR.forEach(([p, col], i) => {
+    const a = U.smooth((t - 2 - i * .4) / .5); if (a <= 0) return;
+    ga(a);
+    const cx = i % 2 ? 710 : 50, cy = i < 2 ? 290 : 640, w = 600, h = 310;
+    card(cx, cy, w, h);
+    c.fillStyle = col; c.beginPath(); c.roundRect(cx, cy + 24, 8, h - 48, 4); c.fill();
+    L.tx(lab(p + ' név'), cx + 40, cy + 70, { s: 46, f: F.D, w: 600, a: 'left', c: col, k: p + ' név' });
+    L.tx(lab(p + ' leírás'), cx + 40, cy + 118, { s: 26, w: 500, a: 'left', c: MUTED, k: p + ' leírás', max: w - 70 });
+    L.tx(list(p + ' szavak').slice(0, 2).join(' · '), cx + 40, cy + 205, { s: 54, f: F.D, w: 560, a: 'left', c: INK, k: p + ' szavak', max: w - 70 });
+    if (p === 'egyszerűsítés') L.pill(lab('kivétel felirat'), cx + 40, cy + 248, { s: 24, w: 600, bg: CARD, bd: BAD, bw: 2, c: BAD, pad: 10, k: 'kivétel felirat', max: w - 100 });
+  });
+}
+
+const SCENES = [scene1, scene2, scene3, scene4, scene5, scene6, scene7, scene8];
+const sT = [];
+
+/* ═════════ ellenőrzések (QA: L.checks; a .md adatai ↔ a lecke szabálya) ═════════ */
+let DATA_ERR = [];
+function checks() {
+  const out = [], eq = (name, got, want) => out.push({ name, ok: JSON.stringify(got) === JSON.stringify(want), got: JSON.stringify(got), want: JSON.stringify(want) });
+  eq('MagText.letters láttya', MagText.letters('láttya'), ['l', 'á', 'ty', 'ty', 'a']);
+  eq('MagText.letters baráccság', MagText.letters('baráccság'), ['b', 'a', 'r', 'á', 'cs', 'cs', 'á', 'g']);
+  eq('zöngés–zöngétlen párok száma', [VOICED.length, VLESS.length], [9, 9]);
+  // 1–2. lépés: az ejtés eltér az írástól
+  W1.concat(['kútból', 'anyja', 'adja', 'barátság', 'jobbra', 'tollban', 'mondta', 'mindnyájan']).forEach((k) => { const p = pron(k); eq('ejtés ≠ írás: ' + k, !!p && p.w !== p.p, true); });
+  const s2 = score2(); eq('2: kútba – egy hang hasonul (t → d), utána zöngés hang', [s2.ok, isVoiced(s2.B[s2.j]), isVoiced(s2.A[s2.j + 1])], [true, true, true]);
+  // 3. lépés: minden szóban zöngésség vagy képzési hely szerinti hasonulás
+  const want3 = { 'kútba': 'zönge', 'népdal': 'zönge', 'zsákban': 'zönge', 'vízpart': 'zönge', 'színpad': 'hely', 'különben': 'hely' };
+  W3.forEach((k) => { const r = analyse3(k); eq('3: ' + k + ' hasonulása', r ? r.kind : null, want3[k]); });
+  // 4. lépés: teljes hasonulás – a hasonult hang azonos a szomszédjával
+  ['egészség', 'anyja'].forEach((k) => {
+    const p = pron(k), A = MagText.letters(p.w), B = MagText.letters(p.p), pairs = MagText.diff(p.w, p.p), mb = new Set(pairs.map((q) => q[1]));
+    const nw = B.map((x, j) => (mb.has(j) ? null : j)).filter((j) => j != null);
+    eq('4: ' + k + ' teljes hasonulás', nw.length === 1 && (B[nw[0] - 1] === B[nw[0]] || B[nw[0] + 1] === B[nw[0]]) && A.length === B.length, true);
+  });
+  [['kéz vel', 'kézzel'], ['az ban', 'abban']].forEach(([a, b]) => { const ch = changed4(a, b); eq('4: ' + b + ' jelölt teljes hasonulás', !!(ch && ch.src), true); });
+  // 6. lépés: az ejtés a raggal végződik
+  R6.forEach(([mk, pk]) => { const f = forms6(mk, pk); eq('6: ' + mk, [f.sStem != null, f.stem], [true, 'kút']); });
+  // 7. lépés: 12 különböző szó, elvenként 3
+  const all = PR.reduce((a, [p]) => a.concat(list(p + ' szavak')), []);
+  eq('7: 12 különböző szó', [all.length, new Set(all).size], [12, 12]);
+  return out;
+}
+
+L = Lesson.create({
+  content: window.LESSON_CONTENT,
+  home: false,
+  resetCtx: true,
+  steps: [
+    { settle: 7,
+      enter() { S1.t0 = -99; },
+      controls(L) { L.button(lab('írás gomb'), () => go1(0), 'írás gomb'); L.button(lab('kiejtés gomb'), () => go1(1), 'kiejtés gomb'); } },
+    { settle: 5,
+      enter() { S2.t0 = -99; },
+      controls(L) { L.button(lab('gondosan gomb'), () => go2(0), 'gondosan gomb'); L.button(lab('természetesen gomb'), () => go2(1), 'természetesen gomb'); } },
+    { settle: 4,
+      enter() { S3.i = 0; S3.t0 = 0; },
+      controls(L) { W3.forEach((k, i) => L.button(pron(k).w, () => set3(i), k)); } },
+    { settle: 5,
+      enter() { S4.t0 = 0; },
+      controls(L) { L.button(lab('újra gomb'), () => { S4.t0 = L.st; }, 'újra gomb'); } },
+    { settle: 5,
+      enter() { S5.t0 = -99; },
+      controls(L) { L.button(lab('írás gomb'), () => go5(0), 'írás gomb'); L.button(lab('kiejtés gomb'), () => go5(1), 'kiejtés gomb'); } },
+    { settle: 5,
+      enter() { S6.t0 = -99; },
+      controls(L) { L.button(lab('ahogy mondjuk gomb'), () => go6(0), 'ahogy mondjuk gomb'); L.button(lab('szóelemzés gomb'), () => go6(1), 'szóelemzés gomb'); } },
+    { settle: 1.5,
+      enter() { if (CARDS) CARDS.reset(); },
+      controls(L) { L.button(lab('megoldás gomb'), () => CARDS.solve(), 'megoldás gomb'); L.button(lab('keverés gomb'), () => CARDS.reset(), 'keverés gomb'); } },
+    { settle: 4.5 },
+  ],
+  init(Lx) {
+    L = Lx; c = L.ctx;
+    T = MagText.create(L, { f: F.D, s: 80, w: 560 });
+    TB = MagText.create(L, { f: F.B, s: 26, w: 500, lh: 1.25 });
+    M = MagMorph.create(L, { font: { f: F.D, s: 80, w: 560 } });
+    VOICED = list('zöngés mássalhangzók').map(lo); VLESS = list('zöngétlen párjuk').map(lo); LABIAL = list('ajakhangok').map(lo);
+    makeCards();
+    L.checks = checks;
+    DATA_ERR = checks().filter((x) => !x.ok).map((x) => x.name);
+    if (DATA_ERR.length) console.warn('A .md adatai és a lecke szabálya eltér: ' + DATA_ERR.join('; '));
+  },
+  draw(Lx) {
+    L = Lx; c = L.ctx; GA = 1; background();
+    if (L.step >= 0) sT[L.step] = L.st;
+    for (let i = 0; i < SCENES.length; i++) {
+      const w = clamp(1 - Math.abs(L.sp - i) * 2); if (w <= .005) continue;
+      GA = w; c.save(); c.globalAlpha = w; SCENES[i](sT[i] == null ? 0 : sT[i], L.step === i); c.restore();
+    }
+    c.globalAlpha = 1;
+    if (DATA_ERR.length) L.pill(lab('adathiba felirat').replace('#', DATA_ERR.slice(0, 3).join('; ')), 680, 1040, { a: 'center', s: 24, w: 600, bg: BAD, c: CARD, pad: 12, k: 'adathiba felirat', max: 1240 });
+  },
+});
+
+/* QA: szélső állapotok (tools/qa_lesson.py --states; a kulcs 1-alapú lépésszám) */
+window.__qaStates = {
+  1: [{ name: 'iras', set() { S1.from = [0, 0, 0, 0]; S1.tgt = 0; S1.t0 = -30; } }, { name: 'atmenet', set() { S1.from = [0, 0, 0, 0]; S1.tgt = 1; S1.t0 = L.st - .5; } }],
+  2: [{ name: 'gondosan', set() { S2.from = 0; S2.tgt = 0; S2.t0 = -30; } },  { name: 't-alatt-gondos', set() { S2.from = 0; S2.tgt = 0; S2.t0 = -30; }, st: 8.26 }],
+  3: W3.slice(1).map((k, i) => ({ name: 'szo-' + (i + 2), set() { set3(i + 1); S3.t0 = -30; } })).concat([{ name: 'kozben', set() { set3(4); S3.t0 = L.st - 1.6; } }]),
+  4: [{ name: 'kozben', set() { S4.t0 = L.st - 1.5; } }],
+  5: [{ name: 'iras', set() { S5.from = [0, 0, 0]; S5.tgt = 0; S5.t0 = -30; } }],
+  6: [{ name: 'ahogy-mondjuk', set() { S6.from = 0; S6.tgt = 0; S6.t0 = -30; } }],
+  7: [{ name: 'reszben', set() { CARDS.reset(); CARDS.cards.slice(0, 5).forEach((q, i) => CARDS.place(q, i === 1 ? (q.zone === 'kiejtés' ? 'hagyomány' : 'kiejtés') : q.zone, -30)); } },
+      { name: 'megoldva', set() { CARDS.reset(); CARDS.solve(-30); } }],
+};
+
+})();
+</script>
+</body>
+</html>
