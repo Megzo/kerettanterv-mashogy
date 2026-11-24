@@ -1,0 +1,1290 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Melyik hálóból lesz kocka? — Matematika</title>
+<link rel="stylesheet" href="../../shared/lesson.css">
+<style>
+  .lp-text b { color: var(--ink); }
+</style>
+<!-- A lecke által várt tartalomkulcsok. A tools/build_lesson.py ez alapján ellenőrzi a .md-t. -->
+<script type="application/json" id="lesson-spec">
+{
+  "steps": 9,
+  "maxWords": 45,
+  "math": true,
+  "labels": {
+    "tippelj": 20, "a tipped": 16, "jó tipp": 14, "rossz tipp": 14, "forgasd": 24,
+    "csúcs": 10, "él": 10, "lap": 10, "a csúszka": 22, "b csúszka": 22, "c csúszka": 22, "felszín": 12, "térfogat": 12,
+    "kérdés 1": 34, "tipp 6": 8, "tipp 8": 8, "tipp 12": 8, "lapátló": 12, "testátló": 12, "takart él": 14,
+    "nézetek cím": 30, "elölnézet": 14, "felülnézet": 14, "oldalnézet": 22, "alaprajz": 12,
+    "gomb elölről": 12, "gomb felülről": 12, "gomb jobbról": 12, "gomb térben": 12, "építmény": 24,
+    "háló kocka": 34, "háló téglatest": 34, "háló hasáb": 34, "háló gúla": 34,
+    "gomb kocka": 12, "gomb téglatest": 12, "gomb hasáb": 12, "gomb gúla": 12,
+    "lapok kocka": 34, "lapok téglatest": 34, "lapok hasáb": 34, "lapok gúla": 34, "összehajtás": 20,
+    "kérdés 4": 30, "válassz": 26, "gomb lesz": 18, "gomb nem lesz": 18, "gomb következő": 22,
+    "kocka lett": 18, "nem lett": 18, "ütközik": 30, "nyitva": 30,
+    "felszín cím": 34, "háló területe": 22,
+    "térfogat cím": 34, "egy réteg": 30, "rétegek": 30, "egységkocka": 30, "kockák": 14, "nem ugyanaz": 34,
+    "állítás cím": 16, "állítás 1": 26, "állítás 2": 26, "öntés gomb": 18, "beöntve": 16, "kifolyt": 16,
+    "nem fér": 18, "belefér": 18, "réteg 1": 30, "réteg 10": 30, "liter egyenlőség": 30, "él felirat": 18,
+    "kérdés 8": 40, "tipp 2x": 12, "tipp 4x": 12, "tipp 8x": 12, "nagyítás": 24, "kis kocka": 14, "nagy kocka": 14,
+    "össz kocka": 16, "össz háló": 16, "össz felszín": 16, "össz térfogat": 16, "össz liter": 16, "össz kétszeres": 16,
+    "össz hálók": 30, "össz felszín sor": 30, "össz térfogat sor": 30, "össz szorzók": 36
+  },
+  "data": {
+    "csúcsok száma": {"int": true, "min": 1, "max": 20},
+    "élek száma": {"int": true, "min": 1, "max": 30},
+    "lapok száma": {"int": true, "min": 1, "max": 20},
+    "lapátlók száma": {"int": true, "min": 0, "max": 30},
+    "testátlók száma": {"int": true, "min": 0, "max": 20},
+    "építmény kockái": {"int": true, "min": 1, "max": 30},
+    "hexominók száma": {"int": true, "min": 1, "max": 100},
+    "kockahálók száma": {"int": true, "min": 1, "max": 35},
+    "téglatest a": {"dim": "hosszúság", "min": 0.01, "max": 0.05},
+    "téglatest b": {"dim": "hosszúság", "min": 0.01, "max": 0.05},
+    "téglatest c": {"dim": "hosszúság", "min": 0.01, "max": 0.05},
+    "téglatest felszíne": {"dim": "terület", "min": 0.0001, "max": 0.1},
+    "téglatest térfogata": {"dim": "térfogat", "min": 0.001, "max": 1},
+    "kocka éle": {"dim": "hosszúság", "min": 0.1, "max": 0.1},
+    "edény térfogata": {"dim": "térfogat", "min": 0.1, "max": 10},
+    "tej": {"dim": "térfogat", "min": 0.25, "max": 3},
+    "kifolyó tej": {"dim": "térfogat", "min": 0, "max": 3},
+    "kis kocka éle": {"dim": "hosszúság", "min": 0.01, "max": 0.02},
+    "kis felszín": {"dim": "terület", "min": 0.0001, "max": 0.1},
+    "kis térfogat": {"dim": "térfogat", "min": 0.0001, "max": 1},
+    "nagy felszín": {"dim": "terület", "min": 0.0001, "max": 0.1},
+    "nagy térfogat": {"dim": "térfogat", "min": 0.0001, "max": 1},
+    "felszín szorzó": {"int": true, "min": 1, "max": 100},
+    "térfogat szorzó": {"int": true, "min": 1, "max": 1000}
+  }
+}
+</script>
+</head>
+<body>
+<script src="16-testek.content.js"></script>
+<script src="../../shared/lesson.js"></script>
+<script src="../../shared/matek/mtext.js"></script>
+<script>
+(function () {
+'use strict';
+const U = Lesson.U, { clamp, lerp, smooth, out, TAU } = U, fmt = U.fmt;
+const F = Lesson.FONTS;
+
+/* ── MODUL: Testek (Mat3D) · forrás: matematika-5-6/16-testek, 2026-11-24 ──────────────────────────────────────
+   Egyszerű 3D-motor a vászonra: ortografikus (vagy enyhén perspektivikus) vetítés, forgatás egérrel / W-A-S-D-vel,
+   festő-algoritmus, takart él szaggatva, testek (téglatest, kocka, szabályos hasáb, gúla, henger), háló hajtogatása
+   csuklóélek körül, ütközésvizsgálat (kockaháló), egységkockák (voxelek, rejtett lapok nélkül), nézetek.
+   Csak a Lesson motorra épül (L.ctx, L.pointer, Lesson.U); szöveget NEM ír – a feliratokat a lecke teszi ki a
+   vetített pontokhoz (S.P), így minden felirat .md-kulcsos marad. Lecke-specifikus kódra nem hivatkozik.
+   Koordináták: x jobbra, y hátra (a nézőtől el), z fel; az egység tetszőleges (pl. 1 = 1 cm). Színek: '#rrggbb'.
+   Állapot: zárt képletű – a hajtogatás t (0..1) fázist kap; a nézet yaw/pitch (fok) + a húzás eltolása (dyaw, dpitch).
+   Minden rajzoló save/restore-ral visszaállítja a vászonállapotot. o.a: abszolút átlátszóság (a lecke a saját
+   áttűnés-szorzóját adja bele).
+
+   ── Nézet ──
+   const S = Mat3D.create(L, {cx, cy, scale (px / egység), yaw = −30, pitch = 25 (fok; 0: szemből, 90: felülről),
+                              target: [x, y, z] (ez a világpont kerül a (cx, cy) képpontba), dist = 0 (0: ortografikus;
+                              > 0: a kamera távolsága egységben, enyhe perspektíva), light: [x, y, z] (nézettérben)})
+   S.set({…}) – ugyanezek a mezők (képkockánként hívható, pl. Mat3D.lerpView eredményével)
+   S.yaw, S.pitch – a tényleges nézet (alap + húzás) · S.dyaw, S.dpitch – a húzás eltolása
+   yaw = 0, pitch = 0: elölnézet · yaw = 0, pitch = 90: felülnézet (elöl lent) · yaw = −90, pitch = 0: jobbról
+   S.P([x, y, z]) → [sx, sy, d] képpont + mélység (nagyobb d = távolabb) · S.unP(sx, sy, d = 0) → világpont (ortho)
+   S.view(p) / S.dir(v) → nézettérbeli pont / vektor [jobbra, fel, befelé] · S.facing(n, c) → felénk néz-e a lap
+   S.lam(n) → megvilágítás (−1..1)
+   S.drag({rect: [x, y, w, h] (alap: a vizuális terület), k = .45 (fok/px), pitch: [min, max] = [−10, 90]}) → true húzás
+          közben. Minden képkockán hívd az élő jelenetből; a L.pointer (pressed/down) a dyaw/dpitch-et állítja.
+   S.key(e, lépés = 10) → true, ha kezelte (A/D: forgatás, W/S: billentés) · S.reset() · S.save() → {dyaw, dpitch} · S.load(o)
+   Mat3D.lerpView(a, b, t) → a két nézet ({yaw, pitch, scale, cx, cy, target}) közti nézet; a yaw a rövidebb úton
+
+   ── Testek ── {v: [[x, y, z]…], f: [[i, j, k…]…] (kívülről nézve pozitív körüljárás – a build igazítja), n (lapnormálisok,
+                 kifelé), c (lapközéppontok), e: [{i, j, f: [lapok], soft}] (élek), vf (csúcs → lapjai), kind}
+   Mat3D.solid(v, f, {soft(e) → bool, kind}) – tetszőleges konvex poliéder; lágy él: csak kontúrként látszik (henger)
+   Mat3D.cuboid(a, b, c, {at: [x, y, z] (a bal-elülső-alsó csúcs), center}) – lapok: 0 alsó, 1 felső, 2 elülső, 3 hátsó,
+          4 bal, 5 jobb; csúcsok: 0..3 alul (0 bal-elöl, 1 jobb-elöl, 2 jobb-hátul, 3 bal-hátul), 4..7 fölöttük
+   Mat3D.cube(a, o) · Mat3D.prism(n, r, h, {rot (fok), at (az alaplap közepe)}) – szabályos n-szög alapú egyenes hasáb,
+          r: körülírt sugár; lapok: 0 alsó, 1 felső, 2 + k oldallapok (a 2. lap néz előre); csúcsok 0..n−1 alul, n..2n−1 fölül
+   Mat3D.pyramid(n, r, h, o) – 0 alaplap, 1 + k oldallapok; csúcs n: a gúla csúcsa · Mat3D.cylinder(r, h, {n = 48, at})
+   Mat3D.diagonals(sol) → {face: [[i, j]…] (lapátlók), space: [[i, j]…] (testátlók: nem egy lapon levő csúcspárok)}
+   Mat3D.move(sol, f(p) → p) – új test a transzformált csúcsokkal
+   S.draw(sol, {a, fill: '#hex' | (fi) → '#hex' | null (nincs kitöltés), alpha = 1 (kitöltés; < 1: a hátsó lapok is
+          látszanak), shade = .22, stroke, lw = 2.5, hidden: 'dash' | 'solid' | 'none', hiddenA = .6,
+          pass: 'all' | 'back' | 'front' (tartály: előbb 'back', közben a tartalom, végül 'front'), skip: [fi] (hiányzó
+          lapok, pl. nyitott doboz teteje), hi: {faces: {fi: col | {c, a}}, edges: {ei: col | {c, w, a}},
+          verts: {vi: col | {c, r, a, ring}}}}) → {v2: vetített csúcsok, vis: [lap felénk néz], edges: [{ei, e, hidden, show}]}
+   S.seg(p, q, {c, w = 3, dash, a}) · S.dot(p, {r = 8, c, a, hollow, ring}) · S.poly(pts, {fill, fa, stroke, w, dash, a})
+
+   ── Háló ──
+   const N = Mat3D.net(faces)   faces: [{poly: [[x, y]…] (a síkban, z = 0), parent: j | −1 (gyökér), hp: [[x, y], [x, y]]
+          (a csuklóél két végpontja; vagy hinge: [k, k + 1] a poly indexeivel), ang (cél-hajtásszög, rad; alap π/2), col, name}]
+          Minden lap a szülőjéhez képest felfelé (+z) hajlik; t = 1-nél a test összezárul a gyökérlapon állva.
+   N.faces · N.maxDepth · N.at(t, {stagger = 0}) → [{i, pts: [[x, y, z]…], n (külső normális), c}]
+          (stagger > 0: a gyökérhez közelebbi lapok előbb hajlanak, a mélyebbek később)
+   N.map(i, [x, y], t, o) → [x, y, z] – az i. lap egy síkbeli pontjának helye t-ben (felirat, rács, számegyenes a lapon)
+   N.box(t, o) → {min, max, c} befoglaló doboz (kamera-célponthoz)
+   Mat3D.gridNet(cells, {size = 1, root}) – négyzetekből ([[x, y]…], poliominó); szélességi feszítőfa, a gyökér alapból a
+          legkisebb mélységet adó cella → N.grid = {size, root, cells}
+   Mat3D.cuboidNet(a, b, c) – kereszt alakú háló; lapok: 0 alsó, 1 elülső, 2 hátsó, 3 bal, 4 jobb, 5 felső (a hátsóhoz
+          csatlakozik); a síkban x ∈ [−c; a + c], y ∈ [−c; 2b + c]
+   Mat3D.prismNet(n, r, h, {bottom = true, top = true}) – oldallapok szalagja (0..n−1; a gyökér a középső) + alaplapok;
+          bottom/top: false → csak a palást („felcsavarás”: a szalag a hasábra tekeredik)
+   Mat3D.pyramidNet(n, r, h) – 0 alaplap + n háromszög (a hajtásszög a lapszögből: π − atan(h / apotéma))
+   Mat3D.netCheck(N) → {ok, clash: [[i, j]…] (t = 1-nél azonos helyre kerülő lapok), open: [[[x, y, z]…]…] (gridNet-nél:
+          a kocka üresen maradt lapjai), gaps (t = 1-nél nem pontosan két laphoz tartozó élek száma; zárt test: 0)}
+   S.fold(N, t, {a, fill: (i) → col (alap: N.faces[i].col), stroke, lw, stagger, alpha, inner = .25 (a belső oldal
+          világosabb), flash: {i: 0..1} (piros villanás), flashCol, deco(i, q2d, face) (a lap rajza után, festő-sorrendben)})
+          → [{f, q, d}] – a lapok mindkét oldala látszik
+   Mat3D.cells(rows) – ['.#..', '####', '.#..'] → [[x, y]…] (a felső sor van hátul) · Mat3D.cubeNets → {ok: [11 háló],
+          bad: [néhány nem-háló]} (sorlisták) · Mat3D.polyominoes(n) → az n cellás szabad poliominók (n = 6: 35)
+   Mat3D.grid2d(L, cells, x0, yb, cella, {fill, stroke, lw = 2, a}) → doboz – cellák síkban (bélyegkép, nézet);
+          [u, v] cella: x0 + u · cella, a sor alja yb − v · cella (v felfelé nő)
+
+   ── Egységkockák ──
+   S.voxels(cells, {size = 1, at, fill: col | (cell, i) → col, stroke, lw = 2, a, shade,
+          show: (i, cell) → false | null | {off: [dx, dy, dz] (repülés közben), alpha}}) → a kirajzolt elemek
+          cells: [[x, y, z]…] egész rácspontok; a két rögzített kocka közti lapot elhagyja, mélység szerint rajzol (ortho)
+   Mat3D.fillOrder(a, b, c) → [[x, y, z]…] rétegenként alulról, soronként hátulról előre (feltöltés-animációhoz)
+   Mat3D.views(cells) → {front: [[x, z]…], top: [[x, y, db]…] (db: a mezőn álló kockák száma), side: [[y, z]…] (jobbról)}
+
+   Színek: Mat3D.COL {ink, mut, red, teal, ochre, card, good, bad} · Mat3D.FACES (világos lapszínek) · Mat3D.mix(a, b, t)
+   ─────────────────────────────────────────────────────────────── */
+const Mat3D = (() => {
+  const D2R = Math.PI / 180, TP = Math.PI * 2;
+  const COL = { ink: '#1c2440', mut: '#565d72', red: '#c8401c', teal: '#0a6f86', ochre: '#8f5a0c', card: '#fffaf1', good: '#1d7a45', bad: '#b3261e' };
+  const FACES = ['#eaa58c', '#8ec8d5', '#e6c486', '#c6b2da', '#a8c6e8', '#b6d7a6'];
+  const cl = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+  // ── vektorok ──
+  const add = (a, b) => [a[0] + b[0], a[1] + b[1], a[2] + b[2]], sub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+  const mul = (a, k) => [a[0] * k, a[1] * k, a[2] * k], dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+  const cross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+  const len = (a) => Math.hypot(a[0], a[1], a[2]), norm = (a) => { const l = len(a) || 1; return [a[0] / l, a[1] / l, a[2] / l]; };
+  const lerp3 = (a, b, t) => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
+  const centroid = (pts) => { let x = 0, y = 0, z = 0; pts.forEach((p) => { x += p[0]; y += p[1]; z += p[2] || 0; }); return [x / pts.length, y / pts.length, z / pts.length]; };
+  function newell(pts) {
+    let x = 0, y = 0, z = 0;
+    for (let i = 0; i < pts.length; i++) {
+      const p = pts[i], q = pts[(i + 1) % pts.length], pz = p[2] || 0, qz = q[2] || 0;
+      x += (p[1] - q[1]) * (pz + qz); y += (pz - qz) * (p[0] + q[0]); z += (p[0] - q[0]) * (p[1] + q[1]);
+    }
+    return norm([x, y, z]);
+  }
+  const area2 = (poly) => { let s = 0; for (let i = 0; i < poly.length; i++) { const p = poly[i], q = poly[(i + 1) % poly.length]; s += p[0] * q[1] - q[0] * p[1]; } return s / 2; };
+  // ── színek ──
+  const hx = (h) => { const n = parseInt(h.slice(1), 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; };
+  const mix = (a, b, t) => { const p = hx(a), q = hx(b); return '#' + p.map((v, i) => Math.round(v + (q[i] - v) * cl(t)).toString(16).padStart(2, '0')).join(''); };
+  const shC = new Map();
+  function shade(col, lam, sh) {
+    const t = Math.round((1 - sh * (1 - cl(lam))) * 48) / 48, k = col + '|' + t;
+    let r = shC.get(k); if (!r) { r = mix(COL.ink, col, t); shC.set(k, r); } return r;
+  }
+  function path(c, q) { c.beginPath(); q.forEach((p, i) => (i ? c.lineTo(p[0], p[1]) : c.moveTo(p[0], p[1]))); c.closePath(); }
+
+  // ── testek ──
+  function solid(v, f, o = {}) {
+    const S = { v: v.map((p) => p.slice()), f: f.map((a) => a.slice()), n: [], c: [], kind: o.kind || 'test' };
+    const cen = centroid(S.v);
+    S.f.forEach((fa, i) => {
+      const pts = fa.map((k) => S.v[k]); let n = newell(pts); const c = centroid(pts);
+      if (dot(n, sub(c, cen)) < 0) { fa.reverse(); n = mul(n, -1); }
+      S.n[i] = n; S.c[i] = c;
+    });
+    const m = new Map(); S.e = []; S.vf = S.v.map(() => []);
+    S.f.forEach((fa, i) => fa.forEach((a, k) => {
+      S.vf[a].push(i);
+      const b = fa[(k + 1) % fa.length], i0 = Math.min(a, b), j0 = Math.max(a, b), key = i0 + ',' + j0;
+      let e = m.get(key); if (!e) { e = { i: i0, j: j0, f: [] }; m.set(key, e); S.e.push(e); }
+      e.f.push(i);
+    }));
+    S.e.forEach((e) => { e.soft = !!(o.soft && o.soft(e)); });
+    return S;
+  }
+  function cuboid(a, b, c, o = {}) {
+    const p = o.at || (o.center ? [-a / 2, -b / 2, -c / 2] : [0, 0, 0]);
+    const v = [[0, 0, 0], [a, 0, 0], [a, b, 0], [0, b, 0], [0, 0, c], [a, 0, c], [a, b, c], [0, b, c]].map((q) => add(q, p));
+    return solid(v, [[0, 3, 2, 1], [4, 5, 6, 7], [0, 1, 5, 4], [2, 3, 7, 6], [3, 0, 4, 7], [1, 2, 6, 5]], { kind: o.kind || 'téglatest' });
+  }
+  const ring = (n, r, rot, at, z) => { const v = []; for (let k = 0; k < n; k++) { const a = -Math.PI / 2 - Math.PI / n + TP * k / n + rot; v.push([at[0] + r * Math.cos(a), at[1] + r * Math.sin(a), at[2] + z]); } return v; };
+  function prism(n, r, h, o = {}) {
+    const at = o.at || [0, 0, 0], rot = (o.rot || 0) * D2R;
+    const v = ring(n, r, rot, at, 0).concat(ring(n, r, rot, at, h)), ks = [...Array(n).keys()];
+    const f = [ks.slice().reverse(), ks.map((k) => n + k)];
+    ks.forEach((k) => f.push([k, (k + 1) % n, n + (k + 1) % n, n + k]));
+    return solid(v, f, { kind: o.kind || 'hasáb', soft: o.soft });
+  }
+  function pyramid(n, r, h, o = {}) {
+    const at = o.at || [0, 0, 0], rot = (o.rot || 0) * D2R, ks = [...Array(n).keys()];
+    const v = ring(n, r, rot, at, 0).concat([[at[0], at[1], at[2] + h]]);
+    const f = [ks.slice().reverse()]; ks.forEach((k) => f.push([k, (k + 1) % n, n]));
+    return solid(v, f, { kind: o.kind || 'gúla' });
+  }
+  const cylinder = (r, h, o = {}) => prism(o.n || 48, r, h, { at: o.at, kind: 'henger', soft: (e) => e.f.every((fi) => fi >= 2) });
+  function diagonals(S) {
+    const face = [], space = [], seen = new Set(), onFace = (i, j) => S.f.some((fa) => fa.includes(i) && fa.includes(j));
+    S.f.forEach((fa) => {
+      const m = fa.length;
+      for (let p = 0; p < m; p++) for (let q = p + 2; q < m; q++) {
+        if (p === 0 && q === m - 1) continue;
+        const i = Math.min(fa[p], fa[q]), j = Math.max(fa[p], fa[q]), k = i + ',' + j;
+        if (!seen.has(k)) { seen.add(k); face.push([i, j]); }
+      }
+    });
+    for (let i = 0; i < S.v.length; i++) for (let j = i + 1; j < S.v.length; j++) if (!onFace(i, j)) space.push([i, j]);
+    return { face, space };
+  }
+  const move = (S, fn) => solid(S.v.map(fn), S.f, { kind: S.kind, soft: (e) => e.soft });
+
+  // ── háló ──
+  function net(faces) {
+    const F = faces.map((f, i) => {
+      const poly = f.poly.map((p) => [p[0], p[1]]);
+      const hp = f.hp ? f.hp.map((p) => [p[0], p[1]]) : f.hinge ? [poly[f.hinge[0]], poly[f.hinge[1] % poly.length]] : null;
+      if (area2(poly) < 0) poly.reverse();
+      return { i, poly, parent: f.parent == null ? -1 : f.parent, hp, ang: f.ang == null ? Math.PI / 2 : f.ang, col: f.col, name: f.name };
+    });
+    const dep = (i) => { const f = F[i]; if (f.depth != null) return f.depth; f.depth = f.parent < 0 ? 0 : dep(f.parent) + 1; return f.depth; };
+    F.forEach((f) => dep(f.i));
+    F.forEach((f) => {
+      if (f.parent < 0) return;
+      const [a, b] = f.hp, cc = centroid(f.poly.map((p) => [p[0], p[1], 0]));
+      const ex = b[0] - a[0], ey = b[1] - a[1], l = Math.hypot(ex, ey), ux = ex / l, uy = ey / l;
+      let wx = cc[0] - a[0], wy = cc[1] - a[1]; const pr = wx * ux + wy * uy; wx -= pr * ux; wy -= pr * uy;
+      const wl = Math.hypot(wx, wy) || 1; wx /= wl; wy /= wl;
+      f.h0 = [a[0], a[1], 0]; f.k = [wy, -wx, 0];          // k × w = +z: a lap felfelé hajlik
+    });
+    const maxD = Math.max(0, ...F.map((f) => f.depth));
+    const tl = (f, t, o) => {
+      const sg = (o && o.stagger) || 0;
+      if (!sg || maxD <= 1) return cl(t);
+      const o0 = sg * (f.depth - 1) / (maxD - 1); return cl((t - o0) / (1 - sg));
+    };
+    const rot = (p, f, th) => {
+      const v = sub(p, f.h0), k = f.k, c = Math.cos(th), s = Math.sin(th), kv = cross(k, v), kd = dot(k, v) * (1 - c);
+      return [f.h0[0] + v[0] * c + kv[0] * s + k[0] * kd, f.h0[1] + v[1] * c + kv[1] * s + k[1] * kd, f.h0[2] + v[2] * c + kv[2] * s + k[2] * kd];
+    };
+    const N = { faces: F, maxDepth: maxD };
+    N.map = (i, p, t, o) => {
+      let q = [p[0], p[1], p[2] || 0], f = F[i];
+      while (f.parent >= 0) { q = rot(q, f, f.ang * tl(f, t, o)); f = F[f.parent]; }
+      return q;
+    };
+    N.at = (t, o) => F.map((f) => { const pts = f.poly.map((p) => N.map(f.i, p, t, o)); return { i: f.i, pts, n: mul(newell(pts), -1), c: centroid(pts) }; });
+    N.box = (t, o) => {
+      const mn = [1e9, 1e9, 1e9], mx = [-1e9, -1e9, -1e9];
+      N.at(t, o).forEach((f) => f.pts.forEach((p) => { for (let d = 0; d < 3; d++) { mn[d] = Math.min(mn[d], p[d]); mx[d] = Math.max(mx[d], p[d]); } }));
+      return { min: mn, max: mx, c: lerp3(mn, mx, .5) };
+    };
+    return N;
+  }
+  function gridNet(cells, o = {}) {
+    const s = o.size || 1, n = cells.length, key = (x, y) => x + ',' + y, idx = new Map(cells.map((c, i) => [key(c[0], c[1]), i]));
+    const nb = (i) => [[1, 0], [-1, 0], [0, 1], [0, -1]].map(([dx, dy]) => idx.get(key(cells[i][0] + dx, cells[i][1] + dy))).filter((j) => j != null);
+    const bfs = (r) => {
+      const par = Array(n).fill(-2), dep = Array(n).fill(0); par[r] = -1; const q = [r];
+      while (q.length) { const i = q.shift(); nb(i).forEach((j) => { if (par[j] === -2) { par[j] = i; dep[j] = dep[i] + 1; q.push(j); } }); }
+      return { par, ecc: Math.max(...dep) };
+    };
+    let root = o.root;
+    if (root == null) { let best = 1e9; cells.forEach((c, i) => { const e = bfs(i).ecc; if (e < best) { best = e; root = i; } }); }
+    const { par } = bfs(root);
+    const faces = cells.map((c, i) => {
+      const x = c[0] * s, y = c[1] * s, poly = [[x, y], [x + s, y], [x + s, y + s], [x, y + s]];
+      let hp = null;
+      if (par[i] >= 0) {
+        const p = cells[par[i]], dx = p[0] - c[0], dy = p[1] - c[1];
+        hp = dx === 1 ? [[x + s, y], [x + s, y + s]] : dx === -1 ? [[x, y], [x, y + s]] : dy === 1 ? [[x, y + s], [x + s, y + s]] : [[x, y], [x + s, y]];
+      }
+      return { poly, parent: par[i] < 0 ? -1 : par[i], hp };
+    });
+    const N = net(faces); N.grid = { size: s, root, cells }; return N;
+  }
+  function cuboidNet(a, b, c) {
+    const R = (x0, y0, x1, y1) => [[x0, y0], [x1, y0], [x1, y1], [x0, y1]];
+    return net([
+      { poly: R(0, 0, a, b), parent: -1, name: 'alsó' },
+      { poly: R(0, -c, a, 0), parent: 0, hp: [[0, 0], [a, 0]], name: 'elülső' },
+      { poly: R(0, b, a, b + c), parent: 0, hp: [[0, b], [a, b]], name: 'hátsó' },
+      { poly: R(-c, 0, 0, b), parent: 0, hp: [[0, 0], [0, b]], name: 'bal' },
+      { poly: R(a, 0, a + c, b), parent: 0, hp: [[a, 0], [a, b]], name: 'jobb' },
+      { poly: R(0, b + c, a, 2 * b + c), parent: 2, hp: [[0, b + c], [a, b + c]], name: 'felső' },
+    ]);
+  }
+  function prismNet(n, r, h, o = {}) {
+    const s = 2 * r * Math.sin(Math.PI / n), ap = r * Math.cos(Math.PI / n), m = Math.floor((n - 1) / 2), F = [];
+    for (let k = 0; k < n; k++) {
+      const par = k === m ? -1 : k < m ? k + 1 : k - 1, hx0 = k < m ? (k + 1) * s : k * s;
+      F.push({ poly: [[k * s, 0], [(k + 1) * s, 0], [(k + 1) * s, h], [k * s, h]], parent: par, hp: par < 0 ? null : [[hx0, 0], [hx0, h]], ang: TP / n, name: 'oldallap' });
+    }
+    const xm = (m + .5) * s, base = (y0, sg) => { const p = []; for (let j = 0; j < n; j++) { const a = Math.PI / 2 - Math.PI / n - TP * j / n; p.push([xm + r * Math.cos(a), y0 - sg * r * Math.sin(a)]); } return p; };
+    if (o.bottom !== false) F.push({ poly: base(-ap, -1), parent: m, hp: [[m * s, 0], [(m + 1) * s, 0]], name: 'alaplap' });
+    if (o.top !== false) F.push({ poly: base(h + ap, 1), parent: m, hp: [[m * s, h], [(m + 1) * s, h]], name: 'alaplap' });
+    return net(F);
+  }
+  function pyramidNet(n, r, h) {
+    const v = ring(n, r, 0, [0, 0, 0], 0).map((p) => [p[0], p[1]]), ap = r * Math.cos(Math.PI / n), sl = Math.hypot(h, ap);
+    const F = [{ poly: v, parent: -1, name: 'alaplap' }], ang = Math.PI - Math.atan2(h, ap);
+    for (let k = 0; k < n; k++) {
+      const a = v[k], b = v[(k + 1) % n], mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2, ml = Math.hypot(mx, my);
+      F.push({ poly: [a, b, [mx + mx / ml * sl, my + my / ml * sl]], parent: 0, hp: [a, b], ang, name: 'oldallap' });
+    }
+    return net(F);
+  }
+  function netCheck(N) {
+    const fs = N.at(1), clash = [], open = [];
+    let sz = 0; N.faces.forEach((f) => f.poly.forEach((p) => { sz = Math.max(sz, Math.abs(p[0]), Math.abs(p[1])); }));
+    const eps = 1e-6 * Math.max(1, sz);
+    for (let i = 0; i < fs.length; i++) for (let j = i + 1; j < fs.length; j++) if (len(sub(fs[i].c, fs[j].c)) < eps) clash.push([i, j]);
+    if (N.grid) {
+      const s = N.grid.size, r = N.faces[N.grid.root].poly, x0 = Math.min(...r.map((p) => p[0])), y0 = Math.min(...r.map((p) => p[1]));
+      const X = [x0, x0 + s], Y = [y0, y0 + s], Z = [0, s];
+      const sq = [[[X[0], Y[0], 0], [X[1], Y[0], 0], [X[1], Y[1], 0], [X[0], Y[1], 0]], [[X[0], Y[0], s], [X[1], Y[0], s], [X[1], Y[1], s], [X[0], Y[1], s]],
+        [[X[0], Y[0], 0], [X[1], Y[0], 0], [X[1], Y[0], s], [X[0], Y[0], s]], [[X[0], Y[1], 0], [X[1], Y[1], 0], [X[1], Y[1], s], [X[0], Y[1], s]],
+        [[X[0], Y[0], 0], [X[0], Y[1], 0], [X[0], Y[1], s], [X[0], Y[0], s]], [[X[1], Y[0], 0], [X[1], Y[1], 0], [X[1], Y[1], s], [X[1], Y[0], s]]];
+      void Z;
+      sq.forEach((q) => { const c = centroid(q); if (!fs.some((f) => len(sub(f.c, c)) < eps)) open.push(q); });
+    }
+    const rk = (p) => p.map((v) => Math.round(v / (eps * 1e3))).join(','), em = new Map();
+    fs.forEach((f) => f.pts.forEach((p, k) => { const a = rk(p), b = rk(f.pts[(k + 1) % f.pts.length]), key = a < b ? a + '|' + b : b + '|' + a; em.set(key, (em.get(key) || 0) + 1); }));
+    let gaps = 0; em.forEach((n) => { if (n !== 2) gaps++; });
+    return { ok: !clash.length && !open.length && !gaps, clash, open, gaps };
+  }
+  function cells(rows) { const out = [], R = rows.length; rows.forEach((r, i) => [...r].forEach((ch, j) => { if (ch === '#') out.push([j, R - 1 - i]); })); return out; }
+  const cubeNets = {
+    ok: [['#...', '####', '#...'], ['#...', '####', '.#..'], ['#...', '####', '..#.'], ['#...', '####', '...#'], ['.#..', '####', '.#..'], ['.#..', '####', '..#.'],
+      ['##..', '.###', '.#..'], ['##..', '.###', '..#.'], ['##..', '.###', '...#'], ['##..', '.##.', '..##'], ['###..', '..###']],
+    bad: [['######'], ['###', '###'], ['#####', '#....'], ['#.#.', '####'], ['####', '#..#'], ['##..', '####']],
+  };
+  function polyominoes(n) {
+    const canon = (cs) => {
+      let best = null;
+      for (let s = 0; s < 8; s++) {
+        const t = cs.map(([x, y]) => { let X = s & 4 ? -x : x, Y = y; for (let r = 0; r < (s & 3); r++) { const q = X; X = -Y; Y = q; } return [X, Y]; });
+        const mx = Math.min(...t.map((p) => p[0])), my = Math.min(...t.map((p) => p[1]));
+        const k = t.map((p) => [p[0] - mx, p[1] - my]).sort((p, q) => p[0] - q[0] || p[1] - q[1]).map((p) => p.join(',')).join(';');
+        if (best === null || k < best) best = k;
+      }
+      return best;
+    };
+    let cur = new Map([[canon([[0, 0]]), [[0, 0]]]]);
+    for (let k = 1; k < n; k++) {
+      const nx = new Map();
+      cur.forEach((cs) => {
+        const set = new Set(cs.map((p) => p.join(',')));
+        cs.forEach(([x, y]) => [[1, 0], [-1, 0], [0, 1], [0, -1]].forEach(([dx, dy]) => {
+          const q = [x + dx, y + dy]; if (set.has(q.join(','))) return;
+          const key = canon(cs.concat([q])); if (!nx.has(key)) nx.set(key, key.split(';').map((s) => s.split(',').map(Number)));
+        }));
+      });
+      cur = nx;
+    }
+    return [...cur.values()];
+  }
+  function grid2d(L, cs, x0, yb, sz, o = {}) {
+    const c = L.ctx; let mx = 0, my = 0;
+    c.save(); c.globalAlpha = o.a == null ? 1 : o.a; c.lineJoin = 'round';
+    cs.forEach((q) => {
+      const x = x0 + q[0] * sz, y = yb - (q[1] + 1) * sz;
+      c.fillStyle = o.fill || FACES[2]; c.fillRect(x, y, sz, sz);
+      c.strokeStyle = o.stroke || COL.ink; c.lineWidth = o.lw || 2; c.strokeRect(x, y, sz, sz);
+      mx = Math.max(mx, q[0] + 1); my = Math.max(my, q[1] + 1);
+    });
+    c.restore(); return { x: x0, y: yb - my * sz, w: mx * sz, h: my * sz };
+  }
+  // ── egységkockák ──
+  function fillOrder(a, b, c) { const out = []; for (let z = 0; z < c; z++) for (let y = b - 1; y >= 0; y--) for (let x = 0; x < a; x++) out.push([x, y, z]); return out; }
+  function views(cs) {
+    const f = new Map(), t = new Map(), s = new Map();
+    cs.forEach(([x, y, z]) => {
+      f.set(x + ',' + z, [x, z]); s.set(y + ',' + z, [y, z]);
+      const k = x + ',' + y, o = t.get(k); if (o) o[2]++; else t.set(k, [x, y, 1]);
+    });
+    return { front: [...f.values()], top: [...t.values()], side: [...s.values()] };
+  }
+  const VD = [[0, 0, -1], [0, 0, 1], [0, -1, 0], [0, 1, 0], [-1, 0, 0], [1, 0, 0]], VQ = [[0, 1, 3, 2], [4, 5, 7, 6], [0, 1, 5, 4], [2, 3, 7, 6], [0, 2, 6, 4], [1, 3, 7, 5]];
+  function lerpView(a, b, t) {
+    const o = {}, dy = ((b.yaw - a.yaw) % 360 + 540) % 360 - 180;
+    o.yaw = a.yaw + dy * t; o.pitch = a.pitch + (b.pitch - a.pitch) * t;
+    ['scale', 'cx', 'cy'].forEach((k) => { if (a[k] != null && b[k] != null) o[k] = a[k] + (b[k] - a[k]) * t; });
+    if (a.target && b.target) o.target = lerp3(a.target, b.target, t);
+    return o;
+  }
+
+  // ── nézet ──
+  function create(L, o = {}) {
+    const S = { L, cx: 680, cy: 540, scale: 100, yaw0: -30, pitch0: 25, target: [0, 0, 0], dist: 0, dyaw: 0, dpitch: 0, yaw: 0, pitch: 0, light: norm([-0.45, 0.6, -0.65]), grab: null };
+    let cY = 1, sY = 0, cP = 1, sP = 0;
+    const upd = () => {
+      S.yaw = S.yaw0 + S.dyaw; S.pitch = cl(S.pitch0 + S.dpitch, -90, 90);
+      const y = S.yaw * D2R, p = S.pitch * D2R; cY = Math.cos(y); sY = Math.sin(y); cP = Math.cos(p); sP = Math.sin(p);
+    };
+    S.set = (p = {}) => {
+      ['cx', 'cy', 'scale', 'dist'].forEach((k) => { if (p[k] != null) S[k] = p[k]; });
+      if (p.yaw != null) S.yaw0 = p.yaw; if (p.pitch != null) S.pitch0 = p.pitch;
+      if (p.target) S.target = p.target.slice(); if (p.light) S.light = norm(p.light);
+      upd(); return S;
+    };
+    S.dir = (n) => { const x1 = n[0] * cY - n[1] * sY, y1 = n[0] * sY + n[1] * cY; return [x1, y1 * sP + n[2] * cP, y1 * cP - n[2] * sP]; };
+    S.view = (p) => S.dir(sub(p, S.target));
+    S.P = (p) => {
+      const q = S.view(p), f = S.dist > 0 ? S.dist / Math.max(S.dist * .1, S.dist + q[2]) : 1;
+      return [S.cx + S.scale * q[0] * f, S.cy - S.scale * q[1] * f, q[2]];
+    };
+    S.unP = (X, Y, d = 0) => {
+      const u = (X - S.cx) / S.scale, v = (S.cy - Y) / S.scale, y1 = v * sP + d * cP, z = v * cP - d * sP;
+      return [u * cY + y1 * sY + S.target[0], -u * sY + y1 * cY + S.target[1], z + S.target[2]];
+    };
+    S.facing = (n, c) => {
+      const nv = S.dir(n);
+      if (S.dist > 0 && c) { const q = S.view(c); return nv[0] * q[0] + nv[1] * q[1] + nv[2] * (q[2] + S.dist) < -1e-9; }
+      return nv[2] < -1e-9;
+    };
+    S.lam = (n) => dot(S.dir(n), S.light);
+    S.drag = (o = {}) => {
+      const P = L.pointer, r = o.rect || [0, 0, L.VW, L.H], k = o.k || .45, pr = o.pitch || [-10, 90];
+      const inR = (x, y) => x >= r[0] && x <= r[0] + r[2] && y >= r[1] && y <= r[1] + r[3];
+      if (P.pressed && inR(P.px, P.py)) S.grab = { x: P.px, y: P.py };
+      if (S.grab && P.down) {
+        const dx = P.x - S.grab.x, dy = P.y - S.grab.y; S.grab.x = P.x; S.grab.y = P.y;
+        S.dyaw += dx * k; S.dpitch = cl(S.pitch0 + S.dpitch + dy * k, pr[0], pr[1]) - S.pitch0; upd(); return true;
+      }
+      if (!P.down) S.grab = null;
+      return false;
+    };
+    S.key = (e, st = 10) => {
+      const k = (e.key || '').toLowerCase();
+      if (k === 'a') S.dyaw -= st; else if (k === 'd') S.dyaw += st;
+      else if (k === 'w' || k === 's') S.dpitch = cl(S.pitch0 + S.dpitch + (k === 's' ? st : -st), -10, 90) - S.pitch0;
+      else return false;
+      upd(); return true;
+    };
+    S.reset = () => { S.dyaw = 0; S.dpitch = 0; S.grab = null; upd(); };
+    S.save = () => ({ dyaw: S.dyaw, dpitch: S.dpitch });
+    S.load = (o) => { S.dyaw = o.dyaw || 0; S.dpitch = o.dpitch || 0; upd(); };
+
+    S.seg = (p, q, o = {}) => {
+      const c = L.ctx, a = S.P(p), b = S.P(q); c.save(); c.globalAlpha = o.a == null ? 1 : o.a; c.strokeStyle = o.c || COL.ink;
+      c.lineWidth = o.w || 3; c.lineCap = 'round'; c.setLineDash(o.dash || []); c.beginPath(); c.moveTo(a[0], a[1]); c.lineTo(b[0], b[1]); c.stroke(); c.restore();
+    };
+    S.dot = (p, o = {}) => {
+      const c = L.ctx, a = S.P(p), r = o.r || 8; c.save(); c.globalAlpha = o.a == null ? 1 : o.a;
+      c.beginPath(); c.arc(a[0], a[1], r, 0, TP); c.fillStyle = o.hollow ? COL.card : o.c || COL.ink; c.fill();
+      c.lineWidth = 3; c.strokeStyle = o.c || COL.ink; c.stroke();
+      if (o.ring) { c.globalAlpha = (o.a == null ? 1 : o.a) * o.ring; c.beginPath(); c.arc(a[0], a[1], r + 10, 0, TP); c.stroke(); }
+      c.restore();
+    };
+    S.poly = (pts, o = {}) => {
+      const c = L.ctx, q = pts.map(S.P); c.save(); c.lineJoin = 'round'; path(c, q);
+      if (o.fill) { c.globalAlpha = (o.a == null ? 1 : o.a) * (o.fa == null ? 1 : o.fa); c.fillStyle = o.fill; c.fill(); }
+      if (o.stroke) { c.globalAlpha = o.a == null ? 1 : o.a; c.strokeStyle = o.stroke; c.lineWidth = o.w || 2.5; c.setLineDash(o.dash || []); c.stroke(); }
+      c.restore(); return q;
+    };
+
+    S.draw = (sol, o = {}) => {
+      upd(); const A = o.a == null ? 1 : o.a; if (A <= .003) return null;
+      const c = L.ctx, v2 = sol.v.map(S.P), skip = new Set(o.skip || []), pass = o.pass || 'all';
+      const vis = sol.f.map((f, i) => S.facing(sol.n[i], sol.c[i]));
+      const hi = o.hi || {}, hf = hi.faces || {}, he = hi.edges || {}, hv = hi.verts || {};
+      const fillOf = (i) => (typeof o.fill === 'function' ? o.fill(i) : o.fill === undefined ? FACES[i % FACES.length] : o.fill);
+      const fa = o.alpha == null ? 1 : o.alpha, sh = o.shade == null ? .22 : o.shade, lw = o.lw || 2.5, ink = o.stroke || COL.ink;
+      c.save(); c.lineJoin = 'round'; c.lineCap = 'round';
+      const face = (i) => {
+        if (skip.has(i)) return;
+        const col = fillOf(i), q = sol.f[i].map((k) => v2[k]);
+        if (col) { path(c, q); c.globalAlpha = A * fa; c.fillStyle = shade(col, vis[i] ? S.lam(sol.n[i]) : -S.lam(sol.n[i]) * .6, sh); c.fill(); }
+        let h = hf[i]; if (h) { if (typeof h === 'string') h = { c: h }; path(c, q); c.globalAlpha = A * (h.a == null ? .5 : h.a); c.fillStyle = h.c; c.fill(); }
+      };
+      if (pass === 'back' || (pass === 'all' && fa < 1)) sol.f.forEach((f, i) => { if (!vis[i]) face(i); });
+      if (pass !== 'back') sol.f.forEach((f, i) => { if (vis[i]) face(i); });
+      const E = sol.e.map((e, ei) => {
+        const fs = e.f.filter((fi) => !skip.has(fi)); if (!fs.length) return null;
+        const sv = fs.some((fi) => vis[fi]), sil = fs.length === 1 || (sv && fs.some((fi) => !vis[fi]));
+        return { ei, e, hidden: !sv, show: !e.soft || (sv && sil) };
+      });
+      const hm = o.hidden || 'dash';
+      const edge = (x) => {
+        let h = he[x.ei]; if (typeof h === 'string') h = { c: h };
+        c.globalAlpha = A * (x.hidden ? (o.hiddenA == null ? .6 : o.hiddenA) : 1) * (h && h.a != null ? h.a : 1);
+        c.strokeStyle = (h && h.c) || ink; c.lineWidth = (h && h.w) || (x.hidden ? lw * .8 : lw);
+        c.setLineDash(x.hidden && hm === 'dash' ? [10, 8] : []);
+        c.beginPath(); c.moveTo(v2[x.e.i][0], v2[x.e.i][1]); c.lineTo(v2[x.e.j][0], v2[x.e.j][1]); c.stroke();
+      };
+      if (pass !== 'front' && hm !== 'none') E.forEach((x) => { if (x && x.show && x.hidden) edge(x); });
+      c.setLineDash([]);
+      if (pass !== 'back') E.forEach((x) => { if (x && x.show && !x.hidden) edge(x); });
+      if (pass !== 'back') Object.keys(hv).forEach((k) => {
+        const vi = +k; let h = hv[k]; if (typeof h === 'string') h = { c: h };
+        const hid = !sol.vf[vi].some((fi) => vis[fi] && !skip.has(fi)), p = v2[vi], r = h.r || 9;
+        c.setLineDash([]); c.globalAlpha = A * (h.a == null ? 1 : h.a) * (hid ? .8 : 1);
+        c.beginPath(); c.arc(p[0], p[1], r, 0, TP); c.fillStyle = hid ? COL.card : h.c; c.fill(); c.lineWidth = 3; c.strokeStyle = h.c; c.stroke();
+        if (h.ring > 0) { c.globalAlpha = A * h.ring; c.beginPath(); c.arc(p[0], p[1], r + 10, 0, TP); c.stroke(); }
+      });
+      c.restore();
+      return { v2, vis, edges: E };
+    };
+
+    S.fold = (N, t, o = {}) => {
+      upd(); const A = o.a == null ? 1 : o.a, fs = N.at(t, o);
+      const it = fs.map((f) => ({ f, q: f.pts.map(S.P), d: S.view(f.c)[2] })).sort((a, b) => b.d - a.d);
+      if (A <= .003) return it;
+      const c = L.ctx, lw = o.lw || 2.5, ink = o.stroke || COL.ink, sh = o.shade == null ? .22 : o.shade, inn = o.inner == null ? .25 : o.inner;
+      c.save(); c.lineJoin = 'round'; c.lineCap = 'round';
+      it.forEach(({ f, q }) => {
+        const i = f.i, col = (typeof o.fill === 'function' ? o.fill(i) : o.fill) || N.faces[i].col || FACES[i % FACES.length];
+        const nv = S.dir(f.n), outS = nv[2] < 0, lam = dot(nv, S.light) * (outS ? 1 : -1);
+        path(c, q); c.globalAlpha = A * (o.alpha == null ? 1 : o.alpha); c.fillStyle = shade(outS ? col : mix(col, COL.card, inn), lam, sh); c.fill();
+        const fl = o.flash && o.flash[i]; if (fl > 0) { c.globalAlpha = A * fl; c.fillStyle = o.flashCol || COL.bad; c.fill(); }
+        c.globalAlpha = A; c.strokeStyle = ink; c.lineWidth = lw; c.stroke();
+        if (o.deco) { c.save(); o.deco(i, q, f); c.restore(); }
+      });
+      c.restore(); return it;
+    };
+
+    S.voxels = (cs, o = {}) => {
+      upd(); const A = o.a == null ? 1 : o.a; if (A <= .003) return [];
+      const c = L.ctx, s = o.size || 1, at = o.at || [0, 0, 0], sh = o.shade == null ? .22 : o.shade, lw = o.lw == null ? 2 : o.lw, ink = o.stroke || COL.ink;
+      const key = (x, y, z) => x + ',' + y + ',' + z, fixed = new Set(), items = [];
+      cs.forEach((q, i) => {
+        const w = o.show ? o.show(i, q) : null; if (w === false) return;
+        const off = (w && w.off) || null, al = w && w.alpha != null ? w.alpha : 1; if (al <= .003) return;
+        const fx = !off && al >= 1; if (fx) fixed.add(key(q[0], q[1], q[2]));
+        const p0 = [at[0] + q[0] * s + (off ? off[0] : 0), at[1] + q[1] * s + (off ? off[1] : 0), at[2] + q[2] * s + (off ? off[2] : 0)];
+        items.push({ i, q, p0, al, fx, d: S.view([p0[0] + s / 2, p0[1] + s / 2, p0[2] + s / 2])[2], col: typeof o.fill === 'function' ? o.fill(q, i) : o.fill || FACES[2] });
+      });
+      items.sort((a, b) => b.d - a.d);
+      const vis = VD.map((n) => S.facing(n)), lam = VD.map((n) => S.lam(n));
+      c.save(); c.lineJoin = 'round';
+      items.forEach((it) => {
+        const q = [];
+        for (let k = 0; k < 8; k++) q.push(S.P([it.p0[0] + (k & 1) * s, it.p0[1] + (k >> 1 & 1) * s, it.p0[2] + (k >> 2 & 1) * s]));
+        for (let f = 0; f < 6; f++) {
+          if (!vis[f]) continue;
+          if (it.fx) { const d = VD[f]; if (fixed.has(key(it.q[0] + d[0], it.q[1] + d[1], it.q[2] + d[2]))) continue; }
+          path(c, VQ[f].map((k) => q[k])); c.globalAlpha = A * it.al; c.fillStyle = shade(it.col, lam[f], sh); c.fill();
+          if (lw > 0) { c.strokeStyle = ink; c.lineWidth = lw; c.stroke(); }
+        }
+      });
+      c.restore(); return items;
+    };
+
+    S.set(o);
+    return S;
+  }
+
+  return { create, solid, cuboid, cube: (a, o) => cuboid(a, a, a, Object.assign({ kind: 'kocka' }, o)), prism, pyramid, cylinder, diagonals, move,
+    net, gridNet, cuboidNet, prismNet, pyramidNet, netCheck, cells, cubeNets, polyominoes, grid2d, fillOrder, views, lerpView,
+    COL, FACES, mix, V: { add, sub, mul, dot, cross, len, norm, lerp3, centroid } };
+})();
+/* ── MODUL VÉGE ── */
+
+
+/* ════════════════════════ a lecke ════════════════════════ */
+const INK = '#1c2440', MUT = '#565d72', RED = '#c8401c', TEAL = '#0a6f86', OCHRE = '#8f5a0c', GOOD = '#1d7a45', BAD = '#b3261e',
+  PLUM = '#7b4fa0', CARD = '#fffaf1', LINE = 'rgba(28,36,64,.16)';
+const FR = '#eaa58c', FT = '#8ec8d5', FO = '#e6c486', GLASS = '#cfe0e8', MILK = '#eef2f6';
+let L, c, GA = 1;
+const al = (a = 1) => { c.globalAlpha = GA * clamp(a); };
+const lab = (k) => L.lab(k), num = (k) => L.num(k);
+const KN = (k, ...ns) => { let s = lab(k); ns.forEach((n) => { s = s.replace('#', n); }); return { s, k }; };
+const T = (k, x, y, o = {}) => L.tx(lab(k), x, y, Object.assign({ k }, o));
+const MT = (s, x, y, o) => MatText.draw(L, s, x, y, o);
+const sT = [];   // a jelenetek utolsó ideje (áttűnéshez)
+/* hosszúság-adat cm-ben; eredmény-ellenőrzés az adat saját mértékegységében (base: m, m², l) */
+const dcm = (k) => { const d = L.dat(k); return d.base != null ? Math.round(d.base * 100 * 1e6) / 1e6 : d.v; };
+const chk = (k, base) => { const d = L.dat(k); return MatText.check(L, k, d.base ? base * d.v / d.base : base, 1e-6 * Math.max(1, Math.abs(d.v))); };
+const cm2 = (v) => v * 1e-4, cm3 = (v) => v * 1e-3;        // cm² → m², cm³ → l
+/* „-szoros/-szeres/-szörös” a szám kiejtése szerint (2-szeres, 3-szoros, 5-szörös, 16-szoros, 27-szeres) */
+function szor(n) {
+  const u = n % 10, t = Math.floor(n / 10) % 10;
+  const UN = ['', 'szeres', 'szeres', 'szoros', 'szeres', 'szörös', 'szoros', 'szeres', 'szoros', 'szeres'];
+  const TE = ['', 'szeres', 'szoros', 'szoros', 'szeres', 'szeres', 'szoros', 'szeres', 'szoros', 'szeres'];
+  return n + '-' + (u ? UN[u] : t ? TE[t] : n % 1000 === 0 ? 'szeres' : 'szoros');
+}
+
+/* ── háttér: meleg papír + 40 px-es rács (kockás füzet) ── */
+function background() {
+  c.globalAlpha = 1;
+  const g = c.createRadialGradient(680, 480, 100, 680, 540, 1300); g.addColorStop(0, '#fbf6ec'); g.addColorStop(1, '#efe6d6');
+  c.fillStyle = g; c.fillRect(0, 0, 1920, 1080);
+  c.strokeStyle = 'rgba(28,36,64,.05)'; c.lineWidth = 1; c.beginPath();
+  for (let x = 0; x <= 1920; x += 40) { c.moveTo(x + .5, 0); c.lineTo(x + .5, 1080); }
+  for (let y = 0; y <= 1080; y += 40) { c.moveTo(0, y + .5); c.lineTo(1920, y + .5); }
+  c.stroke();
+}
+function mark(ok, x, y, s, col) {
+  c.save(); c.strokeStyle = col || (ok ? GOOD : BAD); c.lineWidth = Math.max(4, s * .16); c.lineCap = 'round'; c.lineJoin = 'round'; c.beginPath();
+  if (ok) { c.moveTo(x - s * .45, y); c.lineTo(x - s * .1, y + s * .35); c.lineTo(x + s * .5, y - s * .4); }
+  else { c.moveTo(x - s * .4, y - s * .4); c.lineTo(x + s * .4, y + s * .4); c.moveTo(x + s * .4, y - s * .4); c.lineTo(x - s * .4, y + s * .4); }
+  c.stroke(); c.restore();
+}
+function tipHead(x, a) {
+  al(a); L.pill(lab('tippelj'), x, 62, { k: 'tippelj', s: 24, w: 700, f: F.B, a: 'center', c: '#ffffff', bg: RED, pad: 12 });
+}
+/* tipp-sor a vásznon: a választott kiemelve, a helyes ✓-et kap, ha kész */
+function tipRow(keys, rightKey, guess, xs, y, a, done) {
+  keys.forEach((k, j) => {
+    const isG = guess === k, right = k === rightKey, col = done && right ? GOOD : isG ? INK : MUT;
+    al(a * (isG || (done && right) ? 1 : .55));
+    const b = L.pill(lab(k), xs[j], y, { k, s: 26, w: 700, f: F.B, a: 'center', c: col, bg: CARD, bd: col, bw: isG ? 3 : 2, pad: 12 });
+    if (done && right) { al(a); mark(true, b.x + b.w + 22, y, 28); }
+    if (isG) {
+      al(a); const kk = done ? (right ? 'jó tipp' : 'rossz tipp') : 'a tipped';
+      T(kk, xs[j], y + 54, { s: 22, w: 700, f: F.B, a: 'center', c: done ? (right ? GOOD : BAD) : MUT });
+    }
+  });
+}
+function hint(k, x, y, a) { al(a); T(k, x, y, { s: 24, w: 600, f: F.B, a: 'center', c: MUT }); }
+
+/* ════════ 1. Csúcsok, élek, lapok, átlók ════════ */
+const CUBE = Mat3D.cube(1), DG = Mat3D.diagonals(CUBE);
+const VORD = [0, 1, 2, 3, 4, 5, 6, 7];
+const eRank = (ei) => { const e = CUBE.e[ei], zi = CUBE.v[e.i][2], zj = CUBE.v[e.j][2], g = zi + zj; const pos = (e.i % 4 === 0 && e.j % 4 === 3) ? 3 : e.i % 4; return g * 10 + pos; };
+const EORD = CUBE.e.map((e, i) => i).sort((a, b) => eRank(a) - eRank(b));
+const FORD = [2, 5, 3, 4, 1, 0];          // elöl, jobb, hátul, bal, felül, alul
+const FDIAG = [];                          // lapátlók lapsorrendben: [i, j, lap]
+FORD.forEach((fi) => DG.face.forEach(([i, j]) => { if (CUBE.f[fi].includes(i) && CUBE.f[fi].includes(j)) FDIAG.push([i, j, fi]); }));
+const S1 = { guess: null, gt: -9, row: null };
+const TIPS1 = ['tipp 6', 'tipp 8', 'tipp 12'];
+let V1 = null;
+function tl1(st) {
+  const t0 = S1.gt + .45, G = .25;
+  const tv = (k) => t0 + k * .16, te = (k) => tv(8) + G + k * .15, tf = (k) => te(12) + G + k * .2;
+  const tfd = (k) => tf(6) + G + k * .07, tsd = (k) => tfd(12) + G + k * .18;
+  const cnt = (f, n) => { let m = 0; for (let k = 0; k < n; k++) if (st >= f(k)) m++; return m; };
+  return { tv, te, tf, tfd, tsd, nv: cnt(tv, 8), ne: cnt(te, 12), nf: cnt(tf, 6), nfd: cnt(tfd, 12), nsd: cnt(tsd, 4), end: tsd(4) };
+}
+function reset1() { S1.guess = null; S1.gt = -9; if (V1) V1.reset(); }
+function guess1(k) { if (S1.guess) return; S1.guess = k; S1.gt = L.st; if (S1.row) S1.row.style.display = 'none'; }
+const ROWS1 = [['csúcs', 'nv', RED, 330], ['él', 'ne', TEAL, 410], ['lap', 'nf', OCHRE, 490], ['lapátló', 'nfd', RED, 610], ['testátló', 'nsd', PLUM, 690]];
+function scene1(st, live) {
+  const p0 = smooth(st / .5);
+  tipHead(680, p0);
+  al(p0); T('kérdés 1', 680, 128, { f: F.D, i: true, s: 46, w: 500, a: 'center' });
+  V1.set({ yaw: -32 + 7 * Math.sin(st * .45), pitch: 22 });
+  if (live) V1.drag({ rect: [0, 160, 940, 920] });
+  const tl = S1.guess ? tl1(st) : null, hv = {}, he = {}, hf = {};
+  if (tl) {
+    EORD.forEach((ei, k) => { if (st >= tl.te(k)) he[ei] = { c: TEAL, w: 6 }; });
+    FORD.forEach((fi, k) => { const t = tl.tf(k); if (st >= t) hf[fi] = { c: FO, a: .3 + .35 * clamp(1 - (st - t) / .4) }; });
+  }
+  const R = V1.draw(CUBE, { a: GA * p0, fill: CARD, alpha: .6, hi: { faces: hf, edges: he } });
+  // átlók
+  if (tl && tl.nfd > 0) {
+    const fade = smooth((st - tl.tsd(0) + .1) / .5);
+    FDIAG.forEach(([i, j, fi], k) => {
+      if (st < tl.tfd(k)) return;
+      const hid = !R.vis[fi], ex = k === 2;
+      V1.seg(CUBE.v[i], CUBE.v[j], { c: RED, w: ex ? 5 : 3.5, dash: hid ? [9, 8] : null, a: GA * (ex ? 1 : lerp(1, .3, fade)) * (hid ? .7 : 1) });
+    });
+  }
+  if (tl && tl.nsd > 0) {
+    const fade = smooth((st - tl.end - .4) / .6);
+    DG.space.forEach(([i, j], k) => {
+      if (st < tl.tsd(k)) return;
+      V1.seg(CUBE.v[i], CUBE.v[j], { c: PLUM, w: k === 1 ? 5.5 : 4, a: GA * (k === 1 ? 1 : lerp(1, .3, fade)) });
+    });
+  }
+  // csúcsok
+  if (tl) VORD.forEach((vi, k) => {
+    const t = tl.tv(k); if (st < t) return;
+    const hid = !CUBE.vf[vi].some((fi) => R.vis[fi]);
+    V1.dot(CUBE.v[vi], { r: 10, c: RED, hollow: hid, a: GA, ring: clamp(1 - (st - t) / .35) });
+  });
+  CK.s1 = tl ? { nv: tl.nv, ne: tl.ne, nf: tl.nf, nfd: tl.nfd, nsd: tl.nsd, done: st >= tl.end } : null;
+  // számlálók
+  if (tl) {
+    ROWS1.forEach(([k, f, col, y]) => {
+      const n = tl[f]; if (!n) return;
+      al(1); T(k, 1150, y, { s: 30, w: 600, f: F.B, a: 'right', b: 'middle' });
+      al(1); L.tx(String(n), 1180, y, { f: F.M, s: 48, w: 700, b: 'middle', c: col });
+    });
+    const ga = smooth((st - S1.gt) / .4);
+    tipRow(TIPS1, 'tipp 12', S1.guess, [430, 680, 930], 200, ga, st >= tl.te(12));
+  }
+  // jelmagyarázat
+  c.save(); al(p0); c.strokeStyle = INK; c.lineWidth = 2.5; c.setLineDash([10, 8]); c.beginPath(); c.moveTo(120, 1010); c.lineTo(200, 1010); c.stroke(); c.restore();
+  al(p0); T('takart él', 216, 1010, { s: 24, w: 600, f: F.B, b: 'middle', c: MUT });
+  hint('forgasd', 560, 1018, p0);
+}
+
+/* ════════ 2. Nézetek ════════ */
+const BLD = [[0, 0, 0], [1, 0, 0], [2, 0, 0], [0, 1, 0], [1, 1, 0], [0, 1, 1], [0, 1, 2]];
+const BV = Mat3D.views(BLD);
+const VIEWS2 = { free: { yaw: -35, pitch: 26 }, front: { yaw: 0, pitch: 0 }, top: { yaw: 0, pitch: 90 }, side: { yaw: -90, pitch: 0 } };
+const S2 = { mode: 'free', from: VIEWS2.free, t0: -9 };
+let V2 = null;
+const cur2 = (st) => Mat3D.lerpView(S2.from, VIEWS2[S2.mode], smooth((st - S2.t0) / 1.1));
+function mode2(m) {
+  const v = cur2(L.st); S2.from = { yaw: v.yaw + V2.dyaw, pitch: clamp(v.pitch + V2.dpitch, -90, 90) };
+  V2.reset(); S2.mode = m; S2.t0 = L.st;
+}
+function reset2() { S2.mode = 'free'; S2.from = VIEWS2.free; S2.t0 = -9; if (V2) V2.reset(); }
+const CARDS2 = [['front', 'elölnézet', BV.front, 200, 360], ['top', 'felülnézet', BV.top, 440, 560], ['side', 'oldalnézet', BV.side, 680, 840]];
+function scene2(st, live) {
+  const p0 = smooth(st / .5);
+  al(p0); T('nézetek cím', 430, 100, { f: F.D, i: true, s: 44, w: 500, a: 'center' });
+  const v = cur2(st); V2.set(v);
+  if (live) V2.drag({ rect: [0, 140, 900, 940] });
+  V2.voxels(BLD, { a: GA * p0, fill: FO, lw: 2.5 });
+  al(p0); L.tx(KN('építmény', BLD.length).s, 430, 1010, { k: 'építmény', s: 26, w: 600, f: F.B, a: 'center', c: MUT });
+  const settled = st - S2.t0 > 1.1 && Math.abs(V2.dyaw) < .01 && Math.abs(V2.dpitch) < .01;
+  const na = smooth((st - 1.2) / .6);
+  CARDS2.forEach(([m, k, cs, ty, yb], j) => {
+    const a = smooth((st - .3 - j * .2) / .5), on = settled && S2.mode === m;
+    const h = yb - ty + 60;
+    if (on) { c.save(); al(a); c.beginPath(); c.roundRect(930, ty - 42, 400, h, 16); c.fillStyle = U.rgba(RED, .07); c.fill(); c.strokeStyle = RED; c.lineWidth = 3; c.stroke(); c.restore(); }
+    al(a); T(k, 960, ty, { s: 28, w: 700, f: F.B, b: 'middle', c: on ? RED : INK });
+    Mat3D.grid2d(L, cs, 960, yb, 40, { a: GA * a, fill: on ? FR : FO, lw: 2.5 });
+    if (m === 'top') {
+      cs.forEach(([x, y, n]) => { al(a * na); L.tx(String(n), 960 + x * 40 + 20, yb - y * 40 - 20, { f: F.M, s: 26, w: 700, a: 'center', b: 'middle', c: INK }); });
+      const w = L.measure(lab(k), { s: 28, w: 700, f: F.B }).w;
+      al(a * na); L.pill(lab('alaprajz'), 960 + w + 18, ty, { k: 'alaprajz', s: 22, w: 700, f: F.B, c: OCHRE, bg: CARD, bd: OCHRE, pad: 10 });
+    }
+  });
+}
+
+/* ════════ 3. Kiterítjük: a háló ════════ */
+const KINDS3 = ['kocka', 'téglatest', 'hasáb', 'gúla'];
+const K3 = {};
+{
+  const pair = [FR, FT, FT, FO, FO, FR];
+  const mk = (N, sol, cols) => { N.faces.forEach((f, i) => { f.col = cols(i); }); return { N, sol }; };
+  K3['kocka'] = mk(Mat3D.cuboidNet(1, 1, 1), Mat3D.cube(1), (i) => pair[i]);
+  K3['téglatest'] = mk(Mat3D.cuboidNet(1.6, 1, .7), Mat3D.cuboid(1.6, 1, .7), (i) => pair[i]);
+  const rP = 1 / Math.sqrt(3);
+  K3['hasáb'] = mk(Mat3D.prismNet(3, rP, 1.5), Mat3D.prism(3, rP, 1.5), (i) => (i < 3 ? FO : FT));
+  K3['gúla'] = mk(Mat3D.pyramidNet(4, Math.SQRT1_2, .9), Mat3D.pyramid(4, Math.SQRT1_2, .9), (i) => (i === 0 ? FT : FR));
+  KINDS3.forEach((k) => { const b = K3[k].N.box(0), w = b.max[0] - b.min[0], h = b.max[1] - b.min[1]; K3[k].scale = Math.min(230, 820 / w, 600 / (h * .9)); });
+}
+const S3 = { kind: 'kocka', a0: 0, user: null, sld: null };
+let V3 = null;
+const ST3 = { stagger: .35 };
+const fold3 = (st) => (S3.user ? lerp(S3.user.from, S3.user.to, smooth((st - S3.user.t0) / .7)) : 1 - smooth((st - S3.a0 - .8) / 2.6));
+function reset3() { S3.kind = 'kocka'; S3.a0 = 0; S3.user = null; if (V3) V3.reset(); }
+function kind3(k) { S3.kind = k; S3.a0 = L.st; S3.user = null; if (S3.sld) S3.sld.set(0); }
+function scene3(st, live) {
+  const p0 = smooth(st / .5), K = K3[S3.kind], f = fold3(st);
+  al(p0); T('háló ' + S3.kind, 640, 96, { f: F.D, i: true, s: 46, w: 500, a: 'center', max: 1200 });
+  al(p0); T('lapok ' + S3.kind, 640, 152, { s: 28, w: 600, f: F.B, a: 'center', c: MUT });
+  const b = K.N.box(f, ST3);
+  V3.set({ cx: 640, cy: 600, scale: K.scale, yaw: lerp(-8, -30, f), pitch: lerp(64, 24, f), target: b.c });
+  if (live) V3.drag({ rect: [0, 180, 1340, 800] });
+  V3.fold(K.N, f, Object.assign({ a: GA * p0 }, ST3));
+  const s = K.sol, txt = s.f.length + ' ' + lab('lap') + ' · ' + s.e.length + ' ' + lab('él') + ' · ' + s.v.length + ' ' + lab('csúcs');
+  al(p0); L.tx(txt, 640, 1016, { k: ['lap', 'él', 'csúcs'], s: 28, w: 700, f: F.B, a: 'center' });
+  CK.s3 = { f, K };
+}
+
+/* ════════ 4. Melyikből lesz kocka? ════════ */
+const NET4 = [['.#..', '####', '.#..'], ['######'], ['##..', '.##.', '..##'], ['###', '###'], ['#...', '####', '...#'],
+  ['#.#.', '####'], ['###..', '..###'], ['##..', '.###', '.#..'], ['#####', '#....'], ['#...', '####', '.#..']];
+const NETS4 = NET4.map((r) => { const cs = Mat3D.cells(r), N = Mat3D.gridNet(cs); N.faces.forEach((f) => { f.col = FO; }); return { cs, N, chk: Mat3D.netCheck(N) }; });
+const SLOT4 = (i) => ({ x: [160, 420][i % 2], y: 250 + Math.floor(i / 2) * 150 });
+const S4 = { sel: 0, tip: null, f0: 0, f1: 0, t0: -9, done: {}, selT: -9 };
+let V4 = null;
+const FD4 = 2.6, ST4 = { stagger: .3 };
+const fold4 = (st) => lerp(S4.f0, S4.f1, smooth((st - S4.t0) / FD4));
+function reset4() { S4.sel = 0; S4.tip = null; S4.f0 = S4.f1 = 0; S4.t0 = -9; S4.done = {}; S4.selT = -9; if (V4) V4.reset(); }
+function select4(i) { if (i === S4.sel && !S4.tip) return; S4.sel = i; S4.tip = null; S4.f0 = S4.f1 = 0; S4.t0 = -9; S4.selT = L.st; }
+function tip4(k) { if (S4.tip) return; S4.tip = k; S4.f0 = 0; S4.f1 = 1; S4.t0 = L.st; }
+function scene4(st, live) {
+  const p0 = smooth(st / .5), it = NETS4[S4.sel], f = fold4(st), done = S4.tip && st - S4.t0 >= FD4 + .1;
+  if (done) S4.done[S4.sel] = it.chk.ok;
+  tipHead(940, p0);
+  al(p0); T('kérdés 4', 940, 128, { f: F.D, i: true, s: 46, w: 500, a: 'center' });
+  hint('válassz', 290, 150, p0);
+  // bélyegképek
+  NETS4.forEach((n, i) => {
+    const s = SLOT4(i), on = i === S4.sel, a = smooth((st - .2 - i * .05) / .4);
+    c.save(); al(a); c.beginPath(); c.roundRect(s.x - 118, s.y - 64, 236, 128, 14); c.fillStyle = CARD; c.fill();
+    c.strokeStyle = on ? RED : LINE; c.lineWidth = on ? 3.5 : 2; c.stroke(); c.restore();
+    const xs = n.cs.map((q) => q[0]), ys = n.cs.map((q) => q[1]), w = (Math.max(...xs) + 1) * 26, h = (Math.max(...ys) + 1) * 26;
+    Mat3D.grid2d(L, n.cs, s.x - w / 2, s.y + h / 2, 26, { a: GA * a, fill: on ? FR : FO, lw: 2 });
+    if (S4.done[i] != null) { al(a); mark(S4.done[i], s.x + 96, s.y - 42, 22); }
+  });
+  if (live && L.pointer.pressed) {
+    const px = L.pointer.px, py = L.pointer.py;
+    NETS4.forEach((n, i) => { const s = SLOT4(i); if (Math.abs(px - s.x) <= 118 && Math.abs(py - s.y) <= 64) select4(i); });
+  }
+  // a kiválasztott háló 3D-ben
+  const na = smooth((st - S4.selT) / .4) * p0, b = it.N.box(f, ST4);
+  const so = Math.min(110, 640 / Math.max(1, ...['0', '1'].map((d) => it.N.box(0).max[d] - it.N.box(0).min[d])));
+  V4.set({ cx: 940, cy: 540, scale: lerp(so, 210, smooth(f)), yaw: lerp(-10, -30, f), pitch: lerp(58, 28, f), target: b.c });
+  if (live) V4.drag({ rect: [560, 180, 780, 700] });
+  const fl = {};
+  if (done && !it.chk.ok) { const pu = .3 + .22 * Math.sin((st - S4.t0) * 7); it.chk.clash.forEach(([i, j]) => { fl[i] = pu; fl[j] = pu; }); }
+  V4.fold(it.N, f, Object.assign({ a: GA * na, flash: fl }, ST4));
+  if (done && !it.chk.ok) it.chk.open.forEach((q) => V4.poly(q, { stroke: BAD, w: 3.5, dash: [12, 8], fill: U.rgba(BAD, .1), a: GA * (.6 + .4 * Math.sin((st - S4.t0) * 7)) }));
+  // eredmény
+  if (done) {
+    const ok = it.chk.ok, a = smooth((st - S4.t0 - FD4 - .1) / .4);
+    al(a); const bx = L.pill(lab(ok ? 'kocka lett' : 'nem lett'), 940, 880, { k: ok ? 'kocka lett' : 'nem lett', s: 30, w: 700, f: F.B, a: 'center', c: ok ? GOOD : BAD, bg: CARD, bd: ok ? GOOD : BAD, bw: 3, pad: 14 });
+    al(a); mark(ok, bx.x - 28, 880, 30);
+    if (!ok) {
+      const parts = []; if (it.chk.clash.length) parts.push('ütközik'); if (it.chk.open.length) parts.push('nyitva');
+      al(a); L.tx(parts.map(lab).join(' · '), 940, 942, { k: parts, s: 26, w: 600, f: F.B, a: 'center', c: BAD, max: 760 });
+    }
+    const right = (S4.tip === 'gomb lesz') === ok;
+    al(a); T(right ? 'jó tipp' : 'rossz tipp', 940, 1000, { s: 26, w: 700, f: F.B, a: 'center', c: right ? GOOD : BAD });
+  } else if (S4.tip) {
+    al(1); L.tx(lab('a tipped') + ': ' + lab(S4.tip), 940, 1000, { k: ['a tipped', S4.tip], s: 24, w: 600, f: F.B, a: 'center', c: MUT });
+  }
+  CK.s4 = { f, it, done };
+}
+
+/* ════════ 5. Felszín: a háló területe ════════ */
+const COL5 = [FR, FT, FT, FO, FO, FR], EDGE5 = [RED, TEAL, TEAL, OCHRE, OCHRE, RED];
+const S5 = { a: 3, b: 4, c: 5, a0: 0 };
+let V5 = null, V5b = null, N5 = null, N5k = '';
+const ST5 = { stagger: .3 };
+function net5() {
+  const k = S5.a + ',' + S5.b + ',' + S5.c;
+  if (k !== N5k) { N5 = Mat3D.cuboidNet(S5.a, S5.b, S5.c); N5.faces.forEach((f, i) => { f.col = COL5[i]; }); N5k = k; }
+  return N5;
+}
+function reset5() { S5.a = dcm('téglatest a'); S5.b = dcm('téglatest b'); S5.c = dcm('téglatest c'); S5.a0 = 0; }
+const area5 = (a, b, c3) => 2 * (a * b + a * c3 + b * c3);
+function scene5(st) {
+  const p0 = smooth(st / .5), { a, b } = S5, cc = S5.c, N = net5();
+  const u = smooth((st - S5.a0 - .8) / 2.2), k = smooth((st - S5.a0 - .6) / 2.8), f = 1 - u;
+  al(p0); T('felszín cím', 440, 100, { f: F.D, i: true, s: 44, w: 500, a: 'center', max: 820 });
+  const X0 = Math.round((440 - 20 * a) / 40) * 40, Y0 = 560 + 40 * b;
+  const A3 = { yaw: -30, pitch: 26, scale: 52, target: [a / 2, b / 2, cc / 2], cx: 440, cy: 580 };
+  const B2 = { yaw: 0, pitch: 90, scale: 40, target: [0, 0, 0], cx: X0, cy: Y0 };
+  V5.set(Mat3D.lerpView(A3, B2, k));
+  V5.fold(N, f, Object.assign({ a: GA * p0, inner: 0, deco: (i) => {
+    const fc = N.faces[i], xs = fc.poly.map((p) => p[0]), ys = fc.poly.map((p) => p[1]);
+    const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
+    const ga = u * p0; if (ga <= .01) return;
+    c.globalAlpha = GA * ga * .5; c.strokeStyle = INK; c.lineWidth = 1.5; c.beginPath();
+    const ln = (p, q) => { const P = V5.P(N.map(i, p, f, ST5)), Q = V5.P(N.map(i, q, f, ST5)); c.moveTo(P[0], P[1]); c.lineTo(Q[0], Q[1]); };
+    for (let x = Math.ceil(x0 + 1e-6); x < x1 - 1e-6; x++) ln([x, y0], [x, y1]);
+    for (let y = Math.ceil(y0 + 1e-6); y < y1 - 1e-6; y++) ln([x0, y], [x1, y]);
+    c.stroke();
+    const na = smooth((k - .85) / .15) * p0;
+    if (na > .01) { const P = V5.P(N.map(i, [(x0 + x1) / 2, (y0 + y1) / 2], f, ST5)); al(na); L.tx(String(Math.round((x1 - x0) * (y1 - y0))), P[0], P[1], { f: F.M, s: 28, w: 700, a: 'center', b: 'middle', c: EDGE5[i] }); }
+  } }, ST5));
+  // jobb oldal: a téglatest és a számolás
+  const sc = 150 / Math.max(a, b, cc, 2);
+  V5b.set({ cx: 1090, cy: 300, scale: sc, yaw: -32, pitch: 24, target: [a / 2, b / 2, cc / 2] });
+  const box = Mat3D.cuboid(a, b, cc);
+  V5b.draw(box, { a: GA * p0, fill: (i) => [FR, FR, FT, FT, FO, FO][i], lw: 2.5 });
+  const pA = V5b.P([a / 2, 0, 0]), pB = V5b.P([a, b / 2, 0]), pC = V5b.P([0, 0, cc / 2]);
+  al(p0); MT('`a` = ' + a + ' cm', pA[0] - 10, pA[1] + 44, { s: 28, a: 'right', c: INK });
+  al(p0); MT('`b` = ' + b + ' cm', pB[0] + 18, pB[1] + 36, { s: 28, a: 'left', c: INK });
+  al(p0); MT('`c` = ' + cc + ' cm', pC[0] - 18, pC[1] + 4, { s: 28, a: 'right', c: INK });
+  const rows = [[FR, RED, a, b], [FT, TEAL, a, cc], [FO, OCHRE, b, cc]], ra = smooth((st - S5.a0 - 3.2) / .5);
+  rows.forEach(([fc, ec, x, y], j) => {
+    const yy = 560 + j * 64, a2 = smooth((st - S5.a0 - 3.2 - j * .25) / .4);
+    c.save(); al(a2); c.fillStyle = fc; c.strokeStyle = INK; c.lineWidth = 2;
+    [0, 1].forEach((d) => { c.fillRect(850 + d * 18, yy - 24 + d * 8, 26, 26); c.strokeRect(850 + d * 18, yy - 24 + d * 8, 26, 26); }); c.restore();
+    al(a2); MT('2 · ' + x + ' · ' + y + ' = ' + (2 * x * y) + ' cm²', 912, yy, { s: 30, c: ec });
+  });
+  const A = area5(a, b, cc);
+  c.save(); al(ra); c.strokeStyle = INK; c.lineWidth = 2; c.beginPath(); c.moveTo(850, 760); c.lineTo(1330, 760); c.stroke(); c.restore();
+  al(ra); T('háló területe', 850, 810, { s: 26, w: 600, f: F.B, c: MUT });
+  al(ra); MT('`A` = ' + 2 * a * b + ' + ' + 2 * a * cc + ' + ' + 2 * b * cc + ' = ' + A + ' cm²', 850, 870, { s: 34, c: RED, max: 480 });
+  CK.s5 = { N, f, A };
+}
+
+/* ════════ 6. Megtöltjük: térfogat ════════ */
+const S6 = { a: 3, b: 4, c: 5, t0: 0 };
+let V6 = null, V6b = null, C6 = null, C6k = '';
+function cells6() { const k = S6.a + ',' + S6.b + ',' + S6.c; if (k !== C6k) { C6 = Mat3D.fillOrder(S6.a, S6.b, S6.c); C6k = k; } return C6; }
+function reset6() { S6.a = dcm('téglatest a'); S6.b = dcm('téglatest b'); S6.c = dcm('téglatest c'); S6.t0 = 0; }
+const FILL6 = 3.6, DROP6 = .3;
+const tc6 = (i, n) => S6.t0 + .6 + FILL6 * i / n;
+function scene6(st, live) {
+  const p0 = smooth(st / .5), { a, b } = S6, cc = S6.c, cs = cells6(), n = cs.length;
+  al(p0); T('térfogat cím', 470, 100, { f: F.D, i: true, s: 44, w: 500, a: 'center', max: 860 });
+  const sc = Math.min(86, 420 / Math.max(a, b, cc, 3));
+  V6.set({ cx: 470, cy: 600, scale: sc, yaw: -34, pitch: 24, target: [a / 2, b / 2, cc / 2] });
+  if (live) V6.drag({ rect: [0, 150, 860, 900] });
+  const box = Mat3D.cuboid(a, b, cc);
+  V6.draw(box, { a: GA * p0, fill: GLASS, alpha: .5, pass: 'back', skip: [1], hidden: 'solid', hiddenA: .45 });
+  let placed = 0;
+  V6.voxels(cs, { a: GA * p0, fill: FR, lw: 1.8, show: (i) => {
+    const t = tc6(i, n); if (st < t) return false; placed++;
+    const p = clamp((st - t) / DROP6); return p < 1 ? { off: [0, 0, (1 - smooth(p)) * 1.4], alpha: clamp(p * 3) } : null;
+  } });
+  V6.draw(box, { a: GA * p0, fill: GLASS, alpha: .16, pass: 'front', skip: [1], lw: 3 });
+  // számolás
+  const ab = a * b, layers = Math.floor(placed / ab), full = st >= tc6(n - 1, n) + DROP6;
+  al(p0); L.tx(KN('kockák', placed).s, 1090, 230, { k: 'kockák', f: F.M, s: 44, w: 700, a: 'center', c: RED });
+  if (layers >= 1) { al(1); MT(KN('egy réteg', a, b, ab).s, 870, 330, { k: 'egy réteg', s: 28, f: F.B, w: 600, max: 470 }); }
+  const fa = full ? smooth((st - tc6(n - 1, n) - DROP6) / .4) : 0;
+  if (fa > 0) {
+    al(fa); MT(KN('rétegek', cc, cc, ab, ab * cc).s, 870, 395, { k: 'rétegek', s: 28, f: F.B, w: 600, max: 470 });
+    al(fa); MT('`V` = ' + a + ' · ' + b + ' · ' + cc + ' = ' + ab * cc + ' cm³', 870, 480, { s: 38, c: RED, max: 470 });
+  }
+  // egységkocka
+  V6b.set({ cx: 905, cy: 610, scale: 40, yaw: -34, pitch: 24, target: [.5, .5, .5] });
+  V6b.voxels([[0, 0, 0]], { a: GA * p0, fill: FR, lw: 2 });
+  al(p0); T('egységkocka', 955, 612, { s: 26, w: 600, f: F.B, b: 'middle', max: 380 });
+  // felszín ≠ térfogat
+  const ta = full ? smooth((st - tc6(n - 1, n) - DROP6 - .6) / .5) : 0;
+  if (ta > 0) {
+    const A = area5(a, b, cc);
+    al(ta); L.tx(lab('felszín') + ': ' + A + ' cm²', 870, 740, { k: 'felszín', f: F.M, s: 30, w: 700, c: TEAL });
+    al(ta); L.tx(lab('térfogat') + ': ' + ab * cc + ' cm³', 870, 795, { k: 'térfogat', f: F.M, s: 30, w: 700, c: RED });
+    al(ta); L.pill(lab('nem ugyanaz'), 870, 870, { k: 'nem ugyanaz', s: 24, w: 700, f: F.B, c: INK, bg: CARD, bd: INK, pad: 12, max: 440 });
+  }
+  CK.s6 = { placed, n, full };
+}
+
+/* ════════ 7. 1 liter = 1 dm³ ════════ */
+const S7 = { p0: null, k0: 0 };   // k0: a kis kockák animációjának eltolása (QA-állapot)
+let V7 = null, E7 = 10, C7 = null;
+const POUR7 = 2.0;      // s / liter
+function reset7() { S7.p0 = null; S7.k0 = 0; }
+function pour7() { if (S7.p0 == null) S7.p0 = L.st; }
+const tz7 = (z, y) => (z === 0 ? .8 + (E7 - 1 - y) * .12 : 2.2 + (z - 1) * .17);
+function scene7(st) {
+  const sk = st - S7.k0, p0 = smooth(st / .5), E = E7, Vl = E * E * E / 1000, tej = L.dat('tej').base;
+  V7.set({ cx: 470, cy: 600, scale: 40, yaw: -34, pitch: 22, target: [E / 2, E / 2, E / 2] });
+  const box = Mat3D.cuboid(E, E, E);
+  const tau = S7.p0 == null ? -1 : st - S7.p0 - .3, poured = tau < 0 ? 0 : Math.min(tej, tau / POUR7);
+  const level = Math.min(1, poured / Vl), over = Math.max(0, poured - Vl);
+  // tócsa
+  if (over > 0) {
+    const r = E * .64 + 1.6 * over, pts = [];
+    for (let j = 0; j < 48; j++) { const t = j / 48 * TAU; pts.push([E / 2 + r * Math.cos(t), E / 2 + r * .9 * Math.sin(t), 0]); }
+    V7.poly(pts, { fill: MILK, stroke: '#7d8aa3', w: 2, a: GA * p0 * clamp(over * 6) });
+  }
+  V7.draw(box, { a: GA * p0, fill: GLASS, alpha: .45, pass: 'back', skip: [1], hidden: 'solid', hiddenA: .45 });
+  // kis kockák
+  const ca = (1 - smooth((sk - 4.3) / .6)) * (S7.p0 == null ? 1 : 1 - smooth((st - S7.p0) / .3));
+  let nz = 0;
+  if (ca > .01) {
+    V7.voxels(C7, { a: GA * p0 * ca, fill: FR, lw: 1.2, show: (i, q) => {
+      const t = tz7(q[2], q[1]); if (sk < t) return false;
+      const p = clamp((sk - t) / .25); return p < 1 ? { off: [0, 0, (1 - smooth(p)) * 2], alpha: clamp(p * 3) } : null;
+    } });
+  }
+  for (let z = 0; z < E; z++) if (sk >= tz7(z, 0) + .25) nz = z + 1;
+  // tej
+  if (level > 0) {
+    const mk = Mat3D.cuboid(E - .1, E - .1, level * E, { at: [.05, .05, 0] });
+    V7.draw(mk, { a: GA * p0, fill: MILK, alpha: .95, stroke: '#7d8aa3', lw: 1.5, hidden: 'none', shade: .12 });
+  }
+  // sugár
+  const pourEnd = tej * POUR7;
+  if (tau >= 0 && tau <= pourEnd + .15) {
+    const top = V7.P([E / 2, E * .35, E * 1.75]), bot = V7.P([E / 2, E * .35, Math.max(level * E, 0)]);
+    const w = 16 * clamp((pourEnd + .15 - tau) / .15) * clamp(tau / .1 + .3);
+    c.save(); al(1); c.fillStyle = MILK; c.strokeStyle = '#7d8aa3'; c.lineWidth = 2;
+    c.beginPath(); c.rect(top[0] - w / 2, top[1], w, bot[1] - top[1]); c.fill(); c.stroke(); c.restore();
+  }
+  V7.draw(box, { a: GA * p0, fill: GLASS, alpha: .14, pass: 'front', skip: [1], lw: 3 });
+  // túlfolyás a két elülső lapon
+  if (over > 0) {
+    const w = Math.min(E * .22, .5 + over * 3), ow = clamp(over * 8);
+    [[0, 'y'], [E, 'x']].forEach(([v0, ax]) => {
+      const q = ax === 'y' ? [[E / 2 - w / 2, -.02, E], [E / 2 + w / 2, -.02, E], [E / 2 + w / 2 + .3, -.02, 0], [E / 2 - w / 2 - .3, -.02, 0]]
+        : [[E + .02, E / 2 - w / 2, E], [E + .02, E / 2 + w / 2, E], [E + .02, E / 2 + w / 2 + .3, 0], [E + .02, E / 2 - w / 2 - .3, 0]];
+      void v0; V7.poly(q, { fill: MILK, fa: .92, stroke: '#7d8aa3', w: 2, a: GA * p0 * ow });
+    });
+  }
+  // él: 1 dm = 10 cm
+  { const y0 = 0, ticks = [];
+    for (let i = 0; i <= E; i++) ticks.push(i);
+    c.save(); al(p0); c.strokeStyle = INK; c.lineWidth = 2.5; c.beginPath();
+    ticks.forEach((i) => { const p = V7.P([i, y0, 0]), q = V7.P([i, y0 - (i % 5 ? .35 : .6), 0]); c.moveTo(p[0], p[1]); c.lineTo(q[0], q[1]); });
+    c.stroke(); c.restore();
+    const m = V7.P([E / 2, -1.6, 0]);
+    al(p0); L.tx(KN('él felirat', fmt(E / 10), E).s, m[0], m[1] + 34, { k: 'él felirat', f: F.M, s: 28, w: 700, a: 'center' });
+  }
+  // számolás jobb oldalt
+  const r1 = smooth((sk - 2.0) / .4), r2 = smooth((sk - 3.9) / .4), r3 = smooth((sk - 4.3) / .5);
+  if (nz >= 1 || S7.p0 != null) { al(Math.max(r1, S7.p0 != null ? 1 : 0)); MT(KN('réteg 1', E, E, E * E).s, 890, 230, { k: 'réteg 1', s: 28, f: F.B, w: 600, max: 450 }); }
+  if (nz >= E || S7.p0 != null) { al(Math.max(r2, S7.p0 != null ? 1 : 0)); MT(KN('réteg 10', E, E, E * E, E * E * E).s, 890, 290, { k: 'réteg 10', s: 28, f: F.B, w: 600, max: 450 }); }
+  const r3b = S7.p0 != null ? 1 : r3;
+  al(r3b); MT(lab('liter egyenlőség'), 890, 370, { k: 'liter egyenlőség', s: 32, w: 700, c: RED, max: 450 });
+  const ca2 = S7.p0 != null ? 1 : smooth((sk - 4.6) / .5);
+  if (ca2 > 0) {
+    c.save(); al(ca2); c.beginPath(); c.roundRect(880, 440, 460, 200, 16); c.fillStyle = CARD; c.fill(); c.strokeStyle = LINE; c.lineWidth = 2; c.stroke(); c.restore();
+    al(ca2); T('állítás cím', 900, 494, { f: F.D, i: true, s: 34, w: 600, c: RED });
+    al(ca2); L.tx(KN('állítás 1', fmt(tej, tej % 1 ? 1 : 0)).s, 900, 556, { k: 'állítás 1', s: 28, w: 600, f: F.B, max: 420 });
+    al(ca2); L.tx(KN('állítás 2', fmt(E / 10)).s, 900, 602, { k: 'állítás 2', s: 28, w: 600, f: F.B, max: 420 });
+  }
+  if (S7.p0 != null && tau >= 0) {
+    const fp = (v) => fmt(v, Math.abs(v - Math.round(v)) < 1e-9 ? 0 : 1);
+    al(1); L.tx(KN('beöntve', fp(poured)).s, 900, 710, { k: 'beöntve', f: F.M, s: 30, w: 700, c: INK });
+    if (over > 0) { al(1); L.tx(KN('kifolyt', fp(over)).s, 900, 765, { k: 'kifolyt', f: F.M, s: 30, w: 700, c: RED }); }
+    if (tau >= pourEnd) {
+      const ok = tej <= Vl + 1e-9, va = smooth((tau - pourEnd) / .4);
+      al(va); const bx = L.pill(lab(ok ? 'belefér' : 'nem fér'), 940, 860, { k: ok ? 'belefér' : 'nem fér', s: 30, w: 700, f: F.B, c: ok ? GOOD : BAD, bg: CARD, bd: ok ? GOOD : BAD, bw: 3, pad: 14 });
+      al(va); mark(ok, bx.x + bx.w + 30, 860, 30);
+    }
+  }
+  CK.s7 = { E, Vl, poured, over, tej };
+}
+
+/* ════════ 8. Kétszer akkora kocka ════════ */
+const S8 = { guess: null, gt: -9, k: 2, kt0: -9, sld: null, row: null };
+let V8 = null;
+const TIPS8 = ['tipp 2x', 'tipp 4x', 'tipp 8x'];
+const FLY8 = 2.4, DUR8 = .6;
+function reset8() { S8.guess = null; S8.gt = -9; S8.k = 2; S8.kt0 = -9; if (V8) V8.reset(); }
+function guess8(k) {
+  if (S8.guess) return; S8.guess = k; S8.gt = L.st;
+  if (S8.row) S8.row.style.display = 'none';
+  if (!S8.sld || !S8.sld.el.isConnected) S8.sld = L.slider({ label: lab('nagyítás'), k: 'nagyítás', min: 2, max: 4, step: 1, value: 2, format: (v) => szor(v), onInput: (v) => { S8.k = v; S8.kt0 = L.st; } });
+}
+let B8 = null, B8k = -1;
+function blocks8(k, e) {
+  if (B8k === k * 10 + e) return B8; B8k = k * 10 + e;
+  const cells = [], blk = [], ord = Mat3D.fillOrder(k, k, k);
+  ord.forEach(([bx, by, bz], j) => { for (let z = 0; z < e; z++) for (let y = 0; y < e; y++) for (let x = 0; x < e; x++) { cells.push([bx * e + x, by * e + y, bz * e + z]); blk.push([j, bx, by, bz]); } });
+  B8 = { cells, blk }; return B8;
+}
+function scene8(st, live) {
+  const p0 = smooth(st / .5), e = dcm('kis kocka éle'), k = S8.guess ? S8.k : 2, K = k * e;
+  tipHead(680, p0);
+  al(p0); T('kérdés 8', 680, 128, { f: F.D, i: true, s: 44, w: 500, a: 'center', max: 1200 });
+  const sc = Math.min(70, 300 / K);
+  V8.set({ cx: 600, cy: 650, scale: sc, yaw: -32, pitch: 24, target: [K / 2, K / 2, K / 2] });
+  if (live) V8.drag({ rect: [0, 280, 900, 760] });
+  // a kis kocka a bal felső sarokban
+  const W0 = V8.unP(190, 330, 0), so = [W0[0] - e / 2, W0[1] - e / 2, W0[2] - e / 2];
+  const small = []; for (let z = 0; z < e; z++) for (let y = 0; y < e; y++) for (let x = 0; x < e; x++) small.push([x, y, z]);
+  V8.voxels(small, { a: GA * p0, at: so, fill: FR, lw: 2 });
+  const sp = V8.P([so[0] + e / 2, so[1], so[2]]);
+  al(p0); T('kis kocka', 190, Math.max(sp[1] + 60, 440), { s: 24, w: 700, f: F.B, a: 'center', c: MUT });
+  // a nagy kocka
+  const A0 = Math.max(S8.gt, S8.kt0) + .35, nb = k * k * k, B = blocks8(k, e);
+  if (!S8.guess) {
+    V8.draw(Mat3D.cube(K), { a: GA * p0 * .7, fill: null, hidden: 'dash', lw: 2.5 });
+  } else {
+    let land = 0;
+    V8.voxels(B.cells, { a: GA, lw: 1.6, fill: (q, i) => ((B.blk[i][1] + B.blk[i][2] + B.blk[i][3]) % 2 ? FT : FR), show: (i) => {
+      const [j, bx, by, bz] = B.blk[i], tj = A0 + j * FLY8 / nb, p = (st - tj) / DUR8;
+      if (p <= 0) return false; if (p >= 1) return null;
+      const s = smooth(p), d = [so[0] - bx * e, so[1] - by * e, so[2] - bz * e];
+      return { off: [d[0] * (1 - s), d[1] * (1 - s), d[2] * (1 - s) + Math.sin(Math.PI * s) * e * .3], alpha: 1 };
+    } });
+    for (let j = 0; j < nb; j++) if (st >= A0 + j * FLY8 / nb + DUR8) land++;
+    V8.draw(Mat3D.cube(K), { a: GA * .35, fill: null, hidden: 'none', lw: 2 });
+    CK.s8 = { land, nb, k, e };
+  }
+  const bp = V8.P([K / 2, 0, 0]);
+  al(p0); T('nagy kocka', bp[0], Math.min(bp[1] + 70, 1030), { s: 24, w: 700, f: F.B, a: 'center', c: MUT });
+  // tipp-sor
+  const done = S8.guess && st >= A0 + FLY8 + DUR8;
+  if (S8.guess) tipRow(TIPS8, 'tipp 8x', S8.guess, [430, 680, 930], 200, smooth((st - S8.gt) / .4), done && k === 2 ? true : done);
+  // táblázat
+  if (done) {
+    const ta = smooth((st - A0 - FLY8 - DUR8) / .5), A1 = 6 * e * e, V1_ = e * e * e;
+    const rows = [['él', e + ' cm → ' + K + ' cm', szor(k), INK], ['felszín', A1 + ' cm² → ' + A1 * k * k + ' cm²', szor(k * k), TEAL], ['térfogat', V1_ + ' cm³ → ' + V1_ * k * k * k + ' cm³', szor(k * k * k), RED]];
+    rows.forEach(([kk, val, fac, col], j) => {
+      const y = 330 + j * 150, a = ta * smooth((st - A0 - FLY8 - DUR8 - j * .3) / .4);
+      al(a); T(kk, 940, y, { s: 30, w: 700, f: F.B, b: 'middle' });
+      al(a); L.pill(fac, 1336, y, { s: 26, w: 700, f: F.B, a: 'right', c: col, bg: CARD, bd: col, bw: 2.5, pad: 12 });
+      al(a); MT(val, 940, y + 62, { s: 32, c: col, max: 400 });
+    });
+  }
+}
+
+/* ════════ 9. Összefoglalás ════════ */
+let V9 = [];
+const CX9 = [240, 680, 1120], TOP9 = [70, 560];
+const N9 = Mat3D.cuboidNet(1.2, .8, .6);
+N9.faces.forEach((f, i) => { f.col = COL5[i]; });
+function scene9(st) {
+  const p = (j) => smooth((st - .2 - j * .3) / .5);
+  const card = (j, kt, a) => {
+    const x = CX9[j % 3], y = TOP9[Math.floor(j / 3)];
+    c.save(); al(a); c.beginPath(); c.roundRect(x - 200, y, 400, 450, 18); c.fillStyle = CARD; c.fill(); c.strokeStyle = LINE; c.lineWidth = 2.5; c.stroke(); c.restore();
+    al(a); T(kt, x, y + 316, { f: F.D, s: 36, w: 600, a: 'center' });
+    return { x, y };
+  };
+  // 1 kocka
+  { const a = p(0), q = card(0, 'össz kocka', a);
+    V9[0].set({ cx: q.x, cy: q.y + 150, scale: 120, yaw: -32, pitch: 22, target: [.5, .5, .5] });
+    V9[0].draw(CUBE, { a: GA * a, fill: CARD, alpha: .6, hi: { edges: Object.fromEntries(CUBE.e.map((e, i) => [i, { c: TEAL, w: 4 }])) } });
+    CUBE.v.forEach((v, i) => V9[0].dot(v, { r: 7, c: RED, a: GA * a, hollow: i === 3 }));
+    al(a); L.tx(CUBE.v.length + ' ' + lab('csúcs') + ' · ' + CUBE.e.length + ' ' + lab('él') + ' · ' + CUBE.f.length + ' ' + lab('lap'), q.x, q.y + 372, { k: ['csúcs', 'él', 'lap'], s: 26, w: 600, f: F.B, a: 'center', c: MUT, max: 370 }); }
+  // 2 háló
+  { const a = p(1), q = card(1, 'össz háló', a), cs = Mat3D.cells(['.#..', '####', '.#..']);
+    Mat3D.grid2d(L, cs, q.x - 88, q.y + 216, 44, { a: GA * a, fill: FO, lw: 2.5 });
+    al(a); L.tx(KN('össz hálók', NCOUNT).s, q.x, q.y + 372, { k: 'össz hálók', s: 26, w: 600, f: F.B, a: 'center', c: MUT, max: 370 }); }
+  // 3 felszín
+  { const a = p(2), q = card(2, 'össz felszín', a);
+    V9[1].set({ cx: q.x, cy: q.y + 150, scale: 80, yaw: -24, pitch: 52, target: N9.box(.3).c });
+    V9[1].fold(N9, .3, { a: GA * a });
+    al(a); MT('`A` = 2 · (`ab` + `ac` + `bc`)', q.x, q.y + 370, { s: 28, a: 'center', c: INK });
+    al(a); T('össz felszín sor', q.x, q.y + 418, { s: 24, w: 600, f: F.B, a: 'center', c: MUT, max: 370 }); }
+  // 4 térfogat
+  { const a = p(3), q = card(3, 'össz térfogat', a);
+    V9[2].set({ cx: q.x, cy: q.y + 150, scale: 52, yaw: -32, pitch: 24, target: [1.5, 1, 1] });
+    V9[2].voxels(Mat3D.fillOrder(3, 2, 2), { a: GA * a, fill: FR, lw: 2 });
+    al(a); MT('`V` = `a` · `b` · `c`', q.x, q.y + 370, { s: 28, a: 'center', c: INK });
+    al(a); T('össz térfogat sor', q.x, q.y + 418, { s: 24, w: 600, f: F.B, a: 'center', c: MUT, max: 370 }); }
+  // 5 liter
+  { const a = p(4), q = card(4, 'össz liter', a);
+    V9[3].set({ cx: q.x, cy: q.y + 150, scale: 130, yaw: -34, pitch: 22, target: [.5, .5, .5] });
+    const bx = Mat3D.cube(1);
+    V9[3].draw(bx, { a: GA * a, fill: GLASS, alpha: .45, pass: 'back', skip: [1], hidden: 'solid', hiddenA: .45 });
+    V9[3].draw(Mat3D.cuboid(.98, .98, .98, { at: [.01, .01, 0] }), { a: GA * a, fill: MILK, alpha: .95, stroke: '#7d8aa3', lw: 1.5, hidden: 'none', shade: .12 });
+    V9[3].draw(bx, { a: GA * a, fill: GLASS, alpha: .14, pass: 'front', skip: [1], lw: 3 });
+    al(a); MT(lab('liter egyenlőség'), q.x, q.y + 372, { k: 'liter egyenlőség', s: 26, w: 700, a: 'center', c: RED, max: 370 }); }
+  // 6 kétszeres él
+  { const a = p(5), q = card(5, 'össz kétszeres', a);
+    V9[4].set({ cx: q.x + 20, cy: q.y + 160, scale: 62, yaw: -32, pitch: 24, target: [1, 1, 1] });
+    V9[4].voxels([[-2.2, .5, 0]], { a: GA * a, fill: FR, lw: 2 });
+    V9[4].voxels(Mat3D.fillOrder(2, 2, 2), { a: GA * a, fill: (cl) => ((cl[0] + cl[1] + cl[2]) % 2 ? FT : FR), lw: 2 });
+    al(a); L.tx(KN('össz szorzók', num('felszín szorzó'), num('térfogat szorzó')).s, q.x, q.y + 372, { k: 'össz szorzók', s: 24, w: 600, f: F.B, a: 'center', c: MUT, max: 370 }); }
+}
+
+const SCENES = [scene1, scene2, scene3, scene4, scene5, scene6, scene7, scene8, scene9];
+const CK = {};
+let NCOUNT = 11, HEXN = 35;
+
+/* ════════ ellenőrzések (QA: L.checks) ════════ */
+function checks() {
+  const outA = [], ok = (name, got, want, eps = 1e-6) => outA.push({ name, ok: Math.abs(got - want) <= eps, got, want });
+  const i = L.step;
+  if (i === 0 && CK.s1 && CK.s1.done) {
+    ok('1: megszámolt csúcsok = adat', CK.s1.nv, num('csúcsok száma')); ok('1: élek', CK.s1.ne, num('élek száma')); ok('1: lapok', CK.s1.nf, num('lapok száma'));
+    ok('1: lapátlók', CK.s1.nfd, num('lapátlók száma')); ok('1: testátlók', CK.s1.nsd, num('testátlók száma'));
+  }
+  if (i === 2 && CK.s3) {
+    const s = CK.s3.K.sol; ok('3: Euler: c − é + l = 2', s.v.length - s.e.length + s.f.length, 2);
+    ok('3: a háló lapjai = a test lapjai', CK.s3.K.N.faces.length, s.f.length);
+    const nc = Mat3D.netCheck(CK.s3.K.N); ok('3: a háló összezárul (nincs ütközés)', nc.clash.length, 0); ok('3: a háló összezárul (nincs rés)', nc.gaps, 0);
+  }
+  if (i === 3 && CK.s4) { const want = NET4.findIndex(() => false); void want; ok('4: a hajtogatás ítélete = ismert besorolás', +NETS4[S4.sel].chk.ok, +KNOWN4[S4.sel]); }
+  if (i === 4 && CK.s5) {
+    let s = 0; CK.s5.N.faces.forEach((f) => { let q = 0; f.poly.forEach((p, j) => { const r = f.poly[(j + 1) % f.poly.length]; q += p[0] * r[1] - r[0] * p[1]; }); s += Math.abs(q) / 2; });
+    ok('5: a háló területe = 2(ab + ac + bc)', s, CK.s5.A);
+  }
+  if (i === 5 && CK.s6 && CK.s6.full) ok('6: a dobozban lévő kockák = a · b · c', CK.s6.placed, S6.a * S6.b * S6.c);
+  if (i === 6 && CK.s7) { ok('7: (10 cm)³ = 1 l', CK.s7.Vl, 1); if (CK.s7.poured >= CK.s7.tej - 1e-9) ok('7: kifolyt = tej − 1 l', CK.s7.over, CK.s7.tej - CK.s7.Vl); }
+  if (i === 7 && CK.s8 && CK.s8.land === CK.s8.nb) ok('8: kis kockák száma = k³', CK.s8.nb, CK.s8.k ** 3);
+  return outA;
+}
+const KNOWN4 = [true, false, true, false, true, false, true, true, false, true];
+
+L = Lesson.create({
+  content: window.LESSON_CONTENT,
+  home: false,
+  resetCtx: true,
+  steps: [
+    { settle: 3,
+      enter() { reset1(); },
+      controls(L) { reset1(); TIPS1.forEach((k) => L.button(lab(k), () => guess1(k), k)); S1.row = L.controlsEl.lastElementChild; } },
+    { settle: 2.5,
+      enter() { reset2(); },
+      controls(L) { [['gomb elölről', 'front'], ['gomb felülről', 'top'], ['gomb jobbról', 'side'], ['gomb térben', 'free']].forEach(([k, m]) => L.button(lab(k), () => mode2(m), k)); } },
+    { settle: 4.2,
+      enter() { reset3(); if (S3.sld) S3.sld.set(0); },
+      controls(L) {
+        KINDS3.forEach((k) => L.button(lab('gomb ' + k), () => kind3(k), 'gomb ' + k));
+        S3.sld = L.slider({ label: lab('összehajtás'), k: 'összehajtás', min: 0, max: 100, step: 1, value: 0, format: (v) => v + ' %',
+          onInput: (v) => { S3.user = { from: fold3(L.st), to: v / 100, t0: L.st }; } });
+      } },
+    { settle: 1.5,
+      enter() { reset4(); },
+      controls(L) { L.button(lab('gomb lesz'), () => tip4('gomb lesz'), 'gomb lesz'); L.button(lab('gomb nem lesz'), () => tip4('gomb nem lesz'), 'gomb nem lesz');
+        L.button(lab('gomb következő'), () => select4((S4.sel + 1) % NETS4.length), 'gomb következő'); } },
+    { settle: 4.4,
+      enter() { reset5(); ['a', 'b', 'c'].forEach((k) => { if (L.sliders[k + ' csúszka']) L.sliders[k + ' csúszka'].set(S5[k]); }); },
+      controls(L) {
+        reset5();
+        ['a', 'b', 'c'].forEach((k) => L.slider({ label: lab(k + ' csúszka'), k: k + ' csúszka', min: 1, max: 5, step: 1, value: S5[k], format: (v) => v + ' cm',
+          onInput: (v) => { S5[k] = v; } }));
+      } },
+    { settle: 5.6,
+      enter() { reset6(); ['a', 'b', 'c'].forEach((k) => { if (L.sliders[k + ' csúszka']) L.sliders[k + ' csúszka'].set(S6[k]); }); },
+      controls(L) {
+        reset6();
+        ['a', 'b', 'c'].forEach((k) => L.slider({ label: lab(k + ' csúszka'), k: k + ' csúszka', min: 1, max: 5, step: 1, value: S6[k], format: (v) => v + ' cm',
+          onInput: (v) => { S6[k] = v; S6.t0 = L.st - .4; } }));
+      } },
+    { settle: 5.4,
+      enter() { reset7(); },
+      controls(L) { L.button(lab('öntés gomb'), () => pour7(), 'öntés gomb'); } },
+    { settle: 3,
+      enter() { reset8(); },
+      controls(L) { reset8(); S8.sld = null; TIPS8.forEach((k) => L.button(lab(k), () => guess8(k), k)); S8.row = L.controlsEl.lastElementChild; } },
+    { settle: 2.4 },
+  ],
+  onKey(e) {
+    const V = [V1, V2, V3, V4, null, V6, null, V8][L.step];
+    if (V) V.key(e);
+  },
+  init(Lx) {
+    L = Lx; c = L.ctx;
+    V1 = Mat3D.create(L, { cx: 520, cy: 600, scale: 300, target: [.5, .5, .5] });
+    V2 = Mat3D.create(L, { cx: 430, cy: 590, scale: 105, target: [1.5, 1, 1.5] });
+    V3 = Mat3D.create(L, {}); V4 = Mat3D.create(L, {}); V5 = Mat3D.create(L, {}); V5b = Mat3D.create(L, {});
+    V6 = Mat3D.create(L, {}); V6b = Mat3D.create(L, {}); V7 = Mat3D.create(L, {}); V8 = Mat3D.create(L, {});
+    V9 = [0, 1, 2, 3, 4].map(() => Mat3D.create(L, {}));
+    E7 = Math.round(dcm('kocka éle'));
+    C7 = []; for (let z = 0; z < E7; z++) for (let y = E7 - 1; y >= 0; y--) for (let x = 0; x < E7; x++) C7.push([x, y, z]);
+    reset1(); reset2(); reset3(); reset4(); reset5(); reset6(); reset7(); reset8();
+    // a .md eredményei ↔ a lecke számolása
+    MatText.check(L, 'csúcsok száma', CUBE.v.length); MatText.check(L, 'élek száma', CUBE.e.length); MatText.check(L, 'lapok száma', CUBE.f.length);
+    MatText.check(L, 'lapátlók száma', DG.face.length); MatText.check(L, 'testátlók száma', DG.space.length);
+    MatText.check(L, 'építmény kockái', BLD.length);
+    const hex = Mat3D.polyominoes(6); HEXN = hex.length; NCOUNT = hex.filter((cs) => Mat3D.netCheck(Mat3D.gridNet(cs)).ok).length;
+    MatText.check(L, 'hexominók száma', HEXN); MatText.check(L, 'kockahálók száma', NCOUNT);
+    const a = dcm('téglatest a'), b = dcm('téglatest b'), cc = dcm('téglatest c');
+    chk('téglatest felszíne', cm2(area5(a, b, cc))); chk('téglatest térfogata', cm3(a * b * cc));
+    chk('edény térfogata', cm3(E7 * E7 * E7));
+    chk('kifolyó tej', Math.max(0, L.dat('tej').base - cm3(E7 * E7 * E7)));
+    const e = dcm('kis kocka éle');
+    chk('kis felszín', cm2(6 * e * e)); chk('kis térfogat', cm3(e * e * e));
+    chk('nagy felszín', cm2(6 * 4 * e * e)); chk('nagy térfogat', cm3(8 * e * e * e));
+    MatText.check(L, 'felszín szorzó', (2 * e) ** 2 / e ** 2); MatText.check(L, 'térfogat szorzó', (2 * e) ** 3 / e ** 3);
+    L.checks = checks;
+  },
+  draw(Lx) {
+    L = Lx; c = L.ctx; GA = 1; background();
+    const sp = L.sp;
+    if (L.step >= 0) sT[L.step] = L.st;
+    for (let i = 0; i < SCENES.length; i++) {
+      const w = clamp(1 - Math.abs(sp - i) * 2); if (w <= .005) continue;
+      GA = w; c.save(); SCENES[i](sT[i] == null ? 0 : sT[i], L.step === i); c.restore();
+    }
+    c.globalAlpha = 1;
+  },
+});
+
+/* QA: szélső állapotok (tools/qa_lesson.py --states) – a set() után a QA az L.st-t a settle-re állítja */
+window.__qaStates = {
+  1: [{ name: 'szamlalas', set() { guess1('tipp 12'); S1.gt = -30; } },
+      { name: 'rossz-tipp', set() { guess1('tipp 6'); S1.gt = -30; } },
+      { name: 'elek-kozben', set() { guess1('tipp 8'); S1.gt = 3 - .45 - 8 * .16 - .25 - 6 * .15; } },
+      { name: 'forgatva', set() { guess1('tipp 12'); S1.gt = -30; V1.dyaw = 70; V1.dpitch = 40; } }],
+  2: [{ name: 'elol', set() { mode2('front'); S2.t0 = -30; } }, { name: 'felul', set() { mode2('top'); S2.t0 = -30; } },
+      { name: 'oldal', set() { mode2('side'); S2.t0 = -30; } }, { name: 'atmenet', set() { mode2('top'); S2.t0 = 2.5 - .5; } }],
+  3: [{ name: 'teglatest', set() { kind3('téglatest'); S3.a0 = -30; } }, { name: 'hasab', set() { kind3('hasáb'); S3.a0 = -30; } },
+      { name: 'gula', set() { kind3('gúla'); S3.a0 = -30; } }, { name: 'gula-felig', set() { kind3('gúla'); S3.user = { from: .5, to: .5, t0: -30 }; } },
+      { name: 'hasab-osszehajtva', set() { kind3('hasáb'); S3.user = { from: 1, to: 1, t0: -30 }; } }],
+  4: [{ name: 'kereszt-kocka', set() { select4(0); tip4('gomb lesz'); S4.t0 = -30; } },
+      { name: 'csik', set() { select4(1); tip4('gomb lesz'); S4.t0 = -30; } },
+      { name: 'teglalap', set() { select4(3); tip4('gomb nem lesz'); S4.t0 = -30; } },
+      { name: 'fesu', set() { select4(5); tip4('gomb lesz'); S4.t0 = -30; } },
+      { name: 'harom-harom', set() { select4(6); tip4('gomb nem lesz'); S4.t0 = -30; } },
+      { name: 'hajtas-kozben', set() { select4(2); tip4('gomb lesz'); S4.t0 = 1.5 - 1.3; } }],
+  5: [{ name: 'min', set() { ['a', 'b', 'c'].forEach((k) => { L.sliders[k + ' csúszka'].set(1, { fire: true }); }); } },
+      { name: 'max', set() { ['a', 'b', 'c'].forEach((k) => { L.sliders[k + ' csúszka'].set(5, { fire: true }); }); } },
+      { name: 'lapos', set() { L.sliders['a csúszka'].set(5, { fire: true }); L.sliders['b csúszka'].set(1, { fire: true }); L.sliders['c csúszka'].set(2, { fire: true }); } },
+      { name: 'kozben', set() { S5.a0 = 4.4 - 1.9; } }],
+  6: [{ name: 'min', set() { ['a', 'b', 'c'].forEach((k) => { L.sliders[k + ' csúszka'].set(1, { fire: true }); }); S6.t0 = -30; } },
+      { name: 'max', set() { ['a', 'b', 'c'].forEach((k) => { L.sliders[k + ' csúszka'].set(5, { fire: true }); }); S6.t0 = -30; } },
+      { name: 'feltoltes-kozben', set() { S6.t0 = 5.6 - .6 - FILL6 * .45; } }],
+  7: [{ name: 'ontes-utan', set() { pour7(); S7.p0 = -30; } },
+      { name: 'ontes-kozben', set() { pour7(); S7.p0 = 5.4 - .3 - 1.3; } },
+      { name: 'tulfolyik', set() { pour7(); S7.p0 = 5.4 - .3 - 3.0; } },
+      { name: 'kockak-kozben', set() { S7.p0 = null; S7.k0 = 5.4 - 2.9; } }],
+  8: [{ name: 'k2', set() { guess8('tipp 8x'); S8.gt = -30; } },
+      { name: 'rossz-tipp', set() { guess8('tipp 2x'); S8.gt = -30; } },
+      { name: 'k3', set() { guess8('tipp 4x'); S8.gt = -30; S8.sld.set(3, { fire: true }); S8.kt0 = -30; } },
+      { name: 'k4', set() { guess8('tipp 8x'); S8.gt = -30; S8.sld.set(4, { fire: true }); S8.kt0 = -30; } },
+      { name: 'repul', set() { guess8('tipp 8x'); S8.gt = 3 - .35 - 1.2; } }],
+};
+})();
+</script>
+</body>
+</html>
