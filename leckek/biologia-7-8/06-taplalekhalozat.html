@@ -1,0 +1,1138 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hány nyúl kell egy rókához? – táplálékhálózat, energiapiramis, körforgás — Biológia</title>
+<link rel="stylesheet" href="../../shared/lesson.css">
+<style>
+  .lp-text b { color: var(--ink); }
+  .lp-btn.on { background: var(--ink, #1c2440); color: #fffaf1; }
+</style>
+<!-- A lecke által várt tartalomkulcsok. A tools/build_lesson.py ez alapján ellenőrzi a .md-t. -->
+<script type="application/json" id="lesson-spec">
+{
+ "steps": 9,
+ "labels": {
+  "fű": 16, "tölgy": 16, "levéltetű": 16, "nyúl": 16, "egér": 16, "cinege": 16, "róka": 16, "héja": 16, "lebontók": 16,
+  "termelő": 16, "növényevő": 16, "ragadozó": 16, "csúcsragadozó": 16,
+  "termelők": 16, "növényevők": 16, "ragadozók": 16, "csúcsragadozók": 16,
+  "honnan tudjuk": null, "becslés": 16, "modell": 24, "hő": 10,
+  "kérdés 1": 50, "megeszi": 36, "nem így": 20, "energia útja": 44, "lánc gomb": 20,
+  "kérdés 2": 50, "tápláléka": 16, "fogyasztója": 16, "kattints": 30, "elhalt": 20,
+  "kérdés 3": 50, "év csúszka": 30, "évek": 12, "fűz tömege": 24, "föld kiírás": 24, "föld változás": 30,
+  "kezdet": 16, "dézsa": 20, "víz": 16, "honnan cím": 34, "víz rész": 12, "szárazanyag": 16,
+  "levegőből": 34, "vízből": 20, "talajból": 14, "egyenlet": 40, "fényenergia": 16, "fotoszintézis": 20,
+  "Helmont": 30, "Helmont szöveg": 34,
+  "kérdés 4": 50, "nap": 10, "levél": 12, "száz egység": 40, "beépül": 28, "elvész": 40, "cukor": 28,
+  "kérdés 5": 50, "hatékonyság csúszka": 30, "tovább": 12, "napfény": 16, "kJ": 14, "elszáll": 30,
+  "kérdés 6": 50, "log gomb": 24, "log skála": 16, "lin skála": 24, "egy rókához": 34, "róka egység": 24,
+  "nyúl egység": 24, "fű egység": 24, "láthatatlan": 20,
+  "kérdés 7": 50, "nézet gomb": 26, "anyag nézet": 34, "energia nézet": 34, "levegő": 14, "növények": 14,
+  "állatok": 14, "légzés": 14, "táplálék": 14, "ásványi anyag": 18, "légzés egyenlet": 40,
+  "kérdés 8": 50, "vissza gomb": 16, "yellowstone gomb": 22, "kivéve": 12, "több lesz": 16, "kevesebb lesz": 16,
+  "farkas": 16, "vapiti": 16, "fűz": 16, "hód": 16, "más ragadozók": 16, "yellowstone cím": 34,
+  "farkas ki": 34, "farkas vissza": 30, "vapiti cím": 30, "vapiti okok": 44, "vitatott": 20, "fűz kérdés": 24,
+  "összegzés cím": 40, "ö1": 32, "ö2": 32, "ö3": 32, "ö4": 32
+ },
+ "data": {
+  "fűz kezdeti tömege": {"unit": "kg", "min": 0.5, "max": 10},
+  "fűz végső tömege": {"unit": "kg", "min": 20, "max": 200},
+  "föld tömege": {"unit": "kg", "min": 20, "max": 300},
+  "föld fogyása": {"unit": "g", "min": 1, "max": 1000},
+  "kísérlet hossza": {"unit": "év", "min": 1, "max": 20, "int": true},
+  "közlés éve": {"unit": "", "min": 1600, "max": 1700, "int": true},
+  "fa víztartalma": {"unit": "%", "min": 20, "max": 80},
+  "levegőből származó rész": {"unit": "%", "min": 50, "max": 100},
+  "vízből származó rész": {"unit": "%", "min": 1, "max": 20},
+  "talajból származó rész": {"unit": "%", "min": 0.1, "max": 10},
+  "napfény hasznosítása": {"type": "range", "unit": "%", "min": 0.1, "max": 10},
+  "átadási hatékonyság": {"unit": "%", "min": 5, "max": 20},
+  "termelők energiája": {"unit": "kJ", "min": 100, "max": 1000000},
+  "farkasok eltűnése": {"unit": "", "min": 1850, "max": 1990, "int": true},
+  "visszatelepítés": {"unit": "", "min": 1990, "max": 2010, "int": true},
+  "visszatelepített farkasok": {"unit": "", "min": 1, "max": 100, "int": true},
+  "vapitik 1995-ben": {"unit": "", "min": 1000, "max": 50000},
+  "vapitik 2013-ban": {"unit": "", "min": 100, "max": 50000, "int": true},
+  "vapiti számlálás éve": {"unit": "", "min": 1996, "max": 2030, "int": true}
+ }
+}
+</script>
+</head>
+<body>
+<script src="06-taplalekhalozat.content.js"></script>
+<script src="../../shared/lesson.js"></script>
+<script>
+/* ══════════════════════════════════════════════════════════════════════════════════════════
+   KÖZÖS BIOLÓGIA-MODUL (pilot/biologia-7-8/terv.md, 4. fejezet). Referencialecke: 06-taplalekhalozat.
+   D · BioNet (hálózat, áramlás az éleken, kaszkád, piramis). Változtatás nélkül átemelhető.
+   ══════════════════════════════════════════════════════════════════════════════════════════ */
+/* ── MODUL: Hálózat (BioNet) · forrás: biologia-7-8/06-taplalekhalozat, 2026-11-24 ──
+   Csomópont–él rajz (táplálékhálózat, anyagkörforgás, bármilyen irányított gráf) ikonokkal,
+   kiemeléssel, kivett csomópontokkal; pöttyáram az éleken és lánc mentén („energia elszáll”);
+   kvalitatív kaszkád egy faj kivételére/betelepítésére; energia-/biomassza-piramis lin ↔ log
+   morffal. Minden mozgás ZÁRT KÉPLETBŐL jön (t → helyzet, seedelt hash), nincs képkockánkénti
+   összegzés: a QA, az ugrás és a visszalépés determinisztikus. Csak a Lesson motorra épül
+   (L.ctx-et a hívó adja c-ként, feliratok L.tx-szel, {s, k} párként – QA, review mód).
+   Fa-elrendezés (dendrogram) és halmazábra ↔ fa morf: a 04-torzsfa építi, ide, visszafelé
+   kompatibilis bővítésként (BioNet.tree); a csomópontrajz (ikon, felirat, kiemelés) innen jön.
+
+   const net = BioNet.create(L, {
+     nodes: [{id, x, y, r = 46, name: {s, k}, icon(c, x, y, s, n) (s: az ikon mérete px, ≈ 1,5 r),
+              side: 'right' | 'left' | 'below' | 'above' (felirat helye), level (szabad mező), bg, ring}],
+     edges: [{from, to, kind = 'eszik', w = 1 (súly a kaszkádhoz), bend = 0 (görbület, a hossz aránya,
+              + balra a from → to irányhoz képest), id = 'from>to', gap0 = 6, gap1 = 10 (rés a körtől)}],
+     styles: {fajta: {col, w, dash}}      // élfajták stílusa; alap: eszik (tinta 3 px), elhalt (barna
+   })                                      //   szaggatott), tápanyag (olív pontozott)
+   Az él iránya az ANYAG/ENERGIA iránya: from → to = „a from-ot megeszi a to” (táplálék → fogyasztó).
+   net.N[id] · net.nodes · net.E (élek: e.A, e.B csomópontok, e.P útvonal: {pts, cum, len})
+   net.move(id, x, y) – csomópont áthelyezése (az élek újraszámolódnak)
+   net.pt(e | id, u) → [x, y, dx, dy]       pont az él mentén (u ∈ [0, 1], a körök szélétől a széléig)
+   net.food(id, kinds?) → [id…] · net.eaters(id, kinds?) → [id…]     (kinds: élfajták, alap: ['eszik'])
+   net.levels(kinds?) → {id: táplálkozási szint}  (termelő 1; a többi 1 + a táplálékai szintjének átlaga)
+   net.hit(px, py, pad = 10) → id | null     melyik csomópontra kattintottak
+   net.draw({a = 1, s = 24 (feliratméret), kinds (mely élfajták), removed: [id…] | Set,
+             nodeA(n) → α, edgeA(e) → α, ring(n) → szín | null (kiemelő gyűrű), edgeCol(e) → szín | null,
+             edgeW(e) → px, halo: id (vastag tintagyűrű), labels = true, icons = true, arrows = true,
+             labelCol(n) → szín, labelBg = papírszín | null (felirat-alátét kikapcsolva)})
+   net.flow(c, {t, kinds, edge(e) → bool, rate = 2 | fn(e) (pötty/s), speed = 150 (px/s), r = 6,
+             col = arany | fn(e), stroke, a = 1, t0 = −∞ (ettől kezdve indulnak pöttyök), removed})
+             pöttyök az éleken (a kibocsátás egyenletes, a helyzet t-ből számolva)
+   net.cascade(id | [id…], {dir = −1 (kivétel) | +1 (betelepítés), depth = 3, decay = .6, kinds:
+             ['eszik', 'tápanyag'], donor: ['tápanyag', 'elhalt'] (csak alulról felfelé ható élfajták:
+             a fogyasztójukra hatnak, a forrásukra nem), removed}) → {v: {id: −1…1}, d: {id: hányadik lépésben}}
+             egy szint: a fogyasztó a táplálékai számával, a zsákmány a ragadozói számával arányos
+             (súlyozott) részt kap; szintenként decay-szel csillapodik; KVALITATÍV, nem előrejelzés
+   net.badges(res, {t = ∞ (a változás óta eltelt idő), dt = .7 (mp lépésenként), thr = .1, a = 1,
+             up = kékeszöld, down = cinóber, size = 1}) – ▲/▼ jelek a csomópontok jobb felső sarkán
+   BioNet.chain(c, {pts: [[x, y]…], rate (pötty/s), keep: p | [p…] (a j. ponton továbbmenés esélye),
+             t, t0 = −∞, seed = 1, speed = 150, r = 6, col, stroke, spread = 0 (oldalirányú szórás px),
+             heat: {col, dx = 1, dy = −.5, dist = 120, life = 1.8}, a = 1}) → [db…]
+             „energia-lánc”: a pötty a pontokon át halad; a j. pontnál keep[j] eséllyel megy tovább,
+             különben hő-pöttyként elszáll; az utolsó ponton keep eséllyel beépül (elhalványul).
+             Visszaad: hány pötty érkezett eddig az egyes pontokhoz (a lecke kiírhatja).
+   BioNet.puffs(c, {x, y, rate, t, t0, seed, col, dx = 0, dy = −1, dist = 90, life = 1.6, r = 6,
+             spread = 30, a = 1}) – egyenletesen felszálló pöttyök (hő, CO₂) egy pontból
+   BioNet.dot(c, x, y, r, col, stroke)       pötty (sötét körvonallal)
+   BioNet.arrow(c, x1, y1, x2, y2, {col, w = 3, head = 16, dash, bend = 0}) – nyíl (egyenes / ív)
+   BioNet.pyramid(L, {cx, y (az alsó sáv alja), W (legszélesebb), h (sávmagasság), gap = 8,
+             vals: [alulról felfelé], log = 0 (0 arányos … 1 log; morf), decades = vals.length,
+             min = 3 (px), u = 1 (felépülés 0 → 1, alulról), cols: [szín…], a = 1,
+             names: [{s, k}], nameX (ha megvan: a nevek jobbra igazítva ide), values = true,
+             fmt(v, i) → szöveg, s = 24, vk (az értékfelirat .md-kulcsa)}) → [{x, y, w, h}…]
+   BioNet.hash(i, j, k) → [0, 1) – determinisztikus „véletlen”
+   ──────────────────────────────────────────────────────────────────────────────────────────── */
+const BioNet = (() => {
+  'use strict';
+  const TAU = Math.PI * 2;
+  const COL = { ink: '#1c2440', mut: '#565d72', card: '#fffaf1', gold: '#f2b632', goldL: '#8f5a0c', heat: '#c8401c', teal: '#0a6f86', red: '#c8401c' };
+  const STY = { eszik: { col: COL.ink, w: 3 }, elhalt: { col: '#6b5a3e', w: 2.5, dash: [8, 7] }, tápanyag: { col: '#6b6a12', w: 2.5, dash: [3, 7] } };
+  const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+  const smooth = (t) => { t = clamp(t); return t * t * (3 - 2 * t); };
+  const hash = (i, j = 0, k = 0) => { let h = (i * 374761393 + j * 668265263 + k * 1274126177) | 0; h = Math.imul(h ^ (h >>> 13), 1274126177); h ^= h >>> 16; h = Math.imul(h ^ (h >>> 15), 2246822519); h ^= h >>> 13; return (h >>> 0) / 4294967296; };
+  function mkPath(pts) { const cum = [0]; for (let i = 1; i < pts.length; i++) cum.push(cum[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1])); return { pts, cum, len: cum[cum.length - 1] }; }
+  function along(P, u) {
+    const s = clamp(u) * P.len; let lo = 0, hi = P.cum.length - 1;
+    while (hi - lo > 1) { const m = (lo + hi) >> 1; if (P.cum[m] <= s) lo = m; else hi = m; }
+    const a = P.pts[lo], b = P.pts[hi], d = (P.cum[hi] - P.cum[lo]) || 1, t = (s - P.cum[lo]) / d;
+    let dx = b[0] - a[0], dy = b[1] - a[1]; const dl = Math.hypot(dx, dy) || 1;
+    return [a[0] + dx * t, a[1] + dy * t, dx / dl, dy / dl];
+  }
+  function bezPts(p0, p2, bend, n = 48) {
+    const dx = p2[0] - p0[0], dy = p2[1] - p0[1], len = Math.hypot(dx, dy) || 1;
+    const q = [(p0[0] + p2[0]) / 2 + dy / len * bend * len, (p0[1] + p2[1]) / 2 - dx / len * bend * len], out = [];
+    for (let i = 0; i <= n; i++) { const t = i / n, m = 1 - t; out.push([m * m * p0[0] + 2 * m * t * q[0] + t * t * p2[0], m * m * p0[1] + 2 * m * t * q[1] + t * t * p2[1]]); }
+    return out;
+  }
+  function head(c, x, y, dx, dy, size, col) {
+    c.beginPath(); c.moveTo(x, y); c.lineTo(x - dx * size - dy * size * .5, y - dy * size + dx * size * .5);
+    c.lineTo(x - dx * size + dy * size * .5, y - dy * size - dx * size * .5); c.closePath(); c.fillStyle = col; c.fill();
+  }
+  function dot(c, x, y, r, col, stroke) {
+    c.beginPath(); c.arc(x, y, Math.max(.5, r), 0, TAU); c.fillStyle = col; c.fill();
+    if (stroke) { c.lineWidth = Math.max(1, r * .28); c.strokeStyle = stroke; c.stroke(); }
+  }
+  function arrow(c, x1, y1, x2, y2, o = {}) {
+    const P = mkPath(o.bend ? bezPts([x1, y1], [x2, y2], o.bend, 32) : [[x1, y1], [x2, y2]]), hs = o.head || 16, col = o.col || COL.ink;
+    const e = along(P, Math.max(0, 1 - hs * .6 / P.len));
+    c.save(); c.lineCap = 'round'; c.lineJoin = 'round'; c.strokeStyle = col; c.lineWidth = o.w || 3; c.setLineDash(o.dash || []);
+    c.beginPath(); P.pts.forEach((p, i) => { if (P.cum[i] > P.len - hs * .6) return; i ? c.lineTo(p[0], p[1]) : c.moveTo(p[0], p[1]); }); c.lineTo(e[0], e[1]); c.stroke();
+    c.setLineDash([]); const z = along(P, 1); head(c, z[0], z[1], z[2], z[3], hs, col); c.restore();
+  }
+
+  function create(L, o) {
+    const net = { L, N: {}, nodes: [], E: [] };
+    const sty = Object.assign({}, STY, o.styles || {});
+    for (const n0 of o.nodes) { const n = Object.assign({ r: 46, side: 'right' }, n0); net.nodes.push(n); net.N[n.id] = n; }
+    for (const e0 of o.edges) { const e = Object.assign({ kind: 'eszik', w: 1, bend: 0, gap0: 6, gap1: 10 }, e0); e.id = e.id || e.from + '>' + e.to; net.E.push(e); }
+    function geom(e) {
+      e.A = net.N[e.from]; e.B = net.N[e.to];
+      const raw = bezPts([e.A.x, e.A.y], [e.B.x, e.B.y], e.bend, 64);
+      const r0 = e.A.r + e.gap0, r1 = e.B.r + e.gap1;
+      let i0 = 0, i1 = raw.length - 1;
+      while (i0 < i1 && Math.hypot(raw[i0][0] - e.A.x, raw[i0][1] - e.A.y) < r0) i0++;
+      while (i1 > i0 && Math.hypot(raw[i1][0] - e.B.x, raw[i1][1] - e.B.y) < r1) i1--;
+      e.P = mkPath(raw.slice(i0, i1 + 1).length > 1 ? raw.slice(i0, i1 + 1) : [raw[0], raw[raw.length - 1]]);
+    }
+    net.E.forEach(geom);
+    const byId = (e) => (typeof e === 'string' ? net.E.find((x) => x.id === e) : e);
+    const ks = (kinds) => kinds || ['eszik'];
+    const rmSet = (r) => (r instanceof Set ? r : new Set(r || []));
+    net.move = (id, x, y) => { const n = net.N[id]; n.x = x; n.y = y; net.E.forEach((e) => { if (e.from === id || e.to === id) geom(e); }); };
+    net.pt = (e, u) => along(byId(e).P, u);
+    net.food = (id, kinds) => net.E.filter((e) => e.to === id && ks(kinds).includes(e.kind)).map((e) => e.from);
+    net.eaters = (id, kinds) => net.E.filter((e) => e.from === id && ks(kinds).includes(e.kind)).map((e) => e.to);
+    net.levels = (kinds) => {
+      const lv = {}; net.nodes.forEach((n) => { lv[n.id] = 1; });
+      for (let it = 0; it < 30; it++) net.nodes.forEach((n) => { const f = net.food(n.id, kinds); if (f.length) lv[n.id] = 1 + f.reduce((s, x) => s + lv[x], 0) / f.length; });
+      return lv;
+    };
+    net.hit = (px, py, pad = 10) => { let best = null, bd = 1e9; for (const n of net.nodes) { const d = Math.hypot(px - n.x, py - n.y); if (d <= n.r + pad && d < bd) { bd = d; best = n.id; } } return best; };
+
+    net.draw = (q = {}) => {
+      const c = L.ctx, A = q.a == null ? 1 : q.a, rm = rmSet(q.removed), base = c.globalAlpha;
+      const kinds = q.kinds || Object.keys(sty);
+      c.save(); c.lineCap = 'round'; c.lineJoin = 'round';
+      // élek
+      for (const e of net.E) {
+        if (!kinds.includes(e.kind)) continue;
+        const st = sty[e.kind] || STY.eszik, gone = rm.has(e.from) || rm.has(e.to);
+        let ea = (q.edgeA ? q.edgeA(e) : 1) * (gone ? .15 : 1); if (ea <= .003) continue;
+        const col = (q.edgeCol && q.edgeCol(e)) || st.col, w = (q.edgeW && q.edgeW(e)) || st.w;
+        c.globalAlpha = base * A * ea; c.strokeStyle = col; c.lineWidth = w; c.setLineDash(gone ? [4, 8] : (st.dash || []));
+        const P = e.P, hs = 10 + w * 2.2, cut = q.arrows === false ? 0 : hs * .7;
+        c.beginPath(); let started = false;
+        for (let i = 0; i < P.pts.length; i++) { if (P.cum[i] > P.len - cut) break; const p = P.pts[i]; started ? c.lineTo(p[0], p[1]) : c.moveTo(p[0], p[1]); started = true; }
+        const z0 = along(P, Math.max(0, 1 - cut / P.len)); c.lineTo(z0[0], z0[1]); c.stroke(); c.setLineDash([]);
+        if (q.arrows !== false) { const z = along(P, 1); head(c, z[0], z[1], z[2], z[3], hs, col); }
+      }
+      // csomópontok
+      for (const n of net.nodes) {
+        const gone = rm.has(n.id); let na = (q.nodeA ? q.nodeA(n) : 1); if (na <= .003) continue;
+        c.globalAlpha = base * A * na;
+        if (q.halo === n.id) { c.beginPath(); c.arc(n.x, n.y, n.r + 9, 0, TAU); c.strokeStyle = COL.ink; c.lineWidth = 5; c.stroke(); }
+        c.beginPath(); c.arc(n.x, n.y, n.r, 0, TAU); c.fillStyle = n.bg || COL.card; c.fill();
+        const ring = (q.ring && q.ring(n)) || null;
+        c.lineWidth = ring ? 5 : 2.5; c.strokeStyle = ring || n.ring || 'rgba(28,36,64,.45)'; c.stroke();
+        if (q.icons !== false && n.icon) {
+          c.save(); c.beginPath(); c.arc(n.x, n.y, n.r - 2, 0, TAU); c.clip();
+          c.globalAlpha = base * A * na * (gone ? .35 : 1); n.icon(c, n.x, n.y, n.r * 1.5, n); c.restore();
+        }
+        if (gone) {
+          c.globalAlpha = base * A * na; c.strokeStyle = COL.red; c.lineWidth = 6; c.lineCap = 'round';
+          const d = n.r * .55; c.beginPath(); c.moveTo(n.x - d, n.y - d); c.lineTo(n.x + d, n.y + d); c.moveTo(n.x + d, n.y - d); c.lineTo(n.x - d, n.y + d); c.stroke();
+        }
+      }
+      // feliratok
+      if (q.labels !== false) for (const n of net.nodes) {
+        if (!n.name) continue; const na = (q.nodeA ? q.nodeA(n) : 1); if (na <= .05) continue;
+        c.globalAlpha = base * A * na * (rm.has(n.id) ? .5 : 1);
+        const s = q.s || 24, o2 = { k: n.name.k, s, w: 650, f: L.fonts.B, c: (q.labelCol && q.labelCol(n)) || COL.ink };
+        const gp = q.halo === n.id ? 22 : 14;
+        let lx = n.x + n.r + gp, ly = n.y + s * .33, la = 'left';
+        if (n.side === 'left') { lx = n.x - n.r - gp; la = 'right'; }
+        else if (n.side === 'below') { lx = n.x; ly = n.y + n.r + s * .5 + gp; la = 'center'; }
+        else if (n.side === 'above') { lx = n.x; ly = n.y - n.r - gp; la = 'center'; }
+        o2.a = la;
+        if (q.labelBg !== null) {                     // papírszínű alátét: az átfutó élek ne zavarják a feliratot
+          const w = L.measure(n.name.s, o2).w + 12, x0 = la === 'center' ? lx - w / 2 : la === 'right' ? lx - w + 6 : lx - 6;
+          c.fillStyle = q.labelBg || 'rgba(247,241,229,.82)'; c.beginPath(); c.roundRect(x0, ly - s * .95, w, s * 1.3, 8); c.fill();
+        }
+        L.tx(n.name.s, lx, ly, o2);
+      }
+      c.restore(); c.globalAlpha = base;
+    };
+
+    net.flow = (c, q = {}) => {
+      const t = q.t || 0, t0 = q.t0 == null ? -Infinity : q.t0, sp = q.speed || 150, r = q.r || 6, rm = rmSet(q.removed), A = q.a == null ? 1 : q.a;
+      const kinds = q.kinds || ['eszik'], base = c.globalAlpha;
+      for (const e of net.E) {
+        if (!kinds.includes(e.kind) || rm.has(e.from) || rm.has(e.to)) continue;
+        if (q.edge && !q.edge(e)) continue;
+        const R = typeof q.rate === 'function' ? q.rate(e) : (q.rate || 2); if (!(R > 0)) continue;
+        const T = e.P.len / sp, col = typeof q.col === 'function' ? q.col(e) : (q.col || COL.gold);
+        const k0 = Math.ceil(Math.max((t - T) * R, t0 * R - 1e-9)), k1 = Math.floor(t * R);
+        for (let k = k0; k <= k1; k++) {
+          const u = (t - k / R) / T; if (u < 0 || u > 1) continue;
+          const p = along(e.P, u); c.globalAlpha = base * A * clamp(Math.min(u, 1 - u) * 10);
+          dot(c, p[0], p[1], r, col, q.stroke === undefined ? COL.goldL : q.stroke);
+        }
+      }
+      c.globalAlpha = base;
+    };
+
+    net.cascade = (ids, q = {}) => {
+      const dir = q.dir || -1, depth = q.depth || 3, decay = q.decay == null ? .6 : q.decay, kinds = q.kinds || ['eszik', 'tápanyag'];
+      const donor = q.donor || ['tápanyag', 'elhalt'];
+      const src = [].concat(ids), rm = new Set([].concat(q.removed || [], dir < 0 ? src : []));
+      const v = {}, d = {}, wsum = (arr) => arr.reduce((s, e) => s + e.w, 0) || 1;
+      let front = src.map((id) => [id, dir]);
+      for (let lvl = 1; lvl <= depth && front.length; lvl++) {
+        const next = {}, f = Math.pow(decay, lvl - 1);
+        for (const [id, val] of front) {
+          for (const e of net.E) {
+            if (!kinds.includes(e.kind)) continue;
+            if (e.to === id && !donor.includes(e.kind) && !rm.has(e.from) && !src.includes(e.from)) {   // a táplálékára: fordított hatás
+              const preds = net.E.filter((x) => x.from === e.from && kinds.includes(x.kind) && !donor.includes(x.kind) && !rm.has(x.to));
+              const dv = -val * e.w / wsum(preds.concat(rm.has(id) ? [e] : [])); next[e.from] = (next[e.from] || 0) + dv;
+            }
+            if (e.from === id && !rm.has(e.to) && !src.includes(e.to)) {            // a fogyasztójára: azonos irány
+              const foods = net.E.filter((x) => x.to === e.to && kinds.includes(x.kind));
+              const dv = val * e.w / wsum(foods); next[e.to] = (next[e.to] || 0) + dv;
+            }
+          }
+        }
+        front = [];
+        for (const id in next) { const dv = next[id] * f; v[id] = (v[id] || 0) + dv; if (d[id] == null && Math.abs(dv) > 1e-6) d[id] = lvl; front.push([id, next[id]]); }
+      }
+      for (const id in v) v[id] = clamp(v[id], -1, 1);
+      return { v, d };
+    };
+
+    net.badges = (res, q = {}) => {
+      const c = L.ctx, t = q.t == null ? Infinity : q.t, dt = q.dt || .7, thr = q.thr == null ? .1 : q.thr, A = q.a == null ? 1 : q.a, base = c.globalAlpha;
+      for (const id in res.v) {
+        const val = res.v[id], n = net.N[id]; if (!n || Math.abs(val) < thr) continue;
+        const ap = smooth((t - (res.d[id] - 1) * dt) / .45); if (ap <= 0) continue;
+        const m = Math.abs(val), sz = (14 + 14 * Math.sqrt(m)) * (q.size || 1) * (.6 + .4 * ap), up = val > 0;
+        const x = n.x + n.r * .78, y = n.y - n.r * .78;
+        c.globalAlpha = base * A * ap;
+        c.beginPath(); c.arc(x, y, sz * .95, 0, TAU); c.fillStyle = COL.card; c.fill();
+        c.lineWidth = 3; c.strokeStyle = up ? (q.up || COL.teal) : (q.down || COL.red); c.stroke();
+        c.beginPath();
+        if (up) { c.moveTo(x, y - sz * .55); c.lineTo(x + sz * .55, y + sz * .4); c.lineTo(x - sz * .55, y + sz * .4); }
+        else { c.moveTo(x, y + sz * .55); c.lineTo(x + sz * .55, y - sz * .4); c.lineTo(x - sz * .55, y - sz * .4); }
+        c.closePath(); c.fillStyle = up ? (q.up || COL.teal) : (q.down || COL.red); c.fill();
+      }
+      c.globalAlpha = base;
+    };
+    return net;
+  }
+
+  function chain(c, q) {
+    const pts = q.pts, n = pts.length, R = q.rate, t = q.t, t0 = q.t0 == null ? -Infinity : q.t0, sp = q.speed || 150, seed = q.seed || 1;
+    const keep = (j) => (Array.isArray(q.keep) ? q.keep[j] : q.keep);
+    const H = Object.assign({ col: COL.heat, dx: 1, dy: -.5, dist: 120, life: 1.8 }, q.heat || {});
+    const seg = []; let Ttot = 0;
+    for (let j = 0; j < n - 1; j++) { const L0 = Math.hypot(pts[j + 1][0] - pts[j][0], pts[j + 1][1] - pts[j][1]); seg.push(L0 / sp); Ttot += L0 / sp; }
+    const r = q.r || 6, base = c.globalAlpha, A = q.a == null ? 1 : q.a, arrived = new Array(n).fill(0), hl = Math.hypot(H.dx, H.dy) || 1;
+    const k0 = Math.ceil(Math.max((t - Ttot - H.life - .6) * R, t0 * R - 1e-9)), k1 = Math.floor(t * R);
+    const kA = Math.ceil(t0 * R - 1e-9);
+    for (let k = Math.min(k0, isFinite(kA) ? kA : k0); k <= k1; k++) {
+      let age = t - k / R, j = 0; const off = ((q.spread || 0) * (hash(k, 7, seed) - .5));
+      const draw = k >= k0;
+      arrived[0]++;
+      while (true) {
+        if (j >= n - 1) {                       // az utolsó ponton: beépül vagy elszáll
+          const pass = hash(k, j, seed) < keep(j);
+          if (pass) { if (draw && age < .6) { c.globalAlpha = base * A * (1 - age / .6); dot(c, pts[j][0] + off * .3, pts[j][1], r * (1 - age / .6 * .5), q.col || COL.gold, q.stroke === undefined ? COL.goldL : q.stroke); } }
+          else if (draw && age < H.life) heatDot(age);
+          break;
+        }
+        if (age < seg[j]) {                     // úton
+          if (draw) {
+            const u = age / seg[j], a = pts[j], b = pts[j + 1], dx = b[0] - a[0], dy = b[1] - a[1], dl = Math.hypot(dx, dy) || 1;
+            c.globalAlpha = base * A * clamp(Math.min(u * 12, 1));
+            dot(c, a[0] + dx * u - dy / dl * off, a[1] + dy * u + dx / dl * off, r, q.col || COL.gold, q.stroke === undefined ? COL.goldL : q.stroke);
+          }
+          break;
+        }
+        age -= seg[j]; j++; arrived[j]++;
+        if (j < n - 1 && hash(k, j, seed) >= keep(j)) { if (draw && age < H.life) heatDot(age); break; }
+      }
+      function heatDot(ag) {
+        const e = 1 - Math.pow(1 - ag / H.life, 2), wob = Math.sin(ag * 5 + k) * 8 * e;
+        const x = pts[j][0] + H.dx / hl * H.dist * e - H.dy / hl * (wob + off * .5), y = pts[j][1] + H.dy / hl * H.dist * e + H.dx / hl * (wob + off * .5);
+        c.globalAlpha = base * A * (1 - ag / H.life) * .9; dot(c, x, y, r * .85, H.col, null);
+      }
+    }
+    c.globalAlpha = base;
+    return arrived;
+  }
+
+  function puffs(c, q) {
+    const R = q.rate, t = q.t, t0 = q.t0 == null ? -Infinity : q.t0, life = q.life || 1.6, dist = q.dist || 90, seed = q.seed || 3;
+    const dx = q.dx || 0, dy = q.dy == null ? -1 : q.dy, hl = Math.hypot(dx, dy) || 1, sp = q.spread == null ? 30 : q.spread, base = c.globalAlpha, A = q.a == null ? 1 : q.a;
+    const k0 = Math.ceil(Math.max((t - life) * R, t0 * R - 1e-9)), k1 = Math.floor(t * R);
+    for (let k = k0; k <= k1; k++) {
+      const ag = t - k / R; if (ag < 0 || ag > life) continue;
+      const e = 1 - Math.pow(1 - ag / life, 2), side = (hash(k, 3, seed) - .5) * sp + Math.sin(ag * 4 + k) * 6;
+      const x = q.x + dx / hl * dist * e - dy / hl * side, y = q.y + dy / hl * dist * e + dx / hl * side;
+      c.globalAlpha = base * A * Math.min(1, ag * 6) * (1 - ag / life); dot(c, x, y, (q.r || 6), q.col || COL.heat, q.stroke || null);
+    }
+    c.globalAlpha = base;
+  }
+
+  function pyramid(L, q) {
+    const c = L.ctx, vals = q.vals, n = vals.length, h = q.h, gap = q.gap == null ? 8 : q.gap, vmax = Math.max(...vals);
+    const dec = q.decades || n, lg = clamp(q.log || 0), u = q.u == null ? 1 : q.u, A = q.a == null ? 1 : q.a, base = c.globalAlpha, out = [];
+    for (let i = 0; i < n; i++) {
+      const gi = smooth(u * n - i); const wl = q.W * vals[i] / vmax, wg = q.W * clamp(1 + Math.log10(vals[i] / vmax) / dec, 0, 1);
+      const w = Math.max(q.min == null ? 3 : q.min, (wl + (wg - wl) * lg) * gi), y = q.y - (i + 1) * h - i * gap;
+      const box = { x: q.cx - w / 2, y, w, h }; out.push(box);
+      if (gi <= 0) continue;
+      c.globalAlpha = base * A * Math.min(1, gi * 2);
+      const col = (q.cols && q.cols[i]) || COL.gold;
+      c.beginPath(); c.roundRect(box.x, y, w, h, Math.min(8, w / 2)); c.fillStyle = col; c.fill();
+      c.lineWidth = 2.5; c.strokeStyle = COL.ink; c.stroke();
+      const s = q.s || 24;
+      if (q.names && q.names[i]) {
+        if (q.nameX != null) L.tx(q.names[i].s, q.nameX, y + h / 2 + s * .35, { k: q.names[i].k, s, w: 650, f: L.fonts.B, a: 'right', c: COL.ink });
+      }
+      if (q.values !== false) L.tx(q.fmt ? q.fmt(vals[i], i) : String(vals[i]), q.cx + w / 2 + 16, y + h / 2 + s * .35, { k: q.vk, s, w: 700, f: L.fonts.M, c: COL.ink });
+    }
+    c.globalAlpha = base;
+    return out;
+  }
+
+  return { create, chain, puffs, pyramid, dot, arrow, hash, COL, STY };
+})();
+/* ── MODUL VÉGE ── */
+</script>
+<script>
+/* ══════════════════════════════ A LECKE KÓDJA ══════════════════════════════ */
+(function () {
+'use strict';
+const U = Lesson.U, { clamp, lerp, smooth, out, TAU } = U, fmt = U.fmt;
+const F = Lesson.FONTS;
+const INK = '#1c2440', MUT = '#565d72', RED = '#c8401c', TEAL = '#0a6f86', GOOD = '#1d7a45', BAD = '#b3261e',
+  CARD = '#fffaf1', LINE = 'rgba(28,36,64,.16)', OCHRE = '#8f5a0c', BROWN = '#6b5a3e';
+const GREEN = '#3f7a26', LEAF = '#6f9e3c', LEAF_D = '#2f5a1a', GOLD = '#f2b632', GOLD_D = '#8f5a0c', CARBON = '#565d72';
+const LVCOL = [GREEN, OCHRE, TEAL, RED];
+let L, c, GA = 1;
+const al = (a = 1) => { c.globalAlpha = GA * clamp(a); };
+const lab = (k) => L.lab(k), num = (k) => L.num(k), dat = (k) => L.dat(k);
+const T = (k, x, y, o = {}) => L.tx(lab(k), x, y, Object.assign({ k }, o));
+const H = (k, v) => lab(k).replace('#', v);
+const TH = (k, v, x, y, o = {}) => L.tx(H(k, v), x, y, Object.assign({ k }, o));
+const nm = (k) => ({ s: lab(k), k });
+const rr = (x, y, w, h, r) => { c.beginPath(); c.roundRect(x, y, w, h, r); };
+const card = (x, y, w, h, o = {}) => { rr(x, y, w, h, o.r || 18); c.fillStyle = o.bg || CARD; c.fill(); c.strokeStyle = o.bd || LINE; c.lineWidth = o.bw || 2; c.stroke(); };
+const disc = (x, y, r, col) => { c.beginPath(); c.arc(x, y, Math.max(0, r), 0, TAU); c.fillStyle = col; c.fill(); };
+const hash = BioNet.hash;
+function stamp(k, x, y, o = {}) { return L.pill(lab(k), x, y, Object.assign({ k, s: 22, w: 600, ls: '0.06em', bg: CARD, bd: MUT, c: MUT, r: 8, pad: 10 }, o)); }
+const title = (k, o = {}) => T(k, 60, 82, Object.assign({ f: F.D, s: 42, w: 600 }, o));
+const effP = () => S56.eff / 100;
+
+function background() {
+  c.globalAlpha = 1;
+  const g = c.createRadialGradient(680, 480, 100, 680, 540, 1300); g.addColorStop(0, '#fbf6ec'); g.addColorStop(1, '#efe6d6');
+  c.fillStyle = g; c.fillRect(0, 0, 1920, 1080);
+  c.strokeStyle = 'rgba(28,36,64,.045)'; c.lineWidth = 1; c.beginPath();
+  for (let x = 0; x <= 1920; x += 40) { c.moveTo(x + .5, 0); c.lineTo(x + .5, 1080); }
+  for (let y = 0; y <= 1080; y += 40) { c.moveTo(0, y + .5); c.lineTo(1920, y + .5); }
+  c.stroke();
+}
+
+/* ════════════ ikonok: icon(c, x, y, s) – s ≈ az ikon szélessége px-ben ════════════ */
+function withT(x, y, s, fn) { c.save(); c.translate(x, y); c.scale(s / 100, s / 100); c.lineJoin = 'round'; c.lineCap = 'round'; fn(); c.restore(); }
+function shape(fill, stroke, w = 3) { if (fill) { c.fillStyle = fill; c.fill(); } if (stroke) { c.strokeStyle = stroke; c.lineWidth = w; c.stroke(); } }
+const IC = {
+  fű(cc, x, y, s) { withT(x, y, s, () => {
+    for (let i = -4; i <= 4; i++) { c.beginPath(); c.moveTo(i * 6, 40); c.quadraticCurveTo(i * 9, 0, i * 13 + (i % 2 ? 6 : -4), -38 + Math.abs(i) * 5); c.strokeStyle = i % 2 ? LEAF : GREEN; c.lineWidth = 6; c.stroke(); }
+    c.beginPath(); c.moveTo(-34, 42); c.lineTo(34, 42); c.strokeStyle = BROWN; c.lineWidth = 5; c.stroke();
+  }); },
+  tölgy(cc, x, y, s) { withT(x, y, s, () => {
+    c.beginPath(); c.moveTo(-7, 44); c.lineTo(-5, 4); c.lineTo(5, 4); c.lineTo(7, 44); c.closePath(); shape('#8a6a44', BROWN, 3);
+    for (const [cx, cy, r] of [[-20, -8, 20], [18, -10, 21], [0, -26, 24], [-26, -28, 15], [26, -30, 15]]) { c.beginPath(); c.arc(cx, cy, r, 0, TAU); shape(LEAF, null); }
+    c.beginPath(); c.arc(0, -16, 34, Math.PI * .95, Math.PI * 2.05); c.strokeStyle = LEAF_D; c.lineWidth = 3; c.stroke();
+    c.beginPath(); c.ellipse(24, 18, 7, 10, 0, 0, TAU); shape('#b98a3e', BROWN, 2.5); c.beginPath(); c.ellipse(24, 10, 9, 5, 0, Math.PI, TAU); shape('#7a5a33', BROWN, 2.5);
+  }); },
+  levéltetű(cc, x, y, s) { withT(x, y, s, () => {
+    c.strokeStyle = LEAF_D; c.lineWidth = 3;
+    for (const sx of [-1, 1]) for (let i = 0; i < 3; i++) { c.beginPath(); c.moveTo(sx * 10, -4 + i * 10); c.lineTo(sx * 28, 4 + i * 12); c.lineTo(sx * 32, 14 + i * 12); c.stroke(); }
+    c.beginPath(); c.moveTo(-6, -26); c.quadraticCurveTo(-20, -44, -30, -40); c.moveTo(6, -26); c.quadraticCurveTo(20, -44, 30, -40); c.stroke();
+    c.beginPath(); c.ellipse(0, 8, 20, 28, 0, 0, TAU); shape('#8fc04a', LEAF_D, 3);
+    c.beginPath(); c.arc(0, -24, 10, 0, TAU); shape('#7aab3a', LEAF_D, 3);
+    c.beginPath(); c.moveTo(-8, 28); c.lineTo(-12, 38); c.moveTo(8, 28); c.lineTo(12, 38); c.lineWidth = 4; c.stroke();
+  }); },
+  nyúl(cc, x, y, s) { withT(x, y, s, () => {
+    const col = '#a9845a', ln = '#4a3a28';
+    c.beginPath(); c.ellipse(18, -36, 6, 22, .25, 0, TAU); shape(col, ln, 3); c.beginPath(); c.ellipse(28, -34, 6, 22, .5, 0, TAU); shape(col, ln, 3);
+    c.beginPath(); c.ellipse(-8, 8, 34, 22, 0, 0, TAU); shape(col, ln, 3);
+    c.beginPath(); c.ellipse(24, -10, 15, 13, 0, 0, TAU); shape(col, ln, 3);
+    c.beginPath(); c.ellipse(-12, 28, 22, 6, 0, 0, TAU); shape(col, ln, 3);
+    c.beginPath(); c.arc(-42, 2, 7, 0, TAU); shape('#f4efe4', ln, 2.5);
+    disc(29, -13, 2.6, ln);
+  }); },
+  egér(cc, x, y, s) { withT(x, y, s, () => {
+    const col = '#9b7b5c', ln = '#3e3326';
+    c.beginPath(); c.moveTo(-26, 12); c.bezierCurveTo(-50, 20, -46, 40, -24, 36); c.strokeStyle = ln; c.lineWidth = 3; c.stroke();
+    c.beginPath(); c.ellipse(-2, 8, 28, 18, 0, 0, TAU); shape(col, ln, 3);
+    c.beginPath(); c.moveTo(14, -6); c.quadraticCurveTo(40, 0, 42, 10); c.quadraticCurveTo(30, 18, 18, 16); shape(col, ln, 3);
+    c.beginPath(); c.arc(14, -12, 12, 0, TAU); shape('#c9a888', ln, 3);
+    disc(28, 3, 2.6, ln); disc(42, 10, 2.5, '#5a2e24');
+  }); },
+  cinege(cc, x, y, s) { withT(x, y, s, () => {
+    const ln = '#1c2440';
+    c.beginPath(); c.moveTo(-30, 10); c.lineTo(-48, 24); c.lineTo(-40, 6); c.closePath(); shape('#5c6f86', ln, 2.5);
+    c.beginPath(); c.ellipse(-2, 6, 30, 24, -.15, 0, TAU); shape('#f2cf3c', ln, 3);
+    c.beginPath(); c.ellipse(-12, 0, 22, 14, -.3, Math.PI * .9, Math.PI * 2.05); shape('#5c7d6a', ln, 2.5);
+    c.beginPath(); c.moveTo(0, 30); c.lineTo(6, 0); c.lineWidth = 7; c.strokeStyle = '#1c2440'; c.stroke();
+    c.beginPath(); c.arc(16, -18, 16, 0, TAU); shape('#1c2440', ln, 2);
+    c.beginPath(); c.ellipse(18, -14, 8, 6, 0, 0, TAU); shape('#ffffff', null);
+    c.beginPath(); c.moveTo(30, -20); c.lineTo(40, -17); c.lineTo(30, -14); shape('#1c2440', null);
+    disc(22, -22, 2.4, '#f2f2f2');
+    c.beginPath(); c.moveTo(-4, 30); c.lineTo(-6, 40); c.moveTo(6, 30); c.lineTo(8, 40); c.strokeStyle = '#6b5a3e'; c.lineWidth = 3; c.stroke();
+  }); },
+  róka(cc, x, y, s) { withT(x, y, s, () => {
+    const col = '#d0702a', ln = '#5a2e14';
+    c.beginPath(); c.moveTo(-28, 0); c.quadraticCurveTo(-58, -6, -54, 24); c.quadraticCurveTo(-40, 26, -26, 12); shape(col, ln, 3);
+    c.beginPath(); c.arc(-53, 18, 6, 0, TAU); shape('#f4efe4', null);
+    for (const lx of [-20, -8, 12, 22]) { c.beginPath(); c.moveTo(lx, 10); c.lineTo(lx, 34); c.strokeStyle = ln; c.lineWidth = 7; c.stroke(); }
+    c.beginPath(); c.ellipse(0, 4, 30, 15, 0, 0, TAU); shape(col, ln, 3);
+    c.beginPath(); c.moveTo(22, -6); c.lineTo(26, -34); c.lineTo(34, -18); c.lineTo(42, -32); c.lineTo(44, -10); c.lineTo(58, -2); c.lineTo(40, 6); c.closePath(); shape(col, ln, 3);
+    c.beginPath(); c.moveTo(44, -4); c.lineTo(58, -2); c.lineTo(42, 4); shape('#f4efe4', null);
+    disc(58, -2, 2.8, ln); disc(38, -12, 2.6, ln);
+  }); },
+  héja(cc, x, y, s) { withT(x, y, s, () => {
+    const ln = '#1c2440';
+    c.beginPath(); c.moveTo(-6, 26); c.lineTo(-14, 50); c.lineTo(8, 50); c.lineTo(6, 26); shape('#6a6f7a', ln, 2.5);
+    c.beginPath(); c.ellipse(0, 4, 22, 30, 0, 0, TAU); shape('#eae4d6', ln, 3);
+    for (let i = 0; i < 4; i++) { c.beginPath(); c.moveTo(-14, -6 + i * 9); c.quadraticCurveTo(0, -2 + i * 9, 14, -6 + i * 9); c.strokeStyle = '#7a7f8a'; c.lineWidth = 2.5; c.stroke(); }
+    c.beginPath(); c.moveTo(-20, -14); c.quadraticCurveTo(-34, 10, -22, 36); c.quadraticCurveTo(-14, 10, -12, -10); shape('#5b616e', ln, 2.5);
+    c.beginPath(); c.moveTo(20, -14); c.quadraticCurveTo(34, 10, 22, 36); c.quadraticCurveTo(14, 10, 12, -10); shape('#5b616e', ln, 2.5);
+    c.beginPath(); c.arc(0, -30, 15, 0, TAU); shape('#5b616e', ln, 3);
+    c.beginPath(); c.moveTo(-14, -34); c.lineTo(14, -34); c.strokeStyle = '#eae4d6'; c.lineWidth = 3; c.stroke();
+    c.beginPath(); c.moveTo(10, -32); c.quadraticCurveTo(26, -32, 20, -20); c.lineTo(12, -24); shape('#e3b23c', ln, 2);
+    disc(6, -32, 3.4, '#e39b1c'); disc(6, -32, 1.6, ln);
+  }); },
+  lebontók(cc, x, y, s) { withT(x, y, s, () => {
+    const ln = '#4a3420';
+    c.beginPath(); c.moveTo(-14, 38); c.lineTo(-10, 0); c.lineTo(4, 0); c.lineTo(6, 38); c.closePath(); shape('#efe3c8', ln, 3);
+    c.beginPath(); c.moveTo(-34, 4); c.quadraticCurveTo(-30, -36, -2, -36); c.quadraticCurveTo(26, -36, 30, 4); c.closePath(); shape('#b5532a', ln, 3);
+    disc(-14, -16, 4.5, '#f4efe4'); disc(6, -24, 4, '#f4efe4'); disc(16, -10, 3.5, '#f4efe4');
+    c.strokeStyle = '#6b6a12'; c.lineWidth = 6;
+    for (const [bx, by, a] of [[26, 26, .5], [34, 14, -.4], [-30, 30, .2]]) { c.save(); c.translate(bx, by); c.rotate(a); c.beginPath(); c.moveTo(-6, 0); c.lineTo(6, 0); c.stroke(); c.restore(); }
+  }); },
+  farkas(cc, x, y, s) { withT(x, y, s, () => {
+    const col = '#8d8a85', ln = '#2e2c2a';
+    c.beginPath(); c.moveTo(-28, -2); c.quadraticCurveTo(-52, 4, -54, 26); c.quadraticCurveTo(-40, 18, -26, 10); shape(col, ln, 3);
+    for (const lx of [-20, -8, 12, 22]) { c.beginPath(); c.moveTo(lx, 10); c.lineTo(lx, 36); c.strokeStyle = ln; c.lineWidth = 8; c.stroke(); }
+    c.beginPath(); c.ellipse(0, 2, 32, 17, 0, 0, TAU); shape(col, ln, 3);
+    c.beginPath(); c.moveTo(20, -10); c.lineTo(24, -36); c.lineTo(32, -22); c.lineTo(40, -34); c.lineTo(42, -14); c.lineTo(58, -6); c.lineTo(56, 4); c.lineTo(36, 6); c.closePath(); shape('#a7a39c', ln, 3);
+    disc(57, -4, 3, ln); disc(37, -16, 2.6, '#c8a23a');
+  }); },
+  vapiti(cc, x, y, s) { withT(x, y, s, () => {
+    const col = '#9a6b3e', ln = '#3e2814';
+    for (const lx of [-22, -12, 14, 24]) { c.beginPath(); c.moveTo(lx, 8); c.lineTo(lx, 44); c.strokeStyle = ln; c.lineWidth = 6; c.stroke(); }
+    c.beginPath(); c.ellipse(0, 0, 32, 16, 0, 0, TAU); shape(col, ln, 3);
+    c.beginPath(); c.ellipse(-24, 0, 9, 12, 0, 0, TAU); shape('#e7d3a8', null);
+    c.beginPath(); c.moveTo(18, -8); c.lineTo(32, -30); c.lineTo(42, -26); c.lineTo(30, -2); c.closePath(); shape('#6e4a28', ln, 3);
+    c.beginPath(); c.moveTo(32, -30); c.lineTo(52, -26); c.lineTo(48, -20); c.lineTo(38, -22); shape(col, ln, 3);
+    c.strokeStyle = '#6b5a3e'; c.lineWidth = 3.5; c.beginPath(); c.moveTo(36, -30); c.lineTo(28, -50); c.lineTo(18, -54); c.moveTo(31, -43); c.lineTo(38, -52); c.moveTo(39, -30); c.lineTo(44, -50); c.lineTo(54, -54); c.stroke();
+    disc(41, -26, 2.4, ln);
+  }); },
+  fűz(cc, x, y, s) { withT(x, y, s, () => {
+    c.strokeStyle = '#7a5a33'; c.lineWidth = 4;
+    for (let i = -3; i <= 3; i++) { c.beginPath(); c.moveTo(0, 40); c.quadraticCurveTo(i * 8, 0, i * 14, -30 - (i & 1) * 6); c.stroke(); }
+    for (let i = -3; i <= 3; i++) for (let j = 0; j < 3; j++) { c.beginPath(); c.ellipse(i * 13 * (.6 + j * .2), -30 + j * 18 - (i & 1) * 6, 4, 10, i * .3, 0, TAU); shape(LEAF, LEAF_D, 1.5); }
+  }); },
+  hód(cc, x, y, s) { withT(x, y, s, () => {
+    const col = '#7a5232', ln = '#3a2412';
+    c.beginPath(); c.ellipse(-36, 18, 18, 8, -.3, 0, TAU); shape('#4a3a30', ln, 2.5);
+    c.beginPath(); c.ellipse(-2, 8, 30, 22, 0, 0, TAU); shape(col, ln, 3);
+    c.beginPath(); c.arc(26, -6, 15, 0, TAU); shape(col, ln, 3);
+    c.beginPath(); c.rect(34, 4, 6, 7); shape('#f4efe4', ln, 1.5);
+    disc(30, -10, 2.6, ln); disc(18, -18, 4, ln);
+  }); },
+  medve(cc, x, y, s) { withT(x, y, s, () => {
+    const col = '#5e4128', ln = '#2a1a0c';
+    for (const lx of [-22, -8, 12, 24]) { c.beginPath(); c.moveTo(lx, 10); c.lineTo(lx, 36); c.strokeStyle = ln; c.lineWidth = 11; c.stroke(); }
+    c.beginPath(); c.moveTo(-36, 10); c.quadraticCurveTo(-36, -18, -8, -22); c.quadraticCurveTo(20, -24, 30, -6); c.quadraticCurveTo(34, 16, 10, 18); c.lineTo(-30, 18); c.closePath(); shape(col, ln, 3);
+    c.beginPath(); c.arc(38, -4, 13, 0, TAU); shape(col, ln, 3); c.beginPath(); c.arc(34, -16, 5, 0, TAU); shape(col, ln, 2);
+    c.beginPath(); c.ellipse(49, 0, 6, 5, 0, 0, TAU); shape('#a88a68', ln, 2); disc(52, -1, 2.2, ln); disc(40, -8, 2.2, ln);
+  }); },
+  nap(cc, x, y, s) { withT(x, y, s, () => {
+    c.strokeStyle = GOLD_D; c.lineWidth = 4;
+    for (let i = 0; i < 12; i++) { const a = i * TAU / 12; c.beginPath(); c.moveTo(Math.cos(a) * 34, Math.sin(a) * 34); c.lineTo(Math.cos(a) * 46, Math.sin(a) * 46); c.stroke(); }
+    c.beginPath(); c.arc(0, 0, 28, 0, TAU); shape(GOLD, GOLD_D, 3);
+  }); },
+  felhő(cc, x, y, s) { withT(x, y, s, () => {
+    c.beginPath(); c.arc(-22, 6, 18, 0, TAU); c.arc(0, -8, 24, 0, TAU); c.arc(24, 6, 18, 0, TAU); c.rect(-22, 6, 46, 18); shape('#dfe5ea', null);
+    for (let i = 0; i < 5; i++) BioNet.dot(c, -26 + i * 13, 10 + (i % 2) * 6, 5, CARBON, null);
+  }); },
+  növények(cc, x, y, s) { IC.tölgy(cc, x + s * .14, y - s * .02, s * .8); IC.fű(cc, x - s * .24, y + s * .14, s * .5); },
+  állatok(cc, x, y, s) { IC.nyúl(cc, x - s * .16, y + s * .14, s * .55); IC.róka(cc, x + s * .1, y - s * .16, s * .6); },
+};
+const ic = (k) => (cc, x, y, s) => IC[k](cc, x, y, s);
+
+/* ════════════ a hálózatok ════════════ */
+let NET1a, NET1b, WEB, CYC, YS;
+const LEVY = [830, 640, 450, 260];       // a 2. és 8. lépés sorai (termelők → csúcsragadozó)
+function makeNets() {
+  NET1a = BioNet.create(L, { nodes: [
+    { id: 'fű', x: 230, y: 560, r: 110, icon: ic('fű'), name: nm('fű'), side: 'below' },
+    { id: 'nyúl', x: 680, y: 560, r: 110, icon: ic('nyúl'), name: nm('nyúl'), side: 'below' },
+    { id: 'róka', x: 1130, y: 560, r: 110, icon: ic('róka'), name: nm('róka'), side: 'below' }],
+  edges: [{ from: 'fű', to: 'nyúl' }, { from: 'nyúl', to: 'róka' }], styles: { eszik: { col: GOLD_D, w: 6 } } });
+  NET1b = BioNet.create(L, { nodes: [
+    { id: 'tölgy', x: 175, y: 560, r: 92, icon: ic('tölgy'), name: nm('tölgy'), side: 'below' },
+    { id: 'levéltetű', x: 505, y: 560, r: 92, icon: ic('levéltetű'), name: nm('levéltetű'), side: 'below' },
+    { id: 'cinege', x: 835, y: 560, r: 92, icon: ic('cinege'), name: nm('cinege'), side: 'below' },
+    { id: 'héja', x: 1165, y: 560, r: 92, icon: ic('héja'), name: nm('héja'), side: 'below' }],
+  edges: [{ from: 'tölgy', to: 'levéltetű' }, { from: 'levéltetű', to: 'cinege' }, { from: 'cinege', to: 'héja' }], styles: { eszik: { col: GOLD_D, w: 6 } } });
+  const n = (id, x, li, side) => ({ id, x, y: LEVY[li], r: 50, icon: ic(id), name: nm(id), side: side || 'right', level: li });
+  WEB = BioNet.create(L, { nodes: [
+    n('fű', 420, 0), n('tölgy', 900, 0),
+    n('nyúl', 330, 1), n('egér', 660, 1), n('levéltetű', 1010, 1),
+    n('róka', 500, 2, 'left'), n('cinege', 1060, 2),
+    n('héja', 800, 3),
+    Object.assign(n('lebontók', 1180, 0), { y: 960, r: 46, side: 'left' })],
+  edges: [
+    { from: 'fű', to: 'nyúl' }, { from: 'fű', to: 'egér', bend: -.12 }, { from: 'tölgy', to: 'egér', bend: .08 }, { from: 'tölgy', to: 'levéltetű' },
+    { from: 'levéltetű', to: 'cinege' }, { from: 'nyúl', to: 'róka' }, { from: 'egér', to: 'róka' },
+    { from: 'nyúl', to: 'héja', bend: -.2 }, { from: 'cinege', to: 'héja' },
+    ...['fű', 'tölgy', 'nyúl', 'egér', 'levéltetű', 'róka', 'cinege', 'héja'].map((id) => ({ from: id, to: 'lebontók', kind: 'elhalt', gap1: 8 })),
+    { from: 'lebontók', to: 'fű', kind: 'tápanyag', bend: -.16 }, { from: 'lebontók', to: 'tölgy', kind: 'tápanyag', bend: .12 }] });
+  // a 7. lépés körforgás-ábrája
+  CYC = BioNet.create(L, { nodes: [
+    { id: 'nap', x: 150, y: 250, r: 62, icon: ic('nap'), name: nm('nap'), side: 'below' },
+    { id: 'levegő', x: 690, y: 250, r: 68, icon: ic('felhő'), name: nm('levegő'), side: 'right' },
+    { id: 'növények', x: 330, y: 610, r: 80, icon: ic('növények'), name: nm('növények'), side: 'left' },
+    { id: 'állatok', x: 1050, y: 610, r: 80, icon: ic('állatok'), name: nm('állatok'), side: 'right' },
+    { id: 'lebontók', x: 690, y: 900, r: 72, icon: ic('lebontók'), name: nm('lebontók'), side: 'right' }],
+  edges: [
+    { from: 'nap', to: 'növények', kind: 'fény' },
+    { from: 'levegő', to: 'növények', kind: 'anyag', bend: .12, lab: 'fotoszintézis' },
+    { from: 'növények', to: 'állatok', kind: 'anyag', lab: 'táplálék' },
+    { from: 'növények', to: 'lebontók', kind: 'anyag', bend: .12, lab: 'elhalt' },
+    { from: 'állatok', to: 'lebontók', kind: 'anyag', bend: -.12, lab: 'elhalt' },
+    { from: 'állatok', to: 'levegő', kind: 'anyag', bend: .12, lab: 'légzés' },
+    { from: 'lebontók', to: 'levegő', kind: 'anyag', bend: -.1, lab: 'légzés' },
+    { from: 'lebontók', to: 'növények', kind: 'tápanyag', bend: .34, lab: 'ásványi anyag' },
+    { from: 'növények', to: 'állatok', kind: 'energia', id: 'e-nö-áll' },
+    { from: 'növények', to: 'lebontók', kind: 'energia', bend: .12, id: 'e-nö-leb' },
+    { from: 'állatok', to: 'lebontók', kind: 'energia', bend: -.12, id: 'e-áll-leb' }],
+  styles: { fény: { col: GOLD_D, w: 5 }, anyag: { col: CARBON, w: 4 }, tápanyag: { col: '#6b6a12', w: 3.5, dash: [3, 8] }, energia: { col: GOLD_D, w: 4 } } });
+  // Yellowstone
+  YS = BioNet.create(L, { nodes: [
+    { id: 'farkas', x: 760, y: 250, r: 58, icon: ic('farkas'), name: nm('farkas'), side: 'right' },
+    { id: 'medve', x: 1110, y: 380, r: 52, icon: ic('medve'), name: nm('más ragadozók'), side: 'right' },
+    { id: 'vapiti', x: 760, y: 530, r: 58, icon: ic('vapiti'), name: nm('vapiti'), side: 'right' },
+    { id: 'fűz', x: 760, y: 820, r: 58, icon: ic('fűz'), name: nm('fűz'), side: 'right' },
+    { id: 'hód', x: 1110, y: 700, r: 52, icon: ic('hód'), name: nm('hód'), side: 'right' }],
+  edges: [{ from: 'vapiti', to: 'farkas' }, { from: 'vapiti', to: 'medve', bend: -.1 }, { from: 'fűz', to: 'vapiti' }, { from: 'fűz', to: 'hód', bend: .12 }] });
+}
+
+/* ════════════ 1. lépés: tápláléklánc, a nyíl iránya ════════════ */
+const S1 = { ch: 0, tc: -9 };
+function scene1(st) {
+  title('kérdés 1');
+  const sw = clamp((st - S1.tc) / .6), cur = S1.ch, prev = 1 - cur;
+  const one = (which, a, tt) => {
+    if (a <= .01) return;
+    const net = which ? NET1b : NET1a, ids = net.nodes.map((n) => n.id), lv = which ? ['termelő', 'növényevő', 'ragadozó', 'csúcsragadozó'] : ['termelő', 'növényevő', 'ragadozó'];
+    const ap = (i) => smooth((tt - .3 - i * .45) / .5);
+    // szintcímkék
+    net.nodes.forEach((n, i) => { al(a * ap(i)); L.pill(lab(lv[i]), n.x, n.y - n.r - 46, { k: lv[i], s: 24, w: 700, a: 'center', c: '#fffaf1', bg: LVCOL[i], bd: LVCOL[i], pad: 10 }); });
+    al(a);
+    const wrongA = which ? 0 : smooth((tt - 2) / .5) * (1 - smooth((tt - 4.2) / .5));
+    const rightA = which ? smooth((tt - 1.6) / .6) : smooth((tt - 4.4) / .6);
+    net.draw({ a: a, arrows: true, nodeA: (n) => ap(ids.indexOf(n.id)), edgeA: () => rightA });
+    if (rightA > 0) {
+      c.save(); c.globalAlpha = GA * a; net.flow(c, { t: tt, rate: 1.6, speed: 120, r: 9, a: rightA }); c.restore();
+      al(a * rightA); T('energia útja', 680, 820, { s: 28, w: 700, a: 'center', c: GOLD_D, f: F.B });
+    }
+    if (wrongA > 0) {   // a „ki kit eszik” olvasat – nem így!
+      const A = NET1a.N['róka'], B = NET1a.N['nyúl'];
+      al(a * wrongA); BioNet.arrow(c, A.x - A.r - 14, A.y + 40, B.x + B.r + 14, B.y + 40, { col: RED, w: 5, head: 22, dash: [12, 9] });
+      T('megeszi', (A.x + B.x) / 2, A.y + 92, { s: 24, w: 600, a: 'center', c: RED });
+      const xa = smooth((tt - 3.2) / .4);
+      if (xa > 0) { al(a * wrongA * xa); L.pill(lab('nem így'), (A.x + B.x) / 2, A.y - 12, { k: 'nem így', s: 28, w: 700, a: 'center', c: '#fffaf1', bg: RED, bd: RED, pad: 12 }); }
+    }
+    al(1);
+  };
+  one(prev, 1 - sw, st - S1.tc + 9);
+  one(cur, S1.tc < -5 ? 1 : sw, S1.tc < -5 ? st : 9 + (st - S1.tc));
+}
+
+/* ════════════ 2. és 8. lépés: a hálózat ════════════ */
+const S2 = { sel: null, selT: -9, user: false };
+const LVL = ['termelők', 'növényevők', 'ragadozók', 'csúcsragadozók'];
+function levelLabels(a = 1) {
+  LVL.forEach((k, i) => { al(a); T(k, 60, LEVY[i] + 8, { s: 24, w: 700, c: LVCOL[i] }); });
+  al(a * .5); c.strokeStyle = 'rgba(28,36,64,.12)'; c.lineWidth = 2; c.setLineDash([4, 8]);
+  for (let i = 0; i < 4; i++) { c.beginPath(); c.moveTo(60, LEVY[i] + 26); c.lineTo(250, LEVY[i] + 26); c.stroke(); }
+  c.setLineDash([]); al(1);
+}
+function scene2(st) {
+  title('kérdés 2');
+  const build = clamp((st - .2) / 2.6), eb = clamp((st - 1.6) / 2);
+  const sel = S2.user ? S2.sel : (st > 4.4 ? 'egér' : null), sa = S2.user ? smooth((st - S2.selT) / .4) : smooth((st - 4.4) / .5);
+  levelLabels(smooth(build * 2));
+  const food = sel ? WEB.food(sel, ['eszik', 'elhalt']) : [], eat = sel ? WEB.eaters(sel) : [];
+  const lvOf = (n) => (n.id === 'lebontók' ? 0 : n.level);
+  WEB.draw({
+    kinds: ['eszik', 'elhalt'],
+    nodeA: (n) => smooth((build * 4.4 - lvOf(n)) / .8) * (sel && sa > 0 ? lerp(1, n.id === sel || food.includes(n.id) || eat.includes(n.id) ? 1 : .25, sa) : 1),
+    edgeA: (e) => {
+      const k = WEB.E.indexOf(e), base = e.kind === 'elhalt' ? .16 : 1, ap = smooth(eb * 14 - k * .8);
+      if (!sel || sa <= 0) return ap * base;
+      const on = (e.to === sel && food.includes(e.from)) || (e.from === sel && eat.includes(e.to)) || (e.kind === 'elhalt' && e.from === sel);
+      return ap * lerp(base, on ? (e.kind === 'elhalt' ? .8 : 1) : base * .15, sa);
+    },
+    edgeCol: (e) => (sel && sa > .3 && (e.kind === 'eszik' || sel === 'lebontók') ? (e.to === sel ? TEAL : e.from === sel && e.kind === 'eszik' ? RED : null) : null),
+    edgeW: (e) => (sel && sa > .3 && e.kind === 'eszik' && (e.to === sel || e.from === sel) ? 5 : null),
+    ring: (n) => (sel && sa > .3 ? (food.includes(n.id) ? TEAL : eat.includes(n.id) ? RED : null) : null),
+    halo: sel && sa > .3 ? sel : null,
+  });
+  al(smooth((st - 3) / .5) * (sel === 'lebontók' ? 1 : .6));
+  T('elhalt', 1290, 885, { s: 22, w: 600, c: BROWN, a: 'center' });
+  // jelmagyarázat
+  const lx = 1310; al(smooth((st - 4) / .5));
+  const w1 = L.measure(lab('fogyasztója'), { s: 24, w: 700 }).w;
+  T('fogyasztója', lx, 150, { s: 24, w: 700, c: RED, a: 'right' }); BioNet.arrow(c, lx - w1 - 64, 142, lx - w1 - 14, 142, { col: RED, w: 5, head: 14 });
+  const w2 = L.measure(lab('tápláléka'), { s: 24, w: 700 }).w;
+  T('tápláléka', lx, 186, { s: 24, w: 700, c: TEAL, a: 'right' }); BioNet.arrow(c, lx - w2 - 64, 178, lx - w2 - 14, 178, { col: TEAL, w: 5, head: 14 });
+  if (!S2.user) { al(smooth((st - 5) / .5)); L.pill(lab('kattints'), 640, 1010, { k: 'kattints', s: 24, w: 700, a: 'center', c: INK, bg: CARD, bd: INK, pad: 12 }); }
+  al(1);
+  if (L.step === 1 && L.pointer.pressed) { const id = WEB.hit(L.pointer.px, L.pointer.py); if (id) { S2.sel = id; S2.selT = st; S2.user = true; } }
+}
+
+/* ════════════ 3. lépés: van Helmont fűzfája ════════════ */
+const S3 = { man: null };
+function scene3(st) {
+  title('kérdés 3');
+  const Y = num('kísérlet hossza'), m0 = num('fűz kezdeti tömege'), m1 = num('fűz végső tömege'), soil = num('föld tömege'), loss = num('föld fogyása');
+  const yr = S3.man != null ? S3.man : clamp((st - 1) / 5 * Y, 0, Y), u = yr / Y;
+  const m = m0 * Math.pow(m1 / m0, u);    // szemléltető: exponenciális növekedés a két mért érték között
+  // HONNAN TUDJUK kártya
+  L.pill(lab('honnan tudjuk'), 60, 140, { k: 'honnan tudjuk', s: 22, w: 700, ls: '0.08em', c: '#fffaf1', bg: TEAL, bd: TEAL, pad: 10 });
+  T('Helmont', 60, 210, { s: 26, w: 700, f: F.D, i: true });
+  L.tx(lab('Helmont szöveg') + ' ' + L.val('közlés éve'), 60, 246, { k: ['Helmont szöveg', 'közlés éve'], s: 22, w: 500, c: MUT });
+  // dézsa + fűz
+  const px = 320, py = 900, pw = 300;
+  const hgt = lerp(90, 470, Math.pow(m / m1, 1 / 2.2));
+  c.save(); c.lineCap = 'round'; c.lineJoin = 'round';
+  // törzs és ágak
+  const tw = lerp(5, 22, Math.pow(m / m1, .45));
+  c.strokeStyle = '#7a5a33'; c.lineWidth = tw; c.beginPath(); c.moveTo(px, py - 120); c.lineTo(px, py - 120 - hgt * .45); c.stroke();
+  const nb = 9;
+  for (let i = 0; i < nb; i++) {
+    const a = (i / (nb - 1) - .5) * 1.9, L0 = hgt * (.55 + .12 * hash(i, 2)), bx = px + Math.sin(a) * L0 * .55, by = py - 120 - hgt * .45 - Math.cos(a) * L0 * .55;
+    c.lineWidth = Math.max(2, tw * .45); c.beginPath(); c.moveTo(px, py - 120 - hgt * .4); c.quadraticCurveTo(px + Math.sin(a) * L0 * .3, by - 20, bx, by); c.stroke();
+    // lecsüngő vesszők levelekkel
+    const nv = 3; for (let v = 0; v < nv; v++) {
+      const vx = bx + (v - 1) * 14, vl = hgt * (.25 + .1 * hash(i, v));
+      c.strokeStyle = '#8a7a3a'; c.lineWidth = 2; c.beginPath(); c.moveTo(bx, by); c.quadraticCurveTo(vx + 10, by + vl * .3, vx, by + vl); c.stroke();
+      for (let l = 1; l <= 4; l++) { const lt = l / 4.4; c.beginPath(); c.ellipse(lerp(bx, vx, lt) + 4, by + vl * lt, 3.5, 9, .4, 0, TAU); c.fillStyle = l % 2 ? LEAF : '#86b04e'; c.fill(); }
+      c.strokeStyle = '#7a5a33';
+    }
+  }
+  c.restore();
+  // dézsa
+  c.beginPath(); c.moveTo(px - pw / 2, py - 130); c.lineTo(px + pw / 2, py - 130); c.lineTo(px + pw / 2 - 26, py); c.lineTo(px - pw / 2 + 26, py); c.closePath();
+  c.fillStyle = '#b07a4a'; c.fill(); c.strokeStyle = '#5a3a1e'; c.lineWidth = 3; c.stroke();
+  c.fillStyle = '#5a4630'; c.fillRect(px - pw / 2 + 6, py - 128, pw - 12, 18);
+  for (const yy of [py - 96, py - 40]) { c.beginPath(); c.moveTo(px - pw / 2 + 8, yy); c.lineTo(px + pw / 2 - 8, yy); c.strokeStyle = '#5a3a1e'; c.lineWidth = 4; c.stroke(); }
+  T('dézsa', px, py - 62, { s: 22, w: 700, c: '#fffaf1', a: 'center' });
+  // öntözés
+  const wa = .5 + .5 * Math.sin(st * 3);
+  for (let i = 0; i < 5; i++) { const dy = ((st * 90 + i * 28) % 140); al(clamp(1 - dy / 140) * .9 + .1); BioNet.dot(c, px + 118 + (i % 2) * 8, py - 260 + dy, 5, '#4696d7', '#1b5a94'); }
+  al(1); T('víz', px + 150, py - 200, { s: 22, w: 600, c: '#1b5a94' });
+  // mérlegek / kiírás
+  const cx = 560;
+  card(cx, 300, 380, 230);
+  TH('évek', fmt(yr, 1), cx + 24, 348, { s: 26, w: 700, f: F.M, c: INK });
+  TH('fűz tömege', fmt(m, 1), cx + 24, 398, { s: 26, w: 700, c: GREEN });
+  TH('föld kiírás', fmt(soil - loss / 1000 * u, 2), cx + 24, 446, { s: 26, w: 600, c: BROWN });
+  TH('föld változás', fmt(loss * u, 0), cx + 24, 494, { s: 24, w: 600, c: MUT });
+  // miből épült fel? sáv
+  const bA = S3.man != null ? (S3.man >= Y - .01 ? 1 : 0) : smooth((st - 6.4) / .6);
+  if (bA > 0) {
+    al(bA);
+    const bx = 600, by = 640, bw = 700, bh = 54, wf = num('fa víztartalma') / 100;
+    T('honnan cím', bx, by - 22, { s: 28, w: 700, f: F.D });
+    const ww = bw * wf;
+    rr(bx, by, ww, bh, 8); c.fillStyle = 'rgba(70,150,215,.45)'; c.fill(); c.strokeStyle = '#1b5a94'; c.lineWidth = 2.5; c.stroke();
+    T('víz rész', bx + ww / 2, by + 36, { s: 24, w: 700, c: '#1b5a94', a: 'center' });
+    const dw = bw - ww - 6, d0 = bx + ww + 6;
+    const fr = [num('levegőből származó rész'), num('vízből származó rész'), num('talajból származó rész')], fs = fr.reduce((s, v) => s + v, 0);
+    const cols = ['#a9b3bf', 'rgba(70,150,215,.45)', '#b9926a'], bds = [CARBON, '#1b5a94', BROWN];
+    let xx = d0;
+    fr.forEach((v, i) => { const w = Math.max(4, dw * v / fs); rr(xx, by, w, bh, 6); c.fillStyle = cols[i]; c.fill(); c.strokeStyle = bds[i]; c.lineWidth = 2.5; c.stroke(); xx += w; });
+    T('szárazanyag', d0 + dw / 2, by - 22, { s: 22, w: 600, c: MUT, a: 'center' });
+    // feliratok a szárazanyag részeihez
+    L.tx(lab('levegőből') + ' ' + L.val('levegőből származó rész'), d0 + 6, by + bh + 34, { k: ['levegőből', 'levegőből származó rész'], s: 22, w: 700, c: CARBON });
+    L.tx(lab('vízből') + ' ' + L.val('vízből származó rész'), d0 + dw, by + bh + 70, { k: ['vízből', 'vízből származó rész'], s: 22, w: 600, c: '#1b5a94', a: 'right' });
+    L.tx(lab('talajból') + ' ' + L.val('talajból származó rész'), d0 + dw, by + bh + 104, { k: ['talajból', 'talajból származó rész'], s: 22, w: 600, c: BROWN, a: 'right' });
+    stamp('becslés', bx, by + bh + 34, { s: 22, c: OCHRE, bd: OCHRE });
+    // egyenlet
+    const ey = 930;
+    card(600, ey - 50, 700, 104, { bd: GREEN, bg: '#f7fbef' });
+    T('fotoszintézis', 624, ey - 14, { s: 22, w: 700, c: GREEN });
+    T('egyenlet', 624, ey + 28, { s: 30, w: 700, f: F.M, c: INK, max: 650 });
+    T('fényenergia', 1276, ey - 14, { s: 22, w: 600, c: GOLD_D, a: 'right' });
+    al(1);
+  }
+}
+
+/* ════════════ 4. lépés: napfény → levél ════════════ */
+function scene4(st) {
+  title('kérdés 4');
+  const sun = [170, 250], leaf = [560, 640];
+  IC.nap(c, sun[0], sun[1], 150); T('nap', sun[0], sun[1] + 110, { s: 24, w: 700, c: GOLD_D, a: 'center' });
+  // levél
+  c.save(); c.translate(leaf[0], leaf[1]); c.rotate(-.5);
+  c.beginPath(); c.moveTo(-200, 0); c.bezierCurveTo(-100, -130, 120, -120, 210, 0); c.bezierCurveTo(120, 120, -100, 130, -200, 0); c.closePath();
+  c.fillStyle = LEAF; c.fill(); c.strokeStyle = LEAF_D; c.lineWidth = 3.5; c.stroke();
+  c.beginPath(); c.moveTo(-230, 0); c.lineTo(200, 0); c.strokeStyle = LEAF_D; c.lineWidth = 3; c.stroke();
+  for (let i = -3; i <= 3; i++) { c.beginPath(); c.moveTo(i * 45, 0); c.lineTo(i * 45 + 50, -60 + Math.abs(i) * 8); c.moveTo(i * 45, 0); c.lineTo(i * 45 + 50, 60 - Math.abs(i) * 8); c.lineWidth = 2; c.stroke(); }
+  c.restore();
+  T('levél', leaf[0] - 150, leaf[1] + 160, { s: 24, w: 700, c: LEAF_D });
+  // fénypöttyök: 100 egységből a beépülők a cukorba mennek
+  const rng = dat('napfény hasznosítása'), keepP = rng.hi / 100;
+  const sugar = [1100, 880];
+  const R = 12, t = st, sp = 340;
+  const n = 100, kmax = Math.min(n - 1, Math.floor(t * R)), seed = 5;
+  for (let k = Math.max(0, kmax - 40); k <= kmax; k++) {
+    const age = t - k / R; if (age < 0) continue;
+    const tx = leaf[0] - 120 + hash(k, 1, seed) * 260, ty = leaf[1] - 60 + hash(k, 2, seed) * 120 - (tx - leaf[0]) * .5;
+    const d = Math.hypot(tx - sun[0], ty - sun[1]), T1 = d / sp;
+    if (age < T1) { const u = age / T1; al(.95); BioNet.dot(c, lerp(sun[0], tx, u), lerp(sun[1], ty, u), 7, GOLD, GOLD_D); continue; }
+    const a2 = age - T1, kept = (k % 50) === 25;                    // 100 egységből 2 (hi), ebből 1 biztos (lo)
+    if (kept) {
+      const T2 = 1.6; if (a2 < T2) { const u = smooth(a2 / T2); al(1); BioNet.dot(c, lerp(tx, sugar[0], u), lerp(ty, sugar[1] - 30, u), 8, GOLD, GOLD_D); }
+    } else {
+      const life = 1.6; if (a2 < life) {
+        const kind = hash(k, 3, seed), e = 1 - Math.pow(1 - a2 / life, 2);
+        if (kind < .18) { al((1 - a2 / life) * .8); BioNet.dot(c, tx + 160 * e, ty - 200 * e, 6, GOLD, GOLD_D); }          // visszaverődik
+        else { al((1 - a2 / life) * .85); BioNet.dot(c, tx + 60 * e + Math.sin(a2 * 6 + k) * 10, ty - 150 * e, 6, RED, null); }   // hővé válik
+      }
+    }
+  }
+  al(1);
+  // cukor-tároló
+  card(sugar[0] - 120, sugar[1] - 70, 240, 110, { bd: GOLD_D, bg: '#fdf3da' });
+  T('cukor', sugar[0], sugar[1] + 74, { s: 22, w: 700, c: GOLD_D, a: 'center', max: 300 });
+  // 10 × 10 rács: 100 egység
+  const gx = 900, gy = 230, cs = 36, nArr = clamp(Math.floor((t - .9) * R), 0, n);
+  T('száz egység', gx, gy - 24, { s: 24, w: 700 });
+  for (let i = 0; i < n; i++) {
+    const col = i % 10, row = Math.floor(i / 10), x = gx + col * cs, y = gy + row * cs, on = i < nArr;
+    const kept = (i % 50) === 25, half = i === 75;
+    rr(x + 2, y + 2, cs - 4, cs - 4, 4);
+    c.fillStyle = !on ? 'rgba(28,36,64,.05)' : kept ? (half ? 'rgba(242,182,50,.5)' : GOLD) : 'rgba(200,64,28,.18)'; c.fill();
+    c.strokeStyle = on && kept ? GOLD_D : 'rgba(28,36,64,.18)'; c.lineWidth = on && kept ? 3 : 1.5; c.stroke();
+  }
+  // a stored count in sugar
+  const stored = Math.min(2, Math.floor((nArr + 24) / 50));
+  for (let i = 0; i < stored; i++) BioNet.dot(c, sugar[0] - 14 + i * 28, sugar[1] - 20, 12, i ? 'rgba(242,182,50,.55)' : GOLD, GOLD_D);
+  const la = smooth((t - 9) / .6);
+  if (la > 0) {
+    al(la);
+    rr(gx, gy + 10 * cs + 22, 26, 26, 4); c.fillStyle = GOLD; c.fill(); c.strokeStyle = GOLD_D; c.lineWidth = 3; c.stroke();
+    L.tx(lab('beépül') + ': ' + L.val('napfény hasznosítása'), gx + 40, gy + 10 * cs + 44, { k: ['beépül', 'napfény hasznosítása'], s: 24, w: 700, c: GOLD_D });
+    rr(gx, gy + 10 * cs + 66, 26, 26, 4); c.fillStyle = 'rgba(200,64,28,.18)'; c.fill(); c.strokeStyle = 'rgba(28,36,64,.18)'; c.lineWidth = 1.5; c.stroke();
+    T('elvész', gx + 40, gy + 10 * cs + 88, { s: 22, w: 600, c: MUT, max: 420 });
+    al(1);
+  }
+}
+
+/* ════════════ 5–6. lépés: energia szintről szintre, piramis ════════════ */
+const S56 = { eff: 10, log: false, tl: -9 };
+const BAND = { x: 110, w: 470, h: 104, y: [840, 640, 440, 240] }, COLX = 700;
+const lvVals = () => { const e = effP(), v0 = num('termelők energiája'); return [v0, v0 * e, v0 * e * e, v0 * e * e * e]; };
+const kJ = (v) => (v >= 100 ? fmt(Math.round(v)) : v >= 1 ? fmt(v, v >= 10 ? 0 : 1) : fmt(v, 2));
+const LVICON = [['fű', 'tölgy'], ['nyúl', 'egér', 'levéltetű'], ['róka', 'cinege'], ['héja']];
+function scene5(st) {
+  title('kérdés 5');
+  const e = effP(), vals = lvVals();
+  // sávok
+  for (let i = 0; i < 4; i++) {
+    const y = BAND.y[i];
+    card(BAND.x, y - BAND.h / 2, BAND.w, BAND.h, { bd: LVCOL[i], bw: 3, bg: CARD });
+    T(LVL[i], BAND.x + 20, y - BAND.h / 2 + 32, { s: 22, w: 700, c: LVCOL[i] });
+    LVICON[i].forEach((id, j) => IC[id](c, BAND.x + 50 + j * 74, y + 14, 58));
+    L.pill(H('kJ', kJ(vals[i])), BAND.x + BAND.w - 16, y, { k: ['kJ', 'termelők energiája', 'átadási hatékonyság'], s: 26, w: 700, f: F.M, a: 'right', b: 'middle', c: INK, bg: '#fdf3da', bd: GOLD_D, pad: 10 });
+    // összekötő a lánc oszlopához
+    c.strokeStyle = U.rgba(LVCOL[i], .5); c.lineWidth = 3; c.setLineDash([6, 8]); c.beginPath(); c.moveTo(BAND.x + BAND.w, y); c.lineTo(COLX - 34, y); c.stroke(); c.setLineDash([]);
+    c.beginPath(); c.arc(COLX, y, 30, 0, TAU); c.fillStyle = CARD; c.fill(); c.lineWidth = 4; c.strokeStyle = LVCOL[i]; c.stroke();
+  }
+  // nyilak a szintek között + „tovább” felirat
+  for (let i = 0; i < 3; i++) {
+    BioNet.arrow(c, COLX, BAND.y[i] - 34, COLX, BAND.y[i + 1] + 38, { col: 'rgba(143,90,12,.45)', w: 3, head: 14 });
+    L.tx(lab('tovább') + ' ' + fmt(S56.eff) + ' %', COLX - 22, (BAND.y[i] + BAND.y[i + 1]) / 2 + 8, { k: ['tovább', 'átadási hatékonyság'], s: 22, w: 700, c: GOLD_D, a: 'right' });
+  }
+  // napfény a termelőkbe
+  IC.nap(c, COLX, 1000, 76);
+  T('napfény', COLX + 50, 1008, { s: 22, w: 600, c: GOLD_D });
+  BioNet.arrow(c, COLX, 960, COLX, BAND.y[0] + 38, { col: 'rgba(143,90,12,.45)', w: 3, head: 14 });
+  // pöttyáram: a lánc pontjai a szintek körei
+  const pts = [[COLX, 972], [COLX, BAND.y[0]], [COLX, BAND.y[1]], [COLX, BAND.y[2]], [COLX, BAND.y[3]]];
+  BioNet.chain(c, { pts, rate: 30, keep: [1, e, e, e, e], t: st, seed: 11, speed: 190, r: 7, spread: 16, heat: { dx: 1, dy: -.32, dist: 330, life: 2.4 } });
+  // jelmagyarázat
+  BioNet.dot(c, 1000, 978, 9, RED, null); T('elszáll', 1020, 986, { s: 24, w: 700, c: RED });
+  BioNet.dot(c, 1000, 1018, 9, GOLD, GOLD_D); L.tx(lab('tovább') + ' ' + fmt(S56.eff) + ' %', 1020, 1026, { k: ['tovább', 'átadási hatékonyság'], s: 24, w: 700, c: GOLD_D });
+}
+function scene6(st) {
+  title('kérdés 6');
+  const vals = lvVals(), lt = clamp((st - S56.tl) / .8), lg = S56.log ? smooth(lt) : 1 - smooth(lt);
+  const u = clamp((st - .2) / 1.6);
+  const cols = ['#b9d58c', '#e9c27a', '#8fc3cf', '#e79a7c'];
+  const bars = BioNet.pyramid(L, { cx: 640, y: 960, W: 760, h: 120, gap: 12, vals, log: lg, decades: 4, min: 3, u, cols,
+    names: LVL.map((k) => nm(k)), nameX: 240, fmt: (v) => H('kJ', kJ(v)), vk: ['kJ', 'termelők energiája', 'átadási hatékonyság'], s: 24 });
+  // a tetején: „ilyen keskeny”
+  const top = bars[3];
+  if (lg < .5 && u >= 1) { al(1 - lg * 2); T('láthatatlan', top.x - 20, top.y + top.h / 2 - 40, { s: 22, w: 700, c: RED, a: 'right' }); al(1); }
+  stamp(lg > .5 ? 'log skála' : 'lin skála', 1310, 1036, { a: 'right' });
+  // hány nyúl kell egy rókához?
+  const e = effP(), ca = smooth((st - 2) / .6);
+  if (ca > 0) {
+    al(ca);
+    const x0 = 860, y0 = 150, w = 450;
+    card(x0, y0, w, 230, { bd: TEAL, bw: 2.5 });
+    T('egy rókához', x0 + 22, y0 + 44, { s: 26, w: 700, f: F.D, c: TEAL, max: w - 40 });
+    IC.róka(c, x0 + 56, y0 + 92, 56); T('róka egység', x0 + 100, y0 + 100, { s: 24, w: 700, c: INK });
+    const r1 = 1 / e, r2 = r1 * r1, d1 = Math.abs(r1 - Math.round(r1)) < 1e-9 ? 0 : 1;
+    IC.nyúl(c, x0 + 56, y0 + 142, 52); TH('nyúl egység', fmt(r1, d1), x0 + 100, y0 + 150, { s: 24, w: 700, c: INK });
+    IC.fű(c, x0 + 56, y0 + 192, 46); TH('fű egység', fmt(r2, 0), x0 + 100, y0 + 200, { s: 24, w: 700, c: INK });
+    al(1);
+  }
+}
+
+/* ════════════ 7. lépés: körforgás vs. egyirányú energia ════════════ */
+const S7 = { view: 'anyag', tv: -9 };
+function scene7(st) {
+  title('kérdés 7');
+  const vt = clamp((st - S7.tv) / .7), em = S7.view === 'energia' ? smooth(vt) : 1 - smooth(vt);   // 0: anyag, 1: energia
+  const am = 1 - em;
+  const kindsA = ['anyag', 'tápanyag'], kindsE = ['fény', 'energia'];
+  CYC.draw({ kinds: kindsA.concat(kindsE), edgeA: (e) => (kindsA.includes(e.kind) ? am : em) * smooth((st - .3) / .8),
+    nodeA: (n) => (n.id === 'nap' ? em : n.id === 'levegő' ? lerp(1, .25, em) : 1) });
+  // pöttyök
+  c.save();
+  CYC.flow(c, { t: st, kinds: ['anyag'], rate: 1.8, speed: 130, r: 7, col: CARBON, stroke: INK, a: am });
+  CYC.flow(c, { t: st, kinds: ['tápanyag'], rate: 1.2, speed: 110, r: 6, col: '#b8b56a', stroke: '#6b6a12', a: am });
+  CYC.flow(c, { t: st, kinds: ['fény'], rate: 4, speed: 160, r: 7, a: em });
+  CYC.flow(c, { t: st, kinds: ['energia'], rate: (e) => (e.from === 'növények' ? 1.4 : .6), speed: 130, r: 7, a: em });
+  for (const [id, rate] of [['növények', 3], ['állatok', 2], ['lebontók', 1.6]]) {
+    const n = CYC.N[id]; BioNet.puffs(c, { x: n.x + (id === 'lebontók' ? 0 : 0), y: n.y - n.r, rate, t: st, seed: id.length, col: RED, dx: .25, dy: -1, dist: 110, life: 1.6, spread: 50, r: 6, a: em });
+  }
+  c.restore();
+  // élcímkék
+  const elab = (k, x, y, a, col = MUT, o = {}) => {
+    if (a <= .01) return; al(a);
+    const oo = Object.assign({ s: 22, w: 650, c: col, a: 'center' }, o), w = L.measure(lab(k), oo).w + 14, sz = oo.s;
+    const x0 = oo.a === 'center' ? x - w / 2 : oo.a === 'right' ? x - w + 7 : x - 7;
+    c.fillStyle = 'rgba(247,241,229,.88)'; c.beginPath(); c.roundRect(x0, y - sz * .95, w, sz * 1.3, 8); c.fill();   // alátét az élek fölött
+    T(k, x, y, oo); al(1);
+  };
+  const ea = smooth((st - .8) / .6);
+  elab('fotoszintézis', 430, 380, am * ea, GREEN);
+  elab('táplálék', 560, 590, ea, INK);
+  elab('légzés', 940, 380, am * ea, CARBON);
+  elab('légzés', 735, 470, am * ea, CARBON, { a: 'left' });
+  elab('elhalt', 505, 745, ea, BROWN);
+  elab('elhalt', 875, 745, ea, BROWN);
+  elab('ásványi anyag', 430, 880, am * ea, '#6b6a12');
+  elab('hő', 380, 400, em * ea, RED, { s: 24, w: 700 });
+  elab('hő', 1110, 400, em * ea, RED, { s: 24, w: 700 });
+  elab('hő', 712, 672, em * ea, RED, { s: 24, w: 700 });
+  // nézetcím
+  const vk = em > .5 ? 'energia nézet' : 'anyag nézet';
+  L.pill(lab(vk), 1310, 150, { k: vk, s: 24, w: 700, a: 'right', c: '#fffaf1', bg: em > .5 ? GOLD_D : CARBON, bd: em > .5 ? GOLD_D : CARBON, pad: 12 });
+  // egyenletek
+  al(smooth((st - 1.5) / .6) * am);
+  const lw = L.measure(lab('légzés egyenlet'), { s: 22, w: 700 }).w;
+  card(1310 - lw - 40, 968, lw + 40, 70, { bd: CARBON });
+  T('légzés egyenlet', 1290, 1012, { s: 22, w: 700, c: CARBON, a: 'right' });
+  al(1);
+}
+
+/* ════════════ 8. lépés: faj kivétele, Yellowstone ════════════ */
+const S8 = { rm: [], tr: -9, ys: false, tys: -9, auto: true };
+function cascade8() { return S8.rm.length ? WEB.cascade(S8.rm.map((r) => r.id)) : { v: {}, d: {} }; }
+function scene8(st) {
+  title('kérdés 8');
+  const yt = clamp((st - S8.tys) / .7), ym = S8.ys ? smooth(yt) : 1 - smooth(yt);
+  // az automatikus bemutató: 1,5 mp-nél kivesszük a rókát
+  const rm = S8.auto && st > 1.5 ? [{ id: 'róka', t: 1.5 }] : S8.rm;
+  const last = rm.length ? rm[rm.length - 1].t : 0;
+  const res = rm.length ? WEB.cascade(rm.map((r) => r.id)) : { v: {}, d: {} };
+  if (ym < .999) {
+    GA = 1 - ym; c.save(); c.globalAlpha = 1 - ym;
+    levelLabels(1);
+    WEB.draw({ kinds: ['eszik', 'elhalt'], removed: rm.map((r) => r.id), edgeA: (e) => (e.kind === 'elhalt' ? .14 : 1) });
+    WEB.badges(res, { t: st - last - .3 });
+    // jelmagyarázat
+    c.globalAlpha = 1 - ym;
+    legend8(1310, 150);
+    if (!rm.length || S8.auto) { L.pill(lab('kattints'), 640, 1010, { k: 'kattints', s: 24, w: 700, a: 'center', c: INK, bg: CARD, bd: INK, pad: 12 }); }
+    stamp('modell', 1310, 1036, { a: 'right' });
+    c.restore(); GA = 1;
+  }
+  if (ym > .001) { GA = ym; c.save(); c.globalAlpha = ym; sceneYS(st); c.restore(); GA = 1; }
+  if (L.step === 7 && !S8.ys && L.pointer.pressed) {
+    const id = WEB.hit(L.pointer.px, L.pointer.py);
+    if (id) {
+      if (S8.auto) { S8.rm = st > 1.5 ? [{ id: 'róka', t: -9 }] : []; S8.auto = false; }
+      const i = S8.rm.findIndex((r) => r.id === id);
+      if (i >= 0) S8.rm.splice(i, 1); else S8.rm.push({ id, t: st });
+      if (S8.rm.length) S8.rm[S8.rm.length - 1].t = st;
+    }
+  }
+}
+function legend8(x, y) {
+  const up = L.measure(lab('több lesz'), { s: 24, w: 700 }).w, dn = L.measure(lab('kevesebb lesz'), { s: 24, w: 700 }).w;
+  T('több lesz', x, y, { s: 24, w: 700, c: TEAL, a: 'right' }); tri(x - up - 22, y - 8, true);
+  T('kevesebb lesz', x, y + 40, { s: 24, w: 700, c: RED, a: 'right' }); tri(x - dn - 22, y + 32, false);
+}
+function tri(x, y, up) { c.beginPath(); if (up) { c.moveTo(x, y - 10); c.lineTo(x + 11, y + 8); c.lineTo(x - 11, y + 8); } else { c.moveTo(x, y + 10); c.lineTo(x + 11, y - 8); c.lineTo(x - 11, y - 8); } c.closePath(); c.fillStyle = up ? TEAL : RED; c.fill(); }
+function sceneYS(st) {
+  const t = st - S8.tys;
+  T('yellowstone cím', 60, 150, { s: 28, w: 700, f: F.D, c: INK });
+  // idővonal-kártyák
+  const x0 = 60, w = 520;
+  card(x0, 190, w, 110);
+  L.tx(L.val('farkasok eltűnése'), x0 + 20, 238, { k: 'farkasok eltűnése', s: 30, w: 700, f: F.M, c: RED });
+  T('farkas ki', x0 + 130, 236, { s: 22, w: 600, c: INK, max: w - 150 });
+  L.tx(L.val('visszatelepítés') + '–96', x0 + 20, 284, { k: 'visszatelepítés', s: 30, w: 700, f: F.M, c: TEAL });
+  L.tx(L.val('visszatelepített farkasok') + ' ' + lab('farkas vissza'), x0 + 190, 282, { k: ['visszatelepített farkasok', 'farkas vissza'], s: 22, w: 600, c: INK, max: w - 210 });
+  // vapiti oszlopok
+  card(x0, 330, w, 400);
+  T('vapiti cím', x0 + 20, 372, { s: 24, w: 700, c: INK });
+  const v0 = num('vapitik 1995-ben'), v1 = num('vapitik 2013-ban'), hmax = 230, by = 650, g = smooth((t - .5) / 1);
+  const bar = (x, v, lbl, k, col) => { const h = hmax * v / v0 * g; rr(x, by - h, 110, h, 6); c.fillStyle = col; c.fill(); c.strokeStyle = INK; c.lineWidth = 2.5; c.stroke();
+    L.tx(fmt(Math.round(v)), x + 55, by - h - 12, { k, s: 24, w: 700, f: F.M, a: 'center' }); L.tx(lbl, x + 55, by + 32, { k, s: 22, w: 600, f: F.M, a: 'center', c: MUT }); };
+  bar(x0 + 70, v0, String(num('visszatelepítés')), 'vapitik 1995-ben', '#c9a27a');
+  bar(x0 + 300, v1, String(num('vapiti számlálás éve')), ['vapitik 2013-ban', 'vapiti számlálás éve'], '#c9a27a');
+  T('vapiti okok', x0 + 20, 712, { s: 22, w: 600, c: MUT, max: w - 40 });
+  // fűz kérdés
+  card(x0, 760, w, 120, { bd: OCHRE });
+  T('fűz kérdés', x0 + 20, 806, { s: 26, w: 700, f: F.D, c: INK });
+  stamp('vitatott', x0 + 20, 850, { c: OCHRE, bd: OCHRE, rotate: 0 });
+  // hálózat + kaszkád (farkas vissza)
+  const res = YS.cascade('farkas', { dir: 1 });
+  YS.draw({ ring: (n) => (n.id === 'farkas' ? TEAL : null) });
+  YS.badges(res, { t: t - 1, thr: .05 });
+  legend8(1310, 150);
+  stamp('modell', 1310, 1036, { a: 'right' });
+}
+
+/* ════════════ 9. lépés: összefoglalás ════════════ */
+function scene9(st) {
+  T('összegzés cím', 60, 82, { f: F.D, s: 42, w: 600 });
+  const cw = 610, ch = 400, xs = [60, 690], ys = [140, 580];
+  const ap = (i) => smooth((st - .2 - i * .35) / .5);
+  ['ö1', 'ö2', 'ö3', 'ö4'].forEach((k, i) => {
+    const x = xs[i % 2], y = ys[Math.floor(i / 2)]; al(ap(i));
+    card(x, y, cw, ch);
+    T(k, x + 24, y + 48, { s: 28, w: 700, f: F.D, max: cw - 48 });
+    c.save(); c.beginPath(); c.rect(x + 4, y + 66, cw - 8, ch - 70); c.clip();
+    if (i === 0) {    // nap → növény → állat, hő
+      const yy = y + 330, xs3 = [x + 110, x + 305, x + 500];
+      IC.nap(c, xs3[0], y + 170, 100); IC.növények(c, xs3[1], y + 170, 120); IC.állatok(c, xs3[2], y + 170, 120);
+      for (let k = 0; k < 2; k++) BioNet.arrow(c, xs3[k] + 20, yy, xs3[k + 1] - 20, yy, { col: 'rgba(143,90,12,.5)', w: 3, head: 14 });
+      BioNet.chain(c, { pts: [[xs3[0] - 60, yy], [xs3[1], yy], [xs3[2], yy]], rate: 6, keep: [1, .3, .25], t: st, seed: 4, speed: 130, r: 7, heat: { dx: .25, dy: -1, dist: 60, life: 1.4 } });
+    } else if (i === 1) {
+      BioNet.pyramid(L, { cx: x + cw / 2, y: y + ch - 30, W: 420, h: 60, gap: 8, vals: lvVals(), log: 1, decades: 4, cols: ['#b9d58c', '#e9c27a', '#8fc3cf', '#e79a7c'], values: false });
+    } else if (i === 2) {
+      const cx = x + cw / 2, cy = y + 240, R = 110;
+      c.strokeStyle = CARBON; c.lineWidth = 4; c.setLineDash([]); c.beginPath(); c.arc(cx, cy, R, 0, TAU); c.stroke();
+      for (let k = 0; k < 4; k++) { const a = k * TAU / 4 - Math.PI / 2 + .45; BioNet.arrow(c, cx + Math.cos(a - .12) * R, cy + Math.sin(a - .12) * R, cx + Math.cos(a) * R, cy + Math.sin(a) * R, { col: CARBON, w: 4, head: 18 }); }
+      for (let k = 0; k < 10; k++) { const a = k * TAU / 10 + st * .5; BioNet.dot(c, cx + Math.cos(a) * R, cy + Math.sin(a) * R, 7, CARBON, INK); }
+      IC.felhő(c, cx, cy - R, 70); IC.növények(c, cx - R, cy, 70); IC.állatok(c, cx + R, cy, 70); IC.lebontók(c, cx, cy + R, 60);
+    } else {
+      const res = WEB.cascade('róka');
+      c.translate(x + cw / 2 - 765 * .37, y + 78 - 205 * .37); c.scale(.37, .37);
+      WEB.draw({ kinds: ['eszik'], removed: ['róka'], labels: false });
+      WEB.badges(res, { t: 99 });
+    }
+    c.restore();
+  });
+  al(1);
+}
+
+/* ════════════ a lecke ════════════ */
+const sT = [];
+L = Lesson.create({
+  content: window.LESSON_CONTENT,
+  home: false,
+  resetCtx: true,
+  steps: [
+    { settle: 7,
+      enter(L) { S1.ch = 0; S1.tc = -9; },
+      controls(L) { L.button(lab('lánc gomb'), () => { S1.ch = 1 - S1.ch; S1.tc = L.st; }, 'lánc gomb'); } },
+    { settle: 6, enter(L) { S2.sel = null; S2.user = false; S2.selT = -9; } },
+    { settle: 8,
+      enter(L) { S3.man = null; },
+      controls(L) { L.slider({ label: lab('év csúszka'), k: 'év csúszka', min: 0, max: num('kísérlet hossza'), step: .1, value: num('kísérlet hossza'), format: (v) => fmt(v, 1), onInput: (v) => { S3.man = v; } }); } },
+    { settle: 11 },
+    { settle: 7,
+      enter(L) { S56.eff = num('átadási hatékonyság'); },
+      controls(L) { L.slider({ label: lab('hatékonyság csúszka'), k: 'hatékonyság csúszka', min: 5, max: 20, step: 1, value: num('átadási hatékonyság'), format: (v) => fmt(v) + ' %', onInput: (v) => { S56.eff = v; } }); } },
+    { settle: 4,
+      enter(L) { S56.eff = num('átadási hatékonyság'); S56.log = false; S56.tl = -9; },
+      controls(L) {
+        L.slider({ label: lab('hatékonyság csúszka'), k: 'hatékonyság csúszka', min: 5, max: 20, step: 1, value: num('átadási hatékonyság'), format: (v) => fmt(v) + ' %', onInput: (v) => { S56.eff = v; } });
+        const b = L.button(lab('log gomb'), () => { S56.log = !S56.log; S56.tl = L.st; b.classList.toggle('on', S56.log); }, 'log gomb');
+      } },
+    { settle: 5,
+      enter(L) { S7.view = 'anyag'; S7.tv = -9; },
+      controls(L) { const b = L.button(lab('nézet gomb'), () => { S7.view = S7.view === 'anyag' ? 'energia' : 'anyag'; S7.tv = L.st; b.classList.toggle('on', S7.view === 'energia'); }, 'nézet gomb'); } },
+    { settle: 5,
+      enter(L) { S8.rm = []; S8.auto = true; S8.ys = false; S8.tys = -9; },
+      controls(L) {
+        L.button(lab('vissza gomb'), () => { S8.rm = []; S8.auto = false; }, 'vissza gomb');
+        const b = L.button(lab('yellowstone gomb'), () => { S8.ys = !S8.ys; S8.tys = L.st; b.classList.toggle('on', S8.ys); }, 'yellowstone gomb');
+      } },
+    { settle: 3 },
+  ],
+  init(Lx) {
+    L = Lx; c = L.ctx;
+    makeNets();
+    S56.eff = num('átadási hatékonyság');
+    window.__bio = { S1, S2, S3, S56, S7, S8, WEB, YS, CYC };
+  },
+  draw(Lx) {
+    L = Lx; c = L.ctx; GA = 1; background();
+    const sp = L.sp;
+    if (L.step >= 0) sT[L.step] = L.st;
+    const SC = [scene1, scene2, scene3, scene4, scene5, scene6, scene7, scene8, scene9];
+    for (let i = 0; i < SC.length; i++) {
+      const w = clamp(1 - Math.abs(sp - i) * 1.6); if (w <= .005) continue;
+      GA = w; c.save(); c.globalAlpha = w; SC[i](sT[i] == null ? 99 : sT[i]); c.restore();
+    }
+    c.globalAlpha = 1;
+  },
+});
+
+/* QA: számolt ↔ rajzolt érték */
+L.checks = () => {
+  const o = [];
+  const lv = WEB.levels();
+  o.push({ name: 'táplálkozási szintek: fű 1, nyúl 2, róka 3, héja 3,5', ok: lv['fű'] === 1 && lv['nyúl'] === 2 && lv['róka'] === 3 && Math.abs(lv['héja'] - 3.5) < 1e-9, got: [lv['fű'], lv['nyúl'], lv['róka'], lv['héja']].join(), want: '1,2,3,3.5' });
+  const r1 = WEB.cascade('héja');
+  o.push({ name: 'héja ki: cinege ↑, levéltetű ↓, nyúl ↑', ok: r1.v['cinege'] > .5 && r1.v['levéltetű'] < 0 && r1.v['nyúl'] > 0, got: JSON.stringify(r1.v), want: 'cinege+, levéltetű−, nyúl+' });
+  const r2 = WEB.cascade('lebontók');
+  o.push({ name: 'lebontók ki: a termelők és minden fogyasztó ↓', ok: ['fű', 'tölgy', 'nyúl', 'egér', 'róka'].every((k) => r2.v[k] < 0), got: JSON.stringify(r2.v), want: 'mind −' });
+  const r3 = YS.cascade('farkas', { dir: 1 });
+  o.push({ name: 'farkas be: vapiti ↓, fűz ↑, hód ↑', ok: r3.v['vapiti'] < 0 && r3.v['fűz'] > 0 && r3.v['hód'] > 0, got: JSON.stringify(r3.v), want: 'vapiti−, fűz+, hód+' });
+  const v = lvVals(), e = effP();
+  o.push({ name: 'piramis: szintenként × hatékonyság', ok: Math.abs(v[3] - num('termelők energiája') * e * e * e) < 1e-9 && Math.abs(v[1] / v[0] - e) < 1e-12, got: v.join(' / '), want: 'v0 · e^k' });
+  const m0 = num('fűz kezdeti tömege'), m1 = num('fűz végső tömege');
+  o.push({ name: 'fűz: a görbe végpontja = mért érték', ok: Math.abs(m0 * Math.pow(m1 / m0, 1) - m1) < 1e-9, got: m1, want: m1 });
+  const fs = num('levegőből származó rész') + num('vízből származó rész') + num('talajból származó rész');
+  o.push({ name: 'szárazanyag-részek összege 100 %', ok: Math.abs(fs - 100) < 1e-9, got: fs, want: 100 });
+  return o;
+};
+/* QA: szélső állapotok (tools/qa_lesson.py --states) */
+function setEff(L, v) { const sl = L.sliders['hatékonyság csúszka']; if (sl) sl.set(v, { fire: true }); else S56.eff = v; }
+window.__qaStates = {
+  1: [{ name: 'lanc2', set(L) { S1.ch = 1; S1.tc = -9; } }],
+  2: [{ name: 'heja', set(L) { S2.sel = 'héja'; S2.user = true; S2.selT = -9; } }, { name: 'lebontok', set(L) { S2.sel = 'lebontók'; S2.user = true; S2.selT = -9; } },
+      { name: 'tolgy', set(L) { S2.sel = 'tölgy'; S2.user = true; S2.selT = -9; } }],
+  3: [{ name: 'ev0', set(L) { S3.man = 0; } }, { name: 'ev2', set(L) { S3.man = 2.5; } }],
+  5: [{ name: 'eff5', set(L) { setEff(L, 5); } }, { name: 'eff20', set(L) { setEff(L, 20); } }],
+  6: [{ name: 'log', set(L) { S56.log = true; S56.tl = -9; } }, { name: 'eff20', set(L) { setEff(L, 20); } }, { name: 'eff5log', set(L) { setEff(L, 5); S56.log = true; S56.tl = -9; } }],
+  7: [{ name: 'energia', set(L) { S7.view = 'energia'; S7.tv = -9; } }],
+  8: [{ name: 'heja-ki', set(L) { S8.auto = false; S8.rm = [{ id: 'héja', t: -9 }]; } }, { name: 'lebontok-ki', set(L) { S8.auto = false; S8.rm = [{ id: 'lebontók', t: -9 }]; } },
+      { name: 'fu-nyul-ki', set(L) { S8.auto = false; S8.rm = [{ id: 'fű', t: -9 }, { id: 'nyúl', t: -9 }]; } },
+      { name: 'yellowstone', set(L) { S8.ys = true; S8.tys = -9; } }],
+};
+})();
+</script>
+</body>
+</html>
