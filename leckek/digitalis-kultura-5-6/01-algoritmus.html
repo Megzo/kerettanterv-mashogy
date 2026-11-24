@@ -289,11 +289,29 @@ const TtTipp = (() => {
   return { bind, STAMP, stamp, Tip, tipReset, panelVeil, veilIf, tipGuess, tipHide, tipControls, tipU, rhythm, tipHead, tipRow, tipFeedback };
 })();
 /* ── MODUL VÉGE: TtTipp ── */
-/* ── MODUL: Blokkprogram (DigBlock) · forrás: digitalis-kultura-5-6/02-ciklus, 2026-11-24 ── */
+/* ── MODUL: Blokkprogram (DigBlock) · forrás: digitalis-kultura-5-6/02-ciklus, 2026-11-24 · v1.1 ── */
 /* A digitális kultúra 5–6. sorozat saját blokknyelve (terv 4.2, szerződés 19.): program-adatszerkezet, determinisztikus
    értelmező (futás-nyomvonal), szerkesztő (paraméter, húzás, paletta, töréspont), futásóra, változódoboz, folyamatábra,
    pszeudokód. Csak a Lesson motorra épül (L.ctx, L.tx, L.measure, L.lab, L.content, L.pointer, L.button, L.slider, L.st,
    Lesson.U, Lesson.FONTS); a lecke kódjára nem hivatkozik. A robot (világ) külön modul: DigRobot.
+
+   VÁLTOZÁSNAPLÓ (a v1.0 hívásai változatlanul működnek)
+   v1.1 (2026-11-24, a 01, 02, 03 metrikasora alapján):
+     · run: a ciklus minden új köre, az eseménykezelő és a saját blokk minden indítása törli a törzse alatti blokkok
+       IGAZ/HAMIS és „#. kör” jelzését (mk) – ismétlésen belüli beágyazott „ha”-nál nem marad kint az előző kör jelölése.
+     · def: {proc: spec, params: [név…]} – saját blokk, amelynek törzse blokkprogram (eljárás); body ≥ 1 – saját
+       tartalmazó blokk, a törzse lefut (v1.0-ban egyik sem futott, csak a world.act).
+     · világ-megállás: act → {s, dur, halt} vagy world.halt(s, info) → a futás leáll (end: 'világ', R.halt); a hibás
+       megállás blokkja nem kap pipát; a szerkesztő jelzi ('<fajta> hiba' / '<fajta> felirat', ha van ilyen kulcs).
+     · E.setParam/setArg/move/insert/remove alapból azonnal rendez (a QA-állapotban nem kell E.set(E.prog())); animálva:
+       utolsó paraméter {anim: true}. Új: E.snap(), E.busy() (idle()-hez).
+     · érzékelés: a 'sense'-es saját blokk 'érték' alakban a nyers értéket adja (v1.0: logikaivá alakította), a sense
+       lehet függvény (args → név); world.sense(s, név, args, {t, id}); a frame-ek reads: {név: érték} mezője a futás
+       közben olvasott szenzorértékek; run o.s0: a világ kezdőállapota (W.init() helyett).
+     · szerkesztő: a futási hiba felirata alapból a blokk MELLÉ kerül (v1.0: alá, a következő blokkot takarta) –
+       E.draw({errAt: 'mellett' | 'alatt' | {x, y} | false}); opClick: a reláció / logikai / aritmetikai jel kattintásra
+       cserélhető (< ≤ > ≥ =; és vagy; + − · :).
+     · flow({bare: true}): a „ha”/„amíg” rombuszában csak a feltétel szövege áll.
 
    BEKÖTÉS (egyszer, legfelső szinten):  DigBlock.bind({ L: () => L, ga: () => GA });   // ga: a lecke alap-alfája
    ALFA: minden rajzoló a globalAlpha-t ga() · a értékre ÁLLÍTJA (nem szoroz), a vonalstílust visszaállítja.
@@ -339,44 +357,70 @@ const TtTipp = (() => {
    DigBlock.def(op, {args, body: 0, shape: 'utasítás', world: true}) – lecke-saját blokk ('saját' kategória, a
         felirata '<op> blokk'). A 'kattintáskor'/'gombra' célja és a 'tollszín' értéke választó: az opts a példányban
         adható meg ({v: 'alma', opts: ['alma', 'körte']}).
+      Változatok (v1.1):
+        world: true (alap)   a világ hajtja végre: world.act(s, op, [paraméterértékek]).
+        proc: spec           eljárás: a hívás egy frame (tick), utána a spec utasításai futnak (frame-id: '<hívás id>.d.<út>',
+                             a szerkesztő ilyenkor a hívó blokkot keretezi). params: ['hossz', …] – a paraméterek a hívás
+                             idejére ilyen nevű változók (['változó', 'hossz']), utána a régi érték visszaáll.
+        body: 1|2            saját tartalmazó blokk: a fejléc (world: true → act, különben tick), utána a törzs(ek) sorban.
+        sense: 'név' | (args) => 'név', world: false   érzékelő blokk: shape 'feltétel' → logikai, 'érték' → a nyers
+                             érték (world.sense(s, név, args, {t, id})).
 
    ── Futás (determinisztikus nyomvonal) ──
    const R = DigBlock.run(P, world, o)
-      world: {init() → s, act(s, op, args) → {s, dur} | null, sense(s, név) → érték | undefined, lerp(s0, s1, u) → s}
+      world: {init() → s, act(s, op, args) → {s, dur, halt?} | null, sense(s, név, args, {t, id}) → érték | undefined,
+              lerp(s0, s1, u) → s, halt?(s, {id, op, t}) → null | 'fajta' | {kind, ok, k}}
         (DigRobot.world ezt adja; world nélkül csak a vezérlés, az adat és a kimenet fut)
+        MEGÁLLÁS (v1.1): ha az act eredményében halt áll, vagy a world.halt(s1) nem null, a frame után a futás leáll:
+        end = 'világ', R.halt = {id, kind, ok (alap: false – hiba; true – pl. „célba ért”), k (felirat-kulcs), t (a
+        frame vége)}. Pl. ütközésre: halt: (s) => (s.bump ? 'ütközés' : null); célra: {kind: 'cél', ok: true}.
       o = {maxSteps: 2000, seed: 1, tick: .15 (egy vezérlő/adat blokk látható ideje, mp), sayDur: 1, askDur: 1,
            vars: {kezdőértékek}, answers: ['11', {k: 'tizenegy válasz'}…] (a 'kérdezd' válaszai sorban),
-           events: [{t, name: 'kattintáskor'|'gombra', target}] (az indítás után; egy szál: a kezelők sorban futnak)}
-      → R = {frames: [{t0, t1, id, op, s0, s1, vars, val, test: true|false|null, err, mk: {loops: {id: kör}, tests:
-             {id: logikai}}}], T, end: 'kész' | 'állj' | 'korlát' (maxSteps – „végtelen ciklus?”) | 'hiba',
-             err: {id (a hibás blokk vagy kifejezés), sid (az utasítás), kind}, s0 (a világ kezdőállapota)}
+           events: [{t, name: 'kattintáskor'|'gombra', target}] (az indítás után; egy szál: a kezelők sorban futnak),
+           s0: a világ kezdőállapota (alap: world.init()) – pl. egy ütemnyi kiértékelés egy adott helyzetből}
+      → R = {frames: [{t0, t1, id, op, s0, s1, vars, val, test: true|false|null, err, halt, reads: {név: érték} | null
+             (a frame alatt olvasott szenzorok), mk: {loops: {id: kör}, tests: {id: logikai}}}], T,
+             end: 'kész' | 'állj' | 'korlát' (maxSteps – „végtelen ciklus?”) | 'hiba' | 'világ' (a világ megállította),
+             err: {id (a hibás blokk vagy kifejezés), sid (az utasítás), kind}, halt (fent) | null, s0 (kezdőállapot)}
       A ciklus fejléce minden körben kap egy frame-et (val: a kör sorszáma), a feltétel minden kiértékeléskor (test).
+      Az mk a futó blokkok jelzése: új ciklus-körnél (és eseménykezelő / saját blokk indításakor) a törzs alatti
+      blokkok jelzése törlődik, így csak az aktuális körben kiértékelt feltételek IGAZ/HAMIS-a látszik.
    R.at(t) → {i, frame, id (a futó blokk, a frame-ek közti szünetben és a végén null), u (0..1 a frame-en belül),
               s (a világ állapota: world.lerp), mk, vars: R.varsAt(t)}      tisztán az időből
    R.varsAt(t) → {név: {v, pv (előző érték), tc (a változás ideje)}} · R.doneAt(t) → Set(id) (legalább egyszer lefutott)
    R.next(t) / R.prev(t) → a következő / előző blokkhatár ideje („egy lépés”) · R.until(t, pred) → az első t-nél
       későbbi frame kezdete, ahol pred(frame) igaz (töréspont: f => bp.has(f.id)), vagy null
    R.count(t, pred) → a t-ig lefutott frame-ek száma, amelyekre pred igaz
-   DigBlock.trace(frames, {T, end, err, s0, hist, world}) – nyomvonal-objektum kész frame-ekből (a DigRobot.motor is ezt adja)
+   DigBlock.trace(frames, {T, end, err, s0, hist, world, halt}) – nyomvonal-objektum kész frame-ekből (a DigRobot.motor
+      is ezt adja)
 
    ── Szerkesztő ──
    const E = DigBlock.editor(L, {x, y, w, h, prog: P, edit: 'nincs' | 'paraméter' | 'sorrend' | 'teljes',
         palette: [op | spec…] (csak 'teljes'), maxBlocks: 20, s: 1 (méretszorzó, ≥ 1 – 22 px), bpClick: false (a
-        kategóriasávra kattintva töréspont), onChange(P)})
+        kategóriasávra kattintva töréspont), opClick: false | true | [op…] (v1.1, 'paraméter' szinttől: a kifejezés
+        jelére kattintva a következő rokon jel: < ≤ > ≥ = · és vagy · + − · : – tömbnél csak a felsoroltak között;
+        a jel köré halvány keret kerül; a körben szereplő minden jel '<op> blokk' kulcsa kell a .md-be), onChange(P)})
       'paraméter': a literál paraméter kattintásra léptet (szám: a kapszula bal fele −, a jobb fele +, a min/max/step vagy
       az opts szerint; választó: a következő érték). 'sorrend': + a blokk húzható (törzsbe, törzsből, sorrendben; az
       eseményblokk nem). 'teljes': + paletta (új blokk húzással), törlés: a palettára vagy a szerkesztőn kívülre húzva.
    E.update()                a draw-ból, csak a látható, aktív jelenetben (L.pointer.events alapján)
-   E.draw({a, run: R, t, hi: [id], dim: [id], place: (id, kind) => {dx, dy, a}, marks: true, mx})
+   E.draw({a, run: R, t, hi: [id], dim: [id], place: (id, kind) => {dx, dy, a}, marks: true, mx, errAt, haltMark})
       a futó blokk cinóber keretet kap, a lefutott halvány pipát; a ciklusfejléc mellett „#. kör”, a feltétel mellett
       IGAZ / HAMIS; hiba: cinóber keret + '<fajta> hiba'; lépéskorlát: 'korlát felirat'. mx: a jelzések x-e (alap: a
       blokk jobb széle + 12). place: lecke-saját mozgatás/áttűnés blokkonként (kind: 'blokk'|'vége'|'közép'|'üres').
+      errAt (v1.1): a hibafelirat helye – 'mellett' (alap: a jelzések sorában), 'alatt' (v1.0: a blokk alatt),
+      {x, y} (bal széle, függőleges közepe), false (nincs – a lecke rajzolja). Világ-megállás (R.halt): a hibásnál
+      cinóber keret + '<fajta> hiba', a sikeresnél kékeszöld '<fajta> felirat' – csak ha a kulcs megvan a .md-ben;
+      haltMark: false → semmi (a lecke rajzolja). Eljárás belsejében (id '….d.…') a hívó blokk a futó.
    E.prog() → P (másolat) · E.set(P) (animáció nélkül – enter()-ben, QA-állapotban) · E.version (változáskor nő) ·
    E.hover (a mutató alatti elem) · E.dragging · E.bp (Set) · E.toggleBp(id)
-   E.hit(px, py) → {id, part: 'blokk'|'paraméter'|'sín'|'paletta'|null, i} · E.box(id) → {x, y, w, h, fb: teljes doboz}
+   E.hit(px, py) → {id, part: 'blokk'|'paraméter'|'operátor'|'sín'|'paletta'|null, i} · E.box(id) → {x, y, w, h,
+      fb: teljes doboz}
    E.cursor() → 'pointer' | 'grab' | 'grabbing' | null  (a lecke állítja be: L.canvas.style.cursor – több szerkesztőnél is)
    E.setParam(id, i, v) · E.setArg(id, i, spec) · E.move(id, parentId | null, ág (0|1), index) · E.insert(spec,
-      parentId | null, ág, index) · E.remove(id)   – programozott szerkesztés (gombról, QA-állapotból); onChange-et hív
+      parentId | null, ág, index) · E.remove(id)   – programozott szerkesztés (gombról, QA-állapotból); onChange-et hív.
+      v1.1: azonnal a helyére rendez (QA-állapotban nem fotóz félúton); áttűnéssel: utolsó paraméter {anim: true}.
+   E.snap() – a folyamatban lévő áttűnés azonnali befejezése · E.busy() → true, amíg blokk áttűnik (idle()-hez)
    Határ (v1.0): kifejezést nem lehet húzni (a feltétel cseréje E.setArg-gal, gombról).
 
    ── Segédek ──
@@ -393,7 +437,8 @@ const TtTipp = (() => {
       {név: érték}; változáskor a régi érték felfelé kiugrik, az új alulról beúszik (.3 mp).
    DigBlock.flow(L, P, {x, y, a, hi: id, edge: true}) → {w, h, boxes}  ugyanaz folyamatábrán: ovális start ('<esemény>
       blokk' vagy 'start felirat') és vége ('stop felirat'), téglalap, rombusz (elágazás, ciklus), visszacsatoló nyíl;
-      edge: az ágak felirata ('igaz felirat' / 'hamis felirat'). Kb. 12 csomópontig.
+      edge: az ágak felirata ('igaz felirat' / 'hamis felirat'). bare (v1.1): a „ha”, „ha-különben”, „amíg” rombuszában
+      csak a feltétel szövege (a „ha … akkor” keret nélkül). Kb. 12 csomópontig.
    DigBlock.text(P) → [{s, k, depth, id}]   pszeudokód-sorok a .md feliratokból (a hívó írja ki L.tx-szel)
    DigBlock.fmt(v) → '51,4' / '„alma”' / 'IGAZ' (a kiírt érték) · DigBlock.sfx(n, 'szor') → 'szor'|'szer'|'ször'
    DigBlock.CAT → a kategóriaszínek (szerződés 19.)
@@ -492,14 +537,14 @@ const DigBlock = (() => {
     if (!expr && B.shape === 'esemény') n.open = sp.length <= 1 + na;
     return n;
   }
-  function ids(P) {
+  function ids(P, pre0) {
     const rec = (list, pre) => list.forEach((n, j) => {
       n.id = pre + j;
       const ex = (m, p) => m.args.forEach((a, i) => { if (a.op) { a.id = p + '.p' + i; ex(a, a.id); } });
       ex(n, n.id);
       n.body.forEach((L0, b) => rec(L0, n.id + (b ? '.a.' : '.b.')));
     });
-    rec(P.body, '');
+    rec(P.body, pre0 || '');
     return P;
   }
   function prog(spec) {
@@ -575,10 +620,10 @@ const DigBlock = (() => {
     const T = info.T != null ? info.T : frames.length ? frames[frames.length - 1].t1 : 0;
     const wl = info.world && info.world.lerp ? info.world.lerp : (a, b, u) => (u >= 1 ? b : a);
     const hist = info.hist || {}, first = {};
-    frames.forEach((f) => { if (f.id != null && first[f.id] == null) first[f.id] = f.t1; });
+    frames.forEach((f) => { if (f.id != null && first[f.id] == null && !(f.halt && !f.halt.ok)) first[f.id] = f.t1; });
     const idx = (t) => { let lo = 0, hi = frames.length - 1, r = -1; while (lo <= hi) { const m = (lo + hi) >> 1; if (frames[m].t0 <= t + 1e-9) { r = m; lo = m + 1; } else hi = m - 1; } return r; };
     const R = {
-      frames, T, end: info.end || 'kész', err: info.err || null, s0: info.s0, hist,
+      frames, T, end: info.end || 'kész', err: info.err || null, halt: info.halt || null, s0: info.s0, hist,
       varsAt(t) {
         const o = {};
         for (const k in hist) {
@@ -606,16 +651,23 @@ const DigBlock = (() => {
     const maxSteps = o.maxSteps || 2000, tick = o.tick == null ? .15 : o.tick, rnd = U.rng(o.seed || 1);
     const W = world || { init: () => ({}), act: () => null, sense: () => undefined, lerp: (a, b, u) => (u >= 1 ? b : a) };
     const frames = [], hist = {};
-    let s = W.init(), t = 0, end = 'kész', err = null, ai = 0;
+    let s = o.s0 !== undefined ? o.s0 : W.init(), t = 0, end = 'kész', err = null, ai = 0, halt = null, reads = null;
     const s0 = s;
     let vars = Object.assign({}, o.vars || {}), mk = { loops: {}, tests: {} };
     for (const k in vars) hist[k] = [{ t: 0, v: vars[k] }];
     const setVar = (k, v) => { vars = Object.assign({}, vars, { [k]: v }); (hist[k] = hist[k] || []).push({ t, v }); };
     const setMk = (kind, id, v) => { const m = Object.assign({}, mk[kind]); if (v === undefined) delete m[id]; else m[id] = v; mk = Object.assign({}, mk, { [kind]: m }); };
+    /* v1.1: a blokk törzse alatti jelzések törlése (új ciklus-kör, eseménykezelő, saját blokk indítása) */
+    const clearUnder = (id) => {
+      const p = id + '.', lo = Object.assign({}, mk.loops), te = Object.assign({}, mk.tests); let ch = false;
+      for (const k in lo) if (k.startsWith(p)) { delete lo[k]; ch = true; }
+      for (const k in te) if (k.startsWith(p)) { delete te[k]; ch = true; }
+      if (ch) mk = Object.assign({}, mk, { loops: lo, tests: te });
+    };
     function push(n, dur, s1, x = {}) {
       if (frames.length >= maxSteps) { end = 'korlát'; throw STOP; }
-      const f = { t0: t, t1: t + Math.max(0, dur), id: n.id, op: n.op, s0: s, s1: s1 || s, vars, val: x.val, test: x.test == null ? null : x.test, err: x.err || null, mk };
-      frames.push(f); t = f.t1; s = f.s1; return f;
+      const f = { t0: t, t1: t + Math.max(0, dur), id: n.id, op: n.op, s0: s, s1: s1 || s, vars, val: x.val, test: x.test == null ? null : x.test, err: x.err || null, halt: null, reads, mk };
+      reads = null; frames.push(f); t = f.t1; s = f.s1; return f;
     }
     function fail(n, sub, kind) { err = { id: sub.id || n.id, sid: n.id, kind }; push(n, tick * 2, null, { err }); end = 'hiba'; throw STOP; }
     const numOf = (v, n, sub) => {
@@ -624,13 +676,15 @@ const DigBlock = (() => {
       return fail(n, sub, 'típus');
     };
     const isNum = (v) => typeof v === 'number' || (typeof v === 'string' && /^-?\d+(\.\d+)?$/.test(v.trim().replace('−', '-').replace(',', '.')));
+    const argv = (n) => n.args.map((a) => (a.op ? ev(a, n) : a.k && n.op !== 'lépés' ? lab(a.k) : a.v));
+    const sense = (name, args, n) => { const v = W.sense(s, name, args, { t, id: n.id }); if (v !== undefined) (reads = reads || {})[name] = v; return v; };
     function ev(a, n) {
       if (!a.op) return a.k ? lab(a.k) : a.v;
       const x = a.args, B = BLOCKS[a.op];
       switch (a.op) {
         case 'változó': { const k = x[0].v; if (!(k in vars)) return fail(n, a, 'változó'); return vars[k]; }
         case 'válasz': return vars['válasz'] == null ? '' : vars['válasz'];
-        case 'érzékelő': { const v = W.sense(s, x[0].v); if (v === undefined) return fail(n, a, 'érzékelő'); return v; }
+        case 'érzékelő': { const v = sense(x[0].v, [], a); if (v === undefined) return fail(n, a, 'érzékelő'); return v; }
         case '+': return numOf(ev(x[0], n), n, a) + numOf(ev(x[1], n), n, a);
         case '−': return numOf(ev(x[0], n), n, a) - numOf(ev(x[1], n), n, a);
         case '·': return numOf(ev(x[0], n), n, a) * numOf(ev(x[1], n), n, a);
@@ -646,32 +700,58 @@ const DigBlock = (() => {
         case 'összefűz': return String(fmtRaw(ev(x[0], n))) + String(fmtRaw(ev(x[1], n)));
         case 'véletlen': { const p = Math.round(numOf(ev(x[0], n), n, a)), q = Math.round(numOf(ev(x[1], n), n, a)); return Math.min(p, q) + Math.floor(rnd() * (Math.abs(q - p) + 1)); }
         default:
-          if (B && B.sense) { const v = W.sense(s, B.sense); if (v === undefined) return fail(n, a, 'érzékelő'); return !!v; }
+          if (B && B.sense) {
+            const av = argv(a), nm = typeof B.sense === 'function' ? B.sense(av) : B.sense;
+            const v = sense(nm, av, a); if (v === undefined) return fail(n, a, 'érzékelő');
+            return B.shape === 'feltétel' ? !!v : v;
+          }
           return fail(n, a, 'ismeretlen');
       }
     }
     const fmtRaw = (v) => (typeof v === 'number' ? (Number.isInteger(v) ? String(v) : String(+v.toFixed(6)).replace('.', ',')).replace('-', '−') : typeof v === 'boolean' ? lab(v ? 'igaz felirat' : 'hamis felirat') : v);
     function exec(list) { for (const n of list) one(n); }
+    /* a világ hajtja végre; utána megállhat (act → halt, world.halt(s1)) */
+    function act(n) {
+      const r = W.act(s, n.op, argv(n));
+      if (!r) return fail(n, n, 'ismeretlen');
+      const f = push(n, r.dur, r.s);
+      const h = r.halt != null ? r.halt : W.halt ? W.halt(f.s1, { id: n.id, op: n.op, t: f.t1 }) : null;
+      if (h) {
+        halt = typeof h === 'object' ? { kind: h.kind, ok: !!h.ok, k: h.k || null } : { kind: String(h), ok: false, k: null };
+        halt.id = n.id; halt.t = f.t1; halt.k = halt.k || halt.kind + (halt.ok ? ' felirat' : ' hiba');
+        f.halt = halt; end = 'világ'; throw STOP;
+      }
+    }
+    /* eljárás (def … proc): hívás-frame, a paraméterek változóként, a törzs '<id>.d.…' azonosítókkal */
+    function call(n, B) {
+      const av = argv(n), ps = B.params || [], old = {};
+      clearUnder(n.id); push(n, tick);
+      const Q = ids(prog(B.proc), n.id + '.d.');
+      ps.forEach((p, i) => { old[p] = p in vars ? { v: vars[p] } : null; vars = Object.assign({}, vars, { [p]: av[i] }); });
+      exec(Q.body);
+      if (ps.length) { const v2 = Object.assign({}, vars); ps.forEach((p) => { if (old[p]) v2[p] = old[p].v; else delete v2[p]; }); vars = v2; }
+    }
     function one(n) {
       const B = BLOCKS[n.op], x = n.args;
-      if (B.shape === 'esemény') { push(n, tick); exec(n.body[0]); return; }
+      if (B.shape === 'esemény') { clearUnder(n.id); push(n, tick); exec(n.body[0]); return; }
       switch (n.op) {
         case 'ismételd': {
           const N = Math.round(numOf(ev(x[0], n), n, x[0]));
-          for (let k = 1; k <= N; k++) { setMk('loops', n.id, k); push(n, tick, null, { val: k }); exec(n.body[0]); }
+          for (let k = 1; k <= N; k++) { clearUnder(n.id); setMk('loops', n.id, k); push(n, tick, null, { val: k }); exec(n.body[0]); }
           setMk('loops', n.id, undefined); return;
         }
         case 'amíg': {
           for (let k = 1; ; k++) {
+            clearUnder(n.id);
             const v = !!ev(x[0], n); setMk('tests', n.id, v); if (v) setMk('loops', n.id, k);
             push(n, tick, null, { test: v, val: v ? k : null });
             if (!v) break; exec(n.body[0]);
           }
           setMk('loops', n.id, undefined); return;
         }
-        case 'mindig': for (let k = 1; ; k++) { setMk('loops', n.id, k); push(n, tick, null, { val: k }); exec(n.body[0]); }
-        case 'ha': { const v = !!ev(x[0], n); setMk('tests', n.id, v); push(n, tick, null, { test: v }); if (v) exec(n.body[0]); return; }
-        case 'ha-különben': { const v = !!ev(x[0], n); setMk('tests', n.id, v); push(n, tick, null, { test: v }); exec(v ? n.body[0] : n.body[1]); return; }
+        case 'mindig': for (let k = 1; ; k++) { clearUnder(n.id); setMk('loops', n.id, k); push(n, tick, null, { val: k }); exec(n.body[0]); }
+        case 'ha': { clearUnder(n.id); const v = !!ev(x[0], n); setMk('tests', n.id, v); push(n, tick, null, { test: v }); if (v) exec(n.body[0]); return; }
+        case 'ha-különben': { clearUnder(n.id); const v = !!ev(x[0], n); setMk('tests', n.id, v); push(n, tick, null, { test: v }); exec(v ? n.body[0] : n.body[1]); return; }
         case 'várj': push(n, Math.max(0, numOf(ev(x[0], n), n, x[0]))); return;
         case 'állj': push(n, tick); end = 'állj'; throw STOP;
         case 'legyen': { const v = ev(x[1], n); setVar(x[0].v, v); push(n, tick, null, { val: v }); return; }
@@ -685,11 +765,11 @@ const DigBlock = (() => {
         }
         case 'mondd': { const v = ev(x[0], n); push(n, o.sayDur == null ? 1 : o.sayDur, null, { val: v }); return; }
         default: {
-          if (!B.world) return fail(n, n, 'ismeretlen');
-          const args = x.map((a) => (a.op ? ev(a, n) : a.k && n.op !== 'lépés' ? lab(a.k) : a.v));
-          const r = W.act(s, n.op, args);
-          if (!r) return fail(n, n, 'ismeretlen');
-          push(n, r.dur, r.s);
+          if (B.proc) return call(n, B);
+          if (!B.world && !B.body) return fail(n, n, 'ismeretlen');
+          if (B.body) clearUnder(n.id);
+          if (B.world) act(n); else push(n, tick);
+          if (B.body) n.body.forEach((L0) => exec(L0));
         }
       }
     }
@@ -703,7 +783,7 @@ const DigBlock = (() => {
         for (const h of hs) one(h);
       }
     } catch (e) { if (e !== STOP) throw e; }
-    return trace(frames, { T: t, end, err, s0, hist, world: W });
+    return trace(frames, { T: t, end, err, s0, hist, world: W, halt });
   }
 
   /* ── rajzelemek ── */
@@ -732,6 +812,7 @@ const DigBlock = (() => {
 
   /* ── szerkesztő ── */
   const LEVEL = { nincs: 0, paraméter: 1, sorrend: 2, teljes: 3 };
+  const OPFAM = [['<', '≤', '>', '≥', '='], ['és', 'vagy'], ['+', '−', '·', ':']];
   const warned = new Set();
   function editor(L, o = {}) {
     const S = Math.max(1, o.s || 1);
@@ -752,6 +833,13 @@ const DigBlock = (() => {
       return { s: fmt(a.v), k: null, mono: false };
     }
     function metaOf(n, i) { return Object.assign({}, BLOCKS[n.op].args[i], n.args[i].m || {}); }
+    /* v1.1: a kifejezés jele kattintásra cserélhető (opClick) */
+    const opNext = (op) => {
+      const f = OPFAM.find((F0) => F0.includes(op)); if (!f) return null;
+      const g = Array.isArray(o.opClick) ? f.filter((q) => o.opClick.includes(q)) : f;
+      return g.length > 1 && g.includes(op) ? g[(g.indexOf(op) + 1) % g.length] : null;
+    };
+    const opEd = (n) => !!(o.opClick && lvl >= 1 && n && n.op && opNext(n.op));
     function editable(n, i) {
       if (lvl < 1) return false; const a = n.args[i]; if (a.op) return false; const m = metaOf(n, i);
       if (m.lock || m.hide) return false;
@@ -890,6 +978,7 @@ const DigBlock = (() => {
         if (px < it.x - 4 || px > it.x + it.w + 4 || py < it.y - 2 || py > it.y + it.h + 2) continue;
         const rs = placeParts(it.inl, it.x + D.strip + 14 * S, it.y + it.h / 2, [], it.node);
         for (const r of rs) if (r.p.t === 'lit' && r.p.ed && px >= r.x - 4 && px <= r.x + r.w + 4 && py >= r.y - 6 && py <= r.y + r.h + 6) return { part: 'paraméter', id: r.owner.id, i: r.p.i, r, item: it };
+        for (const r of rs) if (r.p.t === 'tx' && opEd(r.owner) && px >= r.x - 8 * S && px <= r.x + r.w + 8 * S && Math.abs(py - r.cy) <= D.ch / 2) return { part: 'operátor', id: r.owner.id, r, item: it };
         best = { part: px <= it.x + D.strip + 4 ? 'sín' : 'blokk', id: it.node.id, item: it };
       }
       return best;
@@ -902,6 +991,7 @@ const DigBlock = (() => {
         if (ev.type === 'down') {
           const h = hitIn(Lr, ev.x, ev.y); E.pend = null; if (!h) continue;
           if (h.part === 'paraméter') E.pend = { k: 'param', h, x: ev.x, y: ev.y };
+          else if (h.part === 'operátor') E.pend = { k: 'op', h, x: ev.x, y: ev.y };
           else if (h.part === 'sín' && o.bpClick) { E.toggleBp(h.id); }
           else if ((h.part === 'blokk' || h.part === 'sín') && lvl >= 2 && !isEvent(h.item.node)) E.pend = { k: 'drag', it: h.item, x: ev.x, y: ev.y };
           else if (h.part === 'paletta' && lvl >= 3) E.pend = { k: 'new', it: h.item, x: ev.x, y: ev.y };
@@ -909,6 +999,7 @@ const DigBlock = (() => {
           const pd = E.pend; E.pend = null;
           if (E.drag) { drop(); Lr = current(); continue; }
           if (pd && pd.k === 'param' && Math.hypot(ev.x - pd.x, ev.y - pd.y) < 12) { clickParam(pd.h.r, ev.x); Lr = current(); }
+          if (pd && pd.k === 'op' && Math.hypot(ev.x - pd.x, ev.y - pd.y) < 12) { const on = pd.h.r.owner, nx = opNext(on.op); if (nx) { on.op = nx; changed(); } Lr = current(); }
         }
       }
       const pd = E.pend;
@@ -937,7 +1028,9 @@ const DigBlock = (() => {
     E.draw = (q = {}) => {
       const c = L.ctx, a0 = q.a == null ? 1 : q.a;
       if (a0 <= .003) return;
-      const Lr = current(), cur = q.run ? q.run.at(q.t || 0) : null, curId = cur && cur.id;
+      const Lr = current(), cur = q.run ? q.run.at(q.t || 0) : null, cid = cur && cur.id;
+      const curId = cid && cid.indexOf('.d.') > 0 ? cid.slice(0, cid.indexOf('.d.')) : cid;     // eljárás belseje → a hívó blokk
+      const hlt = q.run && q.run.halt && q.haltMark !== false && (q.t || 0) >= q.run.halt.t - 1e-9 ? q.run.halt : null;
       const done = q.run && q.marks !== false ? q.run.doneAt(q.t || 0) : null;
       const dim = new Set([].concat(q.dim || [])), hi = new Set([].concat(q.hi || []));
       const lastF = q.run && q.run.frames.length ? q.run.frames[q.run.frames.length - 1] : null;
@@ -965,7 +1058,7 @@ const DigBlock = (() => {
         if (a <= .003) continue;
         if (it.kind === 'üres') { al(a * .7); rr(c, p.x, p.y, it.w, it.h, 8 * S); c.setLineDash([6, 5]); c.strokeStyle = 'rgba(28,36,64,.3)'; c.lineWidth = 2; c.stroke(); c.setLineDash([]); continue; }
         if (it.kind === 'vége' || it.kind === 'közép') { drawBar(it, p, a); continue; }
-        drawBlock(it, p, a, q, { cur: curId === it.node.id, done: done && done.has(it.node.id), hi: hi.has(it.node.id), mk: cur && cur.mk, run: q.run, frame: cur && cur.frame, errOn });
+        drawBlock(it, p, a, q, { cur: curId === it.node.id, done: done && done.has(it.node.id), hi: hi.has(it.node.id), mk: cur && cur.mk, run: q.run, frame: cur && cur.frame, errOn, hlt });
       }
       // húzott blokk a mutatón
       if (E.drag) {
@@ -1015,19 +1108,38 @@ const DigBlock = (() => {
       const tv = st.mk.tests[n.id];
       if (tv != null) {
         const on = st.cur; al(a * (on ? 1 : .7));
-        L.pill(lab(tv ? 'igaz felirat' : 'hamis felirat'), mx, y + h / 2, { k: tv ? 'igaz felirat' : 'hamis felirat', s: 22 * S, w: 700, f: F.B, c: tv ? (on ? '#ffffff' : TEAL) : MUT, bg: tv && on ? TEAL : CARD, bd: tv ? TEAL : MUT, bw: 2, pad: 9 * S });
+        const b = L.pill(lab(tv ? 'igaz felirat' : 'hamis felirat'), mx, y + h / 2, { k: tv ? 'igaz felirat' : 'hamis felirat', s: 22 * S, w: 700, f: F.B, c: tv ? (on ? '#ffffff' : TEAL) : MUT, bg: tv && on ? TEAL : CARD, bd: tv ? TEAL : MUT, bw: 2, pad: 9 * S });
+        if (b) mx = b.x + b.w + 10 * S;
       }
+      // a hiba- / megállásfelirat helye (v1.1: alapból a jelzések sorában, a blokk mellett)
+      const ea = q.errAt == null ? 'mellett' : q.errAt;
+      const epos = () => (ea === 'alatt' ? [x, y + h + 26 * S] : ea && typeof ea === 'object' ? [ea.x, ea.y] : [mx, y + h / 2]);
       if (st.errOn && (st.errOn.sid === n.id)) {
-        al(a); const eid = st.errOn.id, rr0 = rs.find((r0) => r0.owner && r0.owner.id === eid && r0.p.t === 'tx') || null;
+        al(a); const eid = st.errOn.id;
         const ex = rs.find((r0) => r0.p.t === 'ex' && r0.p.node.id === eid);
         const bx = ex || { x: x, y: y, w: w, h: h };
-        rr(c, bx.x - 4, bx.y - 4, bx.w + 8, bx.h + 8, 10 * S); c.strokeStyle = RED; c.lineWidth = 3.5; c.stroke(); void rr0;
-        L.pill(lab(st.errOn.kind + ' hiba'), x, y + h + 26 * S, { k: st.errOn.kind + ' hiba', s: 22 * S, w: 700, f: F.B, c: RED, bg: CARD, bd: RED, bw: 2.5, pad: 10 * S });
+        rr(c, bx.x - 4, bx.y - 4, bx.w + 8, bx.h + 8, 10 * S); c.strokeStyle = RED; c.lineWidth = 3.5; c.stroke();
+        if (ea !== false) { const [px, py] = epos(); L.pill(lab(st.errOn.kind + ' hiba'), px, py, { k: st.errOn.kind + ' hiba', s: 22 * S, w: 700, f: F.B, c: RED, bg: CARD, bd: RED, bw: 2.5, pad: 10 * S }); }
+      }
+      if (st.hlt && st.hlt.id === n.id) {
+        const hk = st.hlt.k;
+        if (!st.hlt.ok) { al(a); rr(c, x - 5, y - 5, w + 10, h + 10, r + 4); c.strokeStyle = RED; c.lineWidth = 3.5; c.stroke(); }
+        if (ea !== false && has(hk)) {
+          al(a); const [px, py] = epos();
+          L.pill(lab(hk), px, py, st.hlt.ok ? { k: hk, s: 22 * S, w: 700, f: F.B, c: '#ffffff', bg: TEAL, pad: 10 * S } : { k: hk, s: 22 * S, w: 700, f: F.B, c: RED, bg: CARD, bd: RED, bw: 2.5, pad: 10 * S });
+        }
       }
     }
     function drawPart(R0, a, n, st) {
       const c = L.ctx, p = R0.p;
-      if (p.t === 'tx') { al(a); L.tx(p.s, R0.x, R0.cy + 1, { s: D.fs, w: 600, f: F.B, c: INK, b: 'middle', k: p.k }); return; }
+      if (p.t === 'tx') {
+        if (opEd(R0.owner)) {
+          const oc = CAT[BLOCKS[R0.owner.op].cat], hov = E.hover && E.hover.part === 'operátor' && E.hover.r && E.hover.r.owner === R0.owner;
+          al(a); rr(c, R0.x - 6 * S, R0.cy - D.ch / 2 + 3 * S, R0.w + 12 * S, D.ch - 6 * S, 6 * S); c.fillStyle = hov ? U.mix(oc, CARD, .8) : CARD; c.fill();
+          c.strokeStyle = oc; c.lineWidth = hov ? 2.5 : 1.5; c.stroke();
+        }
+        al(a); L.tx(p.s, R0.x, R0.cy + 1, { s: D.fs, w: 600, f: F.B, c: INK, b: 'middle', k: p.k }); return;
+      }
       const owner = R0.owner, ocol = CAT[BLOCKS[owner.op].cat];
       if (p.t === 'lit') {
         const hov = E.hover && E.hover.part === 'paraméter' && E.hover.r && E.hover.r.owner === owner && E.hover.r.p.i === p.i && Math.abs(E.hover.r.x - R0.x) < 1;
@@ -1055,25 +1167,29 @@ const DigBlock = (() => {
       }
     }
     E.prog = () => clone(E.P);
-    E.cursor = () => (E.dragging ? 'grabbing' : !E.hover ? null : E.hover.part === 'paraméter' || (E.hover.part === 'sín' && o.bpClick) ? 'pointer'
+    E.cursor = () => (E.dragging ? 'grabbing' : !E.hover ? null : E.hover.part === 'paraméter' || E.hover.part === 'operátor' || (E.hover.part === 'sín' && o.bpClick) ? 'pointer'
       : (E.hover.part === 'paletta' && lvl >= 3) || ((E.hover.part === 'blokk' || E.hover.part === 'sín') && lvl >= 2 && E.hover.item && !isEvent(E.hover.item.node)) ? 'grab' : null);
     E.set = (P) => { E.P = ids(clone(P)); anim.clear(); E.drag = null; E.dragging = false; E.pend = null; E.version++; };
     E.toggleBp = (id) => { if (E.bp.has(id)) E.bp.delete(id); else E.bp.add(id); E.version++; };
     E.hit = (px, py) => { const h = hitIn(current(), px, py); return h ? { id: h.id, part: h.part, i: h.i } : { id: null, part: null }; };
     E.box = (id) => { const Lr = current(); return Lr.boxes[id] || null; };
     E.layout = () => current();
-    E.setParam = (id, i, v) => { const n = find(E.P, id); if (!n || !n.args[i] || n.args[i].op) return false; n.args[i].v = v; changed(); return true; };
-    E.setArg = (id, i, sp) => { const n = find(E.P, id); if (!n) return false; n.args[i] = Array.isArray(sp) && typeof sp[0] === 'string' ? node(sp, true) : lit(sp); changed(); return true; };
-    E.remove = (id) => { const n = find(E.P, id); if (!n) return false; E.P = removeUid(E.P, n.uid).Q; changed(); return true; };
-    E.move = (id, pid, br, index) => {
+    /* programozott szerkesztés: alapból azonnal a helyére (v1.1); {anim: true} → áttűnéssel */
+    const pchanged = (q) => { changed(); if (!(q && q.anim)) anim.clear(); return true; };
+    E.setParam = (id, i, v, q) => { const n = find(E.P, id); if (!n || !n.args[i] || n.args[i].op) return false; n.args[i].v = v; return pchanged(q); };
+    E.setArg = (id, i, sp, q) => { const n = find(E.P, id); if (!n) return false; n.args[i] = Array.isArray(sp) && typeof sp[0] === 'string' ? node(sp, true) : lit(sp); return pchanged(q); };
+    E.remove = (id, q) => { const n = find(E.P, id); if (!n) return false; E.P = removeUid(E.P, n.uid).Q; return pchanged(q); };
+    E.move = (id, pid, br, index, q) => {
       const n = find(E.P, id); if (!n) return false; const pu = pid == null ? null : (find(E.P, pid) || {}).uid;
       if (pid != null && pu == null) return false;
-      const base = removeUid(E.P, n.uid).Q; E.P = insertAt(base, n, { puid: pu, br: br || 0, index }); changed(); return true;
+      const base = removeUid(E.P, n.uid).Q; E.P = insertAt(base, n, { puid: pu, br: br || 0, index }); return pchanged(q);
     };
-    E.insert = (sp, pid, br, index) => {
+    E.insert = (sp, pid, br, index, q) => {
       const pu = pid == null ? null : (find(E.P, pid) || {}).uid; const n = ids({ body: [node(sp)] }).body[0];
-      E.P = insertAt(E.P, n, { puid: pu, br: br || 0, index }); changed(); return true;
+      E.P = insertAt(E.P, n, { puid: pu, br: br || 0, index }); return pchanged(q);
     };
+    E.snap = () => { anim.clear(); return E; };
+    E.busy = () => { for (const a of anim.values()) if (L.st >= a.t0 && L.st - a.t0 < .25) return true; return false; };
     return E;
   }
 
@@ -1173,7 +1289,8 @@ const DigBlock = (() => {
       return { h, l, r, parts, draw(ax, y) { let yy = y; parts.forEach((p, j) => { if (j) { arrow(ax, yy, ax, yy + G); yy += G; } p.draw(ax, yy); yy += p.h; }); } };
     }
     function el(n) {
-      const B = BLOCKS[n.op], t = labelOf(n), tw = L.measure(t.s, FT).w;
+      const B = BLOCKS[n.op], cnd = o.bare && (n.op === 'ha' || n.op === 'ha-különben' || n.op === 'amíg') && n.args[0] && n.args[0].op;
+      const t = cnd ? text({ body: [n.args[0]] })[0] : labelOf(n), tw = L.measure(t.s, FT).w;
       if (!B.body || B.shape === 'esemény') {
         const w = tw + 40, h = 52;
         return { h, l: w / 2, r: w / 2, draw(ax, y) { box(ax - w / 2, y, w, h, n, t); boxes[n.id] = { x: ax - w / 2, y, w, h }; } };
@@ -1717,6 +1834,7 @@ function KitWorld(onion) {
       const s1 = el(s, op, args[0]); return s1 ? { s: s1, dur: s1.d } : null;
     },
     sense: (s, name) => (name === 'van hagyma' ? !!s.onion : undefined),
+    halt: (s) => s.halt || null,                 // DigBlock v1.1: a megállást jelző állapotnál a futás leáll (R.halt)
     lerp(s0, s1, u) {
       if (s1.seq) {
         const tt = u * s1.d; let acc = 0;
@@ -1726,17 +1844,9 @@ function KitWorld(onion) {
     },
   };
 }
-/* futtatás: a világ megállást jelző állapotánál (halt) a nyomvonal véget ér – a lecke rajzolja a hibát */
-function runP(P, W) {
-  const R0 = DigBlock.run(P, W, { tick: .2 });
-  const i = R0.frames.findIndex((f) => f.s1 && f.s1.halt);
-  if (i < 0) return R0;
-  const f = R0.frames[i];
-  const R = DigBlock.trace(R0.frames.slice(0, i + 1), { T: f.t1, end: 'hiba', err: null, s0: R0.s0, hist: R0.hist, world: W });
-  R.halt = { id: f.id, kind: f.s1.halt, t: f.t1 };
-  const d0 = R.doneAt; R.doneAt = (t) => { const s = d0(t); s.delete(f.id); return s; };
-  return R;
-}
+/* futtatás: a világ megállást jelző állapotánál (halt) a DigBlock v1.1 leállítja a futást (R.halt: {id, kind, t});
+   a hibát a lecke rajzolja (errMark), ezért a szerkesztő saját jelzése ki van kapcsolva (haltMark: false) */
+function runP(P, W) { return DigBlock.run(P, W, { tick: .2 }); }
 const endOf = (R) => R.at(R.T).s;
 
 /* ── a konyha rajza ── */
@@ -1948,7 +2058,7 @@ function runScene(S, st, a, act, box, q = {}) {
   const R = S.get(st), t = S.K.t(st), s = R.at(t).s;
   const fin = !R.halt && t >= R.T - 1e-6 && R.T > 0, home = fin ? smooth((st - S.K.endSt() - .1) / .8) : 0;
   const K = kitchen(s, a, box, Object.assign({ home }, q.k || {}));
-  S.E.draw(Object.assign({ a: q.ea != null ? q.ea : a, run: R, t }, q.ed || {}));
+  S.E.draw(Object.assign({ a: q.ea != null ? q.ea : a, run: R, t, haltMark: false }, q.ed || {}));
   const halted = R.halt && t >= R.halt.t - 1e-9;
   if (halted) errMark(S, R, a, q.errY);
   return { R, t, s, fin, halted, K, end: fin || halted };
@@ -2236,7 +2346,7 @@ function scene7(st, a, act) {
   // folyamatábra
   DigBlock.flow(L, S7.E.prog(), { x: FLOW7.x, y: FLOW7.y, a, hi: id });
   // blokkok
-  S7.E.draw({ a, run: R, t });
+  S7.E.draw({ a, run: R, t, haltMark: false });
   // a szelet oldalról (ugyanabból a futásból)
   metszet(cur.s, 40, 640, 240, a);
   stamp('blokknyelv', 40, 1030, a);
@@ -2323,9 +2433,9 @@ window.__qaStates = {
     { name: 'szeleten-közben', set: (L2) => { S3.E.setParam('0.b.3', 0, 'szeleten'); S3.get(L2.st, false); S3.autorun(L2.st - 4.0); } }],
   4: [{ name: 'tipp-jó', set: guessQA(P4, 'só alá tipp') }, { name: 'tipp-rossz', set: guessQA(P4, 'ugyanolyan tipp') },
     { name: 'fut-közben', set: (L2) => { guessQA(P4, 'leáll tipp')(L2); S4.autorun(L2.st - 4.5); } },
-    { name: 'jó-sorrend', set: (L2) => { guessQA(P4, 'só alá tipp')(L2); S4.E.move('0.b.3', '0', 0, 2); S4.E.set(S4.E.prog()); S4.get(L2.st, false); S4.done(); } },
-    { name: 'hagyma-só', set: (L2) => { guessQA(P4, 'só alá tipp')(L2); S4.E.move('0.b.3', '0', 0, 2); S4.E.move('0.b.4', '0', 0, 3); S4.E.set(S4.E.prog()); S4.get(L2.st, false); S4.done(); } },
-    { name: 'hibás-program', set: (L2) => { guessQA(P4, 'só alá tipp')(L2); S4.E.move('0.b.0', '0', 0, 4); S4.E.set(S4.E.prog()); S4.get(L2.st, false); S4.done(); } }],
+    { name: 'jó-sorrend', set: (L2) => { guessQA(P4, 'só alá tipp')(L2); S4.E.move('0.b.3', '0', 0, 2); S4.get(L2.st, false); S4.done(); } },
+    { name: 'hagyma-só', set: (L2) => { guessQA(P4, 'só alá tipp')(L2); S4.E.move('0.b.3', '0', 0, 2); S4.E.move('0.b.4', '0', 0, 3); S4.get(L2.st, false); S4.done(); } },
+    { name: 'hibás-program', set: (L2) => { guessQA(P4, 'só alá tipp')(L2); S4.E.move('0.b.0', '0', 0, 4); S4.get(L2.st, false); S4.done(); } }],
   5: [{ name: 'nyílik', st: 1.5 }, { name: 'összecsukva', set: (L2) => { S5.ev = []; } },
     { name: 'kattintás', set: (L2) => { toggle5(2, L2.st - 5); } }],
   6: [{ name: 'nincs-hagyma', set: (L2) => { S6.setOnion(false); S6.done(); } },
