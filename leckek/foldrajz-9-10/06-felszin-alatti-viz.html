@@ -483,7 +483,7 @@
 <script src="../../shared/tort/map-vilag.js"></script>
 <script src="../../shared/foldrajz/szelveny-alfold-bukk.js"></script>
 <script>
-/* ── MODUL: Földgömb (TortGlobe) ──────────────────────────────────────────────────────────
+/* ── MODUL: Földgömb (TortGlobe) · v1.1 (2026-11-24) ──────────────────────────────────────
    Az A modul (TortMap) gömbbővítése (pilot/tortenelem-5-6/terv.md, 5. fejezet: „ortografikus gömb”).
    Referencia: 13-felfedezesek. Lecke-független: változtatás nélkül átemelhető (pl. shared/tort/globe.js).
    Függ: TortProj (shared/tort/proj.js: ortho, gc, dist, unpack), TortMap (a feliratok ütközésmentes
@@ -503,8 +503,12 @@
      G.frame(v) → V                 beállítja a nézetet (V: TortProj.view az ortho vetülettel; + V.r)
      G.pt(lon, lat) → [x, y, z]     képernyőpont (új tömb); z = koszinusz a nézőirány felé: z < 0 → hátoldal
      G.globe(ctx, o)                tenger-korong (árnyékolva), fokhálózat, szárazföld, tavak, partvonal, perem.
-                                    o = {grid: 30 (fok; 0 = nincs), lakes: true, land: 1 (alfa), style: {sea0, sea1, land,
-                                    coast, coastW, lake, grid, rim}}
+                                    o = {grid: 30 (fok; 0 = nincs), lakes: true, land: 1 (a szárazföld, a tavak és – ha
+                                    nincs coast – a partvonal alfája), coast: alfa (alap: = land), sea: true, rim: true,
+                                    style: {sea0, sea1, land, coast, coastW, lake, grid, rim}}
+                                    sea: false → nincs papír-alap, tengerkorong és perem-árnyék (semmi nem takar): második
+                                    rétegnek a saját rajz fölé, pl. partvonal + perem a lemezszínek fölött:
+                                    G.globe(ctx, {sea: false, grid: 0, land: 0, coast: .55, lakes: false})
      G.clip(ctx)                    a korongra vág (ctx.save() után hívd; saját rajzhoz a gömb felszínén)
      G.parallel(ctx, lat, o) · G.meridian(ctx, lon, o)   szélességi / hosszúsági kör látható része: o = {color, w, dash}
      G.stroke(ctx, pts, o)          tetszőleges [[lon, lat], …] vonal látható része (a peremen pontosan elvágva)
@@ -521,6 +525,8 @@
    körüljárásából derül ki, ha a gyűrű a néző ellenpontját is körbezárja (pl. Afro-Eurázsia a Csendes-óceán felől),
    és akkor kifordítja; végül a korongra vág. A partvonal és az útvonalak a peremen interpolálva érnek véget.
    Teljesítmény: a teljes 1:110m világ (kb. 4800 pont) képkockánként kb. 1–2 ms.
+   Változások: v1.1 (2026-11-24) – G.globe sea/coast/rim opció (eddig a második hívás átlátszó tengerrel is papír-alapot
+   és perem-árnyékot festett a korábbi rétegekre → fehér fátyol). A régi hívások képe változatlan.
    ───────────────────────────────────────────────────────────────────────────────────────── */
 const TortGlobe = (() => {
   'use strict';
@@ -668,7 +674,8 @@ const TortGlobe = (() => {
       // tenger: korong, a perem felé sötétedő víz
       const gr = ctx.createRadialGradient(X - RR * .3, Y - RR * .35, RR * .1, X, Y, RR);
       gr.addColorStop(0, S.sea0); gr.addColorStop(1, S.sea1);
-      ctx.beginPath(); ctx.arc(X, Y, RR, 0, Math.PI * 2); ctx.fillStyle = '#f7f1e6'; ctx.fill(); ctx.fillStyle = gr; ctx.fill();
+      const sea = o2.sea !== false;
+      if (sea) { ctx.beginPath(); ctx.arc(X, Y, RR, 0, Math.PI * 2); ctx.fillStyle = '#f7f1e6'; ctx.fill(); ctx.fillStyle = gr; ctx.fill(); }
       ctx.save(); G.clip(ctx);
       const gs = o2.grid == null ? 30 : o2.grid;
       if (gs) {
@@ -678,21 +685,25 @@ const TortGlobe = (() => {
         ctx.strokeStyle = S.grid; ctx.lineWidth = 1.2; ctx.stroke();
       }
       ctx.globalAlpha = g0 * (o2.land == null ? 1 : o2.land);
-      ctx.beginPath(); fillRings(ctx, rings); ctx.fillStyle = S.land; ctx.fill('evenodd');
-      if (o2.lakes !== false) {
+      if (ctx.globalAlpha > 0) { ctx.beginPath(); fillRings(ctx, rings); ctx.fillStyle = S.land; ctx.fill('evenodd'); }
+      if (o2.lakes !== false && ctx.globalAlpha > 0) {
         ctx.beginPath(); for (const p of lakes) for (const r of p) fillRings(ctx, [{ r, n: r.length / 2, o1: 0 }]);
         ctx.fillStyle = S.lake; ctx.fill('evenodd');
       }
-      ctx.beginPath();
-      for (const g of rings) strokePath(ctx, g.n, ringGet(g.r), true, edgeSkip(g.r));
-      ctx.lineJoin = 'round'; ctx.strokeStyle = S.coast; ctx.lineWidth = S.coastW; ctx.stroke();
+      if (o2.coast != null) ctx.globalAlpha = g0 * o2.coast;
+      if (ctx.globalAlpha > 0) {
+        ctx.beginPath();
+        for (const g of rings) strokePath(ctx, g.n, ringGet(g.r), true, edgeSkip(g.r));
+        ctx.lineJoin = 'round'; ctx.strokeStyle = S.coast; ctx.lineWidth = S.coastW; ctx.stroke();
+      }
       ctx.restore();
       // perem-árnyék (gömbhatás) és körvonal
       ctx.globalAlpha = g0;
       const sh = ctx.createRadialGradient(X - RR * .25, Y - RR * .3, RR * .35, X, Y, RR * 1.02);
       sh.addColorStop(0, 'rgba(255,250,241,.16)'); sh.addColorStop(.7, 'rgba(28,36,64,0)'); sh.addColorStop(1, 'rgba(28,36,64,.20)');
-      ctx.beginPath(); ctx.arc(X, Y, RR, 0, Math.PI * 2); ctx.fillStyle = sh; ctx.fill();
-      ctx.strokeStyle = S.rim; ctx.lineWidth = 2.5; ctx.stroke();
+      ctx.beginPath(); ctx.arc(X, Y, RR, 0, Math.PI * 2);
+      if (sea) { ctx.fillStyle = sh; ctx.fill(); }
+      if (o2.rim !== false) { ctx.strokeStyle = S.rim; ctx.lineWidth = 2.5; ctx.stroke(); }
       ctx.restore(); ctx.globalAlpha = g0;
     };
 

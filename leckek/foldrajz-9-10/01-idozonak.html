@@ -288,7 +288,7 @@
 <script src="../../shared/foldrajz/idozonak.js"></script>
 <script src="../../shared/foldrajz/megyek.js"></script>
 <script>
-/* ── MODUL: Földgömb (TortGlobe) ──────────────────────────────────────────────────────────
+/* ── MODUL: Földgömb (TortGlobe) · v1.1 (2026-11-24) ──────────────────────────────────────
    Az A modul (TortMap) gömbbővítése (pilot/tortenelem-5-6/terv.md, 5. fejezet: „ortografikus gömb”).
    Referencia: 13-felfedezesek. Lecke-független: változtatás nélkül átemelhető (pl. shared/tort/globe.js).
    Függ: TortProj (shared/tort/proj.js: ortho, gc, dist, unpack), TortMap (a feliratok ütközésmentes
@@ -308,8 +308,12 @@
      G.frame(v) → V                 beállítja a nézetet (V: TortProj.view az ortho vetülettel; + V.r)
      G.pt(lon, lat) → [x, y, z]     képernyőpont (új tömb); z = koszinusz a nézőirány felé: z < 0 → hátoldal
      G.globe(ctx, o)                tenger-korong (árnyékolva), fokhálózat, szárazföld, tavak, partvonal, perem.
-                                    o = {grid: 30 (fok; 0 = nincs), lakes: true, land: 1 (alfa), style: {sea0, sea1, land,
-                                    coast, coastW, lake, grid, rim}}
+                                    o = {grid: 30 (fok; 0 = nincs), lakes: true, land: 1 (a szárazföld, a tavak és – ha
+                                    nincs coast – a partvonal alfája), coast: alfa (alap: = land), sea: true, rim: true,
+                                    style: {sea0, sea1, land, coast, coastW, lake, grid, rim}}
+                                    sea: false → nincs papír-alap, tengerkorong és perem-árnyék (semmi nem takar): második
+                                    rétegnek a saját rajz fölé, pl. partvonal + perem a lemezszínek fölött:
+                                    G.globe(ctx, {sea: false, grid: 0, land: 0, coast: .55, lakes: false})
      G.clip(ctx)                    a korongra vág (ctx.save() után hívd; saját rajzhoz a gömb felszínén)
      G.parallel(ctx, lat, o) · G.meridian(ctx, lon, o)   szélességi / hosszúsági kör látható része: o = {color, w, dash}
      G.stroke(ctx, pts, o)          tetszőleges [[lon, lat], …] vonal látható része (a peremen pontosan elvágva)
@@ -326,6 +330,8 @@
    körüljárásából derül ki, ha a gyűrű a néző ellenpontját is körbezárja (pl. Afro-Eurázsia a Csendes-óceán felől),
    és akkor kifordítja; végül a korongra vág. A partvonal és az útvonalak a peremen interpolálva érnek véget.
    Teljesítmény: a teljes 1:110m világ (kb. 4800 pont) képkockánként kb. 1–2 ms.
+   Változások: v1.1 (2026-11-24) – G.globe sea/coast/rim opció (eddig a második hívás átlátszó tengerrel is papír-alapot
+   és perem-árnyékot festett a korábbi rétegekre → fehér fátyol). A régi hívások képe változatlan.
    ───────────────────────────────────────────────────────────────────────────────────────── */
 const TortGlobe = (() => {
   'use strict';
@@ -473,7 +479,8 @@ const TortGlobe = (() => {
       // tenger: korong, a perem felé sötétedő víz
       const gr = ctx.createRadialGradient(X - RR * .3, Y - RR * .35, RR * .1, X, Y, RR);
       gr.addColorStop(0, S.sea0); gr.addColorStop(1, S.sea1);
-      ctx.beginPath(); ctx.arc(X, Y, RR, 0, Math.PI * 2); ctx.fillStyle = '#f7f1e6'; ctx.fill(); ctx.fillStyle = gr; ctx.fill();
+      const sea = o2.sea !== false;
+      if (sea) { ctx.beginPath(); ctx.arc(X, Y, RR, 0, Math.PI * 2); ctx.fillStyle = '#f7f1e6'; ctx.fill(); ctx.fillStyle = gr; ctx.fill(); }
       ctx.save(); G.clip(ctx);
       const gs = o2.grid == null ? 30 : o2.grid;
       if (gs) {
@@ -483,21 +490,25 @@ const TortGlobe = (() => {
         ctx.strokeStyle = S.grid; ctx.lineWidth = 1.2; ctx.stroke();
       }
       ctx.globalAlpha = g0 * (o2.land == null ? 1 : o2.land);
-      ctx.beginPath(); fillRings(ctx, rings); ctx.fillStyle = S.land; ctx.fill('evenodd');
-      if (o2.lakes !== false) {
+      if (ctx.globalAlpha > 0) { ctx.beginPath(); fillRings(ctx, rings); ctx.fillStyle = S.land; ctx.fill('evenodd'); }
+      if (o2.lakes !== false && ctx.globalAlpha > 0) {
         ctx.beginPath(); for (const p of lakes) for (const r of p) fillRings(ctx, [{ r, n: r.length / 2, o1: 0 }]);
         ctx.fillStyle = S.lake; ctx.fill('evenodd');
       }
-      ctx.beginPath();
-      for (const g of rings) strokePath(ctx, g.n, ringGet(g.r), true, edgeSkip(g.r));
-      ctx.lineJoin = 'round'; ctx.strokeStyle = S.coast; ctx.lineWidth = S.coastW; ctx.stroke();
+      if (o2.coast != null) ctx.globalAlpha = g0 * o2.coast;
+      if (ctx.globalAlpha > 0) {
+        ctx.beginPath();
+        for (const g of rings) strokePath(ctx, g.n, ringGet(g.r), true, edgeSkip(g.r));
+        ctx.lineJoin = 'round'; ctx.strokeStyle = S.coast; ctx.lineWidth = S.coastW; ctx.stroke();
+      }
       ctx.restore();
       // perem-árnyék (gömbhatás) és körvonal
       ctx.globalAlpha = g0;
       const sh = ctx.createRadialGradient(X - RR * .25, Y - RR * .3, RR * .35, X, Y, RR * 1.02);
       sh.addColorStop(0, 'rgba(255,250,241,.16)'); sh.addColorStop(.7, 'rgba(28,36,64,0)'); sh.addColorStop(1, 'rgba(28,36,64,.20)');
-      ctx.beginPath(); ctx.arc(X, Y, RR, 0, Math.PI * 2); ctx.fillStyle = sh; ctx.fill();
-      ctx.strokeStyle = S.rim; ctx.lineWidth = 2.5; ctx.stroke();
+      ctx.beginPath(); ctx.arc(X, Y, RR, 0, Math.PI * 2);
+      if (sea) { ctx.fillStyle = sh; ctx.fill(); }
+      if (o2.rim !== false) { ctx.strokeStyle = S.rim; ctx.lineWidth = 2.5; ctx.stroke(); }
       ctx.restore(); ctx.globalAlpha = g0;
     };
 
@@ -748,7 +759,7 @@ const TortSource = (() => {
   return { create, COL };
 })();
 /* ── MODUL VÉGE: Forráskártya ── */
-/* ── MODUL: Tematikus térkép (FoldChoro) · forrás: foldrajz-9-10/11-fejlettseg, 2026-11-24 ──────────────────
+/* ── MODUL: Tematikus térkép (FoldChoro) · forrás: foldrajz-9-10/11-fejlettseg, 2026-11-24 · v1.1 (2026-11-24) ──
    Országok / megyék sokszögei érték szerint színezve (choropleth), bármely TortProj-nézeten (Equal Earth,
    Lambert-kúp, gömb; a TortMap.frame() is ilyen nézetet ad). Osztályközök és színek a leckéből (a .md-ből),
    szekvenciális és divergens paletta, kategória-skála, „nincs adat” sraffozás, vitatott terület szaggatott
@@ -782,7 +793,7 @@ const TortSource = (() => {
                                       fill: (key, szín) → szín (felülírás, pl. kiemelés), border: true }
                                     A vetített gyűrűket a nézet (lon, lat, s, x, y) szerint gyorsítótárazza.
      M.hit(px, py) → key | null     az utolsó draw vetülete szerint (páros–páratlan szabály); a semleges és a
-                                    only-ból kimaradt elemek nem találhatók el
+                                    only-ból kimaradt elemek nem találhatók el; gömbön a korongon kívül null
      M.pt(key) → [x, y] | null      a címkepont (lp) a képernyőn (utolsó nézet)
      M.legend(q) → {x, y, w, h}     q = {x, y (bal felső), title: {s, k}, S, labels: [{s, k}] (osztályonként; ha nincs:
                                     S.labels(), k: q.k), noData: {s, k} (sraffozott mező), dir: 'v' | 'h', a,
@@ -793,6 +804,14 @@ const TortSource = (() => {
                                     anchor: [px, py] (szaggatott vezetővonal a kártyától ide), align: 'left' | 'right'
                                     (x a bal / jobb szél)}
      FoldChoro.hatch(ctx, col)      a sraffozás mintája (CanvasPattern) – saját jelmagyarázathoz
+   Átlátszóság: a draw, a legend és a card (mint az L.tx és a többi modul) a PILLANATNYI ctx.globalAlpha-t szorozza a
+   q.a-val – így a lépésáttűnés (pl. GA) az egész térképre hat. A hívás előtti alfát a hívó állítsa be (pl. al(1));
+   egy korábbi 0-s alfa a jelmagyarázatot is eltünteti. A vászonállapotot (alfa, vonal, szaggatás, árnyék, betű) mind
+   save/restore-ral visszaállítják – utánuk az alfa ugyanaz, ami előttük volt.
+   Gömbön (ortho) a kitöltés és a találat pontos: a TortProj.trace v1.1 a horizonton vág (shared/tort/proj.js).
+   Változások: v1.1 (2026-11-24) – a gömbi kitöltés / hit hibája a proj.js-ben javítva (a modul kódja ugyanaz);
+   hit a korongon kívül null; a card a betűállapotot sem hagyja elállítva (a mérés a save előtt volt); a draw
+   határvonalai nem öröklik a hívó szaggatását; az alfa-szabály dokumentálva.
    ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
 const FoldChoro = (() => {
   const F = Lesson.FONTS, U = Lesson.U;
@@ -885,6 +904,7 @@ const FoldChoro = (() => {
       last = { val, only: q.only || null };
       const kind = V.proj.kind, round = kind === 'equalEarth' || kind === 'ortho';
       c.save(); if (q.a != null) c.globalAlpha *= q.a;
+      c.setLineDash([]);                 // a hívó szaggatása ne öröklődjön a határokra
       const ga = c.globalAlpha;
       if (round && q.sea !== false) { c.beginPath(); TortProj.outline(c, V); c.fillStyle = st.sea; c.fill(); c.clip(); }
       const pat = hatch(c, st.hatch);
@@ -914,7 +934,7 @@ const FoldChoro = (() => {
       c.globalAlpha = ga;
       if (hl) for (const p of proj) if (hl.has(p.it.key)) { c.lineJoin = 'round'; c.lineWidth = 3; c.strokeStyle = INK; c.stroke(p.P); }
       c.restore();
-      if (round && q.sea !== false) { c.save(); if (q.a != null) c.globalAlpha *= q.a; c.beginPath(); TortProj.outline(c, V); c.lineWidth = 2; c.strokeStyle = U.rgba('#1b5a94', .55); c.stroke(); c.restore(); }
+      if (round && q.sea !== false) { c.save(); if (q.a != null) c.globalAlpha *= q.a; c.setLineDash([]); c.beginPath(); TortProj.outline(c, V); c.lineWidth = 2; c.strokeStyle = U.rgba('#1b5a94', .55); c.stroke(); c.restore(); }
     };
     function inRing(a, x, y) {
       let ins = false;
@@ -925,6 +945,7 @@ const FoldChoro = (() => {
       return ins;
     }
     M.hit = (px, py) => {
+      if (lastV && lastV.proj.kind === 'ortho' && lastV.cx != null && Math.hypot(px - lastV.cx, py - lastV.cy) > lastV.s) return null;
       for (const p of proj) {
         const key = p.it.key, b = p.bb;
         if (px < b[0] || px > b[2] || py < b[1] || py > b[3]) continue;
@@ -965,12 +986,13 @@ const FoldChoro = (() => {
   function card(L, q) {
     const c = L.ctx, pad = 22, TF = { f: F.D, s: 30, w: 600, c: INK }, SF = { f: F.B, s: 22, w: 500, i: false, c: MUT },
           LF = { f: F.B, s: 22, w: 600, c: MUT }, VF = { f: F.M, s: 22, w: 600, c: INK };
+    c.save();                          // a mérés (L.measure) is állít betűt → már előtte mentünk
     const lw = q.rows.length ? Math.max(...q.rows.map((r) => L.measure(r.l.s, LF).w)) + 16 : 0;
     const vw = q.rows.length ? Math.max(...q.rows.map((r) => L.measure(r.v.s, VF).w)) : 0;
     const w = Math.max(q.w || 0, L.measure(q.title.s, TF).w + pad * 2, q.sub ? L.measure(q.sub.s, SF).w + pad * 2 : 0, lw + vw + pad * 2);
     const h = pad + 34 + (q.sub ? 30 : 0) + 10 + q.rows.length * 34 + pad - 6;
     const x = q.align === 'right' ? q.x - w : q.x, y = q.y;
-    c.save(); if (q.a != null) c.globalAlpha *= q.a;
+    if (q.a != null) c.globalAlpha *= q.a;
     if (q.anchor) {
       const ax = q.anchor[0], ay = q.anchor[1], ex = U.clamp(ax, x, x + w), ey = U.clamp(ay, y, y + h);
       c.strokeStyle = U.rgba(INK, .6); c.lineWidth = 2; c.setLineDash([5, 5]); c.beginPath(); c.moveTo(ex, ey); c.lineTo(ax, ay); c.stroke(); c.setLineDash([]);
@@ -1101,11 +1123,12 @@ const S_HOUR = { col: hourCol };
 const S_DATE = (utc) => ({ col: (m) => DAYC[clamp(dayOf(utc + m) + 1, 0, 2)] });
 const ckDate = (utc) => 'd' + Math.floor(utc / 15);   // a dátumszínezés 15 percenként változhat (negyedórás zónák)
 /* ── Zónagömb raszterrel ──
-   A FoldChoro gömbi kitöltése (TortProj.trace, ortho: 'fill') a hátoldali csúcsokat a peremre vetíti; a pólustól
-   pólusig érő, a horizonton átnyúló tengeri zónasávoknál ez a korongon át húzódó hamis csíkokat fest (és a
-   M.hit is ezeket találja el). Ezért a zónákat itt raszterrel rajzoljuk: egyszer egy szögtartó (lon/lat) indextérképre
-   festjük a sokszögeket (a javítások a zónák fölé), majd képpontonként visszavetítjük a gömbre. A határ ott van,
-   ahol a szomszédos képpont eltérése (perc) más. */
+   Egyszer egy szögtartó (lon/lat) indextérképre festjük a sokszögeket (a javítások a zónák fölé), majd képpontonként
+   visszavetítjük a gömbre. A határ ott van, ahol a szomszédos képpont eltérése (perc) más.
+   (Eredetileg kerülőút volt: a TortProj.trace ortho 'fill' hamis csíkokat festett. A proj.js v1.1 óta a vektoros
+   FoldChoro-gömb is helyes – próbaképpel összevetve –, de a raszter marad, mert csak az eltérés változásánál húz
+   határt: a vektoros rajz vagy minden sokszögélt mutat (a 103 javító sokszög belső, azonos zónájú határait is), vagy
+   egyet sem (akkor az azonos színű fél órás szomszédok – India/Nepál, Irán/Afganisztán – összefolynak).) */
 const ZR = { IW: 2048, IH: 1024, idx: null, items: [], cv: null, g: null, img: null, n: 0, key: '', mg: null };
 function buildZoneIndex() {
   ZR.items = ZC.items.concat(ZF.items);

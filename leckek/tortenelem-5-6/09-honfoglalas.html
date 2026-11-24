@@ -336,7 +336,7 @@
 <script>
 'use strict';
 
-/* ── MODUL: Térkép (TortMap) ──────────────────────────────────────────────────────────────
+/* ── MODUL: Térkép (TortMap) · v1.1 (2026-11-24) ──────────────────────────────────────────
    Térképmotor a történelemleckékhez. Lecke-független: változtatás nélkül átemelhető a
    shared/tort/ alá (pl. shared/tort/map.js). Függ: TortProj (shared/tort/proj.js), a
    shared/tort/map-*.js adatfájlok, és a lecke-motor L objektuma a feliratokhoz (L.tx, L.measure,
@@ -362,8 +362,13 @@
      TortMap.zfade(V, s0, s1)       0..1: hol tart V.s az [s0, s1] között (log.) – rétegek ki-/beúsztatása zoomra
 
    KÉPKOCKÁNKÉNT (a sorrend: frame → base → region / line / saját rajz → labels)
+     FIGYELEM: a térkép ÁLLAPOTOS – minden rajzoló és segéd (base, borders, region, line, labels, scale, pt, ppk) a
+     LEGUTÓBBI map.frame() nézetét használja. Ha egy képkockán több jelenet / nézet rajzol (lépésáttűnés, két térkép
+     egymás mellett), mindegyik a saját frame()-jével kezdjön – vagy add meg a nézetet a base-nek: base(ctx, {view}).
      const V = map.frame(nézet)     beállítja a kamerát; V = TortProj.view (V.pt, V.inv, V.s)
      map.base(ctx, o)               tenger, szárazföld, hegységfoltok, folyók, tavak, partvonal.
+                                    o.view: nézet ({lon, lat, s, x, y} vagy egy frame()-ből kapott V) → előbb frame()-et
+                                    hív vele (ajánlott, ha a base nem közvetlenül a frame() után jön).
                                     o = {rivers: {rank: 6 | [r0, r1, r2] (rétegenként), hi: {'Duna': {w: 5, wkm: .4, c}}
                                          (9 px fölött part + világos víz),
                                          only: ['Duna', …]}, mountains: 0..1 (alfa), lakes: true, style: {sea, land, …}}
@@ -392,6 +397,8 @@
                                     o = {k, est: true → okker, a: 'left' | 'center' | 'right'} → doboz
    Rétegek keverése: a durva réteg a finomabb kivágatán kívül teljes erővel, belül (1 − alfa)-val rajzol.
    Teljesítmény: a kivágaton kívüli gyűrűk kimaradnak; a foltok negyed felbontású pufferben mosódnak el.
+   Változások: v1.1 (2026-11-24) – base(ctx, {view}); console.warn, ha a base frame() nélkül fut; az állapotos
+   nézet dokumentálva (13-magyarorszag: a frame() előtti base az áttűnésben a szomszéd jelenet nézetével rajzolt).
    ───────────────────────────────────────────────────────────────────────────────────────── */
 const TortMap = (() => {
   'use strict';
@@ -536,8 +543,11 @@ const TortMap = (() => {
     }
     function landPath(ctx, Lr) { ctx.beginPath(); for (const r of Lr.land) if (hit(r.b, map.vb)) TP.trace(ctx, map.V, r.r, { close: true }); }
 
+    let warned = false;
+    const need = () => { if (!map.V && !warned) { warned = true; console.warn('TortMap: base() frame() előtt – előbb map.frame(nézet) kell'); } return map.V; };
     map.base = (ctx, o = {}) => {
-      const V = map.V, st = Object.assign({}, DEF, o.style), g0 = ctx.globalAlpha, R = o.rivers || {};
+      if (o.view) map.frame(o.view.proj ? { lon: o.view.lon, lat: o.view.lat, s: o.view.s, x: o.view.x, y: o.view.y } : o.view);
+      const V = need(), st = Object.assign({}, DEF, o.style), g0 = ctx.globalAlpha, R = o.rivers || {};
       ctx.save();
       ctx.fillStyle = st.sea; ctx.fillRect(-20, -20, 1960, 1120);
       for (const ps of passes(false)) { ctx.save(); clipPass(ctx, ps); landPath(ctx, ps.L); ctx.fillStyle = st.land; ctx.fill('evenodd'); ctx.restore(); }

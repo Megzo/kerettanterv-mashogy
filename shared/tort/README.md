@@ -92,12 +92,15 @@ for (const f of M.rivers) if (!f.lc && !f.modern && f.r <= 8) {
   c.beginPath(); for (const l of f.p) P.trace(c, V, l);
   c.lineWidth = f.r <= 2 ? 3 : 1.8; c.stroke();
 }
-const buda = V.pt(19.04, 47.50);                                       // [x, y, látható] – másold, ha eltárolod
+const buda = V.pt(19.04, 47.50);                                       // [x, y, látható] – friss tömb (v1.1), eltárolható
 </script>
 ```
 
 Gömbön (`ortho`) a kitöltéshez `{close: true, ortho: 'fill'}`, a körvonalhoz `{ortho: 'stroke'}`;
-előtte rajzold meg a korongot (`ctx.arc(V.x, V.y, V.s, …)`). Teljesítmény: a teljes
+előtte rajzold meg a korongot (`P.outline(ctx, V)` vagy `ctx.arc(V.cx, V.cy, V.s, …)`). A `'fill'` (v1.1, 2026-11-24 óta)
+valódi horizontvágás: a gyűrűt a látható félgömbre vágja, és a perem mentén ívvel zárja (mint a d3-geo `clipCircle`),
+így a horizonton átnyúló nagy sokszögek (időzónasávok, Antarktisz) sem festenek hamis csíkot, és a kimenet
+páros–páratlan találatvizsgálatra is jó. A `'stroke'` a peremet átlépő szakaszt a peremig húzza. Teljesítmény: a teljes
 `map-karpat.js` (kb. 12 ezer pont) képkockánkénti újravetítése néhány ms; ha kamera nem mozog,
 rajzold egyszer egy háttér-vászonra.
 
