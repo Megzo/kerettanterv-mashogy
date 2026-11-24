@@ -266,8 +266,8 @@ miért szabad (7. fejezet). Az „Adatok” értékei a `### Adatok` rétegbe, a
   után, a *cu* előtt jön.” (Nem: a *cs* önálló betű, ezért *cukor* < *csiga*.) „A hosszú és a
   rövid hang csak kiejtési kérdés.” (*kor*–*kór*: két külön szó.)
 - **Kulcsvizuál:** **szólétra**, amelynek fokai: *kör → kőr → tőr → tör → tér → tél → tál →
-  sál → sas → kas*. Minden lépésben egyetlen hang cserélődik, és a kis rajz is átváltozik
-  (kör, kártyaszín, tőr, törött pálca, tér, hópehely, tál, sál, sas, méhkas). Mellette a 44
+  sál → sás → sas → kas*. (Javítva 2026-11-24: a sál → sas két hangot cserélt.) Minden lépésben egyetlen hang cserélődik, és a kis rajz is átváltozik
+  (kör, kártyaszín, tőr, törött pálca, tér, hópehely, tál, sál, sás, sas, méhkas). Mellette a 44
   betű „betűsínen”, a két- és háromjegyűek egy-egy összetartozó csempén.
 - **Interaktív:** **Létramászás:** a diák egy hangot cserél (választóból), és ha létező szót
   kapott, megjelenik a rajz. A hosszúság-kapcsoló (ö ↔ ő) a *kör*-ből *kőr*-t csinál.
