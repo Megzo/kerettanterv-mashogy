@@ -7,8 +7,6 @@
 <link rel="stylesheet" href="../../shared/lesson.css">
 <style>
   .lp-text b { color: var(--ink); }
-  /* „Tippelj!”: a megoldás a tippig elmosva (a sorozat mintája, szerződés 17.) */
-  .lp-text p.tt-rejtett { filter: blur(7px); opacity: .5; user-select: none; transition: filter .6s, opacity .6s; }
   .lp-text p { transition: filter .6s, opacity .6s; }
 </style>
 <!-- A lecke által várt tartalomkulcsok. A tools/build_lesson.py ez alapján ellenőrzi a .md-t. -->
@@ -2823,6 +2821,154 @@ const MatChart = (() => {
     dotplot, marks, cards, stamp, legend };
 })();
 /* ── MODUL VÉGE ── */
+
+/* ── MODUL: „Tippelj!” és bélyegek (TtTipp) · forrás: termeszettudomany-5-6/01-tocsa + 03-meres, egységesítve 2026-11-24 ── */
+/* A természettudomány 5–6. sorozat közös mintái (szerződés 17.): kísérlet-/modellbélyeg és a „Tippelj! → kísérlet →
+   magyarázat” jóslat. Csak a Lesson motorra épül (L.ctx, L.tx, L.pill, L.lab, L.button, L.controlsEl, L.panel, L.st,
+   Lesson.U, Lesson.FONTS); a lecke kódjára nem hivatkozik. A panel elmosásához szükséges CSS-t (.tt-rejtett) és a
+   letiltott csúszka halványítását a modul maga teszi a <head>-be – a leckében nem kell <style>-sor.
+
+   BEKÖTÉS (a lecke kódjában, egyszer, legfelső szinten – a getterek miatt a sorrend mindegy):
+     TtTipp.bind({ L: () => L, ga: () => GA });    // ga: a lecke alap-alfája (jelenet-áttűnés); alap: () => 1
+     const { stamp, Tip, tipReset, panelVeil, veilIf, tipGuess, tipHide, tipControls, tipU, rhythm, tipHead, tipRow,
+       tipFeedback } = TtTipp;
+   ALFA: minden rajzoló a globalAlpha-t ga() · a (· belső áttűnés) értékre ÁLLÍTJA (nem szoroz a pillanatnyival, így
+   egy korábbi halvány felirat nem tünteti el), a vonalstílust (lineCap/lineJoin/setLineDash) visszaállítja.
+
+   stamp(kind, x, y, a, o) → doboz | null       kísérlet-/modellbélyeg a KemGHS.stamp stílusával (Bricolage 22 px,
+        600, betűköz 0,08 em, −3°, papír alap, 2 px keret; 'tilos': 700, 3 px). (x, y): a bal szél közepe.
+        Szöveg: az o.k || '<kind> bélyeg' .md-kulcs. Szín (STAMP): otthon kékeszöld, felnőtt okker, tilos #b3261e;
+        tanári, modell, kitalált, nem méretarányos, sematikus, vázlatos, képzeletbeli (és minden más) halvány tinta.
+        o = {k, col (szín felülírása), rot: −3 (fok), al: 'left' (igazítás)}. a ≤ 0,005 → nem rajzol.
+   Tip(keys, ok) → P      jóslat-állapot. keys: a válaszok .md-kulcsai (egyben gombfeliratok), ok: a helyes kulcs (az
+        init-ben is beállítható: P.ok = …). P = {keys, ok, guess: null | kulcs, gt: a választás L.st-je, btns, on}.
+        P.on(k): választáskor hívódik (a lecke állítja, pl. a kísérlet vezérlőinek feloldására).
+   tipReset(P)            alaphelyzet (az enter()-ben; utána veilIf(P)).
+   panelVeil(on)          a panelszöveg 2. bekezdésétől (.lp-text > *, i > 0) elmos (on) / felold.
+   veilIf(P)              panelVeil(!P.guess) – az enter()-ben a tipReset után.
+   tipControls(P)         a tippgombok (L.button, P.keys sorrendben). A választás után csak ezek tűnnek el: a
+        sorukba utána tett más gombok maradnak (ha a sorban nem marad látható gomb, a sor is eltűnik).
+   tipGuess(P, k, gt)     választás (csak az első számít): P.guess = k, P.gt = gt ?? L.st, tipHide, panelVeil(false),
+        P.on(k). A QA-állapotok is ezt hívhatják (pl. gt = L.st − 30: a kísérlet már lefutott).
+   tipHide(P)             a tippgombok elrejtése (a tipGuess hívja; QA-állapotban kézzel is).
+   tipU(P, st) → mp       a választás óta eltelt idő (st − P.gt), −1, ha még nincs tipp.
+   rhythm(ph, a)          a „Tippelj! → kísérlet → magyarázat” sáv a vászon bal felső sarkában (x 40, y 46);
+        ph: 0 / 1 / 2 az aktív szakasz.
+   tipHead(P, st, a, qk, o) → y     fejléc: sáv + kérdés (qk, (40, 116), Fraunces 38, max 1280) + válaszsor (40, y).
+        o = {tExp: 4,5 (a kísérlet hossza mp-ben: ennyi után vált a sáv „magyarázat”-ra, és mutatja a helyes
+        választ), q2 (2. kérdéssor kulcsa, (40, 162); a válaszsor 46 px-szel lejjebb kerül), qv (a kérdés #-jeleinek
+        értékei, sorban), y: 178 (a válaszsor közepe), noRhythm (a sáv nélkül – pl. olvasási kérdésnél)}.
+        Visszaad: a válaszsor y-ja.
+   tipRow(P, st, a, x, y, o) → [dobozok]    csak a válaszsor (a tipHead is ezt rajzolja), bárhová: a választásig
+        semleges; a választott cinóber keretet és alatta „a te tipped” feliratot kap; o.tExp (0) mp múlva a helyes
+        zöld keretet + pipát kap, a többi elhalványul. Dobozköz 54 px (a pipának).
+   tipFeedback(P, st, a, x, y, o) → doboz | null    „Jó tipp!” (zöld) / „Sokan gondolják így – nézzük meg!”
+        (kékeszöld) pill (x: bal szél, y: közép), a választás után 0,15 mp-cel beúszva. o = {s: 24, al: 'left', max}.
+   .md-kulcsok (### Feliratok): tippelj felirat, kísérlet felirat, magyarázat felirat, a te tipped felirat, jó tipp
+        felirat, rossz tipp felirat; a bélyegeké '<kind> bélyeg'.
+   ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
+const TtTipp = (() => {
+  'use strict';
+  const U = Lesson.U, F = Lesson.FONTS, { clamp, lerp, smooth } = U;
+  const INK = '#1c2440', MUT = '#565d72', RED = '#c8401c', TEAL = '#0a6f86', GOOD = '#1d7a45', BAD = '#b3261e', OKR = '#8f5a0c', CARD = '#fffaf1';
+  const STAMP = { otthon: TEAL, felnőtt: OKR, tilos: BAD, tanári: MUT, modell: MUT, kitalált: MUT, 'nem méretarányos': MUT, sematikus: MUT, vázlatos: MUT, képzeletbeli: MUT };
+  const KEYS = { ph: ['tippelj felirat', 'kísérlet felirat', 'magyarázat felirat'], mine: 'a te tipped felirat', ok: 'jó tipp felirat', bad: 'rossz tipp felirat' };
+  let getL = () => null, ga = () => 1;
+  if (typeof document !== 'undefined' && !document.getElementById('tt-tipp-css')) {
+    const st = document.createElement('style'); st.id = 'tt-tipp-css';
+    st.textContent = '.lp-text > .tt-rejtett { filter: blur(7px); opacity: .5; user-select: none; transition: filter .6s, opacity .6s; }\n'
+      + '.lp-slider:has(input:disabled) { opacity: .45; }\n.lp-slider input:disabled { cursor: not-allowed; }';
+    document.head.appendChild(st);
+  }
+  const Lx = () => getL(), cx = () => getL().ctx, lab = (k) => getL().lab(k);
+  const al = (a) => { cx().globalAlpha = ga() * clamp(a); };
+  const fillIn = (s, v) => { let i = 0; return s.replace(/#/g, () => (i < v.length ? v[i++] : '#')); };
+  const rr = (c, x, y, w, h, r) => { c.beginPath(); c.roundRect(x, y, w, h, r); };
+  function check(x, y, a) {                 // pipa (rajz, nem betűjel)
+    const c = cx(); al(a); c.lineWidth = 4.5; c.lineCap = 'round'; c.lineJoin = 'round'; c.strokeStyle = GOOD; c.beginPath();
+    c.moveTo(x - 10, y); c.lineTo(x - 3, y + 8); c.lineTo(x + 11, y - 9); c.stroke(); c.lineCap = 'butt'; c.lineJoin = 'miter';
+  }
+  function arrow(x1, y1, x2, y2, col, w, hs) {
+    const c = cx(), an = Math.atan2(y2 - y1, x2 - x1), bx = x2 - Math.cos(an) * hs * .8, by = y2 - Math.sin(an) * hs * .8;
+    c.setLineDash([]); c.lineCap = 'round'; c.beginPath(); c.moveTo(x1, y1); c.lineTo(bx, by); c.strokeStyle = col; c.lineWidth = w; c.stroke(); c.lineCap = 'butt';
+    c.beginPath(); c.moveTo(x2, y2); c.lineTo(x2 - hs * Math.cos(an - .45), y2 - hs * Math.sin(an - .45)); c.lineTo(x2 - hs * Math.cos(an + .45), y2 - hs * Math.sin(an + .45)); c.closePath();
+    c.fillStyle = col; c.fill();
+  }
+
+  function bind(o = {}) { if (o.L) getL = o.L; if (o.ga) ga = o.ga; }
+  function stamp(kind, x, y, a, o = {}) {
+    if (a <= .005) return null;
+    const L = Lx(), c = L.ctx, k = o.k || (kind + ' bélyeg'), col = o.col || STAMP[kind] || MUT, tilos = kind === 'tilos';
+    c.save(); al(a); c.translate(x, y); c.rotate((o.rot == null ? -3 : o.rot) * Math.PI / 180);
+    const b = L.pill(lab(k), 0, 0, { s: 22, w: tilos ? 700 : 600, ls: '0.08em', f: F.B, bg: CARD, bd: col, bw: tilos ? 3 : 2, c: col, r: 6, pad: 10, k, qa: false, a: o.al || 'left' });
+    c.restore(); return b;
+  }
+  const Tip = (keys, ok) => ({ keys, ok, guess: null, gt: -99, btns: [], on: null });
+  function tipReset(P) { P.guess = null; P.gt = -99; }
+  function panelVeil(on) {
+    const L = Lx(); if (!L || !L.panel) return;
+    L.panel.querySelectorAll('.lp-text > *').forEach((p, i) => { if (i > 0) p.classList.toggle('tt-rejtett', !!on); });
+  }
+  const veilIf = (P) => panelVeil(!P.guess);
+  function tipHide(P) {
+    const rows = new Set();
+    (P.btns || []).forEach((b) => { b.style.display = 'none'; if (b.parentNode) rows.add(b.parentNode); });
+    rows.forEach((r) => { if (![...r.children].some((e) => e.style.display !== 'none')) r.style.display = 'none'; });
+  }
+  function tipGuess(P, k, gt) {
+    if (P.guess) return;
+    P.guess = k; P.gt = gt == null ? Lx().st : gt;
+    tipHide(P); panelVeil(false);
+    if (P.on) P.on(k);
+  }
+  function tipControls(P) { const L = Lx(); P.btns = P.keys.map((k) => L.button(lab(k), () => tipGuess(P, k), k)); }
+  const tipU = (P, st) => (P.guess ? st - P.gt : -1);
+  function rhythm(ph, a) {
+    const L = Lx(), cols = [RED, TEAL, OKR];
+    let x = 40;
+    KEYS.ph.forEach((k, j) => {
+      const on = ph === j, done = ph > j;
+      al(a * (on ? 1 : done ? .7 : .4));
+      const b = L.pill(lab(k), x, 46, { k, s: 22, w: 700, f: F.B, c: on ? '#ffffff' : cols[j], bg: on ? cols[j] : CARD, bd: cols[j], bw: 2, pad: 10 });
+      x = b.x + b.w;
+      if (j < 2) { al(a * .55); arrow(x + 8, 46, x + 34, 46, MUT, 3, 11); x += 44; }
+    });
+  }
+  function tipRow(P, st, a, x, y, o = {}) {
+    const L = Lx(), c = L.ctx, u = tipU(P, st), tx = o.tExp || 0, out = [];
+    const rev = P.guess ? smooth((u - tx) / .5) : 0;
+    P.keys.forEach((k) => {
+      const mine = P.guess === k, ok = k === P.ok, g = rev * (ok ? 1 : 0);
+      al(a * (P.guess && !mine && !ok ? lerp(1, .55, rev) : 1));
+      const b = L.pill(lab(k), x, y, { k, s: 26, w: 600, f: F.B, c: INK, bg: g > .5 ? '#eef6ee' : CARD, bd: g > .5 ? GOOD : 'rgba(28,36,64,.35)', bw: g > .5 ? 3 : 2, pad: 14 });
+      if (mine) {
+        al(a * smooth(u / .3)); rr(c, b.x - 6, b.y - 6, b.w + 12, b.h + 12, (b.h + 12) / 2); c.strokeStyle = RED; c.lineWidth = 3.5; c.stroke();
+        L.tx(lab(KEYS.mine), b.x + b.w / 2, b.y + b.h + 30, { k: KEYS.mine, s: 22, w: 700, f: F.B, c: RED, a: 'center' });
+      }
+      if (g > 0) check(b.x + b.w + 24, y, a * g);
+      out.push(b); x = b.x + b.w + 54;
+    });
+    return out;
+  }
+  function tipHead(P, st, a, qk, o = {}) {
+    const L = Lx(), u = tipU(P, st), tx = o.tExp || 4.5;
+    if (!o.noRhythm) rhythm(!P.guess ? 0 : u < tx ? 1 : 2, a);
+    const q = { f: F.D, s: 38, w: 600, c: INK, max: 1280 };
+    al(a); L.tx(o.qv ? fillIn(lab(qk), o.qv) : lab(qk), 40, 116, Object.assign({ k: qk }, q));
+    let y = o.y || 178;
+    if (o.q2) { al(a); L.tx(lab(o.q2), 40, 162, Object.assign({ k: o.q2 }, q)); y += 46; }
+    tipRow(P, st, a, 40, y, { tExp: tx });
+    return y;
+  }
+  function tipFeedback(P, st, a, x, y, o = {}) {
+    if (!P.guess) return null;
+    const u = tipU(P, st), ok = P.guess === P.ok, k = ok ? KEYS.ok : KEYS.bad;
+    al(a * smooth((u - .15) / .4));
+    return Lx().pill(lab(k), x, y, { k, s: o.s || 24, w: 700, f: F.B, c: ok ? GOOD : TEAL, bg: CARD, bd: ok ? GOOD : TEAL, bw: 2.5, pad: 12, a: o.al || 'left', max: o.max });
+  }
+  return { bind, STAMP, stamp, Tip, tipReset, panelVeil, veilIf, tipGuess, tipHide, tipControls, tipU, rhythm, tipHead, tipRow, tipFeedback };
+})();
+/* ── MODUL VÉGE: TtTipp ── */
 </script>
 <script>
 (function () {
@@ -2880,87 +3026,14 @@ function logV(log, t, f, dur = .6) {
 }
 const lastOf = (log, t) => { let e = log[0]; for (const x of log) if (x.t <= t) e = x; return e; };
 
-/* ══════════════════════════════════════════════════════════════════
-   A SOROZAT MINTÁI (természettudomány 5–6, szerződés 17.) – lecke-saját kód, nem modul:
-   · stamp(kind, …)   kísérlet- és modellbélyeg a KemGHS.stamp stílusával (Bricolage 22 px, 600, betűköz
-                      0,08 em, −3°, papír alap, 2 px keret; „NE PRÓBÁLD KI”: 700, 3 px). kind → .md-kulcs
-                      „<kind> bélyeg”, szín: otthon kékeszöld, felnőtt okker, tanári / modell / kitalált
-                      halvány tinta, tilos #b3261e.
-   · Tip(keys, ok)    „Tippelj!” jóslat: 2–4 L.button (… tipp kulcsok), a választásig a megoldás rejtve
-                      (a panel 2. bekezdésétől elmosva, a vásznon a válaszok semlegesek). tipHead: a
-                      „Tippelj! → kísérlet → magyarázat” sáv, a kérdés és a válaszsor („a te tipped”:
-                      cinóber keret; a helyes válasz: zöld keret + pipa). tipFeedback: „Jó tipp!” /
-                      „Sokan gondolják így – nézzük meg!”. Az enter(L) törli (tipReset + panelVeil(true)).
-   ══════════════════════════════════════════════════════════════════ */
-const STAMP = { otthon: TEAL, felnőtt: OKR, tanári: MUT, tilos: BAD, modell: MUT, kitalált: MUT };
-function stamp(kind, x, y, a, o = {}) {
-  if (a <= .005) return null;
-  const k = o.k || (kind + ' bélyeg'), col = STAMP[kind], tilos = kind === 'tilos';
-  c.save(); al(a); c.translate(x, y); c.rotate((o.rot == null ? -3 : o.rot) * Math.PI / 180);
-  const b = L.pill(lab(k), 0, 0, { s: 22, w: tilos ? 700 : 600, ls: '0.08em', f: F.B, bg: CARD, bd: col, bw: tilos ? 3 : 2, c: col, r: 6, pad: 10, k, qa: false, a: o.al || 'left' });
-  c.restore(); return b;
-}
-function Tip(keys, ok) { return { keys, ok, guess: null, gt: -99, row: null, on: null }; }
-function tipReset(P) { P.guess = null; P.gt = -99; }
-function panelVeil(on) {
-  if (!L || !L.panel) return;
-  L.panel.querySelectorAll('.lp-text > p').forEach((p, i) => { if (i > 0) p.classList.toggle('tt-rejtett', !!on); });
-}
-function tipGuess(P, k) {
-  if (P.guess) return;
-  P.guess = k; P.gt = L.st;
-  if (P.row) P.row.style.display = 'none';
-  panelVeil(false);
-  if (P.on) P.on(k);
-}
-function tipControls(P) { P.keys.forEach((k) => L.button(lab(k), () => tipGuess(P, k), k)); P.row = L.controlsEl.lastElementChild; }
-const tipU = (P, st) => (P.guess ? st - P.gt : -1);
-function rhythm(ph, a) {
-  const ks = ['tippelj felirat', 'kísérlet felirat', 'magyarázat felirat'], cols = [RED, TEAL, OKR];
-  let x = 40;
-  ks.forEach((k, j) => {
-    const on = ph === j, done = ph > j;
-    al(a * (on ? 1 : done ? .7 : .4));
-    const b = L.pill(lab(k), x, 46, { k, s: 22, w: 700, f: F.B, c: on ? '#ffffff' : cols[j], bg: on ? cols[j] : CARD, bd: cols[j], bw: 2, pad: 10 });
-    x = b.x + b.w;
-    if (j < 2) { al(a * .55); arrowTo(x + 8, 46, x + 34, 46, MUT, 3, 11); x += 44; }
-  });
-}
-/* fejléc: sáv + kérdés + válaszsor. o: {tExp (a kísérlet hossza, mp), q2 (2. kérdéssor kulcsa), y (a válaszsor)} → a válaszsor alja */
-function tipHead(P, st, a, qk, o = {}) {
-  const u = tipU(P, st), tx = o.tExp || 4.5;
-  const ph = !P.guess ? 0 : u < tx ? 1 : 2;
-  rhythm(ph, a);
-  al(a); T(qk, 40, 116, { f: F.D, s: 38, w: 600, c: INK, max: 1280 });
-  let y = o.y || 178;
-  if (o.q2) { al(a); T(o.q2, 40, 162, { f: F.D, s: 38, w: 600, c: INK, max: 1280 }); y += 46; }
-  const rev = P.guess ? smooth((u - tx) / .5) : 0;
-  let x = 40;
-  P.keys.forEach((k) => {
-    const mine = P.guess === k, ok = k === P.ok, g = rev * (ok ? 1 : 0);
-    al(a * (P.guess && !mine && !ok ? lerp(1, .55, rev) : 1));
-    const b = L.pill(lab(k), x, y, { k, s: 26, w: 600, f: F.B, c: INK, bg: g > .5 ? '#eef6ee' : CARD, bd: g > .5 ? GOOD : 'rgba(28,36,64,.35)', bw: g > .5 ? 3 : 2, pad: 14 });
-    if (mine) {
-      al(a * smooth(u / .3)); rr(b.x - 6, b.y - 6, b.w + 12, b.h + 12, (b.h + 12) / 2); c.strokeStyle = RED; c.lineWidth = 3.5; c.stroke();
-      T('a te tipped felirat', b.x + b.w / 2, b.y + b.h + 30, { s: 22, w: 700, f: F.B, c: RED, a: 'center' });
-    }
-    if (g > 0) check(b.x + b.w + 24, y, a * g);
-    x = b.x + b.w + 54;
-  });
-  return y;
-}
-function tipFeedback(P, st, a, x, y) {
-  if (!P.guess) return;
-  const u = tipU(P, st), ok = P.guess === P.ok;
-  al(a * smooth((u - .15) / .4));
-  L.pill(lab(ok ? 'jó tipp felirat' : 'rossz tipp felirat'), x, y, { k: ok ? 'jó tipp felirat' : 'rossz tipp felirat', s: 24, w: 700, f: F.B, c: ok ? GOOD : TEAL, bg: CARD, bd: ok ? GOOD : TEAL, bw: 2.5, pad: 12 });
-}
+/* „Tippelj!” és bélyegek: a TtTipp modulból (fent) – a sorozat közös mintája (szerződés 17.) */
+TtTipp.bind({ L: () => L, ga: () => GA });
+const { stamp, Tip, tipReset, panelVeil, veilIf, tipGuess, tipHide, tipControls, tipU, rhythm, tipHead, tipRow, tipFeedback } = TtTipp;
 
 /* ══════════════════════════════════════════════════════════════════
    11-ret-szanto · Mi lenne a réttel kaszálás nélkül? – a lecke saját kódja
    (fölötte a sorozat 01-tocsa-mintái változatlanul; a modulok a külön <script>-ben, bájtra azonosan)
    ══════════════════════════════════════════════════════════════════ */
-STAMP['nem méretarányos'] = MUT;                      // bélyegfajta-bővítés (a 15-hegyek 'vázlatos' mintájára)
 const SOIL = '#5b4632', SOIL2 = '#8a6a48', HUM = '#3e2e22', GOLD = '#a8740a', GRASS = '#5f8f36';
 const dat = (k) => L.dat(k);
 const rangeOf = (k) => { const d = dat(k); return [d.lo, d.hi]; };
@@ -3667,7 +3740,6 @@ function scene8(st, a) {
 /* ════════ a lecke ════════ */
 const SCENES = [scene1, scene2, scene3, scene4, scene5, scene6, scene7, scene8];
 const SETTLE = [4, 3, 3, 3, 3, 3, 8, 6];
-function veilIf(P) { panelVeil(!P.guess); }
 L = Lesson.create({
   content: window.LESSON_CONTENT, home: false, resetCtx: true,
   steps: [
@@ -3741,7 +3813,7 @@ L = Lesson.create({
   },
 });
 /* QA-állapotok (1-alapú lépésszám) */
-const guessQA = (P, k) => (L2) => { P.guess = k; P.gt = L2.st - 30; if (P.row) P.row.style.display = 'none'; panelVeil(false); if (P.on) P.on(k); };
+const guessQA = (P, k) => (L2) => { P.guess = k; P.gt = L2.st - 30; tipHide(P); panelVeil(false); if (P.on) P.on(k); };
 const sel1QA = (s) => (L2) => { S1.log = [{ t: -9, sel: null }, { t: L2.st - 6, sel: s }]; };
 window.__qaStates = {
   1: [{ name: 'rét', set: sel1QA('rét') }, { name: 'legelő', set: sel1QA('legelő') }, { name: 'szántó', set: sel1QA('szántó') }],
