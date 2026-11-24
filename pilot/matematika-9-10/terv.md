@@ -579,7 +579,7 @@ az, amit az animáció csak *mutat* (mérés, kísérlet), és mi az, amit a pan
   pont húzható, a két érintőszakasz hossza élőben. Középponti szög csúszkával: ív, körcikk,
   és mellettük az arány.
 - **Lépések:** Mérjük meg a szöget (sejtés) · Két egyenlő szárú háromszög (bizonyítás) · A
-  megfordítás: kívül tompa, belül hegyes · Ácstrükk: hol a kör középpontja? · Szelőből érintő ·
+  megfordítás: a körön belül tompa, kívül hegyes · Ácstrükk: hol a kör középpontja? · Szelőből érintő ·
   Érintő szerkesztése külső pontból · Két egyenlő érintőszakasz · Ív és cikk: arány a szöggel ·
   Összefoglaló.
 - **Számpéldák (ellenőrizve):** r = 10 cm, 72°: ív = 2π · 10 · 72/360 ≈ 12,57 cm, körcikk =
