@@ -70,7 +70,7 @@
 const U = Lesson.U, { clamp, lerp, smooth, TAU } = U;
 const F = Lesson.FONTS;
 
-/* ── MODUL: Számegyenes (MatLine) · forrás: matematika-5-6/08-tizedes-tortek, 2026-11-23 ──────────────────────
+/* ── MODUL: Számegyenes (MatLine) · forrás: matematika-5-6/08-tizedes-tortek, 2026-11-23 · v1.1 (2026-11-24) ──────
    Terv: pilot/matematika-5-6/terv.md 4. fejezet (API-vázlat) · pilot/matematika-9-10/terv.md 5.1 („MatSzam”).
    Csak a Lesson motorra (L.ctx, L.tx, L.pill, L.measure, L.pointer, L.t, L.stage) és – tört-feliratnál – a
    shared/matek/mtext.js MatText-jére épül. Változtatás nélkül átemelhető (javaslat: shared/matek/line.js).
@@ -115,7 +115,10 @@ const F = Lesson.FONTS;
                                  arrow: true, gap: 6, label: {s, k} | szöveg, sz: 24}
      nl.span(v0, v1, o)          szakasz / intervallum a vonalon; v0 = −Infinity / v1 = Infinity → félegyenes nyíllal;
                                  o = {c, a, lw: 7, dy: 0, t (kirajzolás 0..1), closed: [true, true] (true teli, false
-                                 üres karika, null semmi), alpha: .85}
+                                 üres karika, null semmi), alpha: .85 (csak a sáv; a végpont-karikák a teljes a-val),
+                                 r: 9 (teli karika; az üres r + 2, 4 px-es teljes színű körvonallal), bg (az üres
+                                 karika belseje, alap papírszín)}
+                                 Halványabb sávhoz az alpha-t vedd kisebbre, NE az a-t – különben a karika is halvány.
      nl.mirror(v, t, o) → érték  a v pont tükrözése a 0-ra (ellentett) félköríven; t 0..1; o = {c, a, ghost: true,
                                  r, label}; visszaadja a pont mostani (vetített) értékét
      nl.brace(v0, v1, o)         kapocs a [v0; v1] fölött (o.down: a feliratok alatt); o = {c, a, dy, t,
@@ -136,6 +139,8 @@ const F = Lesson.FONTS;
                                  v1: 1}; draw({a, hi: [[sor, érték]…], c})
    MatLine.decimals(x)           hány tizedesjegy kell x leírásához (0,25 → 2; 3 → 0)
    MatLine.round(v, d = 10)      lebegőpontos zaj nélkül (0,1 + 0,2 → 0,3)
+   v1.1 (2026-11-24): az üres végpont-karika nagyobb (r + 2) és vastagabb (4 px) – kivetítve is jól látszik; a
+   végjel egységesen a sima „MODUL VÉGE ──” sor (név nélkül).
    Nincs benne (még): felcsavarás hasábra (MatLine.wrap – a 03-hoz Mat3D kell), logaritmikus lépték (9–10/04).
    ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
 const MatLine = (() => {
@@ -393,9 +398,10 @@ const MatLine = (() => {
       if (i1 && t >= 1) arrowHead(c, hiX + 14, y, 0, 12, col);
       if (i0) arrowHead(c, lo - 14, y, Math.PI, 12, col);
       const cl = o.closed || [true, true];
+      const r = o.r || 9;
       const dot = (x, k) => {
-        if (cl[k] == null) return; c.beginPath(); c.arc(x, y, 9, 0, TAU);
-        if (cl[k]) { c.fillStyle = col; c.fill(); } else { c.fillStyle = PAPER; c.fill(); c.strokeStyle = col; c.lineWidth = 3.5; c.stroke(); }
+        if (cl[k] == null) return; c.beginPath(); c.arc(x, y, cl[k] ? r : r + 2, 0, TAU);
+        if (cl[k]) { c.fillStyle = col; c.fill(); } else { c.fillStyle = o.bg || PAPER; c.fill(); c.strokeStyle = col; c.lineWidth = 4; c.stroke(); }
       };
       if (!i0 && nl.in(v0)) dot(xa, 0);
       if (!i1 && t >= 1 && nl.in(v1)) dot(xf, 1);
@@ -497,8 +503,8 @@ const MatLine = (() => {
 
   return { create, lerpView, zoomPair, double, parallel, decimals, round };
 })();
-/* ── MODUL VÉGE: Számegyenes (MatLine) ── */
-/* ── MODUL: Testek (Mat3D) · forrás: matematika-5-6/16-testek, 2026-11-24 ──────────────────────────────────────
+/* ── MODUL VÉGE ── */
+/* ── MODUL: Testek (Mat3D) · forrás: matematika-5-6/16-testek, 2026-11-24 · v1.1 (2026-11-24) ──────────────────
    Egyszerű 3D-motor a vászonra: ortografikus (vagy enyhén perspektivikus) vetítés, forgatás egérrel / W-A-S-D-vel,
    festő-algoritmus, takart él szaggatva, testek (téglatest, kocka, szabályos hasáb, gúla, henger), háló hajtogatása
    csuklóélek körül, ütközésvizsgálat (kockaháló), egységkockák (voxelek, rejtett lapok nélkül), nézetek.
@@ -519,7 +525,8 @@ const MatLine = (() => {
    S.P([x, y, z]) → [sx, sy, d] képpont + mélység (nagyobb d = távolabb) · S.unP(sx, sy, d = 0) → világpont (ortho)
    S.view(p) / S.dir(v) → nézettérbeli pont / vektor [jobbra, fel, befelé] · S.facing(n, c) → felénk néz-e a lap
    S.lam(n) → megvilágítás (−1..1)
-   S.drag({rect: [x, y, w, h] (alap: a vizuális terület), k = .45 (fok/px), pitch: [min, max] = [−10, 90]}) → true húzás
+   S.drag({rect: [x, y, w, h] (alap: a vizuális terület), k = .45 (fok/px), pitch: [min, max] = [−10, 90],
+          yaw: [min, max] (a tényleges yaw korlátja fokban; alap: nincs korlát)}) → true húzás
           közben. Minden képkockán hívd az élő jelenetből; a L.pointer (pressed/down) a dyaw/dpitch-et állítja.
    S.key(e, lépés = 10) → true, ha kezelte (A/D: forgatás, W/S: billentés) · S.reset() · S.save() → {dyaw, dpitch} · S.load(o)
    Mat3D.lerpView(a, b, t) → a két nézet ({yaw, pitch, scale, cx, cy, target}) közti nézet; a yaw a rövidebb úton
@@ -545,6 +552,8 @@ const MatLine = (() => {
    const N = Mat3D.net(faces)   faces: [{poly: [[x, y]…] (a síkban, z = 0), parent: j | −1 (gyökér), hp: [[x, y], [x, y]]
           (a csuklóél két végpontja; vagy hinge: [k, k + 1] a poly indexeivel), ang (cél-hajtásszög, rad; alap π/2), col, name}]
           Minden lap a szülőjéhez képest felfelé (+z) hajlik; t = 1-nél a test összezárul a gyökérlapon állva.
+   Mat3D.net(faces, {flip: true}) – z-tükrözött háló: a lapok LEFELÉ (−z) hajlanak, a test a gyökérlap alá zárul, így a
+          sík háló felső (+z) oldala lesz a test KÜLSEJE (amit síkban a lapra rajzolsz, kívül marad). N.flip = true.
    N.faces · N.maxDepth · N.at(t, {stagger = 0}) → [{i, pts: [[x, y, z]…], n (külső normális), c}]
           (stagger > 0: a gyökérhez közelebbi lapok előbb hajlanak, a mélyebbek később)
    N.map(i, [x, y], t, o) → [x, y, z] – az i. lap egy síkbeli pontjának helye t-ben (felirat, rács, számegyenes a lapon)
@@ -553,8 +562,10 @@ const MatLine = (() => {
           legkisebb mélységet adó cella → N.grid = {size, root, cells}
    Mat3D.cuboidNet(a, b, c) – kereszt alakú háló; lapok: 0 alsó, 1 elülső, 2 hátsó, 3 bal, 4 jobb, 5 felső (a hátsóhoz
           csatlakozik); a síkban x ∈ [−c; a + c], y ∈ [−c; 2b + c]
-   Mat3D.prismNet(n, r, h, {bottom = true, top = true}) – oldallapok szalagja (0..n−1; a gyökér a középső) + alaplapok;
-          bottom/top: false → csak a palást („felcsavarás”: a szalag a hasábra tekeredik)
+   Mat3D.prismNet(n, r, h, {bottom = true, top = true, outside: 'down' | 'up', flip}) – oldallapok szalagja (0..n−1; a
+          gyökér a középső) + alaplapok; bottom/top: false → csak a palást („felcsavarás”: a szalag a hasábra tekeredik).
+          outside: 'up' (= flip: true): a sík szalag felső oldala kerül KÍVÜLRE (a hasáb a gyökérlap alá hajlik) –
+          a szalagra rajzolt számegyenes kívül marad; alap ('down'): a felső oldal befelé hajlik (régi viselkedés).
    Mat3D.pyramidNet(n, r, h) – 0 alaplap + n háromszög (a hajtásszög a lapszögből: π − atan(h / apotéma))
    Mat3D.netCheck(N) → {ok, clash: [[i, j]…] (t = 1-nél azonos helyre kerülő lapok), open: [[[x, y, z]…]…] (gridNet-nél:
           a kocka üresen maradt lapjai), gaps (t = 1-nél nem pontosan két laphoz tartozó élek száma; zárt test: 0)}
@@ -573,6 +584,7 @@ const MatLine = (() => {
    Mat3D.fillOrder(a, b, c) → [[x, y, z]…] rétegenként alulról, soronként hátulról előre (feltöltés-animációhoz)
    Mat3D.views(cells) → {front: [[x, z]…], top: [[x, y, db]…] (db: a mezőn álló kockák száma), side: [[y, z]…] (jobbról)}
 
+   v1.1 (2026-11-24): net/prismNet flip (outside: 'up'), S.drag yaw-korlát; a régi hívások változatlanok.
    Színek: Mat3D.COL {ink, mut, red, teal, ochre, card, good, bad} · Mat3D.FACES (világos lapszínek) · Mat3D.mix(a, b, t)
    ─────────────────────────────────────────────────────────────── */
 const Mat3D = (() => {
@@ -661,7 +673,7 @@ const Mat3D = (() => {
   const move = (S, fn) => solid(S.v.map(fn), S.f, { kind: S.kind, soft: (e) => e.soft });
 
   // ── háló ──
-  function net(faces) {
+  function net(faces, no = {}) {
     const F = faces.map((f, i) => {
       const poly = f.poly.map((p) => [p[0], p[1]]);
       const hp = f.hp ? f.hp.map((p) => [p[0], p[1]]) : f.hinge ? [poly[f.hinge[0]], poly[f.hinge[1] % poly.length]] : null;
@@ -688,13 +700,15 @@ const Mat3D = (() => {
       const v = sub(p, f.h0), k = f.k, c = Math.cos(th), s = Math.sin(th), kv = cross(k, v), kd = dot(k, v) * (1 - c);
       return [f.h0[0] + v[0] * c + kv[0] * s + k[0] * kd, f.h0[1] + v[1] * c + kv[1] * s + k[1] * kd, f.h0[2] + v[2] * c + kv[2] * s + k[2] * kd];
     };
-    const N = { faces: F, maxDepth: maxD };
+    const fz = no.flip ? -1 : 1;          // flip: z-tükrözés – a lapok lefelé hajlanak, a felső oldal lesz kívül
+    const N = { faces: F, maxDepth: maxD, flip: !!no.flip };
     N.map = (i, p, t, o) => {
       let q = [p[0], p[1], p[2] || 0], f = F[i];
       while (f.parent >= 0) { q = rot(q, f, f.ang * tl(f, t, o)); f = F[f.parent]; }
+      if (fz < 0) q[2] = -q[2];
       return q;
     };
-    N.at = (t, o) => F.map((f) => { const pts = f.poly.map((p) => N.map(f.i, p, t, o)); return { i: f.i, pts, n: mul(newell(pts), -1), c: centroid(pts) }; });
+    N.at = (t, o) => F.map((f) => { const pts = f.poly.map((p) => N.map(f.i, p, t, o)); return { i: f.i, pts, n: mul(newell(pts), -fz), c: centroid(pts) }; });
     N.box = (t, o) => {
       const mn = [1e9, 1e9, 1e9], mx = [-1e9, -1e9, -1e9];
       N.at(t, o).forEach((f) => f.pts.forEach((p) => { for (let d = 0; d < 3; d++) { mn[d] = Math.min(mn[d], p[d]); mx[d] = Math.max(mx[d], p[d]); } }));
@@ -744,7 +758,7 @@ const Mat3D = (() => {
     const xm = (m + .5) * s, base = (y0, sg) => { const p = []; for (let j = 0; j < n; j++) { const a = Math.PI / 2 - Math.PI / n - TP * j / n; p.push([xm + r * Math.cos(a), y0 - sg * r * Math.sin(a)]); } return p; };
     if (o.bottom !== false) F.push({ poly: base(-ap, -1), parent: m, hp: [[m * s, 0], [(m + 1) * s, 0]], name: 'alaplap' });
     if (o.top !== false) F.push({ poly: base(h + ap, 1), parent: m, hp: [[m * s, h], [(m + 1) * s, h]], name: 'alaplap' });
-    return net(F);
+    return net(F, { flip: o.outside === 'up' || !!o.flip });
   }
   function pyramidNet(n, r, h) {
     const v = ring(n, r, 0, [0, 0, 0], 0).map((p) => [p[0], p[1]]), ap = r * Math.cos(Math.PI / n), sl = Math.hypot(h, ap);
@@ -871,7 +885,9 @@ const Mat3D = (() => {
       if (P.pressed && inR(P.px, P.py)) S.grab = { x: P.px, y: P.py };
       if (S.grab && P.down) {
         const dx = P.x - S.grab.x, dy = P.y - S.grab.y; S.grab.x = P.x; S.grab.y = P.y;
-        S.dyaw += dx * k; S.dpitch = cl(S.pitch0 + S.dpitch + dy * k, pr[0], pr[1]) - S.pitch0; upd(); return true;
+        S.dyaw += dx * k; S.dpitch = cl(S.pitch0 + S.dpitch + dy * k, pr[0], pr[1]) - S.pitch0;
+        if (o.yaw) S.dyaw = cl(S.yaw0 + S.dyaw, o.yaw[0], o.yaw[1]) - S.yaw0;
+        upd(); return true;
       }
       if (!P.down) S.grab = null;
       return false;

@@ -67,7 +67,7 @@
 const U = Lesson.U, { clamp, lerp, smooth, out, inOut, TAU } = U, fmt = U.fmt;
 const F = Lesson.FONTS;
 
-/* ── MODUL: Koordináta-rendszer (MatPlot) · forrás: matematika-5-6/09-aranyossag, 2026-11-23 ─────────────────
+/* ── MODUL: Koordináta-rendszer (MatPlot) · forrás: matematika-5-6/09-aranyossag, 2026-11-23 · v1.1 (2026-11-24) ──
    Terv: pilot/matematika-5-6/terv.md 4. fejezet (API-vázlat) · pilot/matematika-9-10/terv.md 5.1 („MatKoord”);
    a 9–10 MatFv (paraméteres függvényrajzoló) erre épül. Csak a Lesson motorra (L.ctx, L.tx, L.pill, L.measure,
    L.pointer, L.t, L.stage) és – matematikai feliratnál – a shared/matek/mtext.js MatText-jére épül. Változtatás
@@ -102,7 +102,10 @@ const F = Lesson.FONTS;
                                 d = {a: 1, grid: true, ticks: true, labels: true, names: true, arrows: true, gridA: 1,
                                 t: 1 (a tengelyek kirajzolódása 0..1), hi: {x: [v | {v, c}], y: […]} (kiemelt felirat),
                                 hide: {x: [v…], y: [v…]} (ezek közelében – hidePx: 40 – nincs felirat, mert ott pl. egy
-                                pont saját értéke áll)}
+                                pont saját értéke áll), edge: {x: true, y: true} (a tengelyfeliratok a rajzterület
+                                aljára (x) / bal szélére (y) kerülnek a tengely mellől – ha a tengely a rajz belsejében
+                                fut, pl. 0-szinten, és a feliratok a görbékbe lógnának; a beosztás a tengelyen marad;
+                                az O is a saját helyén marad)}
      P.point(x, y, o) → {x, y}  pont; o = {c: cinóber, r: 10, hollow, a, ring, name: 'P' (→ 'P(3; 2)'), coords
                                 (true: '(3; 2)'; névnél alapból true), label: {s, k} | szöveg (felülírja), math,
                                 pos: 'ne' | 'nw' | 'se' | 'sw' | 'n' | 's' | 'e' | 'w', pill: true, sz: 26, lc, k,
@@ -138,6 +141,8 @@ const F = Lesson.FONTS;
                                 Érték: szám (U.fmt), szöveg vagy {s, k, c}. cell(i, j) → {x, y, w, h, cx, cy}
                                 (i rekord, −1 a fejléc; j komponens).
    MatPlot.lerpView(A, B, t) · MatPlot.nice(min) (a legkisebb 1–2–5 · 10^k ≥ min) · MatPlot.decimals · MatPlot.round
+   v1.1 (2026-11-24): P.axes edge-opció (tengelyfeliratok a rajzterület szélén); a végjel egységesen
+   a sima „MODUL VÉGE ──” sor, név nélkül (mint a többi modulé – a blokk az első ilyen sorig tart).
    Nincs benne (a 9–10 MatFv építi rá): transzformáció-paraméterek, „szellem” görbe, zérushely-keresés,
    tengelyszakasz-kiemelés (egyenlőtlenség), tükrözés az y = x egyenesre.
    ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
@@ -275,9 +280,9 @@ const MatPlot = (() => {
           const isLab = Math.abs(g.v / ls - Math.round(g.v / ls)) < 1e-6;
           if (d.labels === false || !isLab || isO || (!h && hid(g.v))) continue;
           c.globalAlpha = A;
-          const s = P.label(ax, g.v), col = h ? h.c : P.c, w = h ? 700 : 500;
-          if (ax === 'x') L.tx(s, g.p, yA + P.tick / 2 + P.s * .95 + 4, { f: F.M, s: P.s, w, a: 'center', c: col });
-          else L.tx(s, xA - P.tick / 2 - 8, g.p + P.s * .34, { f: F.M, s: P.s, w, a: 'right', c: col });
+          const s = P.label(ax, g.v), col = h ? h.c : P.c, w = h ? 700 : 500, eg = d.edge && d.edge[ax];
+          if (ax === 'x') L.tx(s, g.p, (eg ? y0 : yA) + P.tick / 2 + P.s * .95 + 4, { f: F.M, s: P.s, w, a: 'center', c: col });
+          else L.tx(s, (eg ? x0 : xA) - P.tick / 2 - 8, g.p + P.s * .34, { f: F.M, s: P.s, w, a: 'right', c: col });
         }
       }
       if (full && orgIn && d.labels !== false) { c.globalAlpha = A; L.tx(P.origin, xA - 9, yA + P.tick / 2 + P.s * .95 + 4, { f: F.D, i: true, s: P.s * 1.1, w: 500, a: 'right', c: P.c }); }
@@ -518,7 +523,7 @@ const MatPlot = (() => {
 
   return { create, table, lerpView, nice, decimals, round };
 })();
-/* ── MODUL VÉGE: Koordináta-rendszer (MatPlot) ── */
+/* ── MODUL VÉGE ── */
 
 
 /* ── MODUL: Függvényrajzoló (MatFv) · forrás: matematika-9-10/07-fuggveny-transzformacio, 2026-11-23 ──────────

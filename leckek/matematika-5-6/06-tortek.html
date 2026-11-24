@@ -66,7 +66,7 @@
 const U = Lesson.U, { clamp, lerp, smooth, out, inOut, TAU } = U, fmt = U.fmt;
 const F = Lesson.FONTS;
 
-/* ── MODUL: Számegyenes (MatLine) · forrás: matematika-5-6/08-tizedes-tortek, 2026-11-23 ──────────────────────
+/* ── MODUL: Számegyenes (MatLine) · forrás: matematika-5-6/08-tizedes-tortek, 2026-11-23 · v1.1 (2026-11-24) ──────
    Terv: pilot/matematika-5-6/terv.md 4. fejezet (API-vázlat) · pilot/matematika-9-10/terv.md 5.1 („MatSzam”).
    Csak a Lesson motorra (L.ctx, L.tx, L.pill, L.measure, L.pointer, L.t, L.stage) és – tört-feliratnál – a
    shared/matek/mtext.js MatText-jére épül. Változtatás nélkül átemelhető (javaslat: shared/matek/line.js).
@@ -111,7 +111,10 @@ const F = Lesson.FONTS;
                                  arrow: true, gap: 6, label: {s, k} | szöveg, sz: 24}
      nl.span(v0, v1, o)          szakasz / intervallum a vonalon; v0 = −Infinity / v1 = Infinity → félegyenes nyíllal;
                                  o = {c, a, lw: 7, dy: 0, t (kirajzolás 0..1), closed: [true, true] (true teli, false
-                                 üres karika, null semmi), alpha: .85}
+                                 üres karika, null semmi), alpha: .85 (csak a sáv; a végpont-karikák a teljes a-val),
+                                 r: 9 (teli karika; az üres r + 2, 4 px-es teljes színű körvonallal), bg (az üres
+                                 karika belseje, alap papírszín)}
+                                 Halványabb sávhoz az alpha-t vedd kisebbre, NE az a-t – különben a karika is halvány.
      nl.mirror(v, t, o) → érték  a v pont tükrözése a 0-ra (ellentett) félköríven; t 0..1; o = {c, a, ghost: true,
                                  r, label}; visszaadja a pont mostani (vetített) értékét
      nl.brace(v0, v1, o)         kapocs a [v0; v1] fölött (o.down: a feliratok alatt); o = {c, a, dy, t,
@@ -132,6 +135,8 @@ const F = Lesson.FONTS;
                                  v1: 1}; draw({a, hi: [[sor, érték]…], c})
    MatLine.decimals(x)           hány tizedesjegy kell x leírásához (0,25 → 2; 3 → 0)
    MatLine.round(v, d = 10)      lebegőpontos zaj nélkül (0,1 + 0,2 → 0,3)
+   v1.1 (2026-11-24): az üres végpont-karika nagyobb (r + 2) és vastagabb (4 px) – kivetítve is jól látszik; a
+   végjel egységesen a sima „MODUL VÉGE ──” sor (név nélkül).
    Nincs benne (még): felcsavarás hasábra (MatLine.wrap – a 03-hoz Mat3D kell), logaritmikus lépték (9–10/04).
    ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
 const MatLine = (() => {
@@ -389,9 +394,10 @@ const MatLine = (() => {
       if (i1 && t >= 1) arrowHead(c, hiX + 14, y, 0, 12, col);
       if (i0) arrowHead(c, lo - 14, y, Math.PI, 12, col);
       const cl = o.closed || [true, true];
+      const r = o.r || 9;
       const dot = (x, k) => {
-        if (cl[k] == null) return; c.beginPath(); c.arc(x, y, 9, 0, TAU);
-        if (cl[k]) { c.fillStyle = col; c.fill(); } else { c.fillStyle = PAPER; c.fill(); c.strokeStyle = col; c.lineWidth = 3.5; c.stroke(); }
+        if (cl[k] == null) return; c.beginPath(); c.arc(x, y, cl[k] ? r : r + 2, 0, TAU);
+        if (cl[k]) { c.fillStyle = col; c.fill(); } else { c.fillStyle = o.bg || PAPER; c.fill(); c.strokeStyle = col; c.lineWidth = 4; c.stroke(); }
       };
       if (!i0 && nl.in(v0)) dot(xa, 0);
       if (!i1 && t >= 1 && nl.in(v1)) dot(xf, 1);
@@ -493,10 +499,10 @@ const MatLine = (() => {
 
   return { create, lerpView, zoomPair, double, parallel, decimals, round };
 })();
-/* ── MODUL VÉGE: Számegyenes (MatLine) ── */
+/* ── MODUL VÉGE ── */
 
 
-/* ── MODUL: Törtmodellek (MatFrac) · forrás: matematika-5-6/06-tortek, 2026-11-23 ─────────────────────────────
+/* ── MODUL: Törtmodellek (MatFrac) · forrás: matematika-5-6/06-tortek, 2026-11-23 · v1.1 (2026-11-24) ──────────
    Terv: pilot/matematika-5-6/terv.md 4. fejezet (API-vázlat; a 07, 10, 11 is erre épít). Csak a Lesson motorra
    (L.ctx, L.tx, L.measure) és a shared/matek/mtext.js MatText-jére (tört-feliratok) épül; változtatás nélkül
    átemelhető (javaslat: shared/matek/frac.js). Az átlátszóság (o.a) ABSZOLÚT: a hívó szorozza bele a jelenet-
@@ -542,13 +548,21 @@ const MatLine = (() => {
                  ca (cinóber), cb (kékeszöld), a} → {cells, on, x0, y0, s}  (on / cells = p · q; a metszet sraffozva)
    MatFrac.bar(L, o)   szakaszos ábra: o = {parts: [{w, s, k, c, math, hatch, dash}], x (bal szél), y (felső szél),
                  h: 64, unit (px / egység), gap: 0, t (0..1: a darabok egymás után úsznak be), a, sz: 26 (felirat),
-                 brace: {s, k, math, c, down}  (kapocs az egész fölött; down: alatta)} → {x0, x1, y0, y1, xs}
+                 brace: {s, k, math, c, down, a}  (kapocs az egész fölött; down: alatta; az utolsó darabbal együtt
+                 tűnik elő, a: saját átlátszóság-szorzó)} → {x0, x1, y0, y1, xs}
                  (xs: a darabok határai rés nélkül számolva; az i. darab bal széle xs[i] + i · gap)
+                 Sraffozott (hatch) darab felirata alá papírszínű folt kerül (különben a sraffozáson olvashatatlan).
    MatFrac.grid100(L, o)  100-as tábla: o = {n (0..100), x, y (bal felső sarok), size: 400, c, t (0..1: a kitöltés
-                 cellánként), order: 'row' | 'col', a} → {x0, y0, cell}
+                 cellánként), order: 'row' | 'col', a,
+                 cells: [i…] | (i, sor, oszlop) → szín | true | null  (n helyett tetszőleges cellahalmaz; i = sor · 10 +
+                 oszlop, 0-tól; függvénynél a visszaadott szín a cella színe – így második szín is lehet; t: áttűnés),
+                 bg: false (nincs kártyaszínű alap – egy előző grid100-hívás fölé rétegezhető)} → {x0, y0, cell}
    MatFrac.wall(L, o)  törtfal: o = {dens: [1, 2, 3, …], x, y (bal felső sarok), w, rowH: 56, gap: 8, labels: true,
                  hi: [{row, n, c}] (a sor első n téglája színes), t (0..1: soronként úszik be), a} → [{y, d, h}]
    MatFrac.brace(L, x0, x1, y, o)   vízszintes kapocs (o = {c, a, down, label: {s, k} | szöveg, math, sz: 26})
+   v1.1 (2026-11-24): bar – papírszínű folt a sraffozott darab felirata alatt, a kapocs áttűnéssel jelenik meg
+   (brace.a); grid100 – cells (tetszőleges cellák, több szín), bg: false (rétegezés); a végjel egységesen
+   a sima „MODUL VÉGE ──” sor (név nélkül). A régi hívások változatlanul működnek.
    Nincs benne: egynél nagyobb tört egy modellben (a hívó több modellt rajzol egymás mellé); húzható vágás; a
    szalag és a számegyenes közös léptéke (a hívó ugyanazt az x0–x1-et adja a MatLine-nak).
    ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
@@ -802,15 +816,22 @@ const MatFrac = (() => {
       c.strokeStyle = dark(col); c.lineWidth = 2.5; if (p.dash) c.setLineDash([8, 6]);
       c.strokeRect(X, o.y, w, h); c.setLineDash([]);
       const lb = TX(p.s ? { s: p.s, k: p.k, math: p.math } : null);
+      if (lb && p.hatch) {       // papírszínű folt a felirat alatt: a sraffozáson is olvasható
+        const isM = lb.math || /\d\/\d/.test(lb.s);
+        const m = isM ? MatText.measure(L, lb.s, { s: sz, w: 600 }) : L.measure(lb.s, { s: sz, w: 600, f: F.B });
+        const mw = Math.min(m.w, w - 10), mh = isM ? m.asc + m.desc : sz * .98, bw = Math.min(w - 4, mw + 16), bh = Math.min(h - 6, mh + 10);
+        c.fillStyle = rgba(CARD, .94); c.beginPath(); c.roundRect(X + w / 2 - bw / 2, o.y + h / 2 - bh / 2, bw, bh, 8); c.fill();
+      }
       if (lb) {
         if (lb.math || /\d\/\d/.test(lb.s)) MatText.draw(L, lb.s, X + w / 2, o.y + h / 2, { s: sz, a: 'center', b: 'middle', c: dark(col), w: 600, k: lb.k, max: w - 10 });
         else L.tx(lb.s, X + w / 2, o.y + h / 2 + sz * .02, { s: sz, w: 600, f: F.B, a: 'center', b: 'middle', c: dark(col), k: lb.k, max: w - 10 });
       }
     });
     c.restore();
-    if (o.brace && t >= 1) {
+    const ba = A * (o.brace && o.brace.a != null ? o.brace.a : 1) * smooth(clamp(t * N - (N - 1)));
+    if (o.brace && ba > .004) {
       const br = o.brace;
-      brace(L, out.x0, out.x1, br.down ? o.y + h + 14 : o.y - 14, { a: A, c: br.c || INK, down: !!br.down, label: { s: br.s, k: br.k }, math: br.math, sz: br.sz || sz });
+      brace(L, out.x0, out.x1, br.down ? o.y + h + 14 : o.y - 14, { a: ba, c: br.c || INK, down: !!br.down, label: { s: br.s, k: br.k }, math: br.math, sz: br.sz || sz });
     }
     return out;
   }
@@ -821,8 +842,15 @@ const MatFrac = (() => {
     const out = { x0: o.x, y0: o.y, cell };
     if (A <= .004) return out;
     c.save(); c.setLineDash([]); c.lineCap = 'butt'; c.globalAlpha = A;
-    c.fillStyle = CARD; c.fillRect(o.x, o.y, s, s);
-    for (let i = 0; i < 100; i++) {
+    if (o.bg !== false) { c.fillStyle = CARD; c.fillRect(o.x, o.y, s, s); }
+    if (o.cells) {            // tetszőleges cellahalmaz (i = sor · 10 + oszlop), függvénnyel cellánkénti színnel
+      const fn = typeof o.cells === 'function' ? o.cells : null, set = fn ? null : new Set(o.cells);
+      for (let i = 0; i < 100 && t > 0; i++) {
+        const r = Math.floor(i / 10), q = i % 10, v = fn ? fn(i, r, q) : set.has(i); if (!v) continue;
+        c.globalAlpha = A * t; c.fillStyle = rgba(typeof v === 'string' ? v : col, .55); c.fillRect(o.x + q * cell, o.y + r * cell, cell, cell);
+      }
+    }
+    for (let i = 0; i < 100 && !o.cells; i++) {
       const fa = clamp(k - i); if (fa <= 0) break;
       const r = o.order === 'col' ? i % 10 : Math.floor(i / 10), q = o.order === 'col' ? Math.floor(i / 10) : i % 10;
       c.globalAlpha = A * fa; c.fillStyle = rgba(col, .55); c.fillRect(o.x + q * cell, o.y + r * cell, cell, cell);
@@ -861,7 +889,7 @@ const MatFrac = (() => {
 
   return { draw, path, bounds, area, bar, grid100, wall, brace };
 })();
-/* ── MODUL VÉGE: Törtmodellek (MatFrac) ── */
+/* ── MODUL VÉGE ── */
 
 
 /* ════════════════════════ a lecke ════════════════════════ */

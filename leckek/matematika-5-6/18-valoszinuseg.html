@@ -55,7 +55,7 @@
 const U = Lesson.U, { clamp, lerp, smooth, out, TAU } = U, fmt = U.fmt;
 const F = Lesson.FONTS;
 
-/* ── MODUL: Számegyenes (MatLine) · forrás: matematika-5-6/08-tizedes-tortek, 2026-11-23 ──────────────────────
+/* ── MODUL: Számegyenes (MatLine) · forrás: matematika-5-6/08-tizedes-tortek, 2026-11-23 · v1.1 (2026-11-24) ──────
    Terv: pilot/matematika-5-6/terv.md 4. fejezet (API-vázlat) · pilot/matematika-9-10/terv.md 5.1 („MatSzam”).
    Csak a Lesson motorra (L.ctx, L.tx, L.pill, L.measure, L.pointer, L.t, L.stage) és – tört-feliratnál – a
    shared/matek/mtext.js MatText-jére épül. Változtatás nélkül átemelhető (javaslat: shared/matek/line.js).
@@ -100,7 +100,10 @@ const F = Lesson.FONTS;
                                  arrow: true, gap: 6, label: {s, k} | szöveg, sz: 24}
      nl.span(v0, v1, o)          szakasz / intervallum a vonalon; v0 = −Infinity / v1 = Infinity → félegyenes nyíllal;
                                  o = {c, a, lw: 7, dy: 0, t (kirajzolás 0..1), closed: [true, true] (true teli, false
-                                 üres karika, null semmi), alpha: .85}
+                                 üres karika, null semmi), alpha: .85 (csak a sáv; a végpont-karikák a teljes a-val),
+                                 r: 9 (teli karika; az üres r + 2, 4 px-es teljes színű körvonallal), bg (az üres
+                                 karika belseje, alap papírszín)}
+                                 Halványabb sávhoz az alpha-t vedd kisebbre, NE az a-t – különben a karika is halvány.
      nl.mirror(v, t, o) → érték  a v pont tükrözése a 0-ra (ellentett) félköríven; t 0..1; o = {c, a, ghost: true,
                                  r, label}; visszaadja a pont mostani (vetített) értékét
      nl.brace(v0, v1, o)         kapocs a [v0; v1] fölött (o.down: a feliratok alatt); o = {c, a, dy, t,
@@ -121,6 +124,8 @@ const F = Lesson.FONTS;
                                  v1: 1}; draw({a, hi: [[sor, érték]…], c})
    MatLine.decimals(x)           hány tizedesjegy kell x leírásához (0,25 → 2; 3 → 0)
    MatLine.round(v, d = 10)      lebegőpontos zaj nélkül (0,1 + 0,2 → 0,3)
+   v1.1 (2026-11-24): az üres végpont-karika nagyobb (r + 2) és vastagabb (4 px) – kivetítve is jól látszik; a
+   végjel egységesen a sima „MODUL VÉGE ──” sor (név nélkül).
    Nincs benne (még): felcsavarás hasábra (MatLine.wrap – a 03-hoz Mat3D kell), logaritmikus lépték (9–10/04).
    ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
 const MatLine = (() => {
@@ -378,9 +383,10 @@ const MatLine = (() => {
       if (i1 && t >= 1) arrowHead(c, hiX + 14, y, 0, 12, col);
       if (i0) arrowHead(c, lo - 14, y, Math.PI, 12, col);
       const cl = o.closed || [true, true];
+      const r = o.r || 9;
       const dot = (x, k) => {
-        if (cl[k] == null) return; c.beginPath(); c.arc(x, y, 9, 0, TAU);
-        if (cl[k]) { c.fillStyle = col; c.fill(); } else { c.fillStyle = PAPER; c.fill(); c.strokeStyle = col; c.lineWidth = 3.5; c.stroke(); }
+        if (cl[k] == null) return; c.beginPath(); c.arc(x, y, cl[k] ? r : r + 2, 0, TAU);
+        if (cl[k]) { c.fillStyle = col; c.fill(); } else { c.fillStyle = o.bg || PAPER; c.fill(); c.strokeStyle = col; c.lineWidth = 4; c.stroke(); }
       };
       if (!i0 && nl.in(v0)) dot(xa, 0);
       if (!i1 && t >= 1 && nl.in(v1)) dot(xf, 1);
@@ -482,9 +488,9 @@ const MatLine = (() => {
 
   return { create, lerpView, zoomPair, double, parallel, decimals, round };
 })();
-/* ── MODUL VÉGE: Számegyenes (MatLine) ── */
+/* ── MODUL VÉGE ── */
 
-/* ── MODUL: Diagramok (MatChart) · forrás: matematika-5-6/17-statisztika, 2026-11-24 ──────────────────────────
+/* ── MODUL: Diagramok (MatChart) · forrás: matematika-5-6/17-statisztika, 2026-11-24 · v1.1 (2026-11-24) ──────
    Oszlop-, kör-, vonal- és pontdiagram; oszlop → szalag → kör morf; strigula; kockatornyok (átlag mint
    kiegyenlítés); rendezhető kártyasor (medián); átlag/medián/módusz jelzővonalak; „kitalált adat” bélyeg.
    Csak a Lesson motorra (L.ctx, L.tx, L.pill, L.measure, L.pointer, Lesson.U, Lesson.FONTS) és – ha be van
@@ -511,10 +517,13 @@ const MatLine = (() => {
    ch.bars(vals, {a, t (0..1 vagy [t_i]: felnövés), cols: [..] | col, values: true | fmt(v, i) | [{s, k}], vs = 26,
                   hi: i | [i], dim = .25, ghost: [v…] (szaggatott körvonal, pl. elméleti érték), units: 0..1 (az
                   egységek választóvonala: „egy kocka = egy adat”), bw (px)}) → [{i, x, y, w, h}]
+          Az értékfeliratok dobozát (ch.labs: [[x, y, w, h]…], az utolsó bars-hívásé) a ghost szaggatott kerete és a
+          ch.hline vonala kikerüli (rés a vonalban) – a felirat akkor is olvasható, ha az oszlop teteje a vonal közelében van.
    ch.cell(i, k) → {x, y, w, h} – az i. oszlop k. egységkockája (alulról, 0-tól): ide repülhet egy adat
    ch.line(vals, {a, c, w = 4, t (kirajzolás 0..1), dots = 8 (sugár; 0: nincs), dotCols: [..], values, vs})
           → [[px, py]…]
-   ch.hline(v, {c, w = 3, dash, a, label: {s, k}, side: 'right' | 'left'})   – vízszintes szint (pl. átlag)
+   ch.hline(v, {c, w = 3, dash, a, label: {s, k}, side: 'right' | 'left', avoid = true (rés a ch.labs feliratoknál;
+            false: a vonal megszakítás nélkül fut)})   – vízszintes szint (pl. átlag)
 
    ── Kördiagram ──
    MatChart.pie(L, {cx, cy, r, vals, cols, a, t (körbefutás 0..1), start = −π/2 (fölül, óramutató szerint),
@@ -561,6 +570,7 @@ const MatLine = (() => {
           MatChart.rank(vals) · MatChart.nice(span, n) → lépésköz
    Bélyeg: MatChart.stamp(L, {s, k}, x, y, {a, c}) – „kitalált adat” (Bricolage 22, 600, −3°, keret 2 px; (x, y) bal közép)
    Jelmagyarázat: MatChart.legend(L, [{s, k, c}], x, y, {dir: 'right' | 'down', s = 24, gap = 26, a}) → {w, h}
+   v1.1 (2026-11-24): a ghost és a hline nem húzza át az oszlopok értékfeliratát (ch.labs, avoid).
    ──────────────────────────────────────────────────────────────────────────────────────────────────────────── */
 const MatChart = (() => {
   'use strict';
@@ -626,12 +636,32 @@ const MatChart = (() => {
       c.restore();
     };
     ch.cell = (i, k) => { const bw = ch.bw, yb = ch.Y(ch.min + k), yt = ch.Y(ch.min + k + 1); return { x: ch.X(i) - bw / 2, y: yt, w: bw, h: yb - yt }; };
+    // a vonal a dobozokon (értékfeliratok) kívül: kivágás páros–páratlan szabállyal (a dobozok nem fedik egymást)
+    const avoidClip = (c, boxes) => {
+      if (!boxes || !boxes.length) return false;
+      c.beginPath(); c.rect(-4000, -4000, 8000, 8000);
+      boxes.forEach(([x, y, w, h]) => c.rect(x, y, w, h));
+      c.clip('evenodd'); return true;
+    };
+    ch.labs = [];
     ch.bars = (vals, bo = {}) => {
       const c = L.ctx, a = A(bo), H = his(bo), out = [], bw = bo.bw || ch.bw;
+      ch.labs = [];
       if (a <= 0) return out;
+      // az értékfeliratok szövege és doboza előre (a ghost kerete ezeket kerüli)
+      const tOf = (i) => (Array.isArray(bo.t) ? clamp(bo.t[i]) : bo.t == null ? 1 : clamp(bo.t));
+      const vsz = bo.vs || 26, labs = vals.map((v, i) => {
+        const ti = tOf(i); if (!bo.values || ti <= .98) return null;
+        const lv = Array.isArray(bo.values) ? bo.values[i] : null;
+        const s = lv ? lv.s : typeof bo.values === 'function' ? bo.values(v, i) : U.fmt(v, Math.abs(v - Math.round(v)) < 1e-9 ? 0 : 1);
+        if (s == null || s === '') return null;
+        const vv = ch.min + Math.max(0, Math.min(ch.max, v) - ch.min) * ti, yT = ch.Y(vv), w = L.measure(s, { f: F.M, s: vsz, w: 700 }).w;
+        return { s, k: lv ? lv.k : undefined, box: [ch.X(i) - w / 2 - 6, yT - 10 - vsz * .74 - 5, w + 12, vsz * .98 + 10] };
+      });
+      ch.labs = labs.filter(Boolean).map((l) => l.box);
       c.save();
       vals.forEach((v, i) => {
-        const ti = Array.isArray(bo.t) ? clamp(bo.t[i]) : bo.t == null ? 1 : clamp(bo.t);
+        const ti = tOf(i);
         const vv = ch.min + Math.max(0, Math.min(ch.max, v) - ch.min) * ti, yT = ch.Y(vv), x = ch.X(i) - bw / 2, h = ch.base - yT;
         const col = colOf(bo, i), on = !H || H.includes(i), ai = a * (on ? 1 : (bo.dim == null ? .25 : bo.dim));
         c.globalAlpha = ai; c.setLineDash([]);
@@ -645,14 +675,11 @@ const MatChart = (() => {
           c.strokeStyle = edge(col); c.lineWidth = H && on ? 4 : 2.5; c.lineJoin = 'miter'; c.strokeRect(x, yT, bw, h);
         }
         if (bo.ghost && bo.ghost[i] != null) {
-          const yg = ch.Y(Math.max(ch.min, bo.ghost[i])); c.globalAlpha = a * .9; c.setLineDash([8, 6]); c.strokeStyle = COL.mut; c.lineWidth = 2.5;
-          c.strokeRect(x, yg, bw, ch.base - yg); c.setLineDash([]); c.globalAlpha = ai;
+          const yg = ch.Y(Math.max(ch.min, bo.ghost[i])); c.save(); avoidClip(c, ch.labs);
+          c.globalAlpha = a * .9; c.setLineDash([8, 6]); c.strokeStyle = COL.mut; c.lineWidth = 2.5;
+          c.strokeRect(x, yg, bw, ch.base - yg); c.restore(); c.setLineDash([]); c.globalAlpha = ai;
         }
-        if (bo.values && ti > .98) {
-          const lv = Array.isArray(bo.values) ? bo.values[i] : null;
-          const s = lv ? lv.s : typeof bo.values === 'function' ? bo.values(v, i) : U.fmt(v, Math.abs(v - Math.round(v)) < 1e-9 ? 0 : 1);
-          if (s != null && s !== '') L.tx(s, ch.X(i), yT - 10, { k: lv ? lv.k : undefined, f: F.M, s: bo.vs || 26, w: 700, a: 'center', c: edge(col) });
-        }
+        if (labs[i]) L.tx(labs[i].s, ch.X(i), yT - 10, { k: labs[i].k, f: F.M, s: vsz, w: 700, a: 'center', c: edge(col) });
         out.push({ i, x, y: yT, w: bw, h });
       });
       c.restore(); return out;
@@ -678,8 +705,10 @@ const MatChart = (() => {
     ch.hline = (v, ho = {}) => {
       const c = L.ctx, a = A(ho); if (a <= 0) return null;
       const y = ch.Y(v), col = ho.c || COL.red;
-      c.save(); c.globalAlpha = a; c.strokeStyle = col; c.lineWidth = ho.w || 3; c.setLineDash(ho.dash || [12, 8]);
-      c.beginPath(); c.moveTo(o.x, y); c.lineTo(o.x + o.w, y); c.stroke(); c.setLineDash([]);
+      c.save(); if (ho.avoid !== false) avoidClip(c, ch.labs);
+      c.globalAlpha = a; c.strokeStyle = col; c.lineWidth = ho.w || 3; c.setLineDash(ho.dash || [12, 8]);
+      c.beginPath(); c.moveTo(o.x, y); c.lineTo(o.x + o.w, y); c.stroke(); c.setLineDash([]); c.restore();
+      c.save(); c.globalAlpha = a;
       let b = null;
       if (ho.label) b = L.pill(ho.label.s, ho.side === 'left' ? o.x - 10 : o.x + o.w + 10, y, { k: ho.label.k, s: 24, w: 700, f: F.B, a: ho.side === 'left' ? 'right' : 'left', c: col, bg: COL.card, bd: col, pad: 10 });
       c.restore(); return b;

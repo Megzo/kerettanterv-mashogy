@@ -235,7 +235,7 @@
 const U = Lesson.U, { clamp, lerp, smooth, TAU } = U;
 const F = Lesson.FONTS;
 
-/* ── MODUL: Számegyenes (MatLine) · forrás: matematika-5-6/08-tizedes-tortek, 2026-11-23 ──────────────────────
+/* ── MODUL: Számegyenes (MatLine) · forrás: matematika-5-6/08-tizedes-tortek, 2026-11-23 · v1.1 (2026-11-24) ──────
    Terv: pilot/matematika-5-6/terv.md 4. fejezet (API-vázlat) · pilot/matematika-9-10/terv.md 5.1 („MatSzam”).
    Csak a Lesson motorra (L.ctx, L.tx, L.pill, L.measure, L.pointer, L.t, L.stage) és – tört-feliratnál – a
    shared/matek/mtext.js MatText-jére épül. Változtatás nélkül átemelhető (javaslat: shared/matek/line.js).
@@ -280,7 +280,10 @@ const F = Lesson.FONTS;
                                  arrow: true, gap: 6, label: {s, k} | szöveg, sz: 24}
      nl.span(v0, v1, o)          szakasz / intervallum a vonalon; v0 = −Infinity / v1 = Infinity → félegyenes nyíllal;
                                  o = {c, a, lw: 7, dy: 0, t (kirajzolás 0..1), closed: [true, true] (true teli, false
-                                 üres karika, null semmi), alpha: .85}
+                                 üres karika, null semmi), alpha: .85 (csak a sáv; a végpont-karikák a teljes a-val),
+                                 r: 9 (teli karika; az üres r + 2, 4 px-es teljes színű körvonallal), bg (az üres
+                                 karika belseje, alap papírszín)}
+                                 Halványabb sávhoz az alpha-t vedd kisebbre, NE az a-t – különben a karika is halvány.
      nl.mirror(v, t, o) → érték  a v pont tükrözése a 0-ra (ellentett) félköríven; t 0..1; o = {c, a, ghost: true,
                                  r, label}; visszaadja a pont mostani (vetített) értékét
      nl.brace(v0, v1, o)         kapocs a [v0; v1] fölött (o.down: a feliratok alatt); o = {c, a, dy, t,
@@ -301,6 +304,8 @@ const F = Lesson.FONTS;
                                  v1: 1}; draw({a, hi: [[sor, érték]…], c})
    MatLine.decimals(x)           hány tizedesjegy kell x leírásához (0,25 → 2; 3 → 0)
    MatLine.round(v, d = 10)      lebegőpontos zaj nélkül (0,1 + 0,2 → 0,3)
+   v1.1 (2026-11-24): az üres végpont-karika nagyobb (r + 2) és vastagabb (4 px) – kivetítve is jól látszik; a
+   végjel egységesen a sima „MODUL VÉGE ──” sor (név nélkül).
    Nincs benne (még): felcsavarás hasábra (MatLine.wrap – a 03-hoz Mat3D kell), logaritmikus lépték (9–10/04).
    ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
 const MatLine = (() => {
@@ -558,9 +563,10 @@ const MatLine = (() => {
       if (i1 && t >= 1) arrowHead(c, hiX + 14, y, 0, 12, col);
       if (i0) arrowHead(c, lo - 14, y, Math.PI, 12, col);
       const cl = o.closed || [true, true];
+      const r = o.r || 9;
       const dot = (x, k) => {
-        if (cl[k] == null) return; c.beginPath(); c.arc(x, y, 9, 0, TAU);
-        if (cl[k]) { c.fillStyle = col; c.fill(); } else { c.fillStyle = PAPER; c.fill(); c.strokeStyle = col; c.lineWidth = 3.5; c.stroke(); }
+        if (cl[k] == null) return; c.beginPath(); c.arc(x, y, cl[k] ? r : r + 2, 0, TAU);
+        if (cl[k]) { c.fillStyle = col; c.fill(); } else { c.fillStyle = o.bg || PAPER; c.fill(); c.strokeStyle = col; c.lineWidth = 4; c.stroke(); }
       };
       if (!i0 && nl.in(v0)) dot(xa, 0);
       if (!i1 && t >= 1 && nl.in(v1)) dot(xf, 1);
@@ -662,9 +668,9 @@ const MatLine = (() => {
 
   return { create, lerpView, zoomPair, double, parallel, decimals, round };
 })();
-/* ── MODUL VÉGE: Számegyenes (MatLine) ── */
+/* ── MODUL VÉGE ── */
 
-/* ── MODUL: Halmazábra (MatVenn) · forrás: matematika-5-6/01-halmazok, 2026-11-24 ───────────────────────────────
+/* ── MODUL: Halmazábra (MatVenn) · forrás: matematika-5-6/01-halmazok, 2026-11-24 · v1.1 (2026-11-24) ──────────
    Terv: pilot/matematika-5-6/terv.md 4. fejezet (API-vázlat) · pilot/matematika-9-10/terv.md 02-halmazok-logika
    (3 halmaz, tartományonkénti elemszám, „belecsúszó” részhalmaz, kizáró vagy, tagadás). Csak a Lesson motorra
    (L.ctx, L.tx, L.pill, L.measure) épül. Változtatás nélkül átemelhető (javaslat: shared/matek/venn.js).
@@ -694,8 +700,9 @@ const MatLine = (() => {
                                   U: true, names: true | [0..1…] (nevenkénti átlátszóság), fill: .13 (a körök színezése),
                                   hi: maszkok tömbje | kifejezés ('A∩B', '¬A', "A'", 'A△B', 'A∪B∖C') | függvény(m) → bool,
                                   hiA: 1 | függvény(m) → 0..1 (tartományonkénti átlátszóság – áttűnéshez), hiC: '#e0a526'
-                                  (a kiemelés kitöltése), hatch: true (tintasraffozás), hiEdge: true (vastag szegély),
-                                  dim: [i…] (halványított körök), lw: 3}. Egybeeső köröknél a későbbi szaggatott.
+                                  (a kiemelés kitöltése), hatch: true (tintasraffozás), hiEdge: true (vastag szegély a
+                                  kiemelt tartomány határán – a dim-elt körök íve nélkül), dim: [i…] (halványított körök),
+                                  lw: 3}. Egybeeső köröknél a későbbi szaggatott.
      V.label(m, s, o) → doboz     pill a tartomány legmélyebb pontjában (o.at felülírja); o mint L.pill (+ a)
      V.nameAt(i) → [x, y] · V.nameBox(i) → [x, y, w, h]   az i. név pilljének közepe / doboza
    MatVenn.layout(rect, kind, o) → körök   kind: 'one' | 'overlap' (o.lens: a közös rész szélessége px) | 'disjoint'
@@ -711,6 +718,7 @@ const MatLine = (() => {
                                   scale: 1, lift: 0..1 (árnyék, repülés közben), k, qa}
    MatVenn.dot(L, x, y, o)        pötty sok elemhez; o = {r: 9, c, a, ring}
    MatVenn.fly(p0, p1, t, lift = 70) → [x, y]   ívelt röppálya p0 → p1 (t 0..1, a modul simítja)
+   v1.1 (2026-11-24): a hiEdge a halványított (dim) körök szélét nem vastagítja; a végjel egységesen a sima „MODUL VÉGE ──” sor (név nélkül).
    Nincs benne (még): 4+ halmaz, ellipszis alakú tartomány, elemek húzása tartományba (a hívó: V.hit + L.pointer).
    ──────────────────────────────────────────────────────────────────────────────────────────────────────────── */
 const MatVenn = (() => {
@@ -934,7 +942,7 @@ const MatVenn = (() => {
         }
         if (d.hiEdge !== false) {
           c.globalAlpha = ha * .85; c.strokeStyle = INK; c.lineWidth = 8; c.beginPath();
-          V.circles.forEach((C) => { c.moveTo(C.x + C.r, C.y); c.arc(C.x, C.y, C.r, 0, TAU); });
+          V.circles.forEach((C, i) => { if (dim.includes(i)) return; c.moveTo(C.x + C.r, C.y); c.arc(C.x, C.y, C.r, 0, TAU); });
           c.stroke();
         }
         c.restore();
@@ -973,7 +981,7 @@ const MatVenn = (() => {
 
   return { create, layout, relation, lerp: lerpC, expr, card, dot, fly };
 })();
-/* ── MODUL VÉGE: Halmazábra (MatVenn) ── */
+/* ── MODUL VÉGE ── */
 
 /* ── MODUL: Logika és igazságtábla (MatLogic) · forrás: matematika-9-10/02-halmazok-logika, 2026-11-24 ─────────────
    Terv: pilot/matematika-9-10/terv.md 02-halmazok-logika („a halmazműveletek és a logikai műveletek azonossága”).

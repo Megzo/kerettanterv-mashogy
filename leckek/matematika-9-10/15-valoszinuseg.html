@@ -695,7 +695,7 @@ const MatGraf = (() => {
 })();
 /* ── MODUL VÉGE: Gráfok és fák (MatGraf) ── */
 
-/* ── MODUL: Diagramok (MatChart) · forrás: matematika-5-6/17-statisztika, 2026-11-24 ──────────────────────────
+/* ── MODUL: Diagramok (MatChart) · forrás: matematika-5-6/17-statisztika, 2026-11-24 · v1.1 (2026-11-24) ──────
    Oszlop-, kör-, vonal- és pontdiagram; oszlop → szalag → kör morf; strigula; kockatornyok (átlag mint
    kiegyenlítés); rendezhető kártyasor (medián); átlag/medián/módusz jelzővonalak; „kitalált adat” bélyeg.
    Csak a Lesson motorra (L.ctx, L.tx, L.pill, L.measure, L.pointer, Lesson.U, Lesson.FONTS) és – ha be van
@@ -722,10 +722,13 @@ const MatGraf = (() => {
    ch.bars(vals, {a, t (0..1 vagy [t_i]: felnövés), cols: [..] | col, values: true | fmt(v, i) | [{s, k}], vs = 26,
                   hi: i | [i], dim = .25, ghost: [v…] (szaggatott körvonal, pl. elméleti érték), units: 0..1 (az
                   egységek választóvonala: „egy kocka = egy adat”), bw (px)}) → [{i, x, y, w, h}]
+          Az értékfeliratok dobozát (ch.labs: [[x, y, w, h]…], az utolsó bars-hívásé) a ghost szaggatott kerete és a
+          ch.hline vonala kikerüli (rés a vonalban) – a felirat akkor is olvasható, ha az oszlop teteje a vonal közelében van.
    ch.cell(i, k) → {x, y, w, h} – az i. oszlop k. egységkockája (alulról, 0-tól): ide repülhet egy adat
    ch.line(vals, {a, c, w = 4, t (kirajzolás 0..1), dots = 8 (sugár; 0: nincs), dotCols: [..], values, vs})
           → [[px, py]…]
-   ch.hline(v, {c, w = 3, dash, a, label: {s, k}, side: 'right' | 'left'})   – vízszintes szint (pl. átlag)
+   ch.hline(v, {c, w = 3, dash, a, label: {s, k}, side: 'right' | 'left', avoid = true (rés a ch.labs feliratoknál;
+            false: a vonal megszakítás nélkül fut)})   – vízszintes szint (pl. átlag)
 
    ── Kördiagram ──
    MatChart.pie(L, {cx, cy, r, vals, cols, a, t (körbefutás 0..1), start = −π/2 (fölül, óramutató szerint),
@@ -772,6 +775,7 @@ const MatGraf = (() => {
           MatChart.rank(vals) · MatChart.nice(span, n) → lépésköz
    Bélyeg: MatChart.stamp(L, {s, k}, x, y, {a, c}) – „kitalált adat” (Bricolage 22, 600, −3°, keret 2 px; (x, y) bal közép)
    Jelmagyarázat: MatChart.legend(L, [{s, k, c}], x, y, {dir: 'right' | 'down', s = 24, gap = 26, a}) → {w, h}
+   v1.1 (2026-11-24): a ghost és a hline nem húzza át az oszlopok értékfeliratát (ch.labs, avoid).
    ──────────────────────────────────────────────────────────────────────────────────────────────────────────── */
 const MatChart = (() => {
   'use strict';
@@ -837,12 +841,32 @@ const MatChart = (() => {
       c.restore();
     };
     ch.cell = (i, k) => { const bw = ch.bw, yb = ch.Y(ch.min + k), yt = ch.Y(ch.min + k + 1); return { x: ch.X(i) - bw / 2, y: yt, w: bw, h: yb - yt }; };
+    // a vonal a dobozokon (értékfeliratok) kívül: kivágás páros–páratlan szabállyal (a dobozok nem fedik egymást)
+    const avoidClip = (c, boxes) => {
+      if (!boxes || !boxes.length) return false;
+      c.beginPath(); c.rect(-4000, -4000, 8000, 8000);
+      boxes.forEach(([x, y, w, h]) => c.rect(x, y, w, h));
+      c.clip('evenodd'); return true;
+    };
+    ch.labs = [];
     ch.bars = (vals, bo = {}) => {
       const c = L.ctx, a = A(bo), H = his(bo), out = [], bw = bo.bw || ch.bw;
+      ch.labs = [];
       if (a <= 0) return out;
+      // az értékfeliratok szövege és doboza előre (a ghost kerete ezeket kerüli)
+      const tOf = (i) => (Array.isArray(bo.t) ? clamp(bo.t[i]) : bo.t == null ? 1 : clamp(bo.t));
+      const vsz = bo.vs || 26, labs = vals.map((v, i) => {
+        const ti = tOf(i); if (!bo.values || ti <= .98) return null;
+        const lv = Array.isArray(bo.values) ? bo.values[i] : null;
+        const s = lv ? lv.s : typeof bo.values === 'function' ? bo.values(v, i) : U.fmt(v, Math.abs(v - Math.round(v)) < 1e-9 ? 0 : 1);
+        if (s == null || s === '') return null;
+        const vv = ch.min + Math.max(0, Math.min(ch.max, v) - ch.min) * ti, yT = ch.Y(vv), w = L.measure(s, { f: F.M, s: vsz, w: 700 }).w;
+        return { s, k: lv ? lv.k : undefined, box: [ch.X(i) - w / 2 - 6, yT - 10 - vsz * .74 - 5, w + 12, vsz * .98 + 10] };
+      });
+      ch.labs = labs.filter(Boolean).map((l) => l.box);
       c.save();
       vals.forEach((v, i) => {
-        const ti = Array.isArray(bo.t) ? clamp(bo.t[i]) : bo.t == null ? 1 : clamp(bo.t);
+        const ti = tOf(i);
         const vv = ch.min + Math.max(0, Math.min(ch.max, v) - ch.min) * ti, yT = ch.Y(vv), x = ch.X(i) - bw / 2, h = ch.base - yT;
         const col = colOf(bo, i), on = !H || H.includes(i), ai = a * (on ? 1 : (bo.dim == null ? .25 : bo.dim));
         c.globalAlpha = ai; c.setLineDash([]);
@@ -856,14 +880,11 @@ const MatChart = (() => {
           c.strokeStyle = edge(col); c.lineWidth = H && on ? 4 : 2.5; c.lineJoin = 'miter'; c.strokeRect(x, yT, bw, h);
         }
         if (bo.ghost && bo.ghost[i] != null) {
-          const yg = ch.Y(Math.max(ch.min, bo.ghost[i])); c.globalAlpha = a * .9; c.setLineDash([8, 6]); c.strokeStyle = COL.mut; c.lineWidth = 2.5;
-          c.strokeRect(x, yg, bw, ch.base - yg); c.setLineDash([]); c.globalAlpha = ai;
+          const yg = ch.Y(Math.max(ch.min, bo.ghost[i])); c.save(); avoidClip(c, ch.labs);
+          c.globalAlpha = a * .9; c.setLineDash([8, 6]); c.strokeStyle = COL.mut; c.lineWidth = 2.5;
+          c.strokeRect(x, yg, bw, ch.base - yg); c.restore(); c.setLineDash([]); c.globalAlpha = ai;
         }
-        if (bo.values && ti > .98) {
-          const lv = Array.isArray(bo.values) ? bo.values[i] : null;
-          const s = lv ? lv.s : typeof bo.values === 'function' ? bo.values(v, i) : U.fmt(v, Math.abs(v - Math.round(v)) < 1e-9 ? 0 : 1);
-          if (s != null && s !== '') L.tx(s, ch.X(i), yT - 10, { k: lv ? lv.k : undefined, f: F.M, s: bo.vs || 26, w: 700, a: 'center', c: edge(col) });
-        }
+        if (labs[i]) L.tx(labs[i].s, ch.X(i), yT - 10, { k: labs[i].k, f: F.M, s: vsz, w: 700, a: 'center', c: edge(col) });
         out.push({ i, x, y: yT, w: bw, h });
       });
       c.restore(); return out;
@@ -889,8 +910,10 @@ const MatChart = (() => {
     ch.hline = (v, ho = {}) => {
       const c = L.ctx, a = A(ho); if (a <= 0) return null;
       const y = ch.Y(v), col = ho.c || COL.red;
-      c.save(); c.globalAlpha = a; c.strokeStyle = col; c.lineWidth = ho.w || 3; c.setLineDash(ho.dash || [12, 8]);
-      c.beginPath(); c.moveTo(o.x, y); c.lineTo(o.x + o.w, y); c.stroke(); c.setLineDash([]);
+      c.save(); if (ho.avoid !== false) avoidClip(c, ch.labs);
+      c.globalAlpha = a; c.strokeStyle = col; c.lineWidth = ho.w || 3; c.setLineDash(ho.dash || [12, 8]);
+      c.beginPath(); c.moveTo(o.x, y); c.lineTo(o.x + o.w, y); c.stroke(); c.setLineDash([]); c.restore();
+      c.save(); c.globalAlpha = a;
       let b = null;
       if (ho.label) b = L.pill(ho.label.s, ho.side === 'left' ? o.x - 10 : o.x + o.w + 10, y, { k: ho.label.k, s: 24, w: 700, f: F.B, a: ho.side === 'left' ? 'right' : 'left', c: col, bg: COL.card, bd: col, pad: 10 });
       c.restore(); return b;
@@ -1192,7 +1215,7 @@ const MatChart = (() => {
 })();
 /* ── MODUL VÉGE ── */
 
-/* ── MODUL: Koordináta-rendszer (MatPlot) · forrás: matematika-5-6/09-aranyossag, 2026-11-23 ─────────────────
+/* ── MODUL: Koordináta-rendszer (MatPlot) · forrás: matematika-5-6/09-aranyossag, 2026-11-23 · v1.1 (2026-11-24) ──
    Terv: pilot/matematika-5-6/terv.md 4. fejezet (API-vázlat) · pilot/matematika-9-10/terv.md 5.1 („MatKoord”);
    a 9–10 MatFv (paraméteres függvényrajzoló) erre épül. Csak a Lesson motorra (L.ctx, L.tx, L.pill, L.measure,
    L.pointer, L.t, L.stage) és – matematikai feliratnál – a shared/matek/mtext.js MatText-jére épül. Változtatás
@@ -1227,7 +1250,10 @@ const MatChart = (() => {
                                 d = {a: 1, grid: true, ticks: true, labels: true, names: true, arrows: true, gridA: 1,
                                 t: 1 (a tengelyek kirajzolódása 0..1), hi: {x: [v | {v, c}], y: […]} (kiemelt felirat),
                                 hide: {x: [v…], y: [v…]} (ezek közelében – hidePx: 40 – nincs felirat, mert ott pl. egy
-                                pont saját értéke áll)}
+                                pont saját értéke áll), edge: {x: true, y: true} (a tengelyfeliratok a rajzterület
+                                aljára (x) / bal szélére (y) kerülnek a tengely mellől – ha a tengely a rajz belsejében
+                                fut, pl. 0-szinten, és a feliratok a görbékbe lógnának; a beosztás a tengelyen marad;
+                                az O is a saját helyén marad)}
      P.point(x, y, o) → {x, y}  pont; o = {c: cinóber, r: 10, hollow, a, ring, name: 'P' (→ 'P(3; 2)'), coords
                                 (true: '(3; 2)'; névnél alapból true), label: {s, k} | szöveg (felülírja), math,
                                 pos: 'ne' | 'nw' | 'se' | 'sw' | 'n' | 's' | 'e' | 'w', pill: true, sz: 26, lc, k,
@@ -1263,6 +1289,8 @@ const MatChart = (() => {
                                 Érték: szám (U.fmt), szöveg vagy {s, k, c}. cell(i, j) → {x, y, w, h, cx, cy}
                                 (i rekord, −1 a fejléc; j komponens).
    MatPlot.lerpView(A, B, t) · MatPlot.nice(min) (a legkisebb 1–2–5 · 10^k ≥ min) · MatPlot.decimals · MatPlot.round
+   v1.1 (2026-11-24): P.axes edge-opció (tengelyfeliratok a rajzterület szélén); a végjel egységesen
+   a sima „MODUL VÉGE ──” sor, név nélkül (mint a többi modulé – a blokk az első ilyen sorig tart).
    Nincs benne (a 9–10 MatFv építi rá): transzformáció-paraméterek, „szellem” görbe, zérushely-keresés,
    tengelyszakasz-kiemelés (egyenlőtlenség), tükrözés az y = x egyenesre.
    ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
@@ -1400,9 +1428,9 @@ const MatPlot = (() => {
           const isLab = Math.abs(g.v / ls - Math.round(g.v / ls)) < 1e-6;
           if (d.labels === false || !isLab || isO || (!h && hid(g.v))) continue;
           c.globalAlpha = A;
-          const s = P.label(ax, g.v), col = h ? h.c : P.c, w = h ? 700 : 500;
-          if (ax === 'x') L.tx(s, g.p, yA + P.tick / 2 + P.s * .95 + 4, { f: F.M, s: P.s, w, a: 'center', c: col });
-          else L.tx(s, xA - P.tick / 2 - 8, g.p + P.s * .34, { f: F.M, s: P.s, w, a: 'right', c: col });
+          const s = P.label(ax, g.v), col = h ? h.c : P.c, w = h ? 700 : 500, eg = d.edge && d.edge[ax];
+          if (ax === 'x') L.tx(s, g.p, (eg ? y0 : yA) + P.tick / 2 + P.s * .95 + 4, { f: F.M, s: P.s, w, a: 'center', c: col });
+          else L.tx(s, (eg ? x0 : xA) - P.tick / 2 - 8, g.p + P.s * .34, { f: F.M, s: P.s, w, a: 'right', c: col });
         }
       }
       if (full && orgIn && d.labels !== false) { c.globalAlpha = A; L.tx(P.origin, xA - 9, yA + P.tick / 2 + P.s * .95 + 4, { f: F.D, i: true, s: P.s * 1.1, w: 500, a: 'right', c: P.c }); }
@@ -1643,7 +1671,7 @@ const MatPlot = (() => {
 
   return { create, table, lerpView, nice, decimals, round };
 })();
-/* ── MODUL VÉGE: Koordináta-rendszer (MatPlot) ── */
+/* ── MODUL VÉGE ── */
 
 /* ════════════════════════ a lecke ════════════════════════ */
 const INK = '#1c2440', MUT = '#565d72', RED = '#c8401c', TEAL = '#0a6f86', OCHRE = '#8f5a0c', GOOD = '#1d7a45', BAD = '#b3261e',

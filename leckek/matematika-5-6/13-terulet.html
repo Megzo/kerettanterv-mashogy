@@ -515,7 +515,7 @@ const MatGeo = (() => {
 })();
 /* ── MODUL VÉGE ── */
 
-/* ── MODUL: Törtmodellek (MatFrac) · forrás: matematika-5-6/06-tortek, 2026-11-23 ─────────────────────────────
+/* ── MODUL: Törtmodellek (MatFrac) · forrás: matematika-5-6/06-tortek, 2026-11-23 · v1.1 (2026-11-24) ──────────
    Terv: pilot/matematika-5-6/terv.md 4. fejezet (API-vázlat; a 07, 10, 11 is erre épít). Csak a Lesson motorra
    (L.ctx, L.tx, L.measure) és a shared/matek/mtext.js MatText-jére (tört-feliratok) épül; változtatás nélkül
    átemelhető (javaslat: shared/matek/frac.js). Az átlátszóság (o.a) ABSZOLÚT: a hívó szorozza bele a jelenet-
@@ -561,13 +561,21 @@ const MatGeo = (() => {
                  ca (cinóber), cb (kékeszöld), a} → {cells, on, x0, y0, s}  (on / cells = p · q; a metszet sraffozva)
    MatFrac.bar(L, o)   szakaszos ábra: o = {parts: [{w, s, k, c, math, hatch, dash}], x (bal szél), y (felső szél),
                  h: 64, unit (px / egység), gap: 0, t (0..1: a darabok egymás után úsznak be), a, sz: 26 (felirat),
-                 brace: {s, k, math, c, down}  (kapocs az egész fölött; down: alatta)} → {x0, x1, y0, y1, xs}
+                 brace: {s, k, math, c, down, a}  (kapocs az egész fölött; down: alatta; az utolsó darabbal együtt
+                 tűnik elő, a: saját átlátszóság-szorzó)} → {x0, x1, y0, y1, xs}
                  (xs: a darabok határai rés nélkül számolva; az i. darab bal széle xs[i] + i · gap)
+                 Sraffozott (hatch) darab felirata alá papírszínű folt kerül (különben a sraffozáson olvashatatlan).
    MatFrac.grid100(L, o)  100-as tábla: o = {n (0..100), x, y (bal felső sarok), size: 400, c, t (0..1: a kitöltés
-                 cellánként), order: 'row' | 'col', a} → {x0, y0, cell}
+                 cellánként), order: 'row' | 'col', a,
+                 cells: [i…] | (i, sor, oszlop) → szín | true | null  (n helyett tetszőleges cellahalmaz; i = sor · 10 +
+                 oszlop, 0-tól; függvénynél a visszaadott szín a cella színe – így második szín is lehet; t: áttűnés),
+                 bg: false (nincs kártyaszínű alap – egy előző grid100-hívás fölé rétegezhető)} → {x0, y0, cell}
    MatFrac.wall(L, o)  törtfal: o = {dens: [1, 2, 3, …], x, y (bal felső sarok), w, rowH: 56, gap: 8, labels: true,
                  hi: [{row, n, c}] (a sor első n téglája színes), t (0..1: soronként úszik be), a} → [{y, d, h}]
    MatFrac.brace(L, x0, x1, y, o)   vízszintes kapocs (o = {c, a, down, label: {s, k} | szöveg, math, sz: 26})
+   v1.1 (2026-11-24): bar – papírszínű folt a sraffozott darab felirata alatt, a kapocs áttűnéssel jelenik meg
+   (brace.a); grid100 – cells (tetszőleges cellák, több szín), bg: false (rétegezés); a végjel egységesen
+   a sima „MODUL VÉGE ──” sor (név nélkül). A régi hívások változatlanul működnek.
    Nincs benne: egynél nagyobb tört egy modellben (a hívó több modellt rajzol egymás mellé); húzható vágás; a
    szalag és a számegyenes közös léptéke (a hívó ugyanazt az x0–x1-et adja a MatLine-nak).
    ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
@@ -821,15 +829,22 @@ const MatFrac = (() => {
       c.strokeStyle = dark(col); c.lineWidth = 2.5; if (p.dash) c.setLineDash([8, 6]);
       c.strokeRect(X, o.y, w, h); c.setLineDash([]);
       const lb = TX(p.s ? { s: p.s, k: p.k, math: p.math } : null);
+      if (lb && p.hatch) {       // papírszínű folt a felirat alatt: a sraffozáson is olvasható
+        const isM = lb.math || /\d\/\d/.test(lb.s);
+        const m = isM ? MatText.measure(L, lb.s, { s: sz, w: 600 }) : L.measure(lb.s, { s: sz, w: 600, f: F.B });
+        const mw = Math.min(m.w, w - 10), mh = isM ? m.asc + m.desc : sz * .98, bw = Math.min(w - 4, mw + 16), bh = Math.min(h - 6, mh + 10);
+        c.fillStyle = rgba(CARD, .94); c.beginPath(); c.roundRect(X + w / 2 - bw / 2, o.y + h / 2 - bh / 2, bw, bh, 8); c.fill();
+      }
       if (lb) {
         if (lb.math || /\d\/\d/.test(lb.s)) MatText.draw(L, lb.s, X + w / 2, o.y + h / 2, { s: sz, a: 'center', b: 'middle', c: dark(col), w: 600, k: lb.k, max: w - 10 });
         else L.tx(lb.s, X + w / 2, o.y + h / 2 + sz * .02, { s: sz, w: 600, f: F.B, a: 'center', b: 'middle', c: dark(col), k: lb.k, max: w - 10 });
       }
     });
     c.restore();
-    if (o.brace && t >= 1) {
+    const ba = A * (o.brace && o.brace.a != null ? o.brace.a : 1) * smooth(clamp(t * N - (N - 1)));
+    if (o.brace && ba > .004) {
       const br = o.brace;
-      brace(L, out.x0, out.x1, br.down ? o.y + h + 14 : o.y - 14, { a: A, c: br.c || INK, down: !!br.down, label: { s: br.s, k: br.k }, math: br.math, sz: br.sz || sz });
+      brace(L, out.x0, out.x1, br.down ? o.y + h + 14 : o.y - 14, { a: ba, c: br.c || INK, down: !!br.down, label: { s: br.s, k: br.k }, math: br.math, sz: br.sz || sz });
     }
     return out;
   }
@@ -840,8 +855,15 @@ const MatFrac = (() => {
     const out = { x0: o.x, y0: o.y, cell };
     if (A <= .004) return out;
     c.save(); c.setLineDash([]); c.lineCap = 'butt'; c.globalAlpha = A;
-    c.fillStyle = CARD; c.fillRect(o.x, o.y, s, s);
-    for (let i = 0; i < 100; i++) {
+    if (o.bg !== false) { c.fillStyle = CARD; c.fillRect(o.x, o.y, s, s); }
+    if (o.cells) {            // tetszőleges cellahalmaz (i = sor · 10 + oszlop), függvénnyel cellánkénti színnel
+      const fn = typeof o.cells === 'function' ? o.cells : null, set = fn ? null : new Set(o.cells);
+      for (let i = 0; i < 100 && t > 0; i++) {
+        const r = Math.floor(i / 10), q = i % 10, v = fn ? fn(i, r, q) : set.has(i); if (!v) continue;
+        c.globalAlpha = A * t; c.fillStyle = rgba(typeof v === 'string' ? v : col, .55); c.fillRect(o.x + q * cell, o.y + r * cell, cell, cell);
+      }
+    }
+    for (let i = 0; i < 100 && !o.cells; i++) {
       const fa = clamp(k - i); if (fa <= 0) break;
       const r = o.order === 'col' ? i % 10 : Math.floor(i / 10), q = o.order === 'col' ? Math.floor(i / 10) : i % 10;
       c.globalAlpha = A * fa; c.fillStyle = rgba(col, .55); c.fillRect(o.x + q * cell, o.y + r * cell, cell, cell);
@@ -880,7 +902,7 @@ const MatFrac = (() => {
 
   return { draw, path, bounds, area, bar, grid100, wall, brace };
 })();
-/* ── MODUL VÉGE: Törtmodellek (MatFrac) ── */
+/* ── MODUL VÉGE ── */
 
 /* ── MODUL: Átdarabolás (MatDarab) · forrás: matematika-9-10/01-gyok-ketto, 2026-11-23 ── */
 /* API  (v1.0) – sokszögdarabok merev (és területtartó) mozgása kulcskockák között, a MatGeo fölött.
