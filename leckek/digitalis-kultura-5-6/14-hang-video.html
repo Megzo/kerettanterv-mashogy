@@ -1,0 +1,2430 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hogyan lesz a hangból szám? — Digitális kultúra</title>
+<link rel="stylesheet" href="../../shared/lesson.css">
+<style>
+  .lp-text b { color: var(--ink); }
+  .lp-text p { transition: filter .6s, opacity .6s; }
+  .lp-btn:disabled { opacity: .45; cursor: not-allowed; }
+</style>
+<!-- A lecke által várt tartalomkulcsok. A tools/build_lesson.py ez alapján ellenőrzi a .md-t. -->
+<script type="application/json" id="lesson-spec">
+{
+ "steps": 8,
+ "maxWords": 45,
+ "sources": true,
+ "labels": {
+  "tippelj felirat": 12,
+  "kísérlet felirat": 15,
+  "magyarázat felirat": 15,
+  "a te tipped felirat": 16,
+  "jó tipp felirat": 27,
+  "rossz tipp felirat": 44,
+  "kitalált bélyeg": 21,
+  "sematikus bélyeg": 20,
+  "modell bélyeg": 12,
+  "jel tengely": 12,
+  "idő tengely": 12,
+  "szól felirat": 12,
+  "eredeti hang felirat": 24,
+  "meghallgatom gomb": 17,
+  "furulya felirat": 12,
+  "levegő felirat": 20,
+  "mikrofon felirat": 12,
+  "elektromos jel felirat": 20,
+  "dallam felirat": 22,
+  "magas felirat": 12,
+  "mély felirat": 12,
+  "nagyító felirat": 60,
+  "hangerő felirat": 25,
+  "hangmagasság felirat": 30,
+  "rezgés felirat": 32,
+  "egy rezgés felirat": 12,
+  "hang csúszka": 17,
+  "hang sorszám felirat": 12,
+  "mért jel felirat": 36,
+  "visszarajzolt felirat": 46,
+  "mintavétel felirat": 31,
+  "ablak felirat": 41,
+  "szalag felirat": 57,
+  "többi felirat": 21,
+  "hangosabb tévhit felirat": 37,
+  "hangosabb válasz felirat": 59,
+  "mintavétel csúszka": 15,
+  "cd kérdés felirat": 50,
+  "44 tipp": 12,
+  "4410 tipp": 12,
+  "44100 tipp": 12,
+  "egy másodperc felirat": 16,
+  "egy ezredmásodperc felirat": 34,
+  "másodpercenként felirat": 36,
+  "legmagasabb felirat": 56,
+  "kétszer felirat": 41,
+  "cd elég felirat": 31,
+  "jó mintavétel felirat": 37,
+  "rossz mintavétel felirat": 62,
+  "cd felirat": 12,
+  "szintek felirat": 21,
+  "kerekítés felirat": 54,
+  "minta bitjei felirat": 37,
+  "szintlánc felirat": 49,
+  "szintlánc elem": 12,
+  "sűrű szint felirat": 50,
+  "bitmélység csúszka": 15,
+  "minta tényező felirat": 12,
+  "bit tényező felirat": 12,
+  "csatorna tényező felirat": 12,
+  "idő tényező felirat": 14,
+  "bitráta felirat": 50,
+  "bájt felirat": 41,
+  "cd sáv felirat": 30,
+  "saját sáv felirat": 37,
+  "tömörített sáv felirat": 49,
+  "hang tévhit felirat": 42,
+  "hang válasz felirat": 80,
+  "mintavétel 5 csúszka": 15,
+  "bitmélység 5 csúszka": 15,
+  "csatorna csúszka": 14,
+  "hossz csúszka": 17,
+  "kocka kérdés felirat": 71,
+  "3 tipp": 12,
+  "12 tipp": 12,
+  "100 tipp": 12,
+  "filmszalag felirat": 57,
+  "kockaméret felirat": 50,
+  "lejátszó felirat": 31,
+  "egy másodperc 6 felirat": 25,
+  "akadozik felirat": 40,
+  "folyamatos felirat": 37,
+  "film felirat": 26,
+  "folyamatos tévhit felirat": 36,
+  "folyamatos válasz felirat": 39,
+  "kocka csúszka": 25,
+  "egy kocka felirat": 44,
+  "másodperc felirat": 46,
+  "perc felirat": 29,
+  "videó hang felirat": 61,
+  "tömörítetlen sáv felirat": 24,
+  "tömörített videó sáv felirat": 41,
+  "kisebb felirat": 24,
+  "kocka a felirat": 12,
+  "kocka b felirat": 12,
+  "változás cím felirat": 19,
+  "változás felirat": 40,
+  "tömörítés tévhit felirat": 51,
+  "tömörítés válasz felirat": 62,
+  "következő gomb": 25,
+  "összefoglaló cím felirat": 41,
+  "összegzés rezgés felirat": 54,
+  "összegzés mintavétel felirat": 59,
+  "összegzés bitmélység felirat": 69,
+  "összegzés cd felirat": 59,
+  "összegzés kocka felirat": 52,
+  "összegzés tömörítés felirat": 60
+ },
+ "data": {
+  "dallam hangjai": {
+   "type": "list",
+   "unit": "Hz",
+   "len": 8,
+   "int": true,
+   "min": 100,
+   "max": 1000
+  },
+  "egy hang hossza": {
+   "unit": "s",
+   "min": 0.2,
+   "max": 1
+  },
+  "CD bitmélysége": {
+   "unit": "bit",
+   "min": 16,
+   "max": 16,
+   "int": true
+  },
+  "mintavételi lépcsők": {
+   "type": "list",
+   "unit": "kHz",
+   "len": 5,
+   "min": 1,
+   "max": 48
+  },
+  "CD mintavételi gyakorisága": {
+   "unit": "minta/s",
+   "min": 44100,
+   "max": 44100,
+   "int": true
+  },
+  "legmagasabb hallható hang": {
+   "unit": "Hz",
+   "min": 15000,
+   "max": 22000,
+   "int": true
+  },
+  "bitmélységek": {
+   "type": "list",
+   "unit": "bit",
+   "len": 4,
+   "int": true,
+   "min": 1,
+   "max": 16
+  },
+  "CD csatornái": {
+   "min": 2,
+   "max": 2,
+   "int": true
+  },
+  "tömörített zene": {
+   "unit": "kbit/s",
+   "min": 32,
+   "max": 320
+  },
+  "folyamatos mozgás határa": {
+   "unit": "kocka/s",
+   "min": 8,
+   "max": 16
+  },
+  "film képkockái": {
+   "unit": "kocka/s",
+   "min": 24,
+   "max": 24,
+   "int": true
+  },
+  "Full HD szélessége": {
+   "unit": "pixel",
+   "min": 1920,
+   "max": 1920,
+   "int": true
+  },
+  "Full HD magassága": {
+   "unit": "pixel",
+   "min": 1080,
+   "max": 1080,
+   "int": true
+  },
+  "egy pixel mérete": {
+   "unit": "bájt",
+   "min": 3,
+   "max": 3,
+   "int": true
+  },
+  "tömörített videó": {
+   "unit": "Mbit/s",
+   "min": 1,
+   "max": 50
+  }
+ }
+}
+</script>
+</head>
+<body>
+<script src="14-hang-video.content.js"></script>
+<script src="../../shared/lesson.js"></script>
+<script>
+(function () {
+'use strict';
+/* Modulok – bájtra azonosan átvéve: TtTipp (digitalis-kultura-5-6/02-ciklus), DigBit (digitalis-kultura-5-6/17-szamitogep),
+   DigPixel (digitalis-kultura-5-6/13-pixel), BioPlot (termeszettudomany-5-6/03-meres), MagHang v1.1 (magyar-5-6/02-beszedhang).
+   A MagHang-ból csak az unlock() kell (hangkontextus kattintásra); a mintákból szóló hang a lecke saját kódja (play). */
+/* ── MODUL: „Tippelj!” és bélyegek (TtTipp) · forrás: termeszettudomany-5-6/01-tocsa + 03-meres, egységesítve 2026-11-24 ── */
+/* A természettudomány 5–6. sorozat közös mintái (szerződés 17.): kísérlet-/modellbélyeg és a „Tippelj! → kísérlet →
+   magyarázat” jóslat. Csak a Lesson motorra épül (L.ctx, L.tx, L.pill, L.lab, L.button, L.controlsEl, L.panel, L.st,
+   Lesson.U, Lesson.FONTS); a lecke kódjára nem hivatkozik. A panel elmosásához szükséges CSS-t (.tt-rejtett) és a
+   letiltott csúszka halványítását a modul maga teszi a <head>-be – a leckében nem kell <style>-sor.
+
+   BEKÖTÉS (a lecke kódjában, egyszer, legfelső szinten – a getterek miatt a sorrend mindegy):
+     TtTipp.bind({ L: () => L, ga: () => GA });    // ga: a lecke alap-alfája (jelenet-áttűnés); alap: () => 1
+     const { stamp, Tip, tipReset, panelVeil, veilIf, tipGuess, tipHide, tipControls, tipU, rhythm, tipHead, tipRow,
+       tipFeedback } = TtTipp;
+   ALFA: minden rajzoló a globalAlpha-t ga() · a (· belső áttűnés) értékre ÁLLÍTJA (nem szoroz a pillanatnyival, így
+   egy korábbi halvány felirat nem tünteti el), a vonalstílust (lineCap/lineJoin/setLineDash) visszaállítja.
+
+   stamp(kind, x, y, a, o) → doboz | null       kísérlet-/modellbélyeg a KemGHS.stamp stílusával (Bricolage 22 px,
+        600, betűköz 0,08 em, −3°, papír alap, 2 px keret; 'tilos': 700, 3 px). (x, y): a bal szél közepe.
+        Szöveg: az o.k || '<kind> bélyeg' .md-kulcs. Szín (STAMP): otthon kékeszöld, felnőtt okker, tilos #b3261e;
+        tanári, modell, kitalált, nem méretarányos, sematikus, vázlatos, képzeletbeli (és minden más) halvány tinta.
+        o = {k, col (szín felülírása), rot: −3 (fok), al: 'left' (igazítás)}. a ≤ 0,005 → nem rajzol.
+   Tip(keys, ok) → P      jóslat-állapot. keys: a válaszok .md-kulcsai (egyben gombfeliratok), ok: a helyes kulcs (az
+        init-ben is beállítható: P.ok = …). P = {keys, ok, guess: null | kulcs, gt: a választás L.st-je, btns, on}.
+        P.on(k): választáskor hívódik (a lecke állítja, pl. a kísérlet vezérlőinek feloldására).
+   tipReset(P)            alaphelyzet (az enter()-ben; utána veilIf(P)).
+   panelVeil(on)          a panelszöveg 2. bekezdésétől (.lp-text > *, i > 0) elmos (on) / felold.
+   veilIf(P)              panelVeil(!P.guess) – az enter()-ben a tipReset után.
+   tipControls(P)         a tippgombok (L.button, P.keys sorrendben). A választás után csak ezek tűnnek el: a
+        sorukba utána tett más gombok maradnak (ha a sorban nem marad látható gomb, a sor is eltűnik).
+   tipGuess(P, k, gt)     választás (csak az első számít): P.guess = k, P.gt = gt ?? L.st, tipHide, panelVeil(false),
+        P.on(k). A QA-állapotok is ezt hívhatják (pl. gt = L.st − 30: a kísérlet már lefutott).
+   tipHide(P)             a tippgombok elrejtése (a tipGuess hívja; QA-állapotban kézzel is).
+   tipU(P, st) → mp       a választás óta eltelt idő (st − P.gt), −1, ha még nincs tipp.
+   rhythm(ph, a)          a „Tippelj! → kísérlet → magyarázat” sáv a vászon bal felső sarkában (x 40, y 46);
+        ph: 0 / 1 / 2 az aktív szakasz.
+   tipHead(P, st, a, qk, o) → y     fejléc: sáv + kérdés (qk, (40, 116), Fraunces 38, max 1280) + válaszsor (40, y).
+        o = {tExp: 4,5 (a kísérlet hossza mp-ben: ennyi után vált a sáv „magyarázat”-ra, és mutatja a helyes
+        választ), q2 (2. kérdéssor kulcsa, (40, 162); a válaszsor 46 px-szel lejjebb kerül), qv (a kérdés #-jeleinek
+        értékei, sorban), y: 178 (a válaszsor közepe), noRhythm (a sáv nélkül – pl. olvasási kérdésnél)}.
+        Visszaad: a válaszsor y-ja.
+   tipRow(P, st, a, x, y, o) → [dobozok]    csak a válaszsor (a tipHead is ezt rajzolja), bárhová: a választásig
+        semleges; a választott cinóber keretet és alatta „a te tipped” feliratot kap; o.tExp (0) mp múlva a helyes
+        zöld keretet + pipát kap, a többi elhalványul. Dobozköz 54 px (a pipának).
+   tipFeedback(P, st, a, x, y, o) → doboz | null    „Jó tipp!” (zöld) / „Sokan gondolják így – nézzük meg!”
+        (kékeszöld) pill (x: bal szél, y: közép), a választás után 0,15 mp-cel beúszva. o = {s: 24, al: 'left', max}.
+   .md-kulcsok (### Feliratok): tippelj felirat, kísérlet felirat, magyarázat felirat, a te tipped felirat, jó tipp
+        felirat, rossz tipp felirat; a bélyegeké '<kind> bélyeg'.
+   ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
+const TtTipp = (() => {
+  'use strict';
+  const U = Lesson.U, F = Lesson.FONTS, { clamp, lerp, smooth } = U;
+  const INK = '#1c2440', MUT = '#565d72', RED = '#c8401c', TEAL = '#0a6f86', GOOD = '#1d7a45', BAD = '#b3261e', OKR = '#8f5a0c', CARD = '#fffaf1';
+  const STAMP = { otthon: TEAL, felnőtt: OKR, tilos: BAD, tanári: MUT, modell: MUT, kitalált: MUT, 'nem méretarányos': MUT, sematikus: MUT, vázlatos: MUT, képzeletbeli: MUT };
+  const KEYS = { ph: ['tippelj felirat', 'kísérlet felirat', 'magyarázat felirat'], mine: 'a te tipped felirat', ok: 'jó tipp felirat', bad: 'rossz tipp felirat' };
+  let getL = () => null, ga = () => 1;
+  if (typeof document !== 'undefined' && !document.getElementById('tt-tipp-css')) {
+    const st = document.createElement('style'); st.id = 'tt-tipp-css';
+    st.textContent = '.lp-text > .tt-rejtett { filter: blur(7px); opacity: .5; user-select: none; transition: filter .6s, opacity .6s; }\n'
+      + '.lp-slider:has(input:disabled) { opacity: .45; }\n.lp-slider input:disabled { cursor: not-allowed; }';
+    document.head.appendChild(st);
+  }
+  const Lx = () => getL(), cx = () => getL().ctx, lab = (k) => getL().lab(k);
+  const al = (a) => { cx().globalAlpha = ga() * clamp(a); };
+  const fillIn = (s, v) => { let i = 0; return s.replace(/#/g, () => (i < v.length ? v[i++] : '#')); };
+  const rr = (c, x, y, w, h, r) => { c.beginPath(); c.roundRect(x, y, w, h, r); };
+  function check(x, y, a) {                 // pipa (rajz, nem betűjel)
+    const c = cx(); al(a); c.lineWidth = 4.5; c.lineCap = 'round'; c.lineJoin = 'round'; c.strokeStyle = GOOD; c.beginPath();
+    c.moveTo(x - 10, y); c.lineTo(x - 3, y + 8); c.lineTo(x + 11, y - 9); c.stroke(); c.lineCap = 'butt'; c.lineJoin = 'miter';
+  }
+  function arrow(x1, y1, x2, y2, col, w, hs) {
+    const c = cx(), an = Math.atan2(y2 - y1, x2 - x1), bx = x2 - Math.cos(an) * hs * .8, by = y2 - Math.sin(an) * hs * .8;
+    c.setLineDash([]); c.lineCap = 'round'; c.beginPath(); c.moveTo(x1, y1); c.lineTo(bx, by); c.strokeStyle = col; c.lineWidth = w; c.stroke(); c.lineCap = 'butt';
+    c.beginPath(); c.moveTo(x2, y2); c.lineTo(x2 - hs * Math.cos(an - .45), y2 - hs * Math.sin(an - .45)); c.lineTo(x2 - hs * Math.cos(an + .45), y2 - hs * Math.sin(an + .45)); c.closePath();
+    c.fillStyle = col; c.fill();
+  }
+
+  function bind(o = {}) { if (o.L) getL = o.L; if (o.ga) ga = o.ga; }
+  function stamp(kind, x, y, a, o = {}) {
+    if (a <= .005) return null;
+    const L = Lx(), c = L.ctx, k = o.k || (kind + ' bélyeg'), col = o.col || STAMP[kind] || MUT, tilos = kind === 'tilos';
+    c.save(); al(a); c.translate(x, y); c.rotate((o.rot == null ? -3 : o.rot) * Math.PI / 180);
+    const b = L.pill(lab(k), 0, 0, { s: 22, w: tilos ? 700 : 600, ls: '0.08em', f: F.B, bg: CARD, bd: col, bw: tilos ? 3 : 2, c: col, r: 6, pad: 10, k, qa: false, a: o.al || 'left' });
+    c.restore(); return b;
+  }
+  const Tip = (keys, ok) => ({ keys, ok, guess: null, gt: -99, btns: [], on: null });
+  function tipReset(P) { P.guess = null; P.gt = -99; }
+  function panelVeil(on) {
+    const L = Lx(); if (!L || !L.panel) return;
+    L.panel.querySelectorAll('.lp-text > *').forEach((p, i) => { if (i > 0) p.classList.toggle('tt-rejtett', !!on); });
+  }
+  const veilIf = (P) => panelVeil(!P.guess);
+  function tipHide(P) {
+    const rows = new Set();
+    (P.btns || []).forEach((b) => { b.style.display = 'none'; if (b.parentNode) rows.add(b.parentNode); });
+    rows.forEach((r) => { if (![...r.children].some((e) => e.style.display !== 'none')) r.style.display = 'none'; });
+  }
+  function tipGuess(P, k, gt) {
+    if (P.guess) return;
+    P.guess = k; P.gt = gt == null ? Lx().st : gt;
+    tipHide(P); panelVeil(false);
+    if (P.on) P.on(k);
+  }
+  function tipControls(P) { const L = Lx(); P.btns = P.keys.map((k) => L.button(lab(k), () => tipGuess(P, k), k)); }
+  const tipU = (P, st) => (P.guess ? st - P.gt : -1);
+  function rhythm(ph, a) {
+    const L = Lx(), cols = [RED, TEAL, OKR];
+    let x = 40;
+    KEYS.ph.forEach((k, j) => {
+      const on = ph === j, done = ph > j;
+      al(a * (on ? 1 : done ? .7 : .4));
+      const b = L.pill(lab(k), x, 46, { k, s: 22, w: 700, f: F.B, c: on ? '#ffffff' : cols[j], bg: on ? cols[j] : CARD, bd: cols[j], bw: 2, pad: 10 });
+      x = b.x + b.w;
+      if (j < 2) { al(a * .55); arrow(x + 8, 46, x + 34, 46, MUT, 3, 11); x += 44; }
+    });
+  }
+  function tipRow(P, st, a, x, y, o = {}) {
+    const L = Lx(), c = L.ctx, u = tipU(P, st), tx = o.tExp || 0, out = [];
+    const rev = P.guess ? smooth((u - tx) / .5) : 0;
+    P.keys.forEach((k) => {
+      const mine = P.guess === k, ok = k === P.ok, g = rev * (ok ? 1 : 0);
+      al(a * (P.guess && !mine && !ok ? lerp(1, .55, rev) : 1));
+      const b = L.pill(lab(k), x, y, { k, s: 26, w: 600, f: F.B, c: INK, bg: g > .5 ? '#eef6ee' : CARD, bd: g > .5 ? GOOD : 'rgba(28,36,64,.35)', bw: g > .5 ? 3 : 2, pad: 14 });
+      if (mine) {
+        al(a * smooth(u / .3)); rr(c, b.x - 6, b.y - 6, b.w + 12, b.h + 12, (b.h + 12) / 2); c.strokeStyle = RED; c.lineWidth = 3.5; c.stroke();
+        L.tx(lab(KEYS.mine), b.x + b.w / 2, b.y + b.h + 30, { k: KEYS.mine, s: 22, w: 700, f: F.B, c: RED, a: 'center' });
+      }
+      if (g > 0) check(b.x + b.w + 24, y, a * g);
+      out.push(b); x = b.x + b.w + 54;
+    });
+    return out;
+  }
+  function tipHead(P, st, a, qk, o = {}) {
+    const L = Lx(), u = tipU(P, st), tx = o.tExp || 4.5;
+    if (!o.noRhythm) rhythm(!P.guess ? 0 : u < tx ? 1 : 2, a);
+    const q = { f: F.D, s: 38, w: 600, c: INK, max: 1280 };
+    al(a); L.tx(o.qv ? fillIn(lab(qk), o.qv) : lab(qk), 40, 116, Object.assign({ k: qk }, q));
+    let y = o.y || 178;
+    if (o.q2) { al(a); L.tx(lab(o.q2), 40, 162, Object.assign({ k: o.q2 }, q)); y += 46; }
+    tipRow(P, st, a, 40, y, { tExp: tx });
+    return y;
+  }
+  function tipFeedback(P, st, a, x, y, o = {}) {
+    if (!P.guess) return null;
+    const u = tipU(P, st), ok = P.guess === P.ok, k = ok ? KEYS.ok : KEYS.bad;
+    al(a * smooth((u - .15) / .4));
+    return Lx().pill(lab(k), x, y, { k, s: o.s || 24, w: 700, f: F.B, c: ok ? GOOD : TEAL, bg: CARD, bd: ok ? GOOD : TEAL, bw: 2.5, pad: 12, a: o.al || 'left', max: o.max });
+  }
+  return { bind, STAMP, stamp, Tip, tipReset, panelVeil, veilIf, tipGuess, tipHide, tipControls, tipU, rhythm, tipHead, tipRow, tipFeedback };
+})();
+/* ── MODUL VÉGE: TtTipp ── */
+/* ── MODUL: Bit, bájt, kód (DigBit) · forrás: digitalis-kultura-5-6/17-szamitogep, 2026-11-24 ── */
+/* Terv: pilot/digitalis-kultura-5-6/terv.md 4.2 („DigBit”), szerződés 16. és 19. Átvevők: 05-csomagok (bytes: az IP-cím
+   négy bájtja), 06-jelszo (big, pow: nagy számok), 13-pixel (bits csatornánként, col), 14-hang-video (bytes: mintaszalag,
+   size). Csak a Lesson motorra épül (L.ctx, L.tx, L.pill, L.measure, L.pointer, Lesson.U, Lesson.FONTS); a lecke kódjára
+   nem hivatkozik. Felirat: {s, k} (szöveg + .md-kulcs) – csak L.tx / L.pill írja ki; a számok, a 0/1 jegyek és a
+   mértékegység-jelek (kB, MB…) kódban rögzítettek. Vászonon minden betű ≥ 22 px.
+   ALFA: o.a ABSZOLÚT, a modul a globalAlpha-t ga() · o.a értékre ÁLLÍTJA (nem szoroz a pillanatnyival – a TtTipp
+   mintája), ga a bind()-ból (alap: () => 1). A vonalstílust és a betűállapotot save/restore állítja vissza.
+
+   BEKÖTÉS (opcionális, egyszer): DigBit.bind({ ga: () => GA });   // a lecke jelenet-áttűnési alap-alfája
+
+   ── Tiszta függvények (rajz nélkül) ──
+   DigBit.toBits(v, n = 8) → [0|1 …]      n jegy, a legnagyobb helyiérték elöl (65 → [0,1,0,0,0,0,0,1]); n ≤ 53
+   DigBit.value(bits) → szám              a toBits fordítottja
+   DigBit.bin(v, n = 8) → '01000001'      · DigBit.hex(v, n = 2) → 'C5' (nagybetűs, nullával kitöltve)
+   DigBit.count(n) → 2ⁿ                    ennyi különböző érték fér n bitbe
+   DigBit.char(v) → jel | null            ASCII 32–126 (a 32 a szóköz: ' '); minden más null → a hívó „nem betű”-t ír
+   DigBit.code(ch) → kódpont (Unicode)    'A' → 65, 'ő' → 337 (U+0151)
+   DigBit.utf8(s) → [bájtok]              UTF-8 kódolás ('ő' → [0xC5, 0x91]; több jel: egymás után)
+   DigBit.encode(s) → [{ch, cp, bytes}]   jelenként (kódpontonként): a jel, a kódpontja és az UTF-8 bájtjai
+   DigBit.big(n, o) → {n, s, m, e, mant, words}
+        nagy szám magyarul (hosszú skála: ezer 10³, millió 10⁶, milliárd 10⁹, billió 10¹², billiárd 10¹⁵, trillió 10¹⁸,
+        trilliárd 10²¹, kvadrillió 10²⁴, kvadrilliárd 10²⁷, kvintillió 10³⁰). s: '218 billió' (o.sig = 3 értékes jegy),
+        10⁶ alatt U.fmt-tel ('10 000'); o.ezer: true → 10⁴ és 10⁶ között is szóval ('333 ezer'); 10³³ fölött s = mant ·
+        10^e szövegesen. m, e: n = m · 10^e (1 ≤ m < 10); mant: m magyarul, o.pd (alap 1) tizedesre ('2,2'); words: a
+        szorzószó ('billió' | '').
+   DigBit.size(b, base = 1000, o) → {v, u, s}   bájtszám olvasható egységben: base 1000 → bájt, kB, MB, GB, TB, PB
+        (SI, IEC 80000-13); base 1024 → bájt, KiB, MiB, GiB, TiB. s: '10,6 MB' (100 alatt 1 tizedes, a ',0' elmarad;
+        1000 bájt alatt egész). o.d: rögzített tizedesszám; o.units: saját egységnevek (pl. a .md-ből a 'bájt' szóra).
+
+   ── Rajzolók (a draw-ból, minden képkockán) ──
+   DigBit.lamp(L, x, y, r, on, o)          egy lámpa (középpont, sugár); on 0..1 (fényerő, tört: áttűnés);
+        o = {a, col: '#f4bd45' (bekapcsolt szín – RGB-csatornához #c62828 / #2e7d32 / #1e5bc6), glow: true}
+   DigBit.bits(L, v, o) → {v, hit, x, y, w, h, cell(i) → {x, y, w, h}}
+        kapcsoló-/lámpasor: n cella (lekerekített kártya, benne lámpa), alatta a jegy (0/1) és a helyiérték (128 … 1).
+        o = {x, y (a sor bal felső sarka), n: 8, s: 56 (cellaméret px), gap: .25·s, a, col, lit: [0..1 × n] (a lámpák
+        fényerejének felülírása – pl. animációhoz; nélküle v bitjei), digits: true (0/1 alatta, max(24, .42·s) px),
+        place: true (helyiértékek, 22 px – n > 8-nál csak ha s ≥ 80, különben kilógnak; a hívó kapcsolja ki),
+        hi: index | [indexek] | (i) → 0..1 (cinóber keret), click: false (true: a L.pointer.pressed a cellán billent –
+        CSAK az aktív jelenetben add meg, mert áttűnéskor két jelenet is rajzol), dim: 0 (a kikapcsolt cella
+        halványítása 0..1)}.
+        Visszaad: v (kattintás után a billentett érték – a hívó tárolja), hit (a kattintott cella indexe | -1).
+   DigBit.bytes(L, arr, o) → {boxes: [{x, y, w, h, i}], w, h}
+        bájt- (érték-) szalag: cellák sorban, tördelve. arr: számok (bájt, minta – negatív is lehet).
+        o = {x, y (bal felső), show: 'dec' | 'hex' | 'bin' (alap: dec), bits: 8 (bin-nél a jegyek), s: 24 (betűméret,
+        ≥ 22), cell: 56 (min. cellaszélesség; a legszélesebb értékhez nő), h: s + 26, gap: 8, cols (soronként ennyi
+        cella; alap: amennyi a maxW-be fér), maxW: 1280, rowGap: 18, group: [db, db, …] (csoportok – köztük
+        o.groupGap: 26 px; pl. jelenként a bájtok), u: arr.length (kifutás: ennyi cella látszik – tört: az utolsó
+        beúszik; a cellák helye u-tól független), hi: index | [indexek] | (i) → 0..1, col: cinóber (kiemelés), fill: (i) →
+        háttérszín | null, a}
+   DigBit.ladder(L, o) → {box(i) → {x, y, w, h}, n}
+        mértékegység-létra balról jobbra emelkedő lépcsőkkel. o = {x, y, w, h, steps: [{s, k} | szöveg]
+        (fokonként az egység, pl. 'bájt', 'kB', 'MB', 'GB', 'TB'), mul: {s, k} | szöveg (a fokok közti szorzó,
+        alap: '× ' + base), base: 1000, ex: [{s, k} | null] (fokonként egy példa a lépcső tetején; legyen rövid:
+        a fok szélességére kicsinyít), hi: index (tört is: két fok közt átúszik), u: 0..1 (felépülés: a fokok
+        balról jobbra jelennek meg; a szorzó a magasabb fok bal alsó sarkában áll), col: kékeszöld, a}
+   DigBit.pow(L, n, x, y, o) → {w, h}      n hatványalakban: '2,2 · 10' + RAJZOLT felső index (kisebb L.tx, nem
+        Unicode-jel – a három fontban nincs mindenhol); 10⁴ alatt csak U.fmt(n). o = {s: 32, f: Mono, w: 600, c: tinta,
+        a: 'left' | 'center' | 'right', b: 'alphabetic', pd: 1 (a mantissza tizedesei), es: max(22, .62·s)
+        (a kitevő mérete), k}
+   ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
+const DigBit = (() => {
+  'use strict';
+  const U = Lesson.U, F = Lesson.FONTS, clamp = U.clamp, lerp = U.lerp, TAU = Math.PI * 2;
+  const INK = '#1c2440', MUT = '#565d72', RED = '#c8401c', TEAL = '#0a6f86', CARD = '#fffaf1', LINE = 'rgba(28,36,64,.16)';
+  const LAMP = '#f4bd45', OFF = '#ddd5c6';
+  let ga = () => 1;
+  const bind = (o = {}) => { if (o.ga) ga = o.ga; };
+  const al = (c, a) => { c.globalAlpha = ga() * clamp(a == null ? 1 : a); };
+  const TX = (x) => (x == null ? null : typeof x === 'string' || typeof x === 'number' ? { s: String(x) } : x);
+  const hiOf = (hi, i) => (hi == null ? 0 : typeof hi === 'function' ? clamp(+hi(i) || 0) : Array.isArray(hi) ? (hi.includes(i) ? 1 : 0) : hi === i ? 1 : 0);
+  const isHex = (col) => /^#[0-9a-f]{6}$/i.test(col);
+
+  /* ── tiszta függvények ── */
+  const count = (n) => Math.pow(2, n);
+  function toBits(v, n = 8) {
+    v = Math.max(0, Math.floor(+v || 0)) % count(n);
+    const out = []; for (let i = n - 1; i >= 0; i--) out.push(Math.floor(v / count(i)) % 2);
+    return out;
+  }
+  const value = (bits) => bits.reduce((s, b) => s * 2 + (b ? 1 : 0), 0);
+  const bin = (v, n = 8) => toBits(v, n).join('');
+  const hex = (v, n = 2) => Math.max(0, Math.floor(v)).toString(16).toUpperCase().padStart(n, '0');
+  const char = (v) => (v >= 32 && v <= 126 ? String.fromCharCode(v) : null);
+  const code = (ch) => String(ch).codePointAt(0);
+  function utf8cp(cp) {
+    if (cp < 0x80) return [cp];
+    if (cp < 0x800) return [0xC0 | cp >> 6, 0x80 | cp & 63];
+    if (cp < 0x10000) return [0xE0 | cp >> 12, 0x80 | cp >> 6 & 63, 0x80 | cp & 63];
+    return [0xF0 | cp >> 18, 0x80 | cp >> 12 & 63, 0x80 | cp >> 6 & 63, 0x80 | cp & 63];
+  }
+  const encode = (s) => Array.from(String(s)).map((ch) => { const cp = ch.codePointAt(0); return { ch, cp, bytes: utf8cp(cp) }; });
+  const utf8 = (s) => [].concat(...encode(s).map((e) => e.bytes));
+  const WORDS = [[1e30, 'kvintillió'], [1e27, 'kvadrilliárd'], [1e24, 'kvadrillió'], [1e21, 'trilliárd'], [1e18, 'trillió'],
+    [1e15, 'billiárd'], [1e12, 'billió'], [1e9, 'milliárd'], [1e6, 'millió'], [1e3, 'ezer']];
+  function sigRound(v, sig) { if (v === 0) return 0; const d = Math.ceil(Math.log10(Math.abs(v))); const p = Math.pow(10, sig - d); return Math.round(v * p) / p; }
+  function big(n, o = {}) {
+    const sig = o.sig || 3, pd = o.pd == null ? 1 : o.pd;
+    let e = n > 0 ? Math.floor(Math.log10(n) + 1e-12) : 0, m = n > 0 ? n / Math.pow(10, e) : 0;
+    if (+m.toFixed(pd) >= 10) { m /= 10; e += 1; }
+    const mant = U.fmt(m, pd).replace(/,0+$/, '');
+    const r = { n, m, e, mant, words: '', s: '' };
+    const lim = o.ezer ? 1e4 : 1e6;
+    if (n < lim) { r.s = U.fmt(Math.round(n)); return r; }
+    if (n >= 1e33) { r.s = mant + ' · 10^' + e; return r; }
+    for (let j = 0; j < WORDS.length; j++) {
+      let [b, w] = WORDS[j];
+      if (n >= b * (1 - 1e-12)) {
+        let v = sigRound(n / b, sig);
+        if (v >= 1000 && j > 0) { [b, w] = WORDS[j - 1]; v = sigRound(n / b, sig); }   // 999,6 milliárd → 1 billió
+        const t = v >= 100 ? U.fmt(v, 0) : U.fmt(v, v >= 10 ? 1 : 2).replace(/,?0+$/, '');
+        r.words = w; r.s = t + ' ' + w;
+        return r;
+      }
+    }
+    r.s = U.fmt(Math.round(n)); return r;
+  }
+  function size(b, base = 1000, o = {}) {
+    const units = o.units || (base === 1024 ? ['bájt', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB'] : ['bájt', 'kB', 'MB', 'GB', 'TB', 'PB']);
+    let i = 0, v = b;
+    while (i < units.length - 1 && Math.abs(v) >= base * (1 - 5e-4)) { v /= base; i++; }
+    let s;
+    if (o.d != null) s = U.fmt(v, o.d);
+    else if (i === 0) s = U.fmt(Math.round(v));
+    else if (Math.abs(v) < 100) s = U.fmt(v, 1).replace(/,0$/, '');
+    else s = U.fmt(v, 0);
+    return { v, u: units[i], s: s + ' ' + units[i], i };
+  }
+
+  /* ── rajzolók ── */
+  function lamp(L, x, y, r, on, o = {}) {
+    const c = L.ctx, col = o.col || LAMP, q = clamp(on), a = o.a == null ? 1 : o.a;
+    if (a <= .005) return;
+    c.save();
+    if (q > 0 && o.glow !== false) {
+      al(c, a * q * .55); const g = c.createRadialGradient(x, y, r * .6, x, y, r * 1.7);
+      g.addColorStop(0, isHex(col) ? U.rgba(col, .75) : col); g.addColorStop(1, isHex(col) ? U.rgba(col, 0) : 'rgba(0,0,0,0)');
+      c.fillStyle = g; c.beginPath(); c.arc(x, y, r * 1.7, 0, TAU); c.fill();
+    }
+    al(c, a); c.beginPath(); c.arc(x, y, r, 0, TAU); c.fillStyle = isHex(col) ? U.mix(OFF, col, q) : col; c.fill();
+    c.lineWidth = Math.max(2, r * .08); c.strokeStyle = isHex(col) ? U.mix(INK, col, q * .35) : INK; c.stroke();
+    if (q > .02) { al(c, a * q * .8); c.beginPath(); c.arc(x - r * .32, y - r * .32, r * .22, 0, TAU); c.fillStyle = '#fffaf1'; c.fill(); }
+    c.restore();
+  }
+
+  function bits(L, v, o = {}) {
+    const c = L.ctx, n = o.n || 8, s = o.s || 56, gap = o.gap == null ? s * .25 : o.gap, a = o.a == null ? 1 : o.a;
+    const x0 = o.x || 0, y0 = o.y || 0, B = toBits(v, n), ds = Math.max(24, Math.round(s * .42));
+    const showD = o.digits !== false, showP = o.place !== false;
+    const cell = (i) => ({ x: x0 + i * (s + gap), y: y0, w: s, h: s });
+    const H = s + (showD ? ds + 16 : 0) + (showP ? 40 : 0);
+    let nv = v, hit = -1;
+    if (o.click && L.pointer.pressed) {
+      const px = L.pointer.px, py = L.pointer.py;
+      for (let i = 0; i < n; i++) { const b = cell(i); if (px >= b.x - gap / 2 && px <= b.x + s + gap / 2 && py >= y0 - 6 && py <= y0 + H) { hit = i; break; } }
+      if (hit >= 0) { const bb = toBits(v, n); bb[hit] = bb[hit] ? 0 : 1; nv = value(bb); }
+    }
+    if (a > .005) {
+      c.save();
+      for (let i = 0; i < n; i++) {
+        const b = cell(i), on = o.lit ? clamp(o.lit[i]) : B[i], h = hiOf(o.hi, i), dm = o.dim ? lerp(1, 1 - o.dim, 1 - on) : 1;
+        al(c, a * dm); c.beginPath(); c.roundRect(b.x, b.y, s, s, Math.max(6, s * .16)); c.fillStyle = CARD; c.fill();
+        c.lineWidth = 2.5; c.strokeStyle = U.rgba(INK, .55); c.stroke();
+        lamp(L, b.x + s / 2, b.y + s / 2, s * .32, on, { a: a * dm, col: o.col });
+        if (h > 0) { al(c, a * h); c.beginPath(); c.roundRect(b.x - 6, b.y - 6, s + 12, s + 12, Math.max(8, s * .2)); c.strokeStyle = RED; c.lineWidth = 3.5; c.stroke(); }
+        if (showD) { al(c, a * dm); L.tx(String(on >= .5 ? 1 : 0), b.x + s / 2, b.y + s + 10 + ds * .8, { s: ds, w: 700, f: F.M, c: on >= .5 ? INK : MUT, a: 'center' }); }
+        if (showP) { al(c, a * dm); L.tx(U.fmt(count(n - 1 - i)), b.x + s / 2, b.y + s + (showD ? ds + 16 : 0) + 30, { s: 22, w: 500, f: F.M, c: MUT, a: 'center', max: s + gap - 4 }); }
+      }
+      c.restore();
+    }
+    return { v: nv, hit, x: x0, y: y0, w: n * s + (n - 1) * gap, h: H, cell };
+  }
+
+  function fmtVal(v, show, nb) { return show === 'hex' ? hex(v) : show === 'bin' ? bin(v, nb) : U.fmt(v); }
+  function bytes(L, arr, o = {}) {
+    const c = L.ctx, a = o.a == null ? 1 : o.a, show = o.show || 'dec', nb = o.bits || 8, fs = Math.max(22, o.s || 24);
+    const FT = { s: fs, w: 600, f: F.M };
+    let cw = o.cell || 56; for (const v of arr) cw = Math.max(cw, L.measure(fmtVal(v, show, nb), FT).w + 22);
+    const h = o.h || fs + 26, gap = o.gap == null ? 8 : o.gap, gg = o.groupGap == null ? 26 : o.groupGap, maxW = o.maxW || 1280;
+    const gEnd = new Set(); if (o.group) { let acc = 0; o.group.forEach((g) => { acc += g; gEnd.add(acc - 1); }); }
+    const boxes = []; let x = o.x || 0, y = o.y || 0, col = 0, wMax = 0; const cols = o.cols || 1e9;
+    arr.forEach((v, i) => {
+      if (col >= cols || (col > 0 && x - (o.x || 0) + cw > maxW)) { x = o.x || 0; y += h + (o.rowGap == null ? 18 : o.rowGap); col = 0; }
+      boxes.push({ x, y, w: cw, h, i }); wMax = Math.max(wMax, x + cw - (o.x || 0));
+      x += cw + (gEnd.has(i) ? gg : gap); col++;
+    });
+    const u = o.u == null ? arr.length : o.u;
+    if (a > .005) {
+      c.save();
+      boxes.forEach((b) => {
+        const q = clamp(u - b.i); if (q <= 0) return;
+        const hh = hiOf(o.hi, b.i), fill = o.fill ? o.fill(b.i) : null, yy = b.y + (1 - U.out(q)) * 14;
+        al(c, a * q); c.beginPath(); c.roundRect(b.x, yy, b.w, b.h, 8); c.fillStyle = fill || CARD; c.fill();
+        c.lineWidth = hh > .5 ? 3 : 2; c.strokeStyle = hh > .5 ? (o.col || RED) : U.rgba(INK, .45); c.stroke();
+        al(c, a * q); L.tx(fmtVal(arr[b.i], show, nb), b.x + b.w / 2, yy + b.h / 2 + 1, Object.assign({ c: hh > .5 ? (o.col || RED) : INK, a: 'center', b: 'middle' }, FT));
+      });
+      c.restore();
+    }
+    return { boxes, w: wMax, h: boxes.length ? boxes[boxes.length - 1].y + h - (o.y || 0) : 0 };
+  }
+
+  function ladder(L, o = {}) {
+    const c = L.ctx, a = o.a == null ? 1 : o.a, steps = (o.steps || ['bájt', 'kB', 'MB', 'GB', 'TB']).map(TX), n = steps.length;
+    const x0 = o.x || 0, y0 = o.y || 0, W = o.w || 1200, Hh = o.h || 500, bw = W / n, sh = (Hh - 70) / n, col = o.col || TEAL;
+    const base = o.base || 1000, mul = TX(o.mul || ('× ' + U.fmt(base))), u = o.u == null ? 1 : o.u, hi = o.hi == null ? -1 : o.hi;
+    const box = (i) => { const hgt = (i + 1) * sh; return { x: x0 + i * bw, y: y0 + Hh - hgt, w: bw, h: hgt }; };
+    if (a > .005) {
+      c.save();
+      for (let i = 0; i < n; i++) {
+        const q = clamp(u * n - i); if (q <= 0) break;
+        const b = box(i), hq = clamp(1 - Math.abs(hi - i)), yy = b.y + (1 - U.out(q)) * 30;
+        al(c, a * q); c.beginPath(); c.roundRect(b.x + 4, yy, b.w - 8, b.y + b.h - yy, [12, 12, 0, 0]);
+        c.fillStyle = U.mix('#fffaf1', col, .1 + .28 * hq); c.fill(); c.lineWidth = 2.5 + hq * 1.5; c.strokeStyle = hq > .5 ? RED : U.rgba(INK, .55); c.stroke();
+        al(c, a * q); L.tx(steps[i].s, b.x + b.w / 2, yy + 46, { k: steps[i].k, s: 34, w: 700, f: F.B, c: hq > .5 ? RED : INK, a: 'center', max: b.w - 24 });
+        const ex = o.ex && TX(o.ex[i]);
+        if (ex && ex.s) { al(c, a * q); L.pill(ex.s, b.x + b.w / 2, yy - 30, { k: ex.k, s: 22, w: 600, f: F.B, c: INK, bg: CARD, bd: hq > .5 ? RED : LINE, pad: 9, a: 'center', max: b.w - 34 }); }
+        if (i > 0 && mul && mul.s) {
+          const qm = clamp(u * n - i - .3) * q; if (qm > 0) {
+            al(c, a * qm); L.tx(mul.s, b.x + 22, b.y + b.h - 20, { k: mul.k, s: 24, w: 700, f: F.B, c: col, max: b.w - 44 });
+          }
+        }
+      }
+      c.restore();
+    }
+    return { box, n };
+  }
+
+  function pow(L, n, x, y, o = {}) {
+    const s = o.s || 32, es = o.es || Math.max(22, Math.round(s * .62)), FT = { s, w: o.w || 600, f: o.f || F.M, c: o.c || INK, b: o.b || 'alphabetic' };
+    if (n < 1e4) { const t = U.fmt(Math.round(n)), w = L.measure(t, FT).w; L.tx(t, x - (o.a === 'center' ? w / 2 : o.a === 'right' ? w : 0), y, Object.assign({ k: o.k }, FT)); return { w, h: s }; }
+    const B = big(n, { pd: o.pd == null ? 1 : o.pd }), main = B.mant + ' · 10', ex = String(B.e);
+    const FE = Object.assign({}, FT, { s: es, w: 700 }), w1 = L.measure(main, FT).w, w2 = L.measure(ex, FE).w + 2, W = w1 + w2;
+    const xl = x - (o.a === 'center' ? W / 2 : o.a === 'right' ? W : 0);
+    L.tx(main, xl, y, Object.assign({ k: o.k }, FT));
+    L.tx(ex, xl + w1 + 2, y - s * .42, Object.assign({ k: o.k }, FE));
+    return { w: W, h: s * 1.4 };
+  }
+
+  return { bind, toBits, value, bin, hex, count, char, code, utf8, encode, big, size, lamp, bits, bytes, ladder, pow };
+})();
+/* ── MODUL VÉGE: DigBit ── */
+/* ── MODUL: Raszter, vektor, RGB (DigPixel) · forrás: digitalis-kultura-5-6/13-pixel, 2026-11-24 ── */
+/* Terv: pilot/digitalis-kultura-5-6/terv.md 4.2 („DigPixel”), szerződés 16. és 19. Átvevők: 14-hang-video (képkockák:
+   grid kicsiben, fromRows / fromDraw), 16-alhir (fotó: fromDraw, view, ops.crop – a kivágott részlet), (17). Csak a Lesson
+   motorra épül (L.ctx, L.tx, L.measure, L.pointer, Lesson.U, Lesson.FONTS); a lecke kódjára nem hivatkozik. A modul
+   feliratot nem ír, csak számokat (a cellák R, G, B értékét) – ezek kódban rögzítettek, L.tx-szel, ≥ 22 px.
+   ALFA: o.a ABSZOLÚT, a modul a globalAlpha-t ga() · o.a értékre ÁLLÍTJA (nem szoroz a pillanatnyival – a TtTipp és a
+   DigBit mintája), ga a bind()-ból (alap: () => 1). Minden rajzoló save/restore-ral dolgozik (vágás, kompozíció,
+   simítás, vonalstílus nem szivárog ki).
+
+   BEKÖTÉS (opcionális, egyszer): DigPixel.bind({ ga: () => GA });   // a lecke jelenet-áttűnési alap-alfája
+
+   ── A kép (img) ──
+   img = {w, h, d: Uint8ClampedArray(w · h · 3)} – r, g, b soronként (a (i, j) pixel: d[(j · w + i) · 3 + 0..2]).
+   i = oszlop (x, balról), j = sor (y, felülről). Szín (col) bárhol: [r, g, b] | '#rrggbb' | '#rgb' | 'rgb(…)'.
+   MINDEN művelet új img-et ad (tiszta függvény; ha nincs változás, ugyanazt az objektumot) – a lecke tárolja az
+   állapotot (pl. előző kép + művelet ideje az áttűnéshez). A rajzolók img-enként egy vásznat gyorsítótáraznak (WeakMap),
+   ezért egy img-et ne módosíts helyben (d[…] = …): írj set / setMany / ops-szal, vagy copy után, még rajzolás előtt.
+
+   ── Tiszta függvények (rajz nélkül) ──
+   DigPixel.make(w, h, col) → img                 egyszínű kép (col nélkül fekete)
+   DigPixel.copy(img) → img                       · DigPixel.same(a, b) → true, ha méret és minden szám egyezik
+   DigPixel.get(img, i, j) → [r, g, b] | null    (a képen kívül null)
+   DigPixel.set(img, i, j, col) → img             · DigPixel.setMany(img, [[i, j]…], col) → img
+   DigPixel.fromRows(rows, pal) → img             pixelrajz szövegből: rows = ['..rr..', …] (egyforma hosszú sorok),
+        pal = {'.': '#ffffff', r: [200, 40, 40], …} (a palettában nem szereplő jel fekete)
+   DigPixel.fromDraw(w, h, fn(c, w, h), o) → img  raszterizálja a lecke saját rajzát egy w × h-s rejtett vásznon (a
+        rajz élsimított – mint egy fénykép). o = {bg: '#ffffff' (alap), noise: 0 (fényképszerű „szemcse”: ±noise a
+        számokhoz), seed: 1 (a zaj U.rng-magja – determinisztikus)}. Csak init()-ből vagy később hívd (document kell).
+   DigPixel.rasterize(shapes, w, h, o) → img      a vector() alakzatait rajzolja w × h pixelre (o.box: [x0, y0, x1, y1]
+        – a rajz egységeiben, alap [0, 0, 100, 100]; o.bg, o.noise, o.seed, mint fent) – ugyanaz a rajz raszterben.
+   DigPixel.noise(img, amp, seed = 1, chroma = .3) → img   seedelt zaj (fényerő ± amp, színben ± chroma · amp)
+   DigPixel.resample(img, w2, h2, mode = 'kockás') → img    új felbontás. 'kockás': legközelebbi szomszéd (a nagyítás
+        csak ismétli a pixeleket – új részlet nem keletkezik); 'simított': kicsinyítésnél a terület átlaga (doboz),
+        nagyításnál bilineáris (elmosódott).
+   DigPixel.size(w, h, bpp = 24) → bájt           tömörítetlen méret: w · h · bpp / 8 (a fájlméret-kiírások forrása;
+        olvasható alakhoz: DigBit.size(…).s)
+   DigPixel.ops – képműveletek (mind új img):
+        flipH(img) (vízszintes tükrözés: minden sor fordítva) · flipV(img) · rot90(img) (90°, az óra járásával: a
+        w × h-s képből h × w-s) · crop(img, {x, y, w, h}) (kivágás, a képre szorítva) · bright(img, d) (minden
+        számhoz + d, 0 és 255 közé vágva) · gray(img) (szürkeárnyalat: 0,299 R + 0,587 G + 0,114 B) · fill(img, i, j,
+        col) (kitöltés: az (i, j)-vel azonos színű, 4-szomszédosan összefüggő pixelek – iteratív, verem, nincs
+        rekurzió) · retouch(img, rect, from) (retusálás, „bélyegző”: a from = [x, y] | {x, y} bal felső sarkú,
+        rect-méretű folt másolata a rect helyére) · map(img, fn(r, g, b, i, j) → col) (általános, pixelenként).
+   DigPixel.rgb3(col) → [r, g, b] · DigPixel.css(col) → 'rgb(r,g,b)' · DigPixel.lum(col) → 0..1 (relatív fényesség,
+        egyszerű súlyozás – feliratszín választásához) · DigPixel.CH – a csatornák színe a szerződés 19. szerint
+        ['#c62828', '#2e7d32', '#1e5bc6'] (vörös, zöld, kék: felirat, csúszka, lámpa) · DigPixel.NUMPX = 88 (lásd nums).
+
+   ── Rajzolók (a draw-ból, minden képkockán) ──
+   DigPixel.view(L, img, o) → V        a kép (vagy egy része) egy képernyő-téglalapba.
+        o = {x, y, w, h (cél-téglalap; w/h nélkül src · px), px (pixelméret, ha nincs w/h), src: {x, y, w, h} (a
+        kép része pixelben – tört is lehet; alap: az egész kép; a képen kívüli rész o.bg vagy átlátszó), mode:
+        'kockás' (legközelebbi szomszéd, alap) | 'simított' (a böngésző bilineáris simítása), lines: 0..1 (rácsvonal;
+        alap: a pixelmérettől – 8 px alatt 0, 24 px fölött 1), lineCol, nums: 0..1 (a cellában a három szám R, G, B
+        sorrendben, csatornaszínnel, kártyán; CSAK a teljesen látható cellákba és csak ha a cella ≥ NUMPX = 88 px – a
+        22 px-es szabály és a három sor miatt; kisebb cellánál nem ír), hi: [[i, j]…] (cinóber keret), hiCol, frame:
+        true (tinta keret a cél-téglalap körül), bg, a}.
+        V = {x, y, w, h, px (képernyő-px / képpixel, a kisebbik), kx, ky, src, cell(i, j) → {x, y, w, h} (képernyőn),
+        at(X, Y) → [i, j] | null (melyik pixel van a képernyő (X, Y) pontján – pl. L.pointer alapján)}.
+   DigPixel.grid(L, img, o) → V        pixelrács: view a o.from részlettel (alap: az egész kép), o.px cellamérettel a
+        (o.x, o.y) bal felső sarokba; o.lines alapja 1. (A többi kulcs, mint a view-nál.)
+   DigPixel.zoom(L, img, o) → V + {z, u}   folyamatos nagyítás az egész képtől a o.from részletig, a o.to cél-téglalapba
+        (a nézet a o.to arányához igazodik). o.u: 0..1 (a nagyítás mértékének logaritmusa: 0 = egész kép, 1 = o.from)
+        VAGY o.z: nagyítás (1 = egész kép; a from-hoz tartozó érték: V.z u = 1-nél). A nézet a from felé „ráközelít”:
+        a kép rögzített pontja úgy van választva, hogy u = 1-nél a from közepe legyen középen. A többi kulcs (mode,
+        lines, nums, hi, frame, bg, a) a view-é. V.z: a pillanatnyi nagyítás.
+   DigPixel.vector(L, shapes, o) → {n, toScreen(u, v) → [X, Y]}   vektoros rajz: a képernyőn (X, Y) = (o.x + (u − o.ox) ·
+        o.s, o.y + (v − o.oy) · o.s) – bármekkora o.s-nél éles (a gép újrarajzolja). o = {x, y, s: 1, ox: 0, oy: 0,
+        nodes: 0..1 (a csomópontok kis körökként, a görbék vezérlőpontjai kis négyzetként, „fogantyú”-vonallal),
+        clip: {x, y, w, h}, a}. n: a csomópontok száma.
+        shapes: [{t: 'kör', c: [x, y], r} | {t: 'ellipszis', c, rx, ry, rot (fok)} | {t: 'sokszög', pts: [[x, y]…],
+        open: false} | {t: 'görbe', pts: [P0, C1, C2, P1, C1, C2, P2, …] (köbös Bézier-lánc; zárt, ha nincs open),
+        open}] + közös kulcsok: fill (szín | {g: 'lin', p: [x1, y1, x2, y2], stops: [[0, szín], …]} | {g: 'rad', p:
+        [x1, y1, r1, x2, y2, r2], stops}), stroke (szín), w (vonalvastagság a rajz egységében – nagyítással nő, mint a
+        valódi vektorgrafikában), nodes: false (ennek az alakzatnak ne mutassa a csomópontjait).
+        DigPixel.nodesOf(sh) → [{x, y, ctrl, of: [x, y] | null}] – a csomópontok (a lecke megszámolhatja, kiírhatja).
+   DigPixel.rgb(L, o) → {pos: [[x, y] × 3], R}   additív (fény-) keverés: három fénykör sötét kijelzőn, 'lighter'
+        kompozícióval (az átfedésben a számok összeadódnak: vörös + zöld = sárga). o = {x, y (a három kör közös
+        középpontja), R: 130 (sugár), r, g, b: 0..255 (a fények erőssége), sep: 1 (0 = egymáson, 1 = a szokásos
+        háromkörös átfedés, 2 = szinte külön), pos: [[x, y] × 3] (a körök középpontja – felülírja a sep-et), win:
+        {x, y, w, h} (a sötét kijelző-ablak; a fények erre vágva), a}. A kijelző sötét (#151a2b), a lap papír marad.
+   DigPixel.subpix(L, x, y, s, col, o) → [{x, y, w, h} × 3]   egy képernyő-pixel nagyítva: s × s-es sötét négyzet, benne
+        három függőleges fénycsík (vörös, zöld, kék), mindegyik a saját számával arányos fényerővel. o = {gap: .1 (a
+        csíkok közti rés s arányában), a}. Visszaadja a csíkok téglalapját (feliratozáshoz).
+   DigPixel.paint(L, img, o) → {img, changed, hover: [i, j] | null, v: V}   pixelrajzoló pad: kirajzolja a rácsot (grid,
+        lines 1, a mutató alatti cella cinóber kerettel), és ha o.active (alap: true), a L.pointer szerint rajzol:
+        lenyomás (L.pointer.pressed, a gyors kattintás is) a lenyomás helyén; húzás közben (L.pointer.down) a
+        cellákat összeköti (nincs kihagyott cella). o = {x, y, px: 32, tool: 'ceruza' | 'kitöltés' (csak lenyomásra) |
+        'radír', col (ceruzaszín), bg: '#ffffff' (a radír színe), active: true (CSAK az aktív jelenetben – áttűnéskor
+        két jelenet is rajzol), a}. A visszakapott img-et a hívó tárolja (changed: változott-e).
+   ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
+const DigPixel = (() => {
+  'use strict';
+  const U = Lesson.U, F = Lesson.FONTS, clamp = U.clamp, lerp = U.lerp, TAU = Math.PI * 2;
+  const INK = '#1c2440', RED = '#c8401c', CARD = '#fffaf1', DARK = '#151a2b';
+  const CH = ['#c62828', '#2e7d32', '#1e5bc6'], NUMPX = 88;
+  let ga = () => 1;
+  const bind = (o = {}) => { if (o.ga) ga = o.ga; };
+  const al = (c, a) => { c.globalAlpha = ga() * clamp(a == null ? 1 : a); };
+
+  /* ── színek ── */
+  function rgb3(col) {
+    if (col == null) return [0, 0, 0];
+    if (Array.isArray(col) || ArrayBuffer.isView(col)) return [Math.round(col[0]) || 0, Math.round(col[1]) || 0, Math.round(col[2]) || 0];
+    const s = String(col).trim();
+    if (s[0] === '#') { let h = s.slice(1); if (h.length === 3) h = h.split('').map((q) => q + q).join(''); const n = parseInt(h.slice(0, 6), 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; }
+    const m = /rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)/i.exec(s);
+    return m ? [Math.round(+m[1]), Math.round(+m[2]), Math.round(+m[3])] : [0, 0, 0];
+  }
+  const css = (col) => 'rgb(' + rgb3(col).join(',') + ')';
+  const lum = (col) => { const p = rgb3(col); return (.2126 * p[0] + .7152 * p[1] + .0722 * p[2]) / 255; };
+
+  /* ── a kép ── */
+  function make(w, h, col) {
+    const d = new Uint8ClampedArray(w * h * 3);
+    if (col != null) { const p = rgb3(col); for (let k = 0; k < w * h; k++) { d[k * 3] = p[0]; d[k * 3 + 1] = p[1]; d[k * 3 + 2] = p[2]; } }
+    return { w, h, d };
+  }
+  const copy = (img) => ({ w: img.w, h: img.h, d: new Uint8ClampedArray(img.d) });
+  const inside = (img, i, j) => i >= 0 && j >= 0 && i < img.w && j < img.h;
+  function same(a, b) { if (a === b) return true; if (!a || !b || a.w !== b.w || a.h !== b.h) return false; for (let k = 0; k < a.d.length; k++) if (a.d[k] !== b.d[k]) return false; return true; }
+  function get(img, i, j) { if (!inside(img, i, j)) return null; const k = (j * img.w + i) * 3; return [img.d[k], img.d[k + 1], img.d[k + 2]]; }
+  function setMany(img, cells, col) {
+    const p = rgb3(col); let out = null;
+    for (const [i, j] of cells) {
+      if (!inside(img, i, j)) continue;
+      const k = (j * img.w + i) * 3, src = out || img;
+      if (src.d[k] === p[0] && src.d[k + 1] === p[1] && src.d[k + 2] === p[2]) continue;
+      if (!out) out = copy(img);
+      out.d[k] = p[0]; out.d[k + 1] = p[1]; out.d[k + 2] = p[2];
+    }
+    return out || img;
+  }
+  const set = (img, i, j, col) => setMany(img, [[i, j]], col);
+  function fromRows(rows, pal) {
+    const h = rows.length, w = h ? rows[0].length : 0, img = make(w, h), P = {};
+    for (const key in pal) P[key] = rgb3(pal[key]);
+    rows.forEach((row, j) => { for (let i = 0; i < w; i++) { const p = P[row[i]] || [0, 0, 0], k = (j * w + i) * 3; img.d[k] = p[0]; img.d[k + 1] = p[1]; img.d[k + 2] = p[2]; } });
+    return img;
+  }
+  function noise(img, amp, seed = 1, chroma = .3) {
+    if (!amp) return img;
+    const r = U.rng(seed), o = copy(img);
+    for (let k = 0; k < img.w * img.h; k++) {
+      const n = (r() - .5) * 2 * amp;
+      for (let ch = 0; ch < 3; ch++) o.d[k * 3 + ch] = img.d[k * 3 + ch] + n + (r() - .5) * 2 * amp * chroma;
+    }
+    return o;
+  }
+  function fromDraw(w, h, fn, o = {}) {
+    const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+    const c = cv.getContext('2d', { willReadFrequently: true });
+    c.fillStyle = o.bg ? css(o.bg) : '#ffffff'; c.fillRect(0, 0, w, h);
+    c.save(); fn(c, w, h); c.restore();
+    const src = c.getImageData(0, 0, w, h).data, img = make(w, h);
+    for (let k = 0; k < w * h; k++) { img.d[k * 3] = src[k * 4]; img.d[k * 3 + 1] = src[k * 4 + 1]; img.d[k * 3 + 2] = src[k * 4 + 2]; }
+    return o.noise ? noise(img, o.noise, o.seed || 1) : img;
+  }
+  function resample(img, w2, h2, mode = 'kockás') {
+    const out = make(w2, h2), sx = img.w / w2, sy = img.h / h2;
+    for (let j = 0; j < h2; j++) for (let i = 0; i < w2; i++) {
+      const k2 = (j * w2 + i) * 3;
+      if (mode !== 'simított') {
+        const si = Math.min(img.w - 1, Math.floor((i + .5) * sx)), sj = Math.min(img.h - 1, Math.floor((j + .5) * sy)), k = (sj * img.w + si) * 3;
+        out.d[k2] = img.d[k]; out.d[k2 + 1] = img.d[k + 1]; out.d[k2 + 2] = img.d[k + 2];
+      } else if (sx >= 1 && sy >= 1) {           // kicsinyítés: a doboz átlaga
+        const i0 = Math.floor(i * sx), i1 = Math.max(i0 + 1, Math.floor((i + 1) * sx)), j0 = Math.floor(j * sy), j1 = Math.max(j0 + 1, Math.floor((j + 1) * sy));
+        let r = 0, g = 0, b = 0, n = 0;
+        for (let y = j0; y < Math.min(j1, img.h); y++) for (let x = i0; x < Math.min(i1, img.w); x++) { const k = (y * img.w + x) * 3; r += img.d[k]; g += img.d[k + 1]; b += img.d[k + 2]; n++; }
+        out.d[k2] = r / n; out.d[k2 + 1] = g / n; out.d[k2 + 2] = b / n;
+      } else {                                    // nagyítás: bilineáris (a pixelközéppontok között)
+        const fx = clamp((i + .5) * sx - .5, 0, img.w - 1), fy = clamp((j + .5) * sy - .5, 0, img.h - 1);
+        const x0 = Math.floor(fx), y0 = Math.floor(fy), x1 = Math.min(img.w - 1, x0 + 1), y1 = Math.min(img.h - 1, y0 + 1), tx = fx - x0, ty = fy - y0;
+        for (let ch = 0; ch < 3; ch++) {
+          const p = (x, y) => img.d[(y * img.w + x) * 3 + ch];
+          out.d[k2 + ch] = lerp(lerp(p(x0, y0), p(x1, y0), tx), lerp(p(x0, y1), p(x1, y1), tx), ty);
+        }
+      }
+    }
+    return out;
+  }
+  const size = (w, h, bpp = 24) => w * h * bpp / 8;
+
+  /* ── képműveletek ── */
+  function map(img, fn) {
+    const o = make(img.w, img.h);
+    for (let j = 0; j < img.h; j++) for (let i = 0; i < img.w; i++) {
+      const k = (j * img.w + i) * 3, p = rgb3(fn(img.d[k], img.d[k + 1], img.d[k + 2], i, j));
+      o.d[k] = p[0]; o.d[k + 1] = p[1]; o.d[k + 2] = p[2];
+    }
+    return o;
+  }
+  function remap(img, w2, h2, f) {             // f(i2, j2) → [i, j] a forrásban
+    const o = make(w2, h2);
+    for (let j = 0; j < h2; j++) for (let i = 0; i < w2; i++) {
+      const [si, sj] = f(i, j), k = (sj * img.w + si) * 3, k2 = (j * w2 + i) * 3;
+      o.d[k2] = img.d[k]; o.d[k2 + 1] = img.d[k + 1]; o.d[k2 + 2] = img.d[k + 2];
+    }
+    return o;
+  }
+  const flipH = (img) => remap(img, img.w, img.h, (i, j) => [img.w - 1 - i, j]);
+  const flipV = (img) => remap(img, img.w, img.h, (i, j) => [i, img.h - 1 - j]);
+  const rot90 = (img) => remap(img, img.h, img.w, (i, j) => [j, img.h - 1 - i]);
+  function crop(img, r) {
+    const x = clamp(Math.round(r.x), 0, img.w - 1), y = clamp(Math.round(r.y), 0, img.h - 1);
+    const w = clamp(Math.round(r.w), 1, img.w - x), h = clamp(Math.round(r.h), 1, img.h - y);
+    return remap(img, w, h, (i, j) => [x + i, y + j]);
+  }
+  const bright = (img, d) => map(img, (r, g, b) => [r + d, g + d, b + d]);
+  const gray = (img) => map(img, (r, g, b) => { const v = Math.round(.299 * r + .587 * g + .114 * b); return [v, v, v]; });
+  function fill(img, i, j, col) {
+    if (!inside(img, i, j)) return img;
+    const p = rgb3(col), t = get(img, i, j);
+    if (t[0] === p[0] && t[1] === p[1] && t[2] === p[2]) return img;
+    const o = copy(img), stack = [[i, j]], eq = (x, y) => { const k = (y * o.w + x) * 3; return o.d[k] === t[0] && o.d[k + 1] === t[1] && o.d[k + 2] === t[2]; };
+    while (stack.length) {
+      const [x, y] = stack.pop();
+      if (!inside(o, x, y) || !eq(x, y)) continue;
+      const k = (y * o.w + x) * 3; o.d[k] = p[0]; o.d[k + 1] = p[1]; o.d[k + 2] = p[2];
+      stack.push([x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]);
+    }
+    return o;
+  }
+  function retouch(img, rect, from) {
+    const fx = Array.isArray(from) ? from[0] : from.x, fy = Array.isArray(from) ? from[1] : from.y, o = copy(img);
+    for (let y = 0; y < rect.h; y++) for (let x = 0; x < rect.w; x++) {
+      const s = get(img, fx + x, fy + y), ti = rect.x + x, tj = rect.y + y;
+      if (!s || !inside(o, ti, tj)) continue;
+      const k = (tj * o.w + ti) * 3; o.d[k] = s[0]; o.d[k + 1] = s[1]; o.d[k + 2] = s[2];
+    }
+    return same(o, img) ? img : o;
+  }
+  const ops = { flipH, flipV, rot90, crop, bright, gray, fill, retouch, map };
+
+  /* ── gyorsítótár: img → vászon ── */
+  const CACHE = new WeakMap();
+  function canvasOf(img) {
+    let cv = CACHE.get(img);
+    if (cv) return cv;
+    cv = document.createElement('canvas'); cv.width = img.w; cv.height = img.h;
+    const c = cv.getContext('2d'), id = c.createImageData(img.w, img.h);
+    for (let k = 0; k < img.w * img.h; k++) { id.data[k * 4] = img.d[k * 3]; id.data[k * 4 + 1] = img.d[k * 3 + 1]; id.data[k * 4 + 2] = img.d[k * 3 + 2]; id.data[k * 4 + 3] = 255; }
+    c.putImageData(id, 0, 0); CACHE.set(img, cv);
+    return cv;
+  }
+
+  /* ── rajzolók ── */
+  const NUMW = {};
+  function view(L, img, o = {}) {
+    const c = L.ctx, a = o.a == null ? 1 : o.a, src = o.src || { x: 0, y: 0, w: img.w, h: img.h };
+    const x0 = o.x || 0, y0 = o.y || 0, p0 = o.px || 1;
+    const W = o.w == null ? src.w * p0 : o.w, H = o.h == null ? src.h * p0 : o.h, kx = W / src.w, ky = H / src.h, px = Math.min(kx, ky);
+    const sx = (i) => x0 + (i - src.x) * kx, sy = (j) => y0 + (j - src.y) * ky;
+    const cell = (i, j) => ({ x: sx(i), y: sy(j), w: kx, h: ky });
+    const at = (X, Y) => {
+      if (X < x0 || Y < y0 || X >= x0 + W || Y >= y0 + H) return null;
+      const i = Math.floor(src.x + (X - x0) / kx), j = Math.floor(src.y + (Y - y0) / ky);
+      return inside(img, i, j) ? [i, j] : null;
+    };
+    const V = { x: x0, y: y0, w: W, h: H, px, kx, ky, src, cell, at };
+    if (a <= .005) return V;
+    const i0 = Math.max(0, Math.floor(src.x)), j0 = Math.max(0, Math.floor(src.y));
+    const i1 = Math.min(img.w, Math.ceil(src.x + src.w - 1e-9)), j1 = Math.min(img.h, Math.ceil(src.y + src.h - 1e-9));
+    c.save(); al(c, a);
+    c.beginPath(); c.rect(x0, y0, W, H); c.clip();
+    if (o.bg) { c.fillStyle = css(o.bg); c.fillRect(x0, y0, W, H); }
+    if (i1 > i0 && j1 > j0) {
+      c.imageSmoothingEnabled = o.mode === 'simított';
+      if (c.imageSmoothingEnabled) c.imageSmoothingQuality = 'medium';
+      c.drawImage(canvasOf(img), i0, j0, i1 - i0, j1 - j0, sx(i0), sy(j0), (i1 - i0) * kx, (j1 - j0) * ky);
+      const lw = o.lines == null ? clamp((px - 8) / 16) : clamp(o.lines);
+      if (lw > .005 && px >= 3) {
+        al(c, a * lw); c.strokeStyle = o.lineCol || 'rgba(28,36,64,.42)'; c.lineWidth = px >= 40 ? 2 : 1; c.beginPath();
+        const ya = sy(j0), yb = sy(j1), xa = sx(i0), xb = sx(i1);
+        for (let i = i0; i <= i1; i++) { const X = Math.round(sx(i)) + .5; c.moveTo(X, ya); c.lineTo(X, yb); }
+        for (let j = j0; j <= j1; j++) { const Y = Math.round(sy(j)) + .5; c.moveTo(xa, Y); c.lineTo(xb, Y); }
+        c.stroke();
+      }
+      if (o.hi) {
+        al(c, a); c.strokeStyle = o.hiCol || RED; c.lineWidth = 3.5;
+        for (const [i, j] of o.hi) { if (!inside(img, i, j)) continue; const b = cell(i, j); c.strokeRect(b.x + 1.75, b.y + 1.75, b.w - 3.5, b.h - 3.5); }
+      }
+    }
+    c.restore();
+    if (o.frame) { c.save(); al(c, a); c.strokeStyle = INK; c.lineWidth = 2.5; c.strokeRect(x0, y0, W, H); c.restore(); }
+    const nq = o.nums == null ? 0 : clamp(o.nums);
+    if (nq > .005 && px >= NUMPX) {
+      const fs = Math.max(22, Math.min(32, Math.round(px * .24))), lh = Math.round(fs * 1.06), FT = { s: fs, w: 700, f: F.M, a: 'right', b: 'middle' };
+      const nw = NUMW[fs] || (NUMW[fs] = L.measure('255', FT).w), cw = nw + 16, chh = 3 * lh + 10;
+      c.save();
+      for (let j = j0; j < j1; j++) for (let i = i0; i < i1; i++) {
+        const b = cell(i, j);
+        if (b.x < x0 - .5 || b.y < y0 - .5 || b.x + b.w > x0 + W + .5 || b.y + b.h > y0 + H + .5) continue;
+        const p = get(img, i, j), cx = b.x + b.w / 2, cy = b.y + b.h / 2;
+        al(c, a * nq * .88); c.beginPath(); c.roundRect(cx - cw / 2, cy - chh / 2, cw, chh, 6); c.fillStyle = CARD; c.fill();
+        c.lineWidth = 1.5; c.strokeStyle = 'rgba(28,36,64,.3)'; c.stroke();
+        for (let k = 0; k < 3; k++) { al(c, a * nq); L.tx(String(p[k]), cx + nw / 2, cy + (k - 1) * lh + 1, Object.assign({ c: CH[k] }, FT)); }
+      }
+      c.restore();
+    }
+    return V;
+  }
+  function grid(L, img, o = {}) {
+    const fr = o.from || { x: 0, y: 0, w: img.w, h: img.h }, px = o.px || 16;
+    return view(L, img, Object.assign({ lines: 1 }, o, { src: fr, w: fr.w * px, h: fr.h * px, px: undefined }));
+  }
+  function zoom(L, img, o = {}) {
+    const to = o.to || { x: 0, y: 0, w: img.w, h: img.h }, asp = to.w / to.h;
+    const fit = (r) => { let w = r.w, h = r.h; if (w / h < asp) w = h * asp; else h = w / asp; return { cx: r.x + r.w / 2, cy: r.y + r.h / 2, w }; };
+    const A = fit({ x: 0, y: 0, w: img.w, h: img.h }), B = fit(o.from || { x: 0, y: 0, w: img.w, h: img.h }), rB = B.w / A.w;
+    const zB = 1 / rB;
+    const u = o.z != null ? (zB > 1 + 1e-9 ? Math.log(Math.max(1, o.z)) / Math.log(zB) : 0) : clamp(o.u || 0);
+    const r = Math.pow(rB, u), w = A.w * r, h = w / asp;
+    let cx, cy;
+    if (Math.abs(1 - rB) < 1e-9) { cx = lerp(A.cx, B.cx, clamp(u)); cy = lerp(A.cy, B.cy, clamp(u)); } else {
+      const qx = (B.cx - A.cx * rB) / (1 - rB), qy = (B.cy - A.cy * rB) / (1 - rB);
+      cx = qx + (A.cx - qx) * r; cy = qy + (A.cy - qy) * r;
+    }
+    const V = view(L, img, Object.assign({}, o, { x: to.x, y: to.y, w: to.w, h: to.h, px: undefined, src: { x: cx - w / 2, y: cy - h / 2, w, h } }));
+    V.z = A.w / w; V.u = u; V.zMax = zB;
+    return V;
+  }
+
+  /* ── vektorgrafika ── */
+  function shapePath(c, sh) {
+    c.beginPath();
+    if (sh.t === 'kör') c.arc(sh.c[0], sh.c[1], sh.r, 0, TAU);
+    else if (sh.t === 'ellipszis') c.ellipse(sh.c[0], sh.c[1], sh.rx, sh.ry, (sh.rot || 0) * Math.PI / 180, 0, TAU);
+    else if (sh.t === 'sokszög') { sh.pts.forEach((p, i) => (i ? c.lineTo(p[0], p[1]) : c.moveTo(p[0], p[1]))); if (!sh.open) c.closePath(); }
+    else if (sh.t === 'görbe') {
+      const p = sh.pts; c.moveTo(p[0][0], p[0][1]);
+      for (let i = 1; i + 2 < p.length; i += 3) c.bezierCurveTo(p[i][0], p[i][1], p[i + 1][0], p[i + 1][1], p[i + 2][0], p[i + 2][1]);
+      if (!sh.open) c.closePath();
+    }
+  }
+  function paintOf(c, f) {
+    if (!f) return null;
+    if (typeof f === 'string' || Array.isArray(f)) return typeof f === 'string' ? f : css(f);
+    const g = f.g === 'rad' ? c.createRadialGradient(...f.p) : c.createLinearGradient(...f.p);
+    f.stops.forEach(([t, col]) => g.addColorStop(t, typeof col === 'string' ? col : css(col)));
+    return g;
+  }
+  function drawShape(c, sh) {
+    shapePath(c, sh);
+    const f = paintOf(c, sh.fill); if (f) { c.fillStyle = f; c.fill(); }
+    if (sh.stroke) { c.strokeStyle = paintOf(c, sh.stroke); c.lineWidth = sh.w || 1; c.lineJoin = 'round'; c.lineCap = 'round'; c.stroke(); }
+  }
+  function nodesOf(sh) {
+    const out = [];
+    if (sh.t === 'kör') for (let k = 0; k < 4; k++) out.push({ x: sh.c[0] + Math.cos(k * TAU / 4) * sh.r, y: sh.c[1] + Math.sin(k * TAU / 4) * sh.r, ctrl: false, of: null });
+    else if (sh.t === 'ellipszis') {
+      const ro = (sh.rot || 0) * Math.PI / 180;
+      for (let k = 0; k < 4; k++) { const ex = Math.cos(k * TAU / 4) * sh.rx, ey = Math.sin(k * TAU / 4) * sh.ry; out.push({ x: sh.c[0] + ex * Math.cos(ro) - ey * Math.sin(ro), y: sh.c[1] + ex * Math.sin(ro) + ey * Math.cos(ro), ctrl: false, of: null }); }
+    } else if (sh.t === 'sokszög') sh.pts.forEach((p) => out.push({ x: p[0], y: p[1], ctrl: false, of: null }));
+    else if (sh.t === 'görbe') {
+      const p = sh.pts, n = p.length, closedDup = !sh.open && n > 3 && Math.abs(p[0][0] - p[n - 1][0]) < 1e-9 && Math.abs(p[0][1] - p[n - 1][1]) < 1e-9;
+      for (let i = 0; i < n; i++) {
+        const k = i % 3;
+        if (k === 0) { if (!(closedDup && i === n - 1)) out.push({ x: p[i][0], y: p[i][1], ctrl: false, of: null }); }
+        else out.push({ x: p[i][0], y: p[i][1], ctrl: true, of: k === 1 ? p[i - 1] : p[i + 1] });
+      }
+    }
+    return out;
+  }
+  function vector(L, shapes, o = {}) {
+    const c = L.ctx, a = o.a == null ? 1 : o.a, s = o.s || 1, x0 = o.x || 0, y0 = o.y || 0, ox = o.ox || 0, oy = o.oy || 0;
+    const toScreen = (u, v) => [x0 + (u - ox) * s, y0 + (v - oy) * s];
+    let n = 0; shapes.forEach((sh) => { if (sh.nodes !== false) n += nodesOf(sh).filter((q) => !q.ctrl).length; });
+    if (a <= .005) return { n, toScreen };
+    const clip = () => { if (o.clip) { c.beginPath(); c.rect(o.clip.x, o.clip.y, o.clip.w, o.clip.h); c.clip(); } };
+    c.save(); al(c, a); clip();
+    c.translate(x0, y0); c.scale(s, s); c.translate(-ox, -oy);
+    shapes.forEach((sh) => drawShape(c, sh));
+    c.restore();
+    const nd = o.nodes == null ? 0 : clamp(o.nodes);
+    if (nd > .005) {
+      c.save(); clip(); c.lineCap = 'butt';
+      shapes.forEach((sh) => {
+        if (sh.nodes === false) return;
+        nodesOf(sh).forEach((q) => {
+          const [X, Y] = toScreen(q.x, q.y);
+          if (q.ctrl) {
+            const [Ax, Ay] = toScreen(q.of[0], q.of[1]);
+            al(c, a * nd * .8); c.setLineDash([]); c.strokeStyle = '#565d72'; c.lineWidth = 1.5; c.beginPath(); c.moveTo(Ax, Ay); c.lineTo(X, Y); c.stroke();
+            al(c, a * nd); c.fillStyle = '#565d72'; c.fillRect(X - 4, Y - 4, 8, 8);
+          } else {
+            al(c, a * nd); c.beginPath(); c.arc(X, Y, 7, 0, TAU); c.fillStyle = CARD; c.fill(); c.strokeStyle = RED; c.lineWidth = 2.5; c.stroke();
+          }
+        });
+      });
+      c.restore();
+    }
+    return { n, toScreen };
+  }
+  function rasterize(shapes, w, h, o = {}) {
+    const b = o.box || [0, 0, 100, 100];
+    return fromDraw(w, h, (c) => { c.scale(w / (b[2] - b[0]), h / (b[3] - b[1])); c.translate(-b[0], -b[1]); shapes.forEach((sh) => drawShape(c, sh)); }, o);
+  }
+
+  /* ── fény: RGB ── */
+  function rgb(L, o = {}) {
+    const c = L.ctx, a = o.a == null ? 1 : o.a, R = o.R || 130, cx = o.x || 0, cy = o.y || 0, sep = o.sep == null ? 1 : o.sep, d = R * .62 * sep;
+    const pos = o.pos || [-90, 150, 30].map((g) => [cx + Math.cos(g * Math.PI / 180) * d, cy + Math.sin(g * Math.PI / 180) * d]);
+    if (a <= .005) return { pos, R };
+    c.save();
+    if (o.win) {
+      al(c, a); c.beginPath(); c.roundRect(o.win.x, o.win.y, o.win.w, o.win.h, 18); c.fillStyle = DARK; c.fill();
+      c.lineWidth = 3; c.strokeStyle = INK; c.stroke(); c.clip();
+    }
+    c.globalCompositeOperation = 'lighter';
+    [o.r, o.g, o.b].forEach((v, k) => {
+      const q = clamp((v || 0) / 255); if (q <= 0) return;
+      const p = [0, 0, 0]; p[k] = Math.round(255 * q);
+      al(c, a); c.fillStyle = css(p); c.beginPath(); c.arc(pos[k][0], pos[k][1], R, 0, TAU); c.fill();
+    });
+    c.restore();
+    return { pos, R };
+  }
+  function subpix(L, x, y, s, col, o = {}) {
+    const c = L.ctx, a = o.a == null ? 1 : o.a, p = rgb3(col), g = s * (o.gap == null ? .1 : o.gap), sw = (s - 4 * g) / 3, out = [];
+    for (let k = 0; k < 3; k++) out.push({ x: x + g + k * (sw + g), y: y + g, w: sw, h: s - 2 * g });
+    if (a <= .005) return out;
+    c.save(); al(c, a);
+    c.beginPath(); c.roundRect(x, y, s, s, 10); c.fillStyle = DARK; c.fill(); c.lineWidth = 3; c.strokeStyle = INK; c.stroke();
+    out.forEach((b, k) => {
+      const q = [0, 0, 0]; q[k] = p[k];
+      c.beginPath(); c.roundRect(b.x, b.y, b.w, b.h, 6); c.fillStyle = css(q); c.fill();
+      c.lineWidth = 2; c.strokeStyle = U.rgba(CH[k], .7); c.stroke();
+    });
+    c.restore();
+    return out;
+  }
+
+  /* ── rajzolópad ── */
+  let drag = null;
+  function lineCells(A, B) {                     // Bresenham: A-tól B-ig minden cella
+    const out = []; let [x, y] = A; const [x1, y1] = B, dx = Math.abs(x1 - x), dy = -Math.abs(y1 - y), sx = x < x1 ? 1 : -1, sy = y < y1 ? 1 : -1;
+    let err = dx + dy;
+    for (let n = 0; n < 4096; n++) { out.push([x, y]); if (x === x1 && y === y1) break; const e2 = 2 * err; if (e2 >= dy) { err += dy; x += sx; } if (e2 <= dx) { err += dx; y += sy; } }
+    return out;
+  }
+  function paint(L, img, o = {}) {
+    const px = o.px || 32, x0 = o.x || 0, y0 = o.y || 0, P = L.pointer, act = o.active !== false;
+    const cellAt = (X, Y) => { const i = Math.floor((X - x0) / px), j = Math.floor((Y - y0) / px); return inside(img, i, j) && X >= x0 && Y >= y0 ? [i, j] : null; };
+    let out = img;
+    if (act) {
+      const tool = o.tool || 'ceruza', col = tool === 'radír' ? (o.bg || '#ffffff') : (o.col || INK);
+      if (P.pressed) {
+        const h = cellAt(P.px, P.py);
+        if (h) { out = tool === 'kitöltés' ? fill(out, h[0], h[1], col) : setMany(out, [h], col); drag = tool === 'kitöltés' ? null : h; } else drag = null;
+      }
+      if (P.down && drag && tool !== 'kitöltés') {
+        const h = cellAt(P.x, P.y);
+        if (h && (h[0] !== drag[0] || h[1] !== drag[1])) { out = setMany(out, lineCells(drag, h), col); drag = h; }
+      }
+      if (!P.down && !P.pressed) drag = null;
+    }
+    const hover = act && P.inside ? cellAt(P.x, P.y) : null;
+    const v = grid(L, out, { x: x0, y: y0, px, lines: o.lines == null ? 1 : o.lines, hi: hover ? [hover] : null, a: o.a, frame: true });
+    return { img: out, changed: out !== img, hover, v };
+  }
+
+  return { bind, CH, NUMPX, rgb3, css, lum, make, copy, same, get, set, setMany, fromRows, fromDraw, rasterize, noise, resample, size, ops,
+    view, grid, zoom, vector, nodesOf, rgb, subpix, paint };
+})();
+/* ── MODUL VÉGE: DigPixel ── */
+/* ── MODUL: Grafikon (BioPlot) · forrás: biologia-7-8/07-populacio, 2026-11-23 ──
+   Idősor, fázistér, oszlopdiagram, hisztogram, szórásdiagram háttérmezőkkel (Whittaker),
+   S-görbe, húzható pont; lineáris vagy logaritmikus tengely, magyar számformátum.
+   Csak a Lesson motorra épül (L.ctx, L.tx, L.measure, L.fonts, L.pointer, Lesson.U.fmt); minden
+   felirat L.tx-szel megy (QA, review mód), {s, k} párként (szöveg + .md-kulcs). A tengelyszámok
+   kódban rögzítettek (kulcs nélkül). Stílus: tengely tinta 2,5 px nyíllal, rács rgba(28,36,64,.08),
+   tengelyszám JetBrains Mono 22 px halvány tinta, tengelynév Bricolage 22 px.
+
+   const pl = BioPlot.create(L, {
+     x, y, w, h,                    // a rajzterület (a tengelyek ennek a bal és alsó szélén), logikai px
+     xa: {min, max, log: false,     // tengely: tartomány, log-lépték (tízes)
+          name: {s, k},             // tengelynév (x: a tengely jobb vége alatt; y: a tengely fölött, vízszintesen)
+          ticks: [..] | n,          // osztások: tömb vagy közelítő darabszám (alap 6; 1–2–5 lépcső)
+          fmt(v) → szöveg,          // osztásfelirat (alap: magyar szám, a lépésköznek megfelelő tizedessel)
+          labels: true},            // false → nincs osztásfelirat
+     ya: {…ugyanígy},
+     bg: [{poly: [[x, y]…], col, name: {s, k}, at: [x, y]}]   // háttérmezők adatkoordinátában (Whittaker)
+   })
+   pl.X(v) · pl.Y(v) · pl.P(x, y) → [px, py] · pl.inv(px, py) → [x, y] · pl.inside(px, py) · pl.box
+   pl.set({x, y, w, h, xa, ya})      – elhelyezés / tengely módosítása (a megadott mezők felülírják a régit)
+   pl.axes({a = 1, grid = true, frame = false, names = true, ticks = true, arrow = true, s = 22, col, gridCol})
+   pl.bgs({a = 1})                   – a háttérmezők (a nevükkel)
+   pl.line(pts, {col, w = 4, a, dash, from, upto (x-értékig, interpolálva), fill (szín a görbe alatt), base,
+                 head (nyílhegy a végén), dots (r: kör az adatpontokon), clip = true}) → az utolsó pont [px, py] | null
+   pl.bars(vals, {x0 = 0, dx = 1, bw = .8 (oszlopszélesség dx-ben), col | cols: [], a, base = 0,
+                  labels: [{s, k}] (az oszlop alatt), values: false (érték fölötte), fmt, s = 22}) → [{x, y, w, h}]
+   pl.hist(vals, {min, max, n}, o) → [db…]  – hisztogram (a pl.bars-szal; o.norm: arány darab helyett)
+   pl.point(x, y, {r = 8, col, fill, ring = true, a, label: {s, k}, side: 'right' | 'left' | 'above' | 'below',
+                   s = 24, w = 700, lc (a felirat színe)}) → [px, py]
+   pl.vline(x, {col, w = 2, dash, a, label: {s, k}, at: 'top' | 'bottom', s = 22})
+   pl.hline(y, {… at: 'right' | 'left'})
+   pl.band(x0, x1, {col, a})          – függőleges sáv (időszak kiemelése)
+   pl.text(s, x, y, o)                – L.tx adatkoordinátában (o.k: a .md-kulcs)
+   pl.arrow(pts, i, {col, size = 16}) – irány-nyílhegy a görbén az i. pontnál (fázistér)
+   pl.legend(items: [{s, k, col, dash, w}], {x, y, dir: 'down' | 'right', s = 22, gap = 28}) → {w, h}
+   pl.drag(id, get, set, {r = 30, snap(x, y) → [x, y]})
+        húzható pont: ha a gomb a get() → [x, y] pont r px-es körzetében megy le, megfogja; húzás közben
+        set(x, y)-t hívja adatkoordinátában (a dobozra vágva). Visszaad: true, amíg húzzák.
+   BioPlot.ticks(min, max, n = 6) → 1–2–5 lépcsős osztások · BioPlot.logTicks(min, max) → tízhatványok
+   BioPlot.fmt(v, step) → magyar szám a lépésközhöz illő tizedesjeggyel
+   ──────────────────────────────────────────────────────────────────────────────────────────── */
+const BioPlot = (() => {
+  'use strict';
+  const COL = { ink: '#1c2440', mut: '#565d72', grid: 'rgba(28,36,64,.08)', red: '#c8401c' };
+  const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+  const hfmt = (v, d) => (typeof Lesson !== 'undefined' && Lesson.U ? Lesson.U.fmt(v, d) : v.toFixed(d).replace('.', ',').replace('-', '−'));
+  function ticks(min, max, n = 6) {
+    const span = max - min; if (!(span > 0)) return [min];
+    const raw = span / Math.max(1, n), p = Math.pow(10, Math.floor(Math.log10(raw))), f = raw / p;
+    const st = (f < 1.5 ? 1 : f < 3.5 ? 2 : f < 7.5 ? 5 : 10) * p, out = [];
+    for (let v = Math.ceil(min / st - 1e-9) * st; v <= max + st * 1e-9; v += st) out.push(Math.abs(v) < st * 1e-9 ? 0 : v);
+    out.step = st; return out;
+  }
+  function logTicks(min, max) { const out = []; for (let e = Math.ceil(Math.log10(min) - 1e-9); e <= Math.floor(Math.log10(max) + 1e-9); e++) out.push(Math.pow(10, e)); return out; }
+  function fmt(v, step) { const d = step >= 1 || !step ? 0 : Math.min(4, Math.ceil(-Math.log10(step) - 1e-9)); return hfmt(v, d); }
+
+  function create(L, o) {
+    const pl = { L };
+    let B, XA, YA, BG;
+    pl.set = (q) => {
+      B = { x: q.x != null ? q.x : B.x, y: q.y != null ? q.y : B.y, w: q.w != null ? q.w : B.w, h: q.h != null ? q.h : B.h };
+      if (q.xa) XA = Object.assign({}, XA || {}, q.xa); if (q.ya) YA = Object.assign({}, YA || {}, q.ya);
+      if (q.bg) BG = q.bg; pl.box = B; pl.xa = XA; pl.ya = YA; return pl;
+    };
+    B = { x: o.x, y: o.y, w: o.w, h: o.h }; pl.set(o); BG = o.bg || [];
+    const sc = (a, v) => a.log ? (Math.log10(Math.max(v, 1e-300)) - Math.log10(a.min)) / (Math.log10(a.max) - Math.log10(a.min)) : (v - a.min) / (a.max - a.min);
+    const isc = (a, u) => a.log ? Math.pow(10, Math.log10(a.min) + u * (Math.log10(a.max) - Math.log10(a.min))) : a.min + u * (a.max - a.min);
+    pl.X = (v) => B.x + sc(XA, v) * B.w;
+    pl.Y = (v) => B.y + B.h - sc(YA, v) * B.h;
+    pl.P = (x, y) => [pl.X(x), pl.Y(y)];
+    pl.inv = (px, py) => [isc(XA, (px - B.x) / B.w), isc(YA, (B.y + B.h - py) / B.h)];
+    pl.inside = (px, py) => px >= B.x && px <= B.x + B.w && py >= B.y && py <= B.y + B.h;
+    const tk = (a) => Array.isArray(a.ticks) ? a.ticks : a.log ? logTicks(a.min, a.max) : ticks(a.min, a.max, a.ticks || 6);
+    const lab = (a, v, t) => a.fmt ? a.fmt(v) : a.log ? fmt(v, v) : fmt(v, t.step || (t.length > 1 ? Math.abs(t[1] - t[0]) : 1));
+    function clip(c) { c.beginPath(); c.rect(B.x - 2, B.y - 2, B.w + 4, B.h + 4); c.clip(); }
+
+    pl.axes = (q = {}) => {
+      const c = L.ctx, F = L.fonts, s = q.s || 22, col = q.col || COL.ink, a = q.a == null ? 1 : q.a;
+      c.save(); c.globalAlpha *= a; c.lineCap = 'butt'; c.setLineDash([]);
+      const tx = tk(XA), ty = tk(YA);
+      if (q.grid !== false) {
+        c.strokeStyle = q.gridCol || COL.grid; c.lineWidth = 1.5; c.beginPath();
+        for (const v of tx) { const X = Math.round(pl.X(v)) + .5; if (X > B.x + 1 && X <= B.x + B.w) { c.moveTo(X, B.y); c.lineTo(X, B.y + B.h); } }
+        for (const v of ty) { const Y = Math.round(pl.Y(v)) + .5; if (Y < B.y + B.h - 1 && Y >= B.y) { c.moveTo(B.x, Y); c.lineTo(B.x + B.w, Y); } }
+        c.stroke();
+      }
+      if (q.frame) { c.strokeStyle = 'rgba(28,36,64,.25)'; c.lineWidth = 1.5; c.strokeRect(B.x, B.y, B.w, B.h); }
+      c.strokeStyle = col; c.fillStyle = col; c.lineWidth = 2.5; c.beginPath();
+      c.moveTo(B.x, B.y + B.h); c.lineTo(B.x + B.w + (q.arrow === false ? 0 : 14), B.y + B.h);
+      c.moveTo(B.x, B.y + B.h); c.lineTo(B.x, B.y - (q.arrow === false ? 0 : 14)); c.stroke();
+      if (q.arrow !== false) {
+        c.beginPath(); c.moveTo(B.x + B.w + 24, B.y + B.h); c.lineTo(B.x + B.w + 10, B.y + B.h - 6.5); c.lineTo(B.x + B.w + 10, B.y + B.h + 6.5); c.closePath(); c.fill();
+        c.beginPath(); c.moveTo(B.x, B.y - 24); c.lineTo(B.x - 6.5, B.y - 10); c.lineTo(B.x + 6.5, B.y - 10); c.closePath(); c.fill();
+      }
+      if (q.ticks !== false) {
+        c.lineWidth = 2; c.beginPath();
+        for (const v of tx) { const X = pl.X(v); if (X >= B.x - .5 && X <= B.x + B.w + .5) { c.moveTo(X, B.y + B.h); c.lineTo(X, B.y + B.h + 7); } }
+        for (const v of ty) { const Y = pl.Y(v); if (Y >= B.y - .5 && Y <= B.y + B.h + .5) { c.moveTo(B.x, Y); c.lineTo(B.x - 7, Y); } }
+        c.stroke();
+        if (XA.labels !== false) for (const v of tx) { const X = pl.X(v); if (X >= B.x - .5 && X <= B.x + B.w + .5) L.tx(lab(XA, v, tx), X, B.y + B.h + 12, { f: F.M, s, w: 500, a: 'center', b: 'top', c: COL.mut }); }
+        if (YA.labels !== false) for (const v of ty) { const Y = pl.Y(v); if (Y >= B.y - .5 && Y <= B.y + B.h + .5) L.tx(lab(YA, v, ty), B.x - 12, Y, { f: F.M, s, w: 500, a: 'right', b: 'middle', c: COL.mut }); }
+      }
+      if (q.names !== false) {
+        if (XA.name) L.tx(XA.name.s, B.x + B.w + 4, B.y + B.h + 14 + s * 1.25, { s, w: 600, a: 'right', b: 'top', c: col, k: XA.name.k, max: XA.name.max });
+        if (YA.name) L.tx(YA.name.s, B.x + 14, B.y - 18, { s, w: 600, a: 'left', b: 'alphabetic', c: col, k: YA.name.k, max: YA.name.max });
+      }
+      c.restore();
+    };
+    pl.bgs = (q = {}) => {
+      const c = L.ctx; c.save(); c.globalAlpha *= q.a == null ? 1 : q.a; clip(c);
+      for (const g of BG) { c.beginPath(); g.poly.forEach((p, i) => { const [X, Y] = pl.P(p[0], p[1]); if (i) c.lineTo(X, Y); else c.moveTo(X, Y); }); c.closePath(); c.fillStyle = g.col; c.fill(); }
+      c.restore();
+      c.save(); c.globalAlpha *= q.a == null ? 1 : q.a;
+      for (const g of BG) if (g.name && g.at) { const [X, Y] = pl.P(g.at[0], g.at[1]); L.tx(g.name.s, X, Y, { s: 22, w: 600, a: 'center', b: 'middle', c: g.tc || COL.ink, k: g.name.k }); }
+      c.restore();
+    };
+    pl.line = (pts, q = {}) => {
+      const c = L.ctx; if (!pts || !pts.length) return null;
+      const P = [];
+      const lo = q.from == null ? -Infinity : q.from, hi = q.upto == null ? Infinity : q.upto;
+      for (let i = 0; i < pts.length; i++) {
+        const p = pts[i], x = p[0];
+        if (x < lo) { const n = pts[i + 1]; if (n && n[0] > lo) P.push([lo, p[1] + (n[1] - p[1]) * (lo - x) / (n[0] - x)]); continue; }
+        if (x > hi) { const pr = pts[i - 1]; if (pr && pr[0] < hi) P.push([hi, pr[1] + (p[1] - pr[1]) * (hi - pr[0]) / (x - pr[0])]); break; }
+        P.push(p);
+      }
+      if (q.upto != null && hi < pts[0][0]) return null;
+      if (!P.length) return null;
+      c.save(); c.globalAlpha *= q.a == null ? 1 : q.a; if (q.clip !== false) clip(c);
+      c.lineJoin = 'round'; c.lineCap = 'round';
+      const S = P.map((p) => pl.P(p[0], p[1]));
+      if (q.fill) {
+        const yb = pl.Y(q.base == null ? Math.max(YA.min, YA.log ? YA.min : 0) : q.base);
+        c.beginPath(); c.moveTo(S[0][0], yb); for (const s of S) c.lineTo(s[0], s[1]); c.lineTo(S[S.length - 1][0], yb); c.closePath(); c.fillStyle = q.fill; c.fill();
+      }
+      c.beginPath(); S.forEach((s, i) => (i ? c.lineTo(s[0], s[1]) : c.moveTo(s[0], s[1])));
+      c.strokeStyle = q.col || COL.red; c.lineWidth = q.w || 4; c.setLineDash(q.dash || []); c.stroke(); c.setLineDash([]);
+      if (q.dots) for (const s of S) { c.beginPath(); c.arc(s[0], s[1], q.dots, 0, Math.PI * 2); c.fillStyle = q.dotFill || q.col || COL.red; c.fill(); c.lineWidth = 2; c.strokeStyle = '#fffaf1'; c.stroke(); }
+      if (q.head && S.length > 1) { const n = S.length; let j = n - 2; while (j > 0 && Math.hypot(S[n - 1][0] - S[j][0], S[n - 1][1] - S[j][1]) < 8) j--; head(c, S[j], S[n - 1], q.col || COL.red, q.hs || 18); }
+      c.restore();
+      return S[S.length - 1];
+    };
+    function head(c, a, b, col, size) {
+      const an = Math.atan2(b[1] - a[1], b[0] - a[0]);
+      c.beginPath(); c.moveTo(b[0] + Math.cos(an) * size * .35, b[1] + Math.sin(an) * size * .35);
+      c.lineTo(b[0] - Math.cos(an - .45) * size, b[1] - Math.sin(an - .45) * size);
+      c.lineTo(b[0] - Math.cos(an + .45) * size, b[1] - Math.sin(an + .45) * size); c.closePath(); c.fillStyle = col; c.fill();
+    }
+    pl.arrow = (pts, i, q = {}) => {
+      const c = L.ctx, n = pts.length; if (n < 2) return; i = clamp(i, 1, n - 1);
+      const a = pl.P(pts[i - 1][0], pts[i - 1][1]), b = pl.P(pts[i][0], pts[i][1]);
+      c.save(); c.globalAlpha *= q.a == null ? 1 : q.a; head(c, a, b, q.col || COL.red, q.size || 16); c.restore();
+    };
+    pl.bars = (vals, q = {}) => {
+      const c = L.ctx, F = L.fonts, x0 = q.x0 || 0, dx = q.dx || 1, bw = q.bw || .8, base = q.base || 0, s = q.s || 22, out = [];
+      c.save(); c.globalAlpha *= q.a == null ? 1 : q.a;
+      vals.forEach((v, i) => {
+        const xa = pl.X(x0 + i * dx + dx * (1 - bw) / 2), xb = pl.X(x0 + i * dx + dx * (1 + bw) / 2);
+        const ya = pl.Y(clamp(v, YA.min, YA.max)), yb = pl.Y(clamp(base, YA.min, YA.max));
+        const r = { x: xa, y: Math.min(ya, yb), w: xb - xa, h: Math.abs(yb - ya) }; out.push(r);
+        c.fillStyle = (q.cols && q.cols[i]) || q.col || COL.red; c.fillRect(r.x, r.y, r.w, r.h);
+        if (q.values && v != null) L.tx(q.fmt ? q.fmt(v) : hfmt(v, 0), (xa + xb) / 2, r.y - 8, { f: F.M, s, w: 600, a: 'center', c: COL.ink });
+        if (q.labels && q.labels[i]) L.tx(q.labels[i].s, (xa + xb) / 2, B.y + B.h + 12, { s, w: 600, a: 'center', b: 'top', c: COL.ink, k: q.labels[i].k, max: (xb - xa) + dx * (1 - bw) * B.w / (XA.max - XA.min) - 6 });
+      });
+      c.restore(); return out;
+    };
+    pl.hist = (vals, bins, q = {}) => {
+      const n = bins.n, w = (bins.max - bins.min) / n, cnt = new Array(n).fill(0);
+      for (const v of vals) { const i = Math.floor((v - bins.min) / w); if (i >= 0 && i < n) cnt[i]++; else if (v === bins.max) cnt[n - 1]++; }
+      const show = q.norm ? cnt.map((k) => k / Math.max(1, vals.length)) : cnt;
+      pl.bars(show, Object.assign({ x0: bins.min, dx: w, bw: .9 }, q)); return cnt;
+    };
+    pl.point = (x, y, q = {}) => {
+      const c = L.ctx, [X, Y] = pl.P(x, y), r = q.r || 8, col = q.col || COL.red;
+      c.save(); c.globalAlpha *= q.a == null ? 1 : q.a;
+      c.beginPath(); c.arc(X, Y, r, 0, Math.PI * 2); c.fillStyle = q.fill || col; c.fill();
+      if (q.ring !== false) { c.lineWidth = 3; c.strokeStyle = '#fffaf1'; c.stroke(); c.beginPath(); c.arc(X, Y, r + 2, 0, Math.PI * 2); c.lineWidth = 2; c.strokeStyle = col; c.stroke(); }
+      if (q.label) {
+        const s = q.s || 24, sd = q.side || 'right', o = { s, w: q.w || 700, c: q.lc || col, k: q.label.k };
+        if (sd === 'right') L.tx(q.label.s, X + r + 10, Y, Object.assign(o, { a: 'left', b: 'middle' }));
+        else if (sd === 'left') L.tx(q.label.s, X - r - 10, Y, Object.assign(o, { a: 'right', b: 'middle' }));
+        else if (sd === 'above') L.tx(q.label.s, X, Y - r - 10, Object.assign(o, { a: 'center', b: 'alphabetic' }));
+        else L.tx(q.label.s, X, Y + r + 10, Object.assign(o, { a: 'center', b: 'top' }));
+      }
+      c.restore(); return [X, Y];
+    };
+    function rule(x1, y1, x2, y2, q) {
+      const c = L.ctx; c.save(); c.globalAlpha *= q.a == null ? 1 : q.a; c.lineCap = 'butt';
+      c.beginPath(); c.moveTo(x1, y1); c.lineTo(x2, y2); c.strokeStyle = q.col || COL.mut; c.lineWidth = q.w || 2; c.setLineDash(q.dash || []); c.stroke(); c.setLineDash([]); c.restore();
+    }
+    pl.vline = (x, q = {}) => {
+      const X = pl.X(x); if (X < B.x - 1 || X > B.x + B.w + 1) return;
+      rule(X, B.y, X, B.y + B.h, q);
+      if (q.label) { const c = L.ctx; c.save(); c.globalAlpha *= q.a == null ? 1 : q.a; L.tx(q.label.s, X + 8, q.at === 'bottom' ? B.y + B.h - 12 : B.y + (q.s || 22) + 4, { s: q.s || 22, w: 600, c: q.lc || q.col || COL.mut, k: q.label.k, a: q.align || 'left' }); c.restore(); }
+    };
+    pl.hline = (y, q = {}) => {
+      const Y = pl.Y(y); if (Y < B.y - 1 || Y > B.y + B.h + 1) return;
+      rule(B.x, Y, B.x + B.w, Y, q);
+      if (q.label) { const c = L.ctx; c.save(); c.globalAlpha *= q.a == null ? 1 : q.a; const left = q.at === 'left';
+        L.tx(q.label.s, left ? B.x + 10 : B.x + B.w - 6, Y - 9, { s: q.s || 22, w: 600, c: q.lc || q.col || COL.mut, k: q.label.k, a: left ? 'left' : 'right' }); c.restore(); }
+    };
+    pl.band = (x0, x1, q = {}) => {
+      const c = L.ctx, a = clamp(pl.X(x0), B.x, B.x + B.w), b = clamp(pl.X(x1), B.x, B.x + B.w); if (b <= a) return;
+      c.save(); c.globalAlpha *= q.a == null ? 1 : q.a; c.fillStyle = q.col || 'rgba(28,36,64,.06)'; c.fillRect(a, B.y, b - a, B.h); c.restore();
+    };
+    pl.text = (s, x, y, q = {}) => L.tx(s, pl.X(x), pl.Y(y), q);
+    pl.legend = (items, q = {}) => {
+      const c = L.ctx, s = q.s || 22, gap = q.gap || 28; let x = q.x, y = q.y, w = 0;
+      c.save(); c.globalAlpha *= q.a == null ? 1 : q.a;
+      for (const it of items) {
+        c.beginPath(); c.moveTo(x, y); c.lineTo(x + 34, y); c.strokeStyle = it.col; c.lineWidth = it.w || 4; c.lineCap = 'round'; c.setLineDash(it.dash || []); c.stroke(); c.setLineDash([]); c.lineCap = 'butt';
+        const m = L.tx(it.s, x + 44, y, { s, w: 600, b: 'middle', c: it.tc || COL.ink, k: it.k });
+        if (q.dir === 'right') { x += 44 + m.w + gap; w = x - q.x; } else { y += s * 1.5; w = Math.max(w, 44 + m.w); }
+      }
+      c.restore(); return { w, h: q.dir === 'right' ? s : y - q.y };
+    };
+    let drag = null;
+    pl.drag = (id, get, set, q = {}) => {
+      const p = L.pointer, r = q.r || 30;
+      if (!p.down) { if (drag === id) drag = null; return false; }
+      if (drag == null && p.inside) { const [gx, gy] = get(), [X, Y] = pl.P(gx, gy); if (Math.hypot(p.x - X, p.y - Y) <= r) drag = id; }
+      if (drag !== id) return false;
+      let [x, y] = pl.inv(clamp(p.x, B.x, B.x + B.w), clamp(p.y, B.y, B.y + B.h)); if (q.snap) [x, y] = q.snap(x, y);
+      set(x, y); return true;
+    };
+    return pl;
+  }
+  return { create, ticks, logTicks, fmt };
+})();
+/* ── MODUL VÉGE ── */
+/* ── MODUL: Hang (MagHang) · v1.1 · forrás: magyar-5-6/10-janos-vitez-vers (kopogás), magyar-5-6/02-beszedhang (szintézis, metszet), magyar-5-6/01-kommunikacio (dúdolás), 2026-11-24 ── */
+/* Szintetizált hang Web Audióval. A hang CSAK kattintásra szól: az AudioContext az első unlock() hívásakor jön létre,
+   és az unlock()-ot kizárólag felhasználói kattintás (gomb) kezelőjéből szabad hívni. A rajz soha nem függhet a hangtól
+   (a QA headless, hang nélkül fut): a lecke hang nélkül is teljes. Nincs felvett emberi hang, nincs gépi felolvasás.
+   Változatok: 10-janos-vitez-vers – ütemkopogás (click); 02-beszedhang – formánsszintézis (vowel), zörej (noise),
+   szájüreg-metszet (tract), hangszalagok felülről (folds), magánhangzó-négyszög (vowelChart), szűrőgörbe (response,
+   spectrum); 01-kommunikacio – dúdolás (hum).
+   v1.1 (2026-11-24): + MagHang.hum (a 01 leckekódjából), + o.at kezdőidő-eltolás a vowel/noise-nál; a többi változatlan.
+   ─ hang ─
+     MagHang.ready()            → true, ha már van hangkontextus (a rajz NE függjön tőle)
+     MagHang.unlock()           → AudioContext | null; létrehozza / folytatja – csak kattintáskezelőből!
+     MagHang.vol(v)             fő hangerő 0..1 (alap .35, mérsékelt)
+     MagHang.perfAt(acT)        → az AudioContext-idő (mp) a performance.now() skáláján (ms) – az időméréshez
+                                 (L.pointer.events[].ts, L.now ugyanezen a skálán van)
+     MagHang.click(times, o)    → {ac0, perf0} kopogás: times = [mp a kezdéstől], o.strong: [bool] vagy fn(i) (erős:
+                                 mélyebb, hangosabb koppanás), o.lead (mp, alap .15) – a kezdés (0. mp) AudioContext-ideje
+                                 (ac0) és performance-ideje (perf0, ms). Hang nélkül (nincs kontextus): null.
+     MagHang.stop()             a beütemezett hangok leállítása (kopogás, magánhangzó, zörej, dúdolás – a még el nem
+                                 indultak is)
+     MagHang.vowel(o)           → hang-fogantyú | null (nincs kontextus). Forrás–szűrő modell: fűrészfog-zönge (o.f0 Hz,
+                                 enyhe vibrátóval) → 3 sorba kötött rezonátor (o.F = [F1, F2, F3] Hz, o.B = [B1, B2, B3]
+                                 sávszélesség, alap [80, 90, 150]) + egy rögzített 4. (3500 Hz) a természetesebb hangszínért.
+                                 o.dur: mp (null → tart, amíg h.stop()); o.vol (alap .8); o.raw: true → szűrő nélkül (nyers
+                                 zönge, csak tompítva); o.path: [[mp, {F, f0}], …] menet közbeni csúszás (pl. i → u);
+                                 o.at: mp, késleltetett indítás (a hang most + 0,02 + at mp-kor szól; a path ideje is ettől
+                                 számít); o.solo: false → nem állítja le a többi tartott hangot (alap: leállítja).
+     MagHang.noise(o)           → fogantyú | null. Réshang: fehér zaj sáváteresztővel (o.band = [lo, hi] Hz); o.voiced:
+                                 + zönge (o.f0) – a zörejt a zönge üteme modulálja, és egy mély zümmögés (o.F = [F1, F2],
+                                 alap [300, 1400]) szól alatta; o.nvol: a zörej hangereje (alap .5); o.dur, o.vol mint fent.
+     MagHang.hum(notes, o)      → {ac0, perf0, T} | null: dúdolás – zümmögő hangok egymás után, pontosan beütemezve
+                                 (setTimeout nélkül). notes = [{t (mp a kezdéstől), dur (alap .23), f0: Hz | [Hz, …] (tömb:
+                                 egyenletes csúszás a hang hosszán – a dallamvonal mintái), vol}]; o.F: hangszín (alap [300,
+                                 950, 2350]: „mmm”-szerű), o.B, o.vol (alap .75), o.att (.025), o.rel (.06), o.lead (mp, alap 0).
+                                 Előbb stop()-ot hív. ac0 / perf0: a 0. mp AudioContext- és performance-ideje; T: a vége, mp.
+                                 Hang nélkül (nincs kontextus) null – a rajz (pl. a dallamkurzor) ne függjön tőle.
+     fogantyú h                 h.set({F, f0, band, voiced}, ramp mp) – folyamatos hang menet közbeni hangolása (új
+                                 hangforrás nem indul); h.stop(rel mp) – lecsengés és leállás; h.alive → bool
+     MagHang.render(kind, o, sec) → Promise<Float32Array>: ugyanaz a hang OfflineAudioContextben (hangszóró nélkül;
+                                 csak tesztre / elemzésre – a QA ezt is hangindításnak látja, a leckéből ne hívd)
+   ─ modell (rajz és hang ugyanabból) ─
+     MagHang.response(f, F, B)  → a szűrő erősítése f Hz-en (a 4 rezonátor szorzata, lineáris)
+     MagHang.spectrum(f0, F, B, fmax) → [{n, f, src, flt, out}] a zönge felharmonikusai (src = 1/n, fűrészfog), a szűrő
+                                 erősítése (flt) és a kijövő hang (out = src · flt)
+     MagHang.formants(fb, hl, lips, vowels) → {F: [F1, F2, F3], near: [legközelebbi magánhangzó(k)], d}: a megadott
+                                 magánhangzók (vowels = [{v, fb, hl, lips, F}]) távolsággal súlyozott átlaga a (fb, hl, lips)
+                                 pontban; egy magánhangzó helyén pontosan az ő értékei. fb: 0 elöl … 1 hátul, hl: 0 fent …
+                                 1 lent, lips: 0 réses … 1 kerek. Azonos helyű párok (i, í) együtt „legközelebbiek”.
+   ─ rajz (minden felirat L.tx / L.pill; a színek a világos téma szerint) ─
+     MagHang.tract(L, o)        → g: oldalnézeti fejmetszet (arc balra). o: {x, y, s, fb, hl, lips, velum (0 leengedve,
+                                 orron át lélegzik … 1 felemelve), voiced 0..1, t (mp, a rezgés rajzához), cons: null | 'alv'
+                                 (sz, z) | 'post' (s, zs) | 'labdent' (f, v), body: true (nyak, törzs, tüdő), air: 0..1 (a
+                                 levegő pöttyeinek alfája), airT (mp, a pöttyök ideje), hi: {rész: szín} (kiemelés: nyelv,
+                                 ajak, gége, tüdő, orr, száj, garat, szájpadlás), a}. Feliratot nem ír: a g pontjaihoz a lecke
+                                 húz vezetővonalat. g = {pt: {rész: [x, y]}, air: [[x, y], …] (a levegő útja), toStage(x, y),
+                                 tongueTop: [x, y], s}. A metszet MODELL: a nyelv egy körív, az állkapocs egy pont körül fordul.
+     MagHang.tongueAt(g, px, py) → {fb, hl}: melyik nyelvállás teszi a nyelvhát tetejét a (px, py) pontra (húzáshoz)
+     MagHang.folds(L, o)        hangszalagok felülnézetben: o = {x, y, s, open 0..1 (nyugalmi rés), voiced 0..1, ph (rezgés
+                                 fázisa, mp · rezgésszám), a}; → {x, y, w, h}
+     MagHang.lipsFront(L, o)    az ajak elölről: o = {x, y, s, lips 0..1, hl 0..1, a}
+     MagHang.vowelChart(L, o)   → ch: magánhangzó-négyszög. o = {x, y, w, h, vowels: [{v, fb, hl, lips}], pt: [fb, hl] |
+                                 null (a nyelv pöttye), col: fn(v) → szín, hi: fn(v) → bool, dim (.3), font, rows: [{s, k}×3]
+                                 (fent, középen, lent; + c, a), cols: [{s, k}×2] (elöl, hátul), mark: fn(v) → háttérszín |
+                                 null (kitöltött jelölés), a}. Réses balra, kerek jobbra a cellán belül; azonos helyű párok
+                                 (i, í) egymás mellett. ch = {at(fb, hl) → [x, y] (a betűk / a pötty helye), inv(x, y) →
+                                 [fb, hl], box: {v: {x, y, w, h}}, pick(px, py) → v | null, inside(px, py) → bool}
+*/
+const MagHang = (() => {
+  let ac = null, master = null, live = [], volume = .35;
+  const AC = () => window.AudioContext || window.webkitAudioContext;
+  function unlock() {
+    try {
+      if (!ac) { const C = AC(); if (!C) return null; ac = new C(); master = ac.createGain(); master.gain.value = volume; master.connect(ac.destination); }
+      if (ac.state === 'suspended') ac.resume();
+      return ac;
+    } catch (e) { return null; }
+  }
+  function perfAt(acT) {
+    if (!ac) return null;
+    const ts = ac.getOutputTimestamp ? ac.getOutputTimestamp() : null;
+    if (ts && ts.performanceTime > 0) return ts.performanceTime + (acT - ts.contextTime) * 1000;
+    return performance.now() + (acT - ac.currentTime - (ac.outputLatency || ac.baseLatency || 0)) * 1000;
+  }
+  function blip(t, strong) {
+    const o = ac.createOscillator(), g = ac.createGain();
+    o.type = 'triangle'; o.frequency.setValueAtTime(strong ? 740 : 1250, t); o.frequency.exponentialRampToValueAtTime(strong ? 380 : 900, t + .05);
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(strong ? .9 : .32, t + .004); g.gain.exponentialRampToValueAtTime(0.0001, t + (strong ? .11 : .06));
+    o.connect(g); g.connect(master); o.start(t); o.stop(t + .14); live.push(o);
+    o.onended = () => { live = live.filter((x) => x !== o); };
+  }
+  function click(times, o = {}) {
+    if (!ac) return null;
+    stop();
+    const ac0 = ac.currentTime + (o.lead == null ? .15 : o.lead);
+    const st = typeof o.strong === 'function' ? o.strong : (i) => !!(o.strong && o.strong[i]);
+    times.forEach((t, i) => blip(ac0 + t, st(i)));
+    return { ac0, perf0: perfAt(ac0) };
+  }
+  function stop() { live.forEach((x) => { try { x.stop(); } catch (e) { /* már leállt */ } }); live = []; held.slice().forEach((h) => h.stop(.04)); }
+
+  /* ── szintézis (02-beszedhang) ── */
+  const U = Lesson.U, F4 = 3500, B4 = 250, BDEF = [80, 90, 150];
+  let held = [], vbus = null, noiseBuf = null;
+  const qdb = (f, b) => 20 * Math.log10(Math.max(.3, f / b));     // a lowpass biquad Q-ja dB-ben (Web Audio): csúcs = F/B
+  function bus(cx, dest) {                                           // magánhangzó-sín: kompresszor → fő hangerő
+    if (cx === ac && vbus) return vbus;
+    const k = cx.createDynamicsCompressor(); k.threshold.value = -18; k.knee.value = 12; k.ratio.value = 4; k.attack.value = .005; k.release.value = .15;
+    k.connect(dest); if (cx === ac) vbus = k; return k;
+  }
+  function nbuf(cx) {
+    if (cx === ac && noiseBuf) return noiseBuf;
+    const n = Math.round(cx.sampleRate * 2), b = cx.createBuffer(1, n, cx.sampleRate), d = b.getChannelData(0), r = U.rng(9001);
+    for (let i = 0; i < n; i++) d[i] = r() * 2 - 1;
+    if (cx === ac) noiseBuf = b; return b;
+  }
+  function env(cx, g, t0, o, peak) {                                  // felfutás – (tartás) – lecsengés
+    const att = o.att || .04, rel = o.rel || .12;
+    g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(peak, t0 + att);
+    if (o.dur) { const te = t0 + Math.max(att + .02, o.dur); g.gain.setValueAtTime(peak, te - rel); g.gain.exponentialRampToValueAtTime(0.0001, te); return te + .02; }
+    return null;
+  }
+  function voiceSrc(cx, t0, f0, nodes) {                              // fűrészfog + 5 Hz-es, ±0,6 %-os vibrátó
+    const o = cx.createOscillator(), lfo = cx.createOscillator(), lg = cx.createGain();
+    o.type = 'sawtooth'; o.frequency.setValueAtTime(f0, t0); lfo.frequency.value = 5; lg.gain.value = f0 * .006;
+    lfo.connect(lg); lg.connect(o.frequency); nodes.push(o, lfo); return { o, lg };
+  }
+  function build(cx, dest, kind, o) {
+    const t0 = cx.currentTime + .02 + Math.max(0, o.at || 0), nodes = [], f0 = o.f0 || 120, B = o.B || BDEF;
+    const out = cx.createGain(); out.connect(bus(cx, dest));
+    const h = { alive: true, kind, cx, set: null, stop: null, srcs: nodes };
+    if (kind === 'vowel') {
+      const { o: src, lg } = voiceSrc(cx, t0, f0, nodes), pre = cx.createGain(); pre.gain.value = o.raw ? .05 : .16;
+      src.connect(pre); let last = pre; const rs = [];
+      const FF = o.F || [500, 1500, 2500];
+      if (o.raw) { const lp = cx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 2600; lp.Q.value = -3; last.connect(lp); last = lp; }
+      else [FF[0], FF[1], FF[2], F4].forEach((f, i) => {
+        const r = cx.createBiquadFilter(); r.type = 'lowpass'; r.frequency.setValueAtTime(f, t0); r.Q.setValueAtTime(qdb(f, i < 3 ? B[i] : B4), t0);
+        last.connect(r); last = r; rs.push(r);
+      });
+      last.connect(out);
+      const tune = (p, t, ramp) => {
+        if (p.f0) { src.frequency.setTargetAtTime(p.f0, t, ramp / 3 + .001); lg.gain.setTargetAtTime(p.f0 * .006, t, ramp / 3 + .001); }
+        if (p.F && rs.length) p.F.forEach((f, i) => { rs[i].frequency.setTargetAtTime(f, t, ramp / 3 + .001); rs[i].Q.setTargetAtTime(qdb(f, B[i]), t, ramp / 3 + .001); });
+      };
+      (o.path || []).forEach(([dt, p]) => {
+        if (p.F && rs.length) p.F.forEach((f, i) => { rs[i].frequency.linearRampToValueAtTime(f, t0 + dt); rs[i].Q.linearRampToValueAtTime(qdb(f, B[i]), t0 + dt); });
+        if (p.f0) src.frequency.linearRampToValueAtTime(p.f0, t0 + dt);
+      });
+      h.set = (p, ramp = .08) => { if (h.alive) tune(p, cx.currentTime, ramp); };
+    } else {                                                          // zörej (réshang), zöngével vagy anélkül
+      const ns = cx.createBufferSource(); ns.buffer = nbuf(cx); ns.loop = true; nodes.push(ns);
+      const hp = cx.createBiquadFilter(), lp = cx.createBiquadFilter(), hp2 = cx.createBiquadFilter(), am = cx.createGain(), ng = cx.createGain();
+      hp.type = hp2.type = 'highpass'; lp.type = 'lowpass'; hp.Q.value = hp2.Q.value = lp.Q.value = -3;
+      const band = o.band || [4000, 8000];
+      hp.frequency.value = hp2.frequency.value = band[0]; lp.frequency.value = Math.min(band[1], cx.sampleRate / 2 - 500);
+      ns.connect(hp); hp.connect(hp2); hp2.connect(lp); lp.connect(am); am.connect(ng); ng.connect(out);
+      ng.gain.value = o.nvol == null ? .5 : o.nvol;
+      const { o: src, lg } = voiceSrc(cx, t0, f0, nodes);              // a zönge: zörej-moduláció + mély zümmögés
+      const mod = cx.createGain(), hum = cx.createGain(), r1 = cx.createBiquadFilter(), r2 = cx.createBiquadFilter();
+      const FF = o.F || [300, 1400];
+      r1.type = r2.type = 'lowpass'; r1.frequency.value = FF[0]; r1.Q.value = qdb(FF[0], 70); r2.frequency.value = FF[1]; r2.Q.value = qdb(FF[1], 120);
+      src.connect(mod); mod.connect(am.gain); src.connect(hum); hum.connect(r1); r1.connect(r2); r2.connect(out);
+      const voice = (v, t, ramp) => {
+        am.gain.setTargetAtTime(v ? .55 : 1, t, ramp / 3 + .001); mod.gain.setTargetAtTime(v ? .45 : 0, t, ramp / 3 + .001);
+        hum.gain.setTargetAtTime(v ? .22 : 0, t, ramp / 3 + .001);
+      };
+      am.gain.value = o.voiced ? .55 : 1; mod.gain.value = o.voiced ? .45 : 0; hum.gain.value = o.voiced ? .22 : 0;
+      h.set = (p, ramp = .08) => {
+        if (!h.alive) return; const t = cx.currentTime;
+        if (p.voiced != null) voice(p.voiced, t, ramp);
+        if (p.f0) { src.frequency.setTargetAtTime(p.f0, t, ramp / 3 + .001); lg.gain.setTargetAtTime(p.f0 * .006, t, ramp / 3 + .001); }
+        if (p.band) { hp.frequency.setTargetAtTime(p.band[0], t, ramp / 3 + .001); hp2.frequency.setTargetAtTime(p.band[0], t, ramp / 3 + .001); lp.frequency.setTargetAtTime(Math.min(p.band[1], cx.sampleRate / 2 - 500), t, ramp / 3 + .001); }
+      };
+    }
+    const vol = o.vol == null ? .8 : o.vol, te = env(cx, out, t0, o, vol);
+    nodes.forEach((n) => n.start(t0));
+    if (te) nodes.forEach((n) => n.stop(te));
+    h.stop = (rel = .12) => {
+      if (!h.alive) return; h.alive = false; held = held.filter((x) => x !== h);
+      const t = cx.currentTime; out.gain.cancelScheduledValues(t); out.gain.setValueAtTime(Math.max(.0001, out.gain.value), t);
+      out.gain.exponentialRampToValueAtTime(0.0001, t + rel); nodes.forEach((n) => { try { n.stop(t + rel + .02); } catch (e) { /* már leállt */ } });
+    };
+    if (te) nodes[0].onended = () => { h.alive = false; held = held.filter((x) => x !== h); };
+    return h;
+  }
+  function play(kind, o) {
+    if (!ac || ac.state === 'closed') return null;
+    if (o.solo !== false) held.slice().forEach((x) => x.stop(.05));
+    const h = build(ac, master, kind, o); held.push(h); return h;
+  }
+  const vowel = (o = {}) => play('vowel', o), noise = (o = {}) => play('noise', o);
+  const HUMF = [300, 950, 2350];                                      // zümmögő, „mmm”-szerű hangszín
+  function hum(notes, o = {}) {
+    if (!ac || ac.state === 'closed') return null;
+    stop();
+    const lead = Math.max(0, o.lead || 0), ac0 = ac.currentTime + .02 + lead; let T = 0;
+    (notes || []).forEach((n) => {
+      const fs = Array.isArray(n.f0) ? n.f0 : [n.f0 || 120], dur = n.dur || .23, t = Math.max(0, n.t || 0);
+      const path = fs.slice(1).map((f, j) => [dur * (j + 1) / (fs.length - 1), { f0: f }]);
+      play('vowel', { F: o.F || HUMF, B: o.B, f0: fs[0], dur, at: lead + t, path, solo: false,
+        vol: n.vol != null ? n.vol : o.vol == null ? .75 : o.vol, att: o.att == null ? .025 : o.att, rel: o.rel == null ? .06 : o.rel });
+      T = Math.max(T, t + dur);
+    });
+    return { ac0, perf0: perfAt(ac0), T };
+  }
+  function render(kind, o, sec = 1, sr = 44100) {
+    const OC = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+    if (!OC) return Promise.resolve(null);
+    const cx = new OC(1, Math.round(sr * sec), sr);
+    build(cx, cx.destination, kind, Object.assign({ dur: sec - .05 }, o));
+    return cx.startRendering().then((b) => b.getChannelData(0));
+  }
+
+  /* ── a modell: ugyanaz a szűrő a rajzon, mint a hangban (analóg közelítés: kétpólusú rezonátorok sorban) ── */
+  function response(f, F, B = BDEF) {
+    let g = 1;
+    [F[0], F[1], F[2], F4].forEach((Fi, i) => { const x = f / Fi, q = Fi / (i < 3 ? B[i] : B4); g /= Math.sqrt((1 - x * x) ** 2 + (x / q) ** 2); });
+    return g;
+  }
+  function spectrum(f0, F, B, fmax = 4000) {
+    const out = [];
+    for (let n = 1; n * f0 <= fmax; n++) { const f = n * f0, src = 1 / n, flt = F ? response(f, F, B) : 1; out.push({ n, f, src, flt, out: src * flt }); }
+    return out;
+  }
+  function formants(fb, hl, lips, vowels) {
+    let sw = 0; const acc = [0, 0, 0]; let best = 1e9, near = [];
+    for (const v of vowels) {
+      const d = Math.hypot(fb - v.fb, hl - v.hl, (lips - v.lips) * .8);
+      if (d < best - 1e-6) { best = d; near = [v.v]; } else if (Math.abs(d - best) <= 1e-6) near.push(v.v);
+    }
+    const exact = vowels.filter((v) => Math.hypot(fb - v.fb, hl - v.hl, (lips - v.lips) * .8) < 1e-6);
+    const use = exact.length ? exact : vowels;
+    for (const v of use) { const d = Math.hypot(fb - v.fb, hl - v.hl, (lips - v.lips) * .8), w = exact.length ? 1 : 1 / Math.pow(d, 3); sw += w; for (let i = 0; i < 3; i++) acc[i] += w * v.F[i]; }
+    return { F: acc.map((x) => x / sw), near, d: best };
+  }
+
+  /* ── rajz: a fejmetszet (helyi koordináták, arc balra; az állkapocs az ízülete körül fordul) ── */
+  const INK = '#1c2440', CARD = '#fffaf1';
+  const COL = { skin: '#f3dccb', skinD: '#9a5b45', air: '#fffaf1', tongue: '#e4867b', tongueD: '#8e2f28', bone: '#ece3d2', tooth: '#fffdf8', lung: '#f0c4bb', soft: '#eab7a6', lip: '#e39a8a' };
+  const PIV = [285, 35];
+  const PAL = [[44, 90], [56, 76], [82, 60], [118, 50], [160, 46], [200, 48], [232, 54]];
+  const WALL = [[296, 22], [306, 70], [312, 150], [314, 240], [310, 320], [300, 342], [296, 420], [296, 560]];
+  const lerp = U.lerp, clamp = U.clamp;
+  const lerpP = (a, b, t) => [lerp(a[0], b[0], t), lerp(a[1], b[1], t)];
+  function rotJ(p, a) { const vx = p[0] - PIV[0], vy = p[1] - PIV[1], co = Math.cos(a), si = Math.sin(a); return [PIV[0] + vx * co + vy * si, PIV[1] - vx * si + vy * co]; }
+  function cub(p0, p1, p2, p3, n = 10) { const o = []; for (let i = 1; i <= n; i++) { const t = i / n, u = 1 - t; o.push([u * u * u * p0[0] + 3 * u * u * t * p1[0] + 3 * u * t * t * p2[0] + t * t * t * p3[0], u * u * u * p0[1] + 3 * u * u * t * p1[1] + 3 * u * t * t * p2[1] + t * t * t * p3[1]]); } return o; }
+  function crs(P, n = 8) {                                            // Catmull–Rom: P[1] … P[len−2] között, a pontokon át
+    const o = [];
+    for (let i = 1; i < P.length - 2; i++) {
+      const p0 = P[i - 1], p1 = P[i], p2 = P[i + 1], p3 = P[i + 2];
+      for (let j = i === 1 ? 0 : 1; j <= n; j++) {
+        const t = j / n, t2 = t * t, t3 = t2 * t;
+        o.push([0, 1].map((k) => .5 * (2 * p1[k] + (-p0[k] + p2[k]) * t + (2 * p0[k] - 5 * p1[k] + 4 * p2[k] - p3[k]) * t2 + (-p0[k] + 3 * p1[k] - 3 * p2[k] + p3[k]) * t3)));
+      }
+    }
+    return o;
+  }
+  function geom(o) {
+    const fb = clamp(o.fb == null ? .5 : o.fb), hl = clamp(o.hl == null ? .5 : o.hl), lips = clamp(o.lips || 0);
+    const cons = o.cons || null, velum = o.velum == null ? 1 : o.velum;
+    const ja = (cons ? 1.5 : 1.5 + 8 * hl) * Math.PI / 180;
+    const J = (p) => rotJ(p, ja);
+    // nyelv: a nyelvhát Catmull–Rom-görbe a nyelvhegytől a gyökig; a „kupola” (D) helye a nyelvállásból
+    const D = rotJ([lerp(128, 208, fb), lerp(70, 116, hl)], ja * .55), C = D, r = 0;
+    let tip = J([44, 142]);
+    if (cons === 'alv') tip = [50, 100]; else if (cons === 'post') tip = [58, 98];
+    const Bl = cons === 'post' ? [80, 74] : cons === 'alv' ? [86, 110] : [lerp(tip[0], D[0], .5) - 4, lerp(tip[1], D[1], .78)];
+    const K = [D[0] + 56, D[1] + 30], K2 = [lerp(234, 280, fb) + 12 * hl * fb, 222], root = [256, 300];
+    const dors = crs([J([36, 168]), tip, Bl, D, K, K2, root, [250, 330]], 8);
+    const floor = [J([200, 262]), J([120, 252]), J([62, 206]), J([40, 166])];
+    const tongue = dors.concat(floor);
+    let top = D; dors.forEach((p) => { if (p[1] < top[1] && p[0] > tip[0] + 10) top = p; });
+    // ajkak: kerekítésnél előre tolódnak és összébb zárnak; f, v: az alsó ajak a felső fogak éléhez
+    const pr = -14 * lips, close = 10 * lips * hl;
+    const ulip = [[6, 82], [-4 + pr, 98], [-5 + pr, 114 + close * .4], [10 + pr * .5, 121 + close * .4], [26, 114], [26, 94]];
+    let llip = [[26, 128], [10 + pr * .5, 124 - close * .6], [-4 + pr, 128 - close * .6], [-4 + pr, 144], [8, 156], [26, 150]].map(J);
+    if (cons === 'labdent') llip = [[36, 120], [30, 113], [18, 116], [12, 136], [16, 154], [32, 148]].map((p) => rotJ(p, 1.5 * Math.PI / 180));
+    const uteeth = [[29, 88], [41, 86], [46, 118], [39, 123], [32, 114]];
+    const lteeth = [[32, 124], [42, 122], [46, 152], [34, 156]].map(J);
+    const velTip = lerpP([284, 122], [300, 74], velum), velCtl = lerpP([262, 74], [268, 58], velum);
+    const face = [[412, 340], [436, 250], [458, 100], [452, -80], [404, -212], [300, -292], [170, -302], [82, -262], [40, -200], [30, -112], [14, -70], [-30, 18], [-22, 42], [10, 56], [4, 78], [-6 + pr, 100], [-5 + pr, 118]]
+      .concat([[-5 + pr, 130], [-4 + pr, 150], [12, 168], [6, 200], [22, 236], [82, 250], [180, 256], [240, 264]].map(J), [[262, 300], [266, 600], [408, 600]]);
+    const nasal = [[-10, 46], [4, 26], [40, 8], [120, -2], [220, 2], [282, 18], [300, 40], [302, 64], [272, 52], [232, 42], [160, 34], [90, 38], [40, 46], [12, 52]];
+    const pharynx = [[270, 40], [296, 22]].concat(WALL, [[246, 560], [246, 420], [240, 342], [254, 300], [232, 240], [236, 120], [250, 60]]);
+    const mouth = [[-6 + pr, 120], [14, 121], [40, 120], [30, 92]].concat(PAL, [[270, 60], [306, 70], [312, 150], [300, 260], [254, 300]], floor.slice(0, 3), [J([36, 126]), J([14, 126]), J([-4 + pr, 128])]);
+    // a levegő útja: légcső → gége → garat → a szájüreg közepe (szájpadlás és nyelv között) → ajkak → ki
+    const PV = PAL.concat([[lerp(232, velTip[0], .5), lerp(60, velTip[1] + 10, .5)], [velTip[0] - 2, velTip[1] + 12], [velTip[0] + 30, velTip[1] + 12]]);
+    const palY = (x) => { if (x <= PV[0][0]) return PV[0][1]; for (let i = 1; i < PV.length; i++) if (x <= PV[i][0]) return lerp(PV[i - 1][1], PV[i][1], (x - PV[i - 1][0]) / (PV[i][0] - PV[i - 1][0])); return PV[PV.length - 1][1]; };
+    const tonY = (x) => { let y = 1e9; for (let i = 1; i < tongue.length; i++) { const p = tongue[i - 1], q = tongue[i]; if ((p[0] - x) * (q[0] - x) <= 0 && p[0] !== q[0]) y = Math.min(y, lerp(p[1], q[1], (x - p[0]) / (q[0] - p[0]))); } return y; };
+    const lipY = (ulip[3][1] + llip[2][1]) / 2;
+    const air = [[271, 900], [271, 560], [271, 420], [271, 346], [276, 300]];
+    const backX = (y) => { let xm = -1e9; for (let i = 1; i < tongue.length; i++) { const p = tongue[i - 1], q = tongue[i]; if ((p[1] - y) * (q[1] - y) <= 0 && p[1] !== q[1]) xm = Math.max(xm, lerp(p[0], q[0], (y - p[1]) / (q[1] - p[1]))); } return xm; };
+    for (let y = 260; y >= Math.max(120, velTip[1] + 40); y -= 28) { const bx = backX(y), wx = lerp(314, 306, (150 - y) / 80); air.push([bx > -1e8 ? (Math.max(bx, 232) + wx) / 2 : (240 + wx) / 2, y]); }
+    for (let x = Math.min(280, velTip[0] - 16); x >= 40; x -= 20) { const yt = tonY(x), yp = palY(x); air.push([x, yt > 1e8 ? yp + 26 : (yp + Math.min(yt, yp + 120)) / 2]); }
+    air.push([12, lipY], [-30 + pr, lipY], [-150, lipY]);
+    const pt = {
+      lips: [-6 + pr, lipY], teeth: [38, 104], palate: [140, 40], velum: velTip, tongue: [D[0] - 10, D[1] + 48], top, nose: [-24, 22],
+      nasal: [150, 18], mouth: [lerp(90, 150, fb), (palY(120) + Math.min(tonY(120), palY(120) + 80)) / 2], pharynx: [300, 200], larynx: [270, 342], glottis: [270, 342],
+      trachea: [271, 470], lungs: [271, 880], alv: [46, 90], post: [62, 72], labdent: [36, 118], jaw: J([40, 236]),
+    };
+    return { fb, hl, lips, cons, velum, ja, D, tongue, top, ulip, llip, uteeth, lteeth, velTip, velCtl, face, nasal, pharynx, mouth, air, pt, palY, tonY };
+  }
+  function path(c, pts, close = true) { c.beginPath(); c.moveTo(pts[0][0], pts[0][1]); for (let i = 1; i < pts.length; i++) c.lineTo(pts[i][0], pts[i][1]); if (close) c.closePath(); }
+  function smoothPath(c, pts, close = true) {
+    const n = pts.length; c.beginPath();
+    const mid = (a, b) => [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
+    if (close) { let m = mid(pts[n - 1], pts[0]); c.moveTo(m[0], m[1]); for (let i = 0; i < n; i++) { const p = pts[i], q = mid(p, pts[(i + 1) % n]); c.quadraticCurveTo(p[0], p[1], q[0], q[1]); } c.closePath(); }
+    else { c.moveTo(pts[0][0], pts[0][1]); for (let i = 1; i < n - 1; i++) { const q = mid(pts[i], pts[i + 1]); c.quadraticCurveTo(pts[i][0], pts[i][1], q[0], q[1]); } c.lineTo(pts[n - 1][0], pts[n - 1][1]); }
+  }
+  function tract(L, o) {
+    const c = L.ctx, g = geom(o), s = o.s || 1, X = o.x || 0, Y = o.y || 0, A0 = c.globalAlpha, hi = o.hi || {}, a = o.a == null ? 1 : o.a;
+    const toStage = (x, y) => [X + x * s, Y + y * s];
+    g.s = s; g.toStage = toStage;
+    const ST = {}; Object.keys(g.pt).forEach((k) => { ST[k] = toStage(g.pt[k][0], g.pt[k][1]); }); g.st = ST;
+    g.airSt = g.air.map((p) => toStage(p[0], p[1]));
+    if (a <= .003) return g;
+    c.save(); c.globalAlpha = A0 * a; c.translate(X, Y); c.scale(s, s); c.lineJoin = 'round'; c.lineCap = 'round';
+    const lw = (px) => px / s;
+    const glow = (k, fn) => { if (!hi[k]) return; c.save(); c.globalAlpha = A0 * a * .32; c.fillStyle = hi[k]; fn(); c.fill(); c.restore(); };
+    const LUNG = [[[244, 700], [170, 730], [130, 860], [150, 1020], [246, 1040], [262, 760]], [[298, 700], [372, 730], [412, 860], [392, 1020], [296, 1040], [280, 760]]];
+    if (o.body) {                                                       // törzs, légcső, tüdő (az egész alakos nézetben)
+      c.fillStyle = COL.skin; c.strokeStyle = COL.skinD; c.lineWidth = lw(2.5);
+      smoothPath(c, [[268, 560], [264, 640], [130, 700], [40, 760], [10, 1000], [20, 1130], [540, 1130], [550, 1000], [530, 760], [430, 700], [410, 640], [408, 560]], false); c.fill(); c.stroke();
+      c.fillStyle = COL.lung; c.strokeStyle = '#a2483c';
+      LUNG.forEach((p) => { smoothPath(c, p); c.fill(); c.stroke(); });
+      glow('tüdő', () => { c.beginPath(); LUNG.forEach((p) => { c.moveTo(p[0][0], p[0][1]); p.forEach((q) => c.lineTo(q[0], q[1])); c.closePath(); }); });
+      c.fillStyle = COL.air; c.strokeStyle = COL.skinD; c.lineWidth = lw(2.5);
+      path(c, [[246, 540], [248, 760], [216, 812], [228, 822], [258, 778], [284, 778], [314, 822], [326, 812], [294, 760], [296, 540]]); c.fill(); c.stroke();
+    }
+    // fej
+    c.fillStyle = COL.skin; c.strokeStyle = COL.skinD; c.lineWidth = lw(3);
+    smoothPath(c, g.face); c.fill(); c.stroke();
+    // üregek (levegő): orrüreg, garat + gége + légcső, szájüreg
+    c.fillStyle = COL.air;
+    smoothPath(c, g.nasal); c.fill(); glow('orr', () => smoothPath(c, g.nasal));
+    path(c, g.pharynx); c.fill(); glow('garat', () => path(c, g.pharynx));
+    path(c, g.mouth); c.fill(); glow('száj', () => path(c, g.mouth));
+    c.strokeStyle = 'rgba(154,91,69,.7)'; c.lineWidth = lw(2.2); smoothPath(c, g.nasal); c.stroke();
+    path(c, WALL, false); c.stroke();
+    path(c, [[246, 560], [246, 420], [240, 342], [254, 300]], false); c.stroke();
+    // kemény szájpadlás (csont) és lágy szájpadlás
+    const palB = PAL.concat([[232, 42], [160, 34], [90, 38], [44, 48], [32, 66]]);
+    c.fillStyle = COL.bone; c.strokeStyle = INK; c.lineWidth = lw(2.5);
+    path(c, palB); c.fill(); c.stroke(); glow('szájpadlás', () => path(c, palB));
+    c.fillStyle = COL.soft; c.strokeStyle = COL.skinD;
+    c.beginPath(); c.moveTo(232, 42); c.quadraticCurveTo(g.velCtl[0] + 4, g.velCtl[1] - 12, g.velTip[0] + 2, g.velTip[1] - 8);
+    c.quadraticCurveTo(g.velTip[0] + 6, g.velTip[1] + 4, g.velTip[0] - 4, g.velTip[1] + 6);
+    c.quadraticCurveTo(g.velCtl[0] - 6, g.velCtl[1] + 10, 232, 56); c.closePath(); c.fill(); c.stroke();
+    glow('lágy', () => { c.beginPath(); c.moveTo(232, 42); c.quadraticCurveTo(g.velCtl[0] + 4, g.velCtl[1] - 12, g.velTip[0] + 2, g.velTip[1] - 8); c.lineTo(g.velTip[0] - 4, g.velTip[1] + 6); c.quadraticCurveTo(g.velCtl[0] - 6, g.velCtl[1] + 10, 232, 56); c.closePath(); });
+    // gégefedő és hangszalagok
+    c.fillStyle = COL.soft; c.beginPath(); c.moveTo(252, 302); c.quadraticCurveTo(256, 268, 272, 246); c.lineTo(278, 250); c.quadraticCurveTo(264, 272, 262, 304); c.closePath(); c.fill(); c.stroke();
+    const vo = clamp(o.voiced || 0), tt = o.t || 0;
+    if (hi['gége']) { c.save(); c.globalAlpha = A0 * a * .3; c.fillStyle = hi['gége']; c.beginPath(); c.ellipse(270, 342, 46, 24, 0, 0, U.TAU); c.fill(); c.restore(); }
+    c.strokeStyle = hi['gége'] || INK; c.lineWidth = lw(5);
+    const wob = vo * 2.5 * Math.sin(tt * U.TAU * 9);
+    c.beginPath(); c.moveTo(241, 342); c.lineTo(265, 342 + wob); c.moveTo(300, 342); c.lineTo(276, 342 - wob); c.stroke();
+    if (vo > .01) {                                                      // a zönge rezgése: hullámvonalak a gége két oldalán
+      c.save(); c.globalAlpha = A0 * a * vo; c.strokeStyle = '#c8401c'; c.lineWidth = lw(3);
+      for (const sx of [-1, 1]) { c.beginPath(); for (let k = 0; k <= 14; k++) { const yy = 318 + k * 3.6, xx = 270 + sx * (56 + 6 * Math.sin(k * 1.4 + tt * U.TAU * 6)); if (k) c.lineTo(xx, yy); else c.moveTo(xx, yy); } c.stroke(); }
+      c.restore();
+    }
+    // nyelv
+    c.fillStyle = COL.tongue; c.strokeStyle = COL.tongueD; c.lineWidth = lw(3);
+    smoothPath(c, g.tongue); c.fill(); c.stroke();
+    if (hi['nyelv']) { c.save(); c.globalAlpha = A0 * a * .35; c.fillStyle = hi['nyelv']; smoothPath(c, g.tongue); c.fill(); c.lineWidth = lw(4.5); c.strokeStyle = hi['nyelv']; c.globalAlpha = A0 * a; c.stroke(); c.restore(); }
+    // fogak, ajkak
+    c.fillStyle = COL.tooth; c.strokeStyle = INK; c.lineWidth = lw(2);
+    smoothPath(c, g.uteeth); c.fill(); c.stroke(); smoothPath(c, g.lteeth); c.fill(); c.stroke();
+    c.fillStyle = COL.lip; c.strokeStyle = COL.skinD; c.lineWidth = lw(2.5);
+    smoothPath(c, g.ulip); c.fill(); c.stroke(); smoothPath(c, g.llip); c.fill(); c.stroke();
+    if (hi['ajak']) { c.save(); c.globalAlpha = A0 * a * .5; c.fillStyle = hi['ajak']; smoothPath(c, g.ulip); c.fill(); smoothPath(c, g.llip); c.fill(); c.restore(); }
+    // szem
+    c.strokeStyle = INK; c.lineWidth = lw(3); c.beginPath(); c.arc(100, -128, 15, Math.PI * .12, Math.PI * .88); c.stroke();
+    c.restore();
+    // a levegő pöttyei a levegő útján (zárt képlet az időből)
+    const aa = clamp(o.air == null ? 0 : o.air);
+    if (aa > .003) {
+      const P = g.airSt, seg = []; let tot = 0;
+      for (let i = 1; i < P.length; i++) { const d = Math.hypot(P[i][0] - P[i - 1][0], P[i][1] - P[i - 1][1]); seg.push(d); tot += d; }
+      const n = Math.max(8, Math.round(tot / (30 * Math.max(.6, s)))), sp = 150 * s, T = (o.airT || 0) * sp;
+      c.save(); c.fillStyle = o.airC || '#0a6f86';
+      for (let i = 0; i < n; i++) {
+        let d = ((T + i * tot / n) % tot + tot) % tot, j = 0;
+        while (j < seg.length - 1 && d > seg[j]) { d -= seg[j]; j++; }
+        const u = seg[j] ? d / seg[j] : 0, x = lerp(P[j][0], P[j + 1][0], u), y = lerp(P[j][1], P[j + 1][1], u);
+        const fade = Math.min(1, (j + u) / 1.2, (P.length - 1 - (j + u)) / 1.5);
+        c.globalAlpha = A0 * a * aa * clamp(fade) * .85; c.beginPath(); c.arc(x, y, 5 * Math.max(.8, s), 0, U.TAU); c.fill();
+      }
+      c.restore();
+    }
+    c.globalAlpha = A0;
+    return g;
+  }
+  function tongueAt(g, px, py) {     // a nyelvhát legmagasabb pontja ide kerüljön (közelítő inverz, 2 Newton-lépés)
+    const s = g.s, X = g.toStage(0, 0), lx = (px - X[0]) / s, ly = (py - X[1]) / s;
+    let fb = clamp((lx - 128) / 80), hl = clamp((ly - 70) / 46);
+    for (let it = 0; it < 6; it++) {
+      const q = geom({ fb, hl, lips: g.lips }), ex = lx - q.top[0], ey = ly - q.top[1];
+      fb = clamp(fb + ex / 100); hl = clamp(hl + ey / 75);
+    }
+    return { fb, hl };
+  }
+  function folds(L, o) {
+    const c = L.ctx, s = o.s || 1, x = o.x, y = o.y, A0 = c.globalAlpha, a = o.a == null ? 1 : o.a;
+    const W = 300 * s, H = 360 * s, vo = clamp(o.voiced || 0);
+    const vib = .5 + .5 * Math.sin(U.TAU * (o.ph || 0));                    // 0 zárt … 1 nyitott
+    const gap = lerp(clamp(o.open == null ? 1 : o.open), vib * .45, vo);   // a rés szélessége (0..1)
+    c.save(); c.globalAlpha = A0 * a; c.lineJoin = 'round';
+    c.fillStyle = '#eab7a6'; c.strokeStyle = COL.skinD; c.lineWidth = 3;
+    c.beginPath(); c.ellipse(x, y, W / 2, H / 2, 0, 0, U.TAU); c.fill(); c.stroke();
+    c.fillStyle = '#3a2a33'; c.beginPath(); c.ellipse(x, y, W * .36, H * .4, 0, 0, U.TAU); c.fill();
+    const top = y - H * .36, bot = y + H * .34, half = gap * W * .2 + 1.5;
+    const fold = (sx) => {
+      c.beginPath(); c.moveTo(x, top); c.quadraticCurveTo(x + sx * (half * .9 + 2), y, x + sx * half, bot);
+      c.lineTo(x + sx * W * .34, bot + 6 * s); c.quadraticCurveTo(x + sx * W * .38, y, x + sx * 6 * s, top - 4 * s); c.closePath();
+      c.fillStyle = '#f6efe6'; c.fill(); c.strokeStyle = INK; c.lineWidth = 2.5; c.stroke();
+    };
+    fold(-1); fold(1);
+    c.restore(); c.globalAlpha = A0;
+    return { x: x - W / 2, y: y - H / 2, w: W, h: H, gap };
+  }
+  function lipsFront(L, o) {
+    const c = L.ctx, s = o.s || 1, x = o.x, y = o.y, A0 = c.globalAlpha, a = o.a == null ? 1 : o.a;
+    const lp = clamp(o.lips || 0), hl = clamp(o.hl == null ? .5 : o.hl);
+    const ow = lerp(120, 52, lp) * s, oh = (lerp(14, 54, hl) * (1 - .25 * lp) + 18 * lp) * s;
+    c.save(); c.globalAlpha = A0 * a;
+    c.fillStyle = '#e9a191'; c.strokeStyle = COL.skinD; c.lineWidth = 3;
+    c.beginPath(); c.ellipse(x, y, ow / 2 + 30 * s, oh / 2 + 26 * s, 0, 0, U.TAU); c.fill(); c.stroke();
+    c.fillStyle = '#3a2a33'; c.beginPath(); c.ellipse(x, y, ow / 2, oh / 2, 0, 0, U.TAU); c.fill();
+    c.restore(); c.globalAlpha = A0;
+    return { x: x - ow / 2 - 30 * s, y: y - oh / 2 - 26 * s, w: ow + 60 * s, h: oh + 52 * s };
+  }
+
+  /* ── magánhangzó-négyszög ── */
+  function vowelChart(L, o) {
+    const c = L.ctx, A0 = c.globalAlpha, a = o.a == null ? 1 : o.a;
+    const x0 = o.x, y0 = o.y, w = o.w, h = o.h, sh = w * .28;     // a bal alsó sarok beljebb: lent a nyelv hátrébb fér el
+    const edge = (fb, hl) => [lerp(lerp(x0, x0 + sh, hl), x0 + w, fb), lerp(y0, y0 + h, hl)];
+    const at = (fb, hl) => edge(.2 + .6 * clamp(fb), .14 + .72 * clamp(hl));   // a betűk és a pötty helye (belül)
+    const inv = (px, py) => { const hh = (py - y0) / h, hl = clamp((hh - .14) / .72), xl = lerp(x0, x0 + sh, hh); return [clamp(((px - xl) / (x0 + w - xl) - .2) / .6), hl]; };
+    const font = Object.assign({ f: Lesson.FONTS.D, s: 44, w: 600 }, o.font || {});
+    const ch = { at, inv, edge, box: {} };
+    c.save(); c.globalAlpha = A0 * a;
+    c.fillStyle = 'rgba(255,250,241,.94)'; c.strokeStyle = INK; c.lineWidth = 2.5; c.lineJoin = 'round';
+    const P = [edge(0, 0), edge(1, 0), edge(1, 1), edge(0, 1)];
+    c.beginPath(); c.moveTo(P[0][0], P[0][1]); P.slice(1).forEach((p) => c.lineTo(p[0], p[1])); c.closePath(); c.fill(); c.stroke();
+    c.strokeStyle = 'rgba(28,36,64,.2)'; c.lineWidth = 2; c.setLineDash([8, 8]); c.beginPath();
+    [1 / 3, 2 / 3].forEach((t) => { const p = edge(0, t), q = edge(1, t); c.moveTo(p[0], p[1]); c.lineTo(q[0], q[1]); });
+    const p5 = edge(.5, 0), q5 = edge(.5, 1); c.moveTo(p5[0], p5[1]); c.lineTo(q5[0], q5[1]); c.stroke(); c.setLineDash([]);
+    (o.rows || []).forEach((r, i) => { if (!r) return; const p = at(0, i / 2), xl = edge(0, (p[1] - y0) / h)[0]; c.globalAlpha = A0 * a * (r.a == null ? 1 : r.a); L.tx(r.s, xl - 18, p[1] + 9, { s: 24, f: Lesson.FONTS.B, w: 600, a: 'right', c: r.c || '#565d72', k: r.k }); });
+    (o.cols || []).forEach((r, i) => { if (!r) return; const p = edge(i, 0); c.globalAlpha = A0 * a * (r.a == null ? 1 : r.a); L.tx(r.s, p[0], y0 - 22, { s: 24, f: Lesson.FONTS.B, w: 700, a: i ? 'right' : 'left', c: r.c || '#565d72', k: r.k, max: w * .48 }); });
+    // betűk cellánként: réses a pont bal, kerek a jobb oldalán; azonos helyűek (i, í) egymás mellett
+    const cells = {};
+    (o.vowels || []).forEach((v) => { const key = v.fb + '|' + v.hl + '|' + v.lips; (cells[key] = cells[key] || []).push(v); });
+    Object.values(cells).forEach((vs) => {
+      const v0 = vs[0], p = at(v0.fb, v0.hl);
+      const ws = vs.map((v) => L.measure(v.v, font).w), gap = font.s * .24, tw = ws.reduce((s2, x) => s2 + x, 0) + gap * (vs.length - 1);
+      let xx = v0.lips ? p[0] + 18 : p[0] - 18 - tw;
+      const yy = p[1] + font.s * .34;
+      vs.forEach((v, i) => {
+        const col = o.col ? o.col(v.v) : INK, on = !o.hi || o.hi(v.v);
+        c.globalAlpha = A0 * a * (on ? 1 : (o.dim == null ? .3 : o.dim));
+        if (o.mark && o.mark(v.v)) { const m = o.mark(v.v); c.fillStyle = m; c.beginPath(); c.roundRect(xx - 7, yy - font.s * .82, ws[i] + 14, font.s * 1.12, 10); c.fill(); }
+        L.tx(v.v, xx, yy, Object.assign({}, font, { c: o.mark && o.mark(v.v) ? CARD : col, k: v.k }));
+        ch.box[v.v] = { x: xx, y: yy - font.s * .8, w: ws[i], h: font.s * 1.05 };
+        xx += ws[i] + gap;
+      });
+    });
+    c.globalAlpha = A0 * a;
+    if (o.pt) {
+      const p = at(o.pt[0], o.pt[1]);
+      c.fillStyle = '#c8401c'; c.strokeStyle = CARD; c.lineWidth = 4;
+      c.beginPath(); c.arc(p[0], p[1], 13, 0, U.TAU); c.fill(); c.stroke();
+      ch.ptXY = p;
+    }
+    c.restore(); c.globalAlpha = A0;
+    ch.pick = (px, py) => { for (const [v, b] of Object.entries(ch.box)) if (px >= b.x - 8 && px <= b.x + b.w + 8 && py >= b.y - 6 && py <= b.y + b.h + 6) return v; return null; };
+    ch.inside = (px, py) => { const hh = (py - y0) / h; if (hh < -.05 || hh > 1.05) return false; const xl = edge(0, clamp(hh))[0]; return px >= xl - 20 && px <= x0 + w + 20; };
+    return ch;
+  }
+
+  return {
+    ready: () => !!ac, unlock, perfAt, click, stop,
+    vol: (v) => { volume = Lesson.U.clamp(v); if (master) master.gain.value = volume; },
+    vowel, noise, hum, render, response, spectrum, formants, tract, tongueAt, folds, lipsFront, vowelChart, geom,
+  };
+})();
+/* ── MODUL VÉGE ── */
+
+/* ════════════════ A lecke saját kódja ════════════════ */
+const U = Lesson.U, { clamp, lerp, smooth, TAU } = U, fmt = U.fmt;
+const F = Lesson.FONTS;
+const INK = '#1c2440', MUT = '#565d72', RED = '#c8401c', TEAL = '#0a6f86', GOOD = '#1d7a45', BAD = '#b3261e', OKR = '#8f5a0c',
+  CARD = '#fffaf1', LINE = 'rgba(28,36,64,.16)';
+let L, c, GA = 1;
+const al = (a = 1) => { c.globalAlpha = GA * clamp(a); };
+const lab = (k) => L.lab(k), num = (k) => L.num(k);
+const T = (k, x, y, o = {}) => L.tx(lab(k), x, y, Object.assign({ k }, o));
+const fillIn = (k, v) => { let i = 0; return lab(k).replace(/#/g, () => (i < v.length ? v[i++] : '#')); };
+const TN = (k, v, x, y, o = {}) => L.tx(fillIn(k, v), x, y, Object.assign({ k }, o));
+const PN = (k, v, x, y, o = {}) => L.pill(fillIn(k, v), x, y, Object.assign({ k }, o));
+const rr = (x, y, w, h, r) => { c.beginPath(); c.roundRect(x, y, w, h, r); };
+const khz = (hz) => fmt(hz / 1000, (hz / 1000) % 1 ? (Math.round(hz / 10) % 10 ? 2 : 1) : 0);   // 22 050 → „22,05”, 44 100 → „44,1”
+function background() {
+  c.globalAlpha = 1;
+  const g = c.createRadialGradient(680, 480, 100, 680, 540, 1300); g.addColorStop(0, '#f7f1e6'); g.addColorStop(1, '#efe6d6');
+  c.fillStyle = g; c.fillRect(0, 0, 1920, 1080);
+  c.strokeStyle = 'rgba(28,36,64,.045)'; c.lineWidth = 1; c.beginPath();
+  for (let x = 0; x <= 1920; x += 40) { c.moveTo(x + .5, 0); c.lineTo(x + .5, 1080); }
+  for (let y = 0; y <= 1080; y += 40) { c.moveTo(0, y + .5); c.lineTo(1920, y + .5); }
+  c.stroke();
+}
+function card(x, y, w, h, a, bg, bd, bw = 2, r = 16) { al(a); rr(x, y, w, h, r); c.fillStyle = bg || CARD; c.fill(); c.strokeStyle = bd || LINE; c.lineWidth = bw; c.stroke(); }
+function ln(x1, y1, x2, y2, col, w = 2, dash) { c.beginPath(); c.moveTo(x1, y1); c.lineTo(x2, y2); c.strokeStyle = col; c.lineWidth = w; c.setLineDash(dash || []); c.stroke(); c.setLineDash([]); }
+function dot(x, y, r, col) { c.beginPath(); c.arc(x, y, r, 0, TAU); c.fillStyle = col; c.fill(); }
+/* tévhit-pár: áthúzott tévhit → válasz (zöld) – a 13-pixel / 17-szamitogep mintája */
+function myth(kq, ka, x, y, st, t0, a, o = {}) {
+  const s = o.s || 26;
+  al(a * clamp((st - t0) / .5)); const b = L.pill(lab(kq), x, y, { k: kq, a: o.a || 'center', s, f: F.D, i: 1, w: 500, bg: '#ffffff', bd: BAD, c: BAD, pad: 14, max: o.max });
+  const q = clamp((st - t0 - 1.2) / .4);
+  if (q > 0) { al(a); ln(b.x + 10, b.y + b.h / 2, lerp(b.x + 10, b.x + b.w - 10, q), b.y + b.h / 2, BAD, 4); }
+  al(a * clamp((st - t0 - 1.6) / .5));
+  const t = o.av ? fillIn(ka, o.av) : lab(ka);
+  L.pill(t, x, y + (o.dy || 58), { k: o.ak || ka, a: o.a || 'center', s: s - 2, w: 700, f: F.B, bg: GOOD, c: '#ffffff', pad: 12, max: o.max });
+}
+/* rajzolt hangszóró-ikon (nem Unicode-jel): a „szól” jelzéshez */
+function speaker(x, y, s, col) {
+  c.save(); c.fillStyle = col; c.strokeStyle = col; c.lineJoin = 'round'; c.lineCap = 'round';
+  c.beginPath(); c.moveTo(x, y - s * .22); c.lineTo(x + s * .28, y - s * .22); c.lineTo(x + s * .6, y - s * .5); c.lineTo(x + s * .6, y + s * .5);
+  c.lineTo(x + s * .28, y + s * .22); c.lineTo(x, y + s * .22); c.closePath(); c.fill();
+  c.lineWidth = Math.max(2, s * .09);
+  for (let k = 0; k < 2; k++) { c.beginPath(); c.arc(x + s * .62, y, s * (.42 + k * .3), -.75, .75); c.stroke(); }
+  c.restore();
+}
+
+/* „Tippelj!” és bélyegek: a TtTipp modulból; DigBit, DigPixel: a sorozat moduljai; BioPlot: tengely és görbe; MagHang: hang */
+TtTipp.bind({ L: () => L, ga: () => GA });
+const { stamp, Tip, tipReset, veilIf, tipGuess, tipControls, tipU, tipHead, tipFeedback } = TtTipp;
+DigBit.bind({ ga: () => GA });
+DigPixel.bind({ ga: () => GA });
+const O = DigPixel.ops;
+
+/* ════════ a kitalált dallam (rajz és hang ugyanabból) ════════ */
+const HARM = [1, .5, .3];                        // hangszín: alaphang + 2. és 3. felhang (modell)
+const VOLS = [.62, .74, .86, .7, .64, .56, .8, 1];  // a hangok ereje (a kitalált dallam része)
+let HN = 1.42;                                  // a hangszín csúcsértéke (init számolja) – erre normálunk
+const notes = () => L.dat('dallam hangjai').v;
+const ND = () => num('egy hang hossza');
+const TOT = () => notes().length * ND();
+function tone(f, t) { let s = 0; for (let h = 0; h < HARM.length; h++) s += HARM[h] * Math.sin(TAU * (h + 1) * f * t); return s / HN; }
+function env(tl, d) { return Math.min(1, tl / .015) * Math.exp(-1.1 * tl) * clamp((d - tl) / .03); }
+function mel(t) {                               // a dallam jele t mp-kor (−1 … 1)
+  const d = ND(), N = notes(), i = Math.floor(t / d); if (i < 0 || i >= N.length) return 0;
+  const tl = t - i * d; return .9 * VOLS[i] * env(tl, d) * tone(N[i], tl);
+}
+const levels = (b) => Math.pow(2, b);
+function level(v, b) { const M = levels(b) - 1; return clamp(Math.round((v + 1) / 2 * M), 0, M); }   // szintszám 0 … 2^b − 1
+function deq(lv, b) { return lv / (levels(b) - 1) * 2 - 1; }
+const quant = (v, b) => deq(level(v, b), b);
+
+/* ════════ hang: csak kattintásra (MagHang.unlock), saját AudioBuffer a mintákból ════════ */
+const AUD = { src: null };
+const VOL = .26;                                 // mérsékelt hangerő
+function stopSound() { if (AUD.src) { try { AUD.src.stop(); } catch (e) { /* már leállt */ } AUD.src = null; } }
+function play(o) {                              // o = {fs: minta/s | 0 (eredeti), bits: 0 | n} – CSAK gombkezelőből!
+  const ac = MagHang.unlock(); if (!ac) return false;
+  stopSound();
+  const sr = ac.sampleRate, T0 = TOT(), n = Math.ceil((T0 + .06) * sr), buf = ac.createBuffer(1, n, sr), d = buf.getChannelData(0);
+  for (let i = 0; i < n; i++) {
+    const t = i / sr, ts = o.fs ? Math.floor(t * o.fs) / o.fs : t;     // mintavétel és tartás
+    const v = mel(ts); d[i] = o.bits ? quant(v, o.bits) : v;
+  }
+  const src = ac.createBufferSource(), g = ac.createGain(), t0 = ac.currentTime + .04;
+  g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(VOL, t0 + .02);
+  g.gain.setValueAtTime(VOL, t0 + T0 - .02); g.gain.linearRampToValueAtTime(0, t0 + T0 + .03);
+  src.buffer = buf; src.connect(g); g.connect(ac.destination); src.start(t0); src.stop(t0 + T0 + .05);
+  AUD.src = src; src.onended = () => { if (AUD.src === src) AUD.src = null; };
+  return true;
+}
+/* a „szól” jelzés: a rajz a kattintás idejéből (L.st) jön, nem a hangból – hang nélkül is ugyanaz */
+function playing(t0, st) { return t0 > -50 && st - t0 >= 0 && st - t0 < TOT(); }
+function playBadge(t0, st, txt, k, x, y, a) {
+  if (!playing(t0, st)) return;
+  const q = a * clamp((st - t0) / .2) * clamp((TOT() - (st - t0)) / .2);
+  al(q); const b = L.pill(fillIn('szól felirat', [txt]), x, y, { k, s: 24, w: 700, f: F.B, c: '#ffffff', bg: TEAL, pad: 10, a: 'right' });
+  al(q); speaker(b.x - 46, y, 30, TEAL);
+}
+
+/* ════════ 1. A hang: rezgő levegő ════════ */
+const S1 = { note: null, t0: .8, play: -99 };
+const ML = { x: 640, y: 128, w: 680, h: 176 };        // a dallam idősávja
+const SC1 = { x: 150, y: 480, w: 1160, h: 300 };      // a mikrofon jele (nagyítva)
+const WIN1 = 10;                                      // ms – a nagyított ablak
+let PL1 = null;
+function reset1() { S1.note = null; S1.t0 = .8; S1.play = -99; }
+function head1(st) {                                  // hol tart a dallam (mp)
+  if (playing(S1.play, st)) return st - S1.play;
+  if (S1.note != null) return (S1.note + .5) * ND();
+  const t0 = S1.play > -50 ? S1.play : S1.t0;
+  return clamp(st - t0, 0, TOT() - 1e-3);
+}
+const noteY = (f) => ML.y + ML.h - 22 - (Math.log(f / 230) / Math.log(600 / 230)) * (ML.h - 44);
+function flute(a) {                                   // sematikus furulya
+  c.save(); al(a); c.translate(150, 214); c.rotate(.62);
+  rr(-92, -15, 184, 30, 14); c.fillStyle = '#e9d5ad'; c.fill(); c.strokeStyle = '#6b4a2b'; c.lineWidth = 3; c.stroke();
+  rr(-112, -11, 26, 22, 8); c.fillStyle = '#d7bd8b'; c.fill(); c.stroke();
+  c.fillStyle = '#6b4a2b'; for (let k = 0; k < 6; k++) { c.beginPath(); c.arc(-40 + k * 20, -4, 4.2, 0, TAU); c.fill(); }
+  c.beginPath(); c.moveTo(80, -15); c.lineTo(98, -22); c.lineTo(98, 22); c.lineTo(80, 15); c.closePath(); c.fillStyle = '#d7bd8b'; c.fill(); c.stroke();
+  c.restore();
+}
+function mic(x, y, a) {                               // mikrofon állvánnyal
+  al(a); c.lineCap = 'round'; ln(x, y + 46, x, y + 120, INK, 5); ln(x - 34, y + 122, x + 34, y + 122, INK, 6); c.lineCap = 'butt';
+  al(a); rr(x - 24, y - 44, 48, 92, 24); c.fillStyle = '#dfe3ea'; c.fill(); c.strokeStyle = INK; c.lineWidth = 3; c.stroke();
+  c.save(); rr(x - 24, y - 44, 48, 60, 24); c.clip(); c.strokeStyle = 'rgba(28,36,64,.4)'; c.lineWidth = 1.5;
+  for (let k = -40; k < 20; k += 8) { c.beginPath(); c.moveTo(x - 30, y + k); c.lineTo(x + 30, y + k); c.stroke(); } c.restore();
+  al(a); ln(x - 24, y + 16, x + 24, y + 16, INK, 3);
+}
+function scene1(st, a, active) {
+  const N = notes(), p = head1(st), i = clamp(Math.floor(p / ND()), 0, N.length - 1), f = N[i], amp = .9 * VOLS[i];
+  // furulya → levegő → mikrofon
+  flute(a);
+  const live = playing(S1.play, st) || (S1.play < -50 && S1.note == null && st > S1.t0 && st < S1.t0 + TOT());
+  for (let k = 0; k < 5; k++) {
+    const r = 24 + ((st * 70 + k * 36) % 180), q = a * (live ? .85 : .35) * clamp(1 - (r - 24) / 180) * (.6 + .4 * amp);
+    if (q < .01) continue;
+    al(q); c.beginPath(); c.arc(232, 268, r, -.55, .55); c.strokeStyle = TEAL; c.lineWidth = 3 + 3 * amp; c.lineCap = 'round'; c.stroke(); c.lineCap = 'butt';
+  }
+  mic(470, 236, a);
+  al(a); T('furulya felirat', 150, 352, { s: 24, w: 700, f: F.B, c: INK, a: 'center' });
+  al(a); T('levegő felirat', 330, 186, { s: 22, w: 600, f: F.B, c: TEAL, a: 'center' });
+  al(a); T('mikrofon felirat', 470, 168, { s: 24, w: 700, f: F.B, c: INK, a: 'center' });
+  stamp('sematikus', 40, 66, a);
+  // kábel: mikrofon → a jel grafikonja
+  al(a); c.beginPath(); c.moveTo(470, 360); c.bezierCurveTo(470, 440, 84, 380, 84, 470); c.lineTo(84, SC1.y + SC1.h / 2); c.lineTo(SC1.x - 10, SC1.y + SC1.h / 2);
+  c.strokeStyle = INK; c.lineWidth = 4; c.lineJoin = 'round'; c.stroke(); c.lineJoin = 'miter';
+  c.save(); al(a); c.translate(66, SC1.y + SC1.h / 2 - 10); c.rotate(-Math.PI / 2); T('elektromos jel felirat', 0, 0, { s: 22, w: 600, f: F.B, c: MUT, a: 'center', b: 'middle' }); c.restore();
+  // a dallam idősávja
+  al(a); TN('dallam felirat', [fmt(N.length)], ML.x, ML.y - 18, { k: ['dallam felirat', 'dallam hangjai'], s: 26, w: 700, f: F.B, c: INK });
+  stamp('kitalált', ML.x + 270, ML.y - 28, a);
+  card(ML.x, ML.y, ML.w, ML.h, a, CARD, LINE, 2, 12);
+  al(a); T('magas felirat', ML.x - 12, ML.y + 26, { s: 22, w: 600, f: F.B, c: MUT, a: 'right', b: 'middle' });
+  al(a); T('mély felirat', ML.x - 12, ML.y + ML.h - 22, { s: 22, w: 600, f: F.B, c: MUT, a: 'right', b: 'middle' });
+  const nw = ML.w / N.length;
+  N.forEach((fq, j) => {
+    const on = j === i, hgt = 8 + 14 * VOLS[j], y = noteY(fq);
+    al(a * (on ? 1 : .6)); rr(ML.x + j * nw + 6, y - hgt / 2, nw - 12, hgt, hgt / 2); c.fillStyle = on ? RED : TEAL; c.fill();
+  });
+  const xph = ML.x + p / TOT() * ML.w;
+  al(a); ln(xph, ML.y - 4, xph, ML.y + ML.h + 4, RED, 3);
+  al(a * .7); ln(xph, ML.y + ML.h + 4, SC1.x, SC1.y - 56, 'rgba(200,64,28,.6)', 2, [8, 7]); ln(xph, ML.y + ML.h + 4, SC1.x + SC1.w, SC1.y - 56, 'rgba(200,64,28,.6)', 2, [8, 7]);
+  // a jel, nagyítva (BioPlot)
+  c.globalAlpha = GA;
+  PL1.axes({ a, ticks: true, names: true });
+  al(a); ln(SC1.x, PL1.Y(0), SC1.x + SC1.w, PL1.Y(0), 'rgba(28,36,64,.35)', 2);
+  const pts = []; for (let k = 0; k <= 500; k++) { const t = k / 500 * WIN1; pts.push([t, amp * tone(f, t / 1000)]); }
+  c.globalAlpha = GA; PL1.line(pts, { col: INK, w: 3.5, a });
+  al(a); TN('nagyító felirat', [fmt(i + 1), fmt(WIN1)], SC1.x + SC1.w, SC1.y - 20, { s: 24, w: 600, f: F.B, c: RED, a: 'right' });
+  // magasság = hangerő (a legnagyobb kitérés), sűrűség = egy rezgés hossza
+  let km = 0; const per = 1000 / f; for (let k = 1; k <= 200; k++) if (pts[k][0] <= per && pts[k][1] > pts[km][1]) km = k;
+  const xp = PL1.X(pts[km][0]), yp = PL1.Y(pts[km][1]), y0 = PL1.Y(0);
+  al(a); c.lineCap = 'round'; ln(xp, y0, xp, yp + 4, TEAL, 4); c.lineCap = 'butt';
+  al(a); c.beginPath(); c.moveTo(xp, yp); c.lineTo(xp - 9, yp + 15); c.lineTo(xp + 9, yp + 15); c.closePath(); c.fillStyle = TEAL; c.fill();
+  const yb = SC1.y + 12, xa0 = PL1.X(0), xa1 = PL1.X(per);
+  al(a); ln(xa0, yb, xa1, yb, RED, 4); ln(xa0, yb - 10, xa0, yb + 10, RED, 4); ln(xa1, yb - 10, xa1, yb + 10, RED, 4);
+  al(a); T('egy rezgés felirat', xa1 + 14, yb, { s: 22, w: 700, f: F.B, c: RED, b: 'middle' });
+  al(a); L.pill(lab('hangerő felirat'), 150, 900, { k: 'hangerő felirat', s: 26, w: 700, f: F.B, c: '#ffffff', bg: TEAL, pad: 12 });
+  al(a); L.pill(lab('hangmagasság felirat'), 560, 900, { k: 'hangmagasság felirat', s: 26, w: 700, f: F.B, c: '#ffffff', bg: RED, pad: 12 });
+  al(a); PN('rezgés felirat', [fmt(f)], 150, 972, { k: ['rezgés felirat', 'dallam hangjai'], s: 28, w: 700, f: F.B, c: INK, bg: CARD, bd: RED, bw: 2.5, pad: 12 });
+  playBadge(S1.play, st, lab('eredeti hang felirat'), ['szól felirat', 'eredeti hang felirat'], 1320, 972, a);
+}
+
+/* ════════ 2. Mintavétel ════════ */
+const S2 = { ri: 1, t: 0, sw: 2, play: -99 };
+const P2T = { x: 150, y: 170, w: 1160, h: 240 }, P2B = { x: 150, y: 530, w: 1160, h: 170 };
+const WIN = 5, SHOW = 2, NSTRIP = 10;               // ms-os ablak; a g′ hang; a szalagon ennyi szám
+let PL2T = null, PL2B = null;
+const RATES = () => L.dat('mintavételi lépcsők').v.map((k) => Math.round(k * 1000));
+const wv = (tms) => .9 * tone(notes()[SHOW], tms / 1000);
+function samples(fs, bits) {
+  const n = Math.floor(WIN / 1000 * fs - 1e-9) + 1, out = [];
+  for (let k = 0; k < n; k++) { const t = k / fs * 1000, v = wv(t), lv = level(v, bits); out.push({ t, v, lv, q: deq(lv, bits) }); }
+  return out;
+}
+function reset2() { S2.ri = 1; S2.t = 0; S2.sw = 2; S2.play = -99; }
+function curvePts(a0, a1, n, fn) { const pts = []; for (let k = 0; k <= n; k++) { const t = a0 + (a1 - a0) * k / n; pts.push([t, fn(t)]); } return pts; }
+function stairPts(sm, tEnd, key) {
+  const pts = []; sm.forEach((s, k) => { const t1 = k + 1 < sm.length ? sm[k + 1].t : tEnd; pts.push([s.t, s[key]], [t1, s[key]]); }); return pts;
+}
+function scene2(st, a) {
+  const fs = RATES()[S2.ri], bits = num('CD bitmélysége'), sm = samples(fs, bits), u = st - S2.t;
+  al(a); T('mért jel felirat', P2T.x, 112, { s: 26, w: 700, f: F.B, c: INK });
+  al(a); PN('mintavétel felirat', [fmt(fs)], 1320, 104, { k: ['mintavétel felirat', 'mintavételi lépcsők'], s: 30, w: 700, f: F.B, c: '#ffffff', bg: RED, pad: 12, a: 'right' });
+  c.globalAlpha = GA; PL2T.axes({ a, names: false });
+  al(a); ln(P2T.x, PL2T.Y(0), P2T.x + P2T.w, PL2T.Y(0), 'rgba(28,36,64,.3)', 2);
+  c.globalAlpha = GA; PL2T.line(curvePts(0, WIN, 400, wv), { col: INK, w: 3, a: a * .8 });
+  const rv = smooth((u - .3) / S2.sw), gapPx = P2T.w / (WIN / 1000 * fs), stem = gapPx >= 9, R = gapPx >= 14 ? 7 : gapPx >= 8 ? 5 : 3.5;
+  sm.forEach((s, k) => {
+    const q = clamp((rv * WIN - s.t) / (WIN * .06) + 1); if (q <= 0) return;
+    const X = PL2T.X(s.t), Y = PL2T.Y(s.v), col = k < NSTRIP ? RED : TEAL;
+    if (stem) { al(a * q); ln(X, PL2T.Y(0), X, Y, col, 2); }
+    al(a * q); dot(X, Y, R, col);
+  });
+  // amit a gép a számokból visszarajzol (mintavétel és tartás)
+  const rb = smooth((u - .4 - S2.sw * .6) / 1.4);
+  al(a); T('visszarajzolt felirat', P2B.x, P2B.y - 30, { s: 26, w: 700, f: F.B, c: INK });
+  stamp('modell', 640, P2B.y - 40, a);
+  al(a); TN('ablak felirat', [fmt(WIN), fmt(sm.length)], P2B.x + P2B.w, P2B.y - 30, { s: 24, w: 700, f: F.B, c: RED, a: 'right' });
+  c.globalAlpha = GA; PL2B.axes({ a });
+  c.globalAlpha = GA; PL2B.line(curvePts(0, WIN, 400, wv), { col: 'rgba(28,36,64,.35)', w: 2.5, dash: [8, 7], a });
+  if (rb > 0) { c.globalAlpha = GA; PL2B.line(stairPts(sm, WIN, 'v'), { col: RED, w: 4, a, upto: rb * WIN }); }
+  // a mért számok szalagja
+  const ns = Math.min(NSTRIP, sm.length), us = clamp((u - .3 - S2.sw * .2) / (S2.sw * .8)) * ns;
+  al(a); TN('szalag felirat', [fmt(ns), fmt(bits), fmt(levels(bits) - 1)], 40, 786, { k: ['szalag felirat', 'CD bitmélysége'], s: 24, w: 700, f: F.B, c: INK });
+  const B = DigBit.bytes(L, sm.slice(0, ns).map((s) => s.lv), { x: 40, y: 806, s: 24, u: us, maxW: 1290, a, col: RED, hi: () => 1 });
+  if (sm.length > ns) { al(a * clamp(us - ns + 1)); TN('többi felirat', [fmt(sm.length - ns)], 40 + B.w + 18, 806 + B.h / 2, { s: 24, w: 600, f: F.B, c: MUT, b: 'middle' }); }
+  myth('hangosabb tévhit felirat', 'hangosabb válasz felirat', 40, 930, st, 3.2, a, { a: 'left', s: 24, max: 760 });
+  playBadge(S2.play, st, fillIn('mintavétel felirat', [fmt(fs)]), ['szól felirat', 'mintavétel felirat'], 1320, 960, a);
+}
+
+/* ════════ 3. Hány minta kell a CD-hez? (tipp) ════════ */
+const P3 = Tip(['44 tipp', '4410 tipp', '44100 tipp'], '44100 tipp');
+const MB3 = [{ x: 40, y: 660, w: 620, h: 200 }, { x: 700, y: 660, w: 620, h: 200 }];
+function reset3() { tipReset(P3); }
+function cd(x, y, r, a) {                            // sematikus CD-lemez
+  al(a); c.beginPath(); c.arc(x, y, r, 0, TAU); const g = c.createLinearGradient(x - r, y - r, x + r, y + r);
+  g.addColorStop(0, '#e9eef3'); g.addColorStop(.35, '#d8e4ef'); g.addColorStop(.5, '#efe0f0'); g.addColorStop(.62, '#e2f0e2'); g.addColorStop(1, '#cfd8e2');
+  c.fillStyle = g; c.fill(); c.strokeStyle = INK; c.lineWidth = 3; c.stroke();
+  for (const rr2 of [r * .92, r * .7, r * .5]) { al(a * .5); c.beginPath(); c.arc(x, y, rr2, 0, TAU); c.strokeStyle = 'rgba(28,36,64,.2)'; c.lineWidth = 1.5; c.stroke(); }
+  al(a); c.beginPath(); c.arc(x, y, r * .3, 0, TAU); c.fillStyle = '#f1f3f6'; c.fill(); c.strokeStyle = 'rgba(28,36,64,.5)'; c.lineWidth = 2; c.stroke();
+  al(a); c.beginPath(); c.arc(x, y, r * .1, 0, TAU); c.fillStyle = '#efe6d6'; c.fill(); c.strokeStyle = INK; c.lineWidth = 2.5; c.stroke();
+}
+function nyq(B, fs, a, good) {                       // a legmagasabb hang rezgése és a minták
+  const fmax = num('legmagasabb hallható hang'), Tms = .25, ph = .7;
+  card(B.x, B.y, B.w, B.h, a, CARD, good ? GOOD : BAD, 2.5, 14);
+  const X = (t) => B.x + 20 + t / Tms * (B.w - 40), Y = (v) => B.y + B.h / 2 - v * (B.h / 2 - 28);
+  const w = (t) => Math.sin(TAU * fmax * t / 1000 + ph);
+  al(a); c.beginPath(); for (let k = 0; k <= 300; k++) { const t = k / 300 * Tms; if (k) c.lineTo(X(t), Y(w(t))); else c.moveTo(X(t), Y(w(t))); }
+  c.strokeStyle = 'rgba(28,36,64,.55)'; c.lineWidth = 2.5; c.stroke();
+  const pts = []; for (let k = 0; k / fs * 1000 <= Tms + 1e-9; k++) { const t = k / fs * 1000; pts.push([X(t), Y(w(t))]); }
+  if (good) pts.forEach((p) => { al(a); ln(p[0], Y(0), p[0], p[1], RED, 2.5); });
+  else { al(a); c.beginPath(); pts.forEach((p, k) => (k ? c.lineTo(p[0], p[1]) : c.moveTo(p[0], p[1]))); c.strokeStyle = RED; c.lineWidth = 4; c.stroke(); }
+  al(a); ln(B.x + 12, Y(0), B.x + B.w - 12, Y(0), 'rgba(28,36,64,.25)', 1.5);
+  pts.forEach((p) => { al(a); dot(p[0], p[1], 7, RED); });
+  return pts;
+}
+function scene3(st, a) {
+  tipHead(P3, st, a, 'cd kérdés felirat');
+  tipFeedback(P3, st, a, 640, 178);
+  const u = tipU(P3, st), cdq = a * (u < 0 ? 1 : 1 - smooth(u / .6));
+  if (cdq > .01) { cd(680, 600, 230, cdq); al(cdq); T('cd felirat', 680, 600 + 300, { s: 34, w: 700, f: F.D, c: INK, a: 'center' }); }
+  if (u < 0) return;
+  const fs = num('CD mintavételi gyakorisága'), fmax = num('legmagasabb hallható hang'), sh = (t0) => a * smooth((u - t0) / .5);
+  // 1 másodperc → 1 ezredmásodperc
+  const X0 = 40, X1 = 1320;
+  al(sh(.4)); T('egy másodperc felirat', X0, 268, { s: 24, w: 700, f: F.B, c: INK });
+  al(sh(.4)); rr(X0, 284, X1 - X0, 22, 6); c.fillStyle = 'rgba(10,111,134,.18)'; c.fill(); c.strokeStyle = TEAL; c.lineWidth = 2; c.stroke();
+  al(sh(.4) * .5); c.beginPath(); for (let k = 0; k <= 100; k++) { const x = X0 + k / 100 * (X1 - X0); c.moveTo(x, 284); c.lineTo(x, k % 10 ? 296 : 306); } c.strokeStyle = TEAL; c.lineWidth = 1; c.stroke();
+  const zq = sh(1), xm = X0 + (X1 - X0) / 1000;
+  if (zq > .01) {
+    al(zq); rr(X0 - 2, 280, xm - X0 + 6, 30, 3); c.strokeStyle = RED; c.lineWidth = 3; c.stroke();
+    al(zq * .7); ln(X0, 310, X0, 372, RED, 2, [6, 5]); ln(xm + 4, 310, X1, 372, RED, 2, [6, 5]);
+    al(zq); ln(X0, 400, X1, 400, INK, 2);
+    const n = Math.floor(fs / 1000), rv = clamp((u - 1.3) / 1.4) * (n + 1);
+    for (let k = 0; k <= n; k++) { const q = clamp(rv - k); if (q <= 0) break; const x = X0 + k / (fs / 1000) * (X1 - X0); al(zq * q); ln(x, 400, x, 382, RED, 2); al(zq * q); dot(x, 382, 5, RED); }
+  }
+  al(sh(2.8)); TN('egy ezredmásodperc felirat', [fmt(fs / 1000, 1)], X0, 450, { k: ['egy ezredmásodperc felirat', 'CD mintavételi gyakorisága'], s: 24, w: 700, f: F.B, c: RED, b: 'middle' });
+  al(sh(3.1)); PN('másodpercenként felirat', [fmt(fs)], X1, 450, { k: ['másodpercenként felirat', 'CD mintavételi gyakorisága'], s: 28, w: 700, f: F.B, c: '#ffffff', bg: RED, pad: 12, a: 'right' });
+  // legalább kétszer olyan sűrűn
+  al(sh(3.8)); PN('legmagasabb felirat', [fmt(fmax)], X0, 530, { k: ['legmagasabb felirat', 'legmagasabb hallható hang'], s: 26, w: 700, f: F.B, c: INK, bg: CARD, bd: LINE, pad: 12 });
+  al(sh(4.4)); PN('kétszer felirat', [fmt(fmax), fmt(2 * fmax)], X0, 594, { k: ['kétszer felirat', 'legmagasabb hallható hang'], s: 26, w: 700, f: F.B, c: INK, bg: CARD, bd: RED, bw: 2.5, pad: 12 });
+  al(sh(5)); PN('cd elég felirat', [fmt(fs)], X1, 594, { k: ['cd elég felirat', 'CD mintavételi gyakorisága'], s: 26, w: 700, f: F.B, c: '#ffffff', bg: GOOD, pad: 12, a: 'right' });
+  const q6 = sh(5.6);
+  if (q6 > .01) {
+    nyq(MB3[0], fs, q6, true); nyq(MB3[1], fmax, q6, false);
+    al(q6); TN('jó mintavétel felirat', [fmt(fs)], MB3[0].x, MB3[0].y + MB3[0].h + 34, { k: ['jó mintavétel felirat', 'CD mintavételi gyakorisága'], s: 24, w: 700, f: F.B, c: GOOD, b: 'middle', max: MB3[0].w });
+    al(q6); TN('rossz mintavétel felirat', [fmt(fmax)], MB3[1].x, MB3[1].y + MB3[1].h + 34, { k: ['rossz mintavétel felirat', 'legmagasabb hallható hang'], s: 22, w: 700, f: F.B, c: BAD, b: 'middle', max: MB3[1].w });
+  }
+}
+
+/* ════════ 4. Hány szint? – bitmélység ════════ */
+const S4 = { bi: 0, prev: -1, t: 0, play: -99 };
+const P4 = { x: 150, y: 170, w: 1060, h: 300 };
+let PL4 = null, HI4 = 0;
+const BITS = () => L.dat('bitmélységek').v;
+function reset4() { S4.bi = 0; S4.prev = -1; S4.t = 0; S4.play = -99; }
+function pick4(v) { if (v === S4.bi) return; S4.prev = S4.bi; S4.bi = v; S4.t = L.st; }
+function scene4(st, a) {
+  const b = BITS()[S4.bi], M = levels(b), fs = num('CD mintavételi gyakorisága'), sm = samples(fs, b);
+  const bp = S4.prev >= 0 ? BITS()[S4.prev] : 0, smp = bp ? samples(fs, bp) : null, q = smooth((st - S4.t - .3) / .7);
+  al(a); T('kerekítés felirat', P4.x, 112, { s: 26, w: 700, f: F.B, c: INK });
+  al(a); PN('szintek felirat', [fmt(b), fmt(M)], 1320, 104, { k: ['szintek felirat', 'bitmélységek'], s: 30, w: 700, f: F.B, c: '#ffffff', bg: RED, pad: 12, a: 'right' });
+  c.globalAlpha = GA; PL4.axes({ a });
+  // a szintek vonalai
+  const sp = P4.h / 2.3 * 2 / (M - 1);
+  if (sp >= 6) {
+    for (let j = 0; j < M; j++) {
+      const y = PL4.Y(deq(j, b)); al(a * .8); ln(P4.x, y, P4.x + P4.w, y, 'rgba(143,90,12,.55)', 2, [10, 6]);
+      if (sp >= 26 || j === 0 || j === M - 1) { al(a); L.tx(fmt(j), P4.x + P4.w + 12, y, { s: 22, w: 600, f: F.M, c: OKR, b: 'middle' }); }
+    }
+  } else {
+    for (const j of [0, M - 1]) { const y = PL4.Y(deq(j, b)); al(a * .8); ln(P4.x, y, P4.x + P4.w, y, 'rgba(143,90,12,.55)', 2, [10, 6]); al(a); L.tx(fmt(j), P4.x + P4.w + 12, y, { s: 22, w: 600, f: F.M, c: OKR, b: 'middle' }); }
+    al(a); TN('sűrű szint felirat', [fmt(M)], P4.x + 20, P4.y + 4, { k: ['sűrű szint felirat', 'bitmélységek'], s: 22, w: 600, f: F.B, c: OKR, b: 'top' });
+  }
+  c.globalAlpha = GA; PL4.line(curvePts(0, WIN, 400, wv), { col: 'rgba(28,36,64,.4)', w: 2.5, a });
+  const yv = (k) => { const from = smp ? smp[k].q : sm[k].v; return lerp(from, sm[k].q, q); };
+  const stair = []; sm.forEach((s, k) => { const t1 = k + 1 < sm.length ? sm[k + 1].t : WIN, v = yv(k); stair.push([s.t, v], [t1, v]); });
+  c.globalAlpha = GA; PL4.line(stair, { col: RED, w: 3.5, a: a * (.35 + .65 * q) });
+  sm.forEach((s, k) => { al(a); dot(PL4.X(s.t), PL4.Y(yv(k)), k === HI4 ? 6 : 3.2, k === HI4 ? RED : TEAL); });
+  const hx = PL4.X(sm[HI4].t), hy = PL4.Y(yv(HI4));
+  al(a); c.beginPath(); c.arc(hx, hy, 15, 0, TAU); c.strokeStyle = RED; c.lineWidth = 3; c.stroke();
+  // a kiemelt minta bitjei
+  const lv = sm[HI4].lv;
+  al(a); TN('minta bitjei felirat', [fmt(lv), fmt(b)], 40, 568, { k: ['minta bitjei felirat', 'bitmélységek'], s: 26, w: 700, f: F.B, c: INK });
+  DigBit.bits(L, lv, { x: 40, y: 594, n: b, s: b > 8 ? 58 : 64, place: b <= 8, a, col: '#f4bd45' });
+  // a mért számok szalagja (ezen a bitmélységen)
+  const ns = NSTRIP;
+  al(a); TN('szalag felirat', [fmt(ns), fmt(b), fmt(M - 1)], 40, 790, { k: ['szalag felirat', 'bitmélységek'], s: 24, w: 700, f: F.B, c: INK });
+  DigBit.bytes(L, sm.slice(0, ns).map((s) => s.lv), { x: 40, y: 808, s: 24, maxW: 1290, a });
+  // minden bit duplázza
+  al(a); T('szintlánc felirat', 40, 914, { s: 24, w: 700, f: F.B, c: INK });
+  let x = 40;
+  BITS().forEach((bb, j) => {
+    const on = j === S4.bi;
+    al(a * (on ? 1 : .7)); const r = PN('szintlánc elem', [fmt(bb), fmt(levels(bb))], x, 970, { k: ['szintlánc elem', 'bitmélységek'], s: 24, w: 700, f: F.B, c: on ? '#ffffff' : INK, bg: on ? RED : CARD, bd: on ? RED : LINE, pad: 11 });
+    x += r.w + 18;
+  });
+  playBadge(S4.play, st, fmt(b) + ' bit', ['szól felirat', 'bitmélységek'], 1320, 970, a);
+}
+
+/* ════════ 5. Mekkora lesz a fájl? ════════ */
+const S5 = { ri: 4, bi: 3, ch: 2, min: 1, t: -99 };
+function reset5() { S5.ri = 4; S5.bi = 3; S5.ch = num('CD csatornái'); S5.min = 1; S5.t = -99; }
+function size5(fs, b, ch, sec) { const bit = fs * b * ch * sec; return { bit, B: bit / 8 }; }
+function scene5(st, a) {
+  const fs = RATES()[S5.ri], b = BITS()[S5.bi], ch = S5.ch, sec = S5.min * 60, cur = size5(fs, b, ch, sec);
+  const cdfs = num('CD mintavételi gyakorisága'), cdb = num('CD bitmélysége'), cdch = num('CD csatornái'), cdS = size5(cdfs, cdb, cdch, sec);
+  const comp = num('tömörített zene') * 1000 * sec / 8;
+  // a szorzat tényezői
+  const fac = [[fmt(fs), 'minta tényező felirat', 'mintavételi lépcsők'], [fmt(b), 'bit tényező felirat', 'bitmélységek'], [fmt(ch), 'csatorna tényező felirat', 'CD csatornái'], [fmt(sec), 'idő tényező felirat', null]];
+  let x = 40;
+  fac.forEach(([v, k, dk], i) => {
+    const w1 = L.measure(v, { s: 44, w: 600, f: F.M }).w, w2 = L.measure(lab(k), { s: 22, w: 600, f: F.B }).w, w = Math.max(w1, w2) + 44;
+    const q = a * smooth((st - .2 - i * .25) / .4);
+    card(x, 110, w, 120, q, CARD, i === 0 ? RED : LINE, i === 0 ? 2.5 : 2, 14);
+    al(q); L.tx(v, x + w / 2, 168, { s: 44, w: 600, f: F.M, c: INK, a: 'center', b: 'middle', k: dk || undefined });
+    al(q); T(k, x + w / 2, 208, { s: 22, w: 600, f: F.B, c: MUT, a: 'center', b: 'middle' });
+    x += w;
+    if (i < 3) { al(q); L.tx('×', x + 26, 170, { s: 40, w: 600, f: F.B, c: INK, a: 'center', b: 'middle' }); x += 52; }
+  });
+  const q2 = a * smooth((st - 1.3) / .5);
+  al(q2); PN('bitráta felirat', [fmt(fs * b * ch), fmt(fs * b * ch / 1000, 1)], 40, 290, { s: 28, w: 700, f: F.B, c: INK, bg: CARD, bd: LINE, pad: 12, max: 1260 });
+  al(q2); PN('bájt felirat', [fmt(cur.bit), fmt(cur.B), DigBit.size(cur.B).s], 40, 360, { s: 28, w: 700, f: F.B, c: INK, bg: CARD, bd: RED, bw: 2.5, pad: 12, max: 1260 });
+  // sávok: CD, a te beállításod, tömörített
+  const W = 1240, mx = cdS.B, q3 = a * smooth((st - 1.8) / .6);
+  const bars = [['cd sáv felirat', cdS.B, TEAL, ['cd sáv felirat', 'CD mintavételi gyakorisága', 'CD bitmélysége', 'CD csatornái'], [fmt(S5.min), DigBit.size(cdS.B).s]],
+    ['saját sáv felirat', cur.B, RED, ['saját sáv felirat'], [fmt(S5.min), DigBit.size(cur.B).s]],
+    ['tömörített sáv felirat', comp, OKR, ['tömörített sáv felirat', 'tömörített zene'], [fmt(num('tömörített zene')), fmt(S5.min), DigBit.size(comp).s]]];
+  bars.forEach(([k, v, col, kk, vals], i) => {
+    const y = 460 + i * 112;
+    al(q3); TN(k, vals, 40, y, { k: kk, s: 24, w: 700, f: F.B, c: col === OKR ? OKR : col });
+    al(q3); rr(40, y + 16, W, 40, 8); c.fillStyle = 'rgba(28,36,64,.06)'; c.fill();
+    al(q3); rr(40, y + 16, Math.max(6, W * v / mx), 40, 8); c.fillStyle = col; c.fill();
+  });
+  myth('hang tévhit felirat', 'hang válasz felirat', 40, 852, st, 1.2, a, { a: 'left', s: 24, max: 1200, av: [fmt(cdfs * cdch)], ak: ['hang válasz felirat', 'CD mintavételi gyakorisága', 'CD csatornái'] });
+}
+
+/* ════════ 6. Mozgókép = sok állókép (tipp) ════════ */
+const P6 = Tip(['3 tipp', '12 tipp', '100 tipp'], '12 tipp');
+const S6 = { fps: null, sl: null };
+const FW = 32, FH = 24, FHZ = 120, FCYC = 2;          // képkocka-méret (pixel); a mozgás 120-szor/s mintázva, 2 mp-es ciklus
+let FR = [];
+const PLY = { x: 40, y: 452, w: 640, h: 480 };
+const NSTR = 12;
+function ballAt(t) {                                   // a labda helye a kockán (pixel), t mp-kor – modell
+  const ph = ((t % 1) + 1) % 1, h = 14.5 * (1 - Math.pow(2 * ph - 1, 2));
+  const tri = 1 - Math.abs(2 * ((((t / FCYC) % 1) + 1) % 1) - 1);
+  return { x: 5 + 22 * tri, y: 20.4 - 2.6 - h, r: 2.6 };
+}
+function makeFrame(t) {
+  const B = ballAt(t);
+  return O.map(DigPixel.make(FW, FH), (r, g, b, i, j) => {
+    let col = j >= 21 ? (j === 21 ? [86, 150, 60] : [64, 120, 44]) : [Math.round(lerp(150, 214, j / 20)), Math.round(lerp(196, 230, j / 20)), Math.round(lerp(232, 240, j / 20))];
+    if (j === 21 && Math.abs(i + .5 - B.x) < 2.6 * (1 - (17.8 - B.y) / 24)) col = [56, 104, 38];   // árnyék a füvön
+    const d = Math.hypot(i + .5 - B.x, j + .5 - B.y), cov = clamp(B.r + .5 - d);
+    if (cov > 0) { const bc = d < B.r * .45 && i + .5 < B.x && j + .5 < B.y ? [240, 110, 90] : [200, 52, 36]; col = col.map((v, m) => Math.round(lerp(v, bc[m], cov))); }
+    return col;
+  });
+}
+const frIdx = (t) => ((Math.round(t * FHZ) % (FHZ * FCYC)) + FHZ * FCYC) % (FHZ * FCYC);
+function reset6() { tipReset(P6); S6.fps = null; }
+function fps6(u) { if (S6.fps != null) return S6.fps; return u < 4.2 ? 3 : u < 7.4 ? 12 : num('film képkockái'); }
+function scene6(st, a) {
+  tipHead(P6, st, a, 'kocka kérdés felirat');
+  tipFeedback(P6, st, a, 840, 178);
+  const u = tipU(P6, st), fps = u < 0 ? 0 : fps6(u), thr = num('folyamatos mozgás határa');
+  // filmszalag: 12 kocka egy pattanásból
+  al(a); rr(28, 250, 1304, 140, 10); c.fillStyle = '#2b2a2e'; c.fill();
+  for (let k = 0; k < 25; k++) { al(a); rr(40 + k * 52, 258, 26, 12, 3); c.fillStyle = '#efe6d6'; c.fill(); rr(40 + k * 52, 370, 26, 12, 3); c.fill(); }
+  for (let k = 0; k < NSTR; k++) {
+    const x = 46 + k * 106, fly = u < 0 ? 0 : smooth((u - .2 - k * .05) / .9);
+    DigPixel.view(L, FR[frIdx(k / NSTR)], { x, y: 284, w: 96, h: 72, lines: 0, a });
+    if (fly > 0 && fly < 1) { const fx = lerp(x, PLY.x, fly), fy = lerp(284, PLY.y, fly), fw = lerp(96, PLY.w, fly), fh = lerp(72, PLY.h, fly);
+      DigPixel.view(L, FR[frIdx(k / NSTR)], { x: fx, y: fy, w: fw, h: fh, lines: 0, a: a * .35 * (1 - fly) }); }
+  }
+  al(a); TN('filmszalag felirat', [fmt(NSTR), fmt(NSTR)], 40, 420, { s: 24, w: 600, f: F.B, c: INK, b: 'middle' });
+  al(a); TN('kockaméret felirat', [fmt(FW), fmt(FH)], 1320, 420, { s: 24, w: 600, f: F.B, c: MUT, a: 'right', b: 'middle' });
+  // a lejátszó: a folytonos mozgásból fps-enként egy kocka
+  const tp = Math.floor(st * Math.max(fps, 1e-6)) / Math.max(fps, 1e-6);
+  const img = fps > 0 && u > 1.2 ? FR[frIdx(tp)] : FR[0];
+  DigPixel.view(L, img, { x: PLY.x, y: PLY.y, w: PLY.w, h: PLY.h, lines: 0, frame: true, a });
+  stamp('modell', PLY.x + 16, PLY.y + PLY.h + 34, a);
+  const qa = a * (u < 0 ? 0 : smooth((u - 1) / .5));
+  if (qa > .01) {
+    al(qa); PN('lejátszó felirat', [fmt(fps)], 730, 500, { k: ['lejátszó felirat'], s: 36, w: 600, f: F.D, c: INK, bg: CARD, bd: RED, bw: 2.5, pad: 14 });
+    const ok = fps >= thr;
+    al(qa); L.pill(lab(ok ? 'folyamatos felirat' : 'akadozik felirat'), 730, 580, { k: [ok ? 'folyamatos felirat' : 'akadozik felirat', 'folyamatos mozgás határa'], s: 26, w: 700, f: F.B, c: '#ffffff', bg: ok ? GOOD : BAD, pad: 12, max: 560 });
+    // 1 másodperc: ennyi kép
+    al(qa); TN('egy másodperc 6 felirat', [fmt(fps)], 730, 650, { s: 24, w: 700, f: F.B, c: INK, b: 'middle' });
+    const X0 = 730, X1 = 1310, yb = 690;
+    al(qa); rr(X0, yb, X1 - X0, 30, 6); c.fillStyle = 'rgba(10,111,134,.12)'; c.fill(); c.strokeStyle = TEAL; c.lineWidth = 2; c.stroke();
+    const n = Math.round(fps), cur = Math.floor(((st % 1) + 1) % 1 * fps);
+    for (let k = 0; k < n; k++) { const x = X0 + (k + .5) / n * (X1 - X0); al(qa); ln(x, yb + 4, x, yb + 26, k === cur ? RED : TEAL, k === cur ? 5 : Math.max(1.5, Math.min(4, 60 / n))); }
+    al(qa); PN('film felirat', [fmt(num('film képkockái'))], 730, 776, { k: ['film felirat', 'film képkockái'], s: 26, w: 700, f: F.B, c: INK, bg: CARD, bd: LINE, pad: 12 });
+    myth('folyamatos tévhit felirat', 'folyamatos válasz felirat', 730, 860, u, 2, a, { a: 'left', s: 24, max: 580 });
+  }
+}
+
+/* ════════ 7. Videó: miért tömörítünk? ════════ */
+const S7 = { k: 3, t: -99 };
+const D7 = [{ x: 40, y: 640 }, { x: 380, y: 640 }, { x: 720, y: 640 }], DPX = 9;
+let DIFF = {};
+function reset7() { S7.k = 3; S7.t = -99; }
+function pair7(k) {
+  if (DIFF[k]) return DIFF[k];
+  const fps = num('film képkockái'), A = FR[frIdx(k / fps)], B = FR[frIdx((k + 1) / fps)];
+  let n = 0; const ch = [];
+  for (let j = 0; j < FH; j++) for (let i = 0; i < FW; i++) { const p = (j * FW + i) * 3; if (A.d[p] !== B.d[p] || A.d[p + 1] !== B.d[p + 1] || A.d[p + 2] !== B.d[p + 2]) { n++; ch.push(i + ',' + j); } }
+  const set = new Set(ch);
+  const D = O.map(B, (r, g, b, i, j) => (set.has(i + ',' + j) ? [200, 64, 28] : [Math.round(lerp(r, 247, .7)), Math.round(lerp(g, 241, .7)), Math.round(lerp(b, 230, .7))]));
+  return (DIFF[k] = { A, B, D, n });
+}
+function scene7(st, a) {
+  const fw = num('Full HD szélessége'), fh = num('Full HD magassága'), bpp = num('egy pixel mérete'), fps = num('film képkockái');
+  const fB = fw * fh * bpp, sB = fB * fps, mB = sB * 60, cdB = num('CD mintavételi gyakorisága') * num('CD bitmélysége') * num('CD csatornái') * 60 / 8;
+  const mb = num('tömörített videó'), cB = mb * 1e6 * 60 / 8, ratio = Math.round(sB * 8 / (mb * 1e6) / 10) * 10;
+  const sh = (t0) => a * smooth((st - t0) / .5);
+  // egy halom kocka
+  for (let k = 23; k >= 0; k--) { const q = sh(.2 + (23 - k) * .03); if (q < .01) continue; DigPixel.view(L, FR[frIdx(k / fps)], { x: 1040 + k * 6, y: 96 + (23 - k) * 5, w: 128, h: 96, lines: 0, frame: true, a: q }); }
+  al(sh(.3)); PN('egy kocka felirat', [fmt(fw), fmt(fh), fmt(bpp), DigBit.size(fB).s], 40, 110, { k: ['egy kocka felirat', 'Full HD szélessége', 'Full HD magassága', 'egy pixel mérete'], s: 26, w: 700, f: F.B, c: INK, bg: CARD, bd: LINE, pad: 12, max: 960 });
+  al(sh(1)); PN('másodperc felirat', [fmt(fps), DigBit.size(sB).s], 40, 176, { k: ['másodperc felirat', 'film képkockái'], s: 26, w: 700, f: F.B, c: INK, bg: CARD, bd: LINE, pad: 12, max: 960 });
+  al(sh(1.7)); PN('perc felirat', [DigBit.size(mB).s], 40, 242, { s: 28, w: 700, f: F.B, c: '#ffffff', bg: RED, pad: 12, max: 960 });
+  al(sh(2.4)); PN('videó hang felirat', [DigBit.size(cdB).s], 40, 308, { k: ['videó hang felirat', 'CD mintavételi gyakorisága', 'CD bitmélysége', 'CD csatornái'], s: 24, w: 600, f: F.B, c: MUT, bg: CARD, bd: LINE, pad: 11, max: 960 });
+  // tömörítetlen vs tömörített
+  const W = 1240, q3 = sh(3);
+  al(q3); TN('tömörítetlen sáv felirat', [DigBit.size(mB).s], 40, 390, { s: 24, w: 700, f: F.B, c: RED });
+  al(q3); rr(40, 404, W, 36, 8); c.fillStyle = RED; c.fill();
+  const q4 = sh(3.6);
+  al(q4); TN('tömörített videó sáv felirat', [fmt(mb), DigBit.size(cB).s], 40, 484, { k: ['tömörített videó sáv felirat', 'tömörített videó'], s: 24, w: 700, f: F.B, c: OKR });
+  al(q4); rr(40, 498, W, 36, 8); c.fillStyle = 'rgba(28,36,64,.06)'; c.fill(); rr(40, 498, Math.max(6, W * cB / mB), 36, 8); c.fillStyle = OKR; c.fill();
+  al(sh(4.2)); PN('kisebb felirat', [fmt(ratio)], 1320, 470, { k: ['kisebb felirat', 'tömörített videó'], s: 26, w: 700, f: F.B, c: '#ffffff', bg: OKR, pad: 12, a: 'right' });
+  // két egymás utáni kocka: alig változik
+  const P = pair7(S7.k), q5 = sh(4.6), qk = smooth((st - S7.t) / .4);
+  al(q5); TN('kocka a felirat', [fmt(S7.k + 1)], D7[0].x, D7[0].y - 18, { s: 24, w: 700, f: F.B, c: INK });
+  al(q5); TN('kocka b felirat', [fmt(S7.k + 2)], D7[1].x, D7[1].y - 18, { s: 24, w: 700, f: F.B, c: INK });
+  al(q5); T('változás cím felirat', D7[2].x, D7[2].y - 18, { s: 24, w: 700, f: F.B, c: RED });
+  [P.A, P.B, P.D].forEach((im, i) => DigPixel.view(L, im, { x: D7[i].x, y: D7[i].y, px: DPX, lines: i === 2 ? .25 : 0, frame: true, a: q5 * (.4 + .6 * qk) }));
+  al(q5); L.tx('→', D7[0].x + FW * DPX + 26, D7[0].y + FH * DPX / 2, { s: 30, w: 700, f: F.B, c: MUT, a: 'center', b: 'middle' });
+  al(q5); PN('változás felirat', [fmt(P.n), fmt(FW * FH)], D7[2].x, D7[2].y + FH * DPX + 40, { s: 24, w: 700, f: F.B, c: RED, bg: CARD, bd: RED, pad: 11 });
+  myth('tömörítés tévhit felirat', 'tömörítés válasz felirat', 40, 914, st, 4.4, a, { a: 'left', s: 24, max: 640 });
+}
+
+/* ════════ 8. Összefoglalás ════════ */
+function scene8(st, a) {
+  al(a); T('összefoglaló cím felirat', 40, 92, { s: 44, w: 600, f: F.D, c: INK });
+  const cdfs = num('CD mintavételi gyakorisága'), cdb = num('CD bitmélysége'), cdch = num('CD csatornái');
+  const rows = [['összegzés rezgés felirat', []], ['összegzés mintavétel felirat', []], ['összegzés bitmélység felirat', [fmt(levels(cdb))]],
+    ['összegzés cd felirat', [fmt(cdfs), fmt(cdb), fmt(cdch), fmt(cdfs * cdb * cdch / 1000, 1)]], ['összegzés kocka felirat', [fmt(num('film képkockái'))]], ['összegzés tömörítés felirat', []]];
+  const KK = [[], [], ['CD bitmélysége'], ['CD mintavételi gyakorisága', 'CD bitmélysége', 'CD csatornái'], ['film képkockái'], []];
+  rows.forEach(([k, v], i) => {
+    const y = 132 + i * 146, q = a * smooth((st - .2 - i * .35) / .5), x = 52;
+    if (q <= .005) return;
+    card(x - 12, y - 10, 120, 116, q, CARD, LINE, 2, 12);
+    const bx = { x, y: y + 4, w: 96, h: 88 }, X = (t) => bx.x + t * bx.w, Y = (v2) => bx.y + bx.h / 2 - v2 * 34;
+    al(q); c.lineJoin = 'round';
+    if (i === 0) { c.beginPath(); for (let m = 0; m <= 60; m++) { const t = m / 60; const yy = Y(.9 * tone(1.6, t)); m ? c.lineTo(X(t), yy) : c.moveTo(X(t), yy); } c.strokeStyle = INK; c.lineWidth = 3; c.stroke(); }
+    if (i === 1) { c.beginPath(); for (let m = 0; m <= 60; m++) { const t = m / 60; const yy = Y(.9 * tone(1.6, t)); m ? c.lineTo(X(t), yy) : c.moveTo(X(t), yy); } c.strokeStyle = 'rgba(28,36,64,.4)'; c.lineWidth = 2; c.stroke();
+      for (let m = 0; m <= 8; m++) { const t = m / 8; al(q); ln(X(t), Y(0), X(t), Y(.9 * tone(1.6, t)), RED, 2); al(q); dot(X(t), Y(.9 * tone(1.6, t)), 4, RED); } }
+    if (i === 2) { c.beginPath(); for (let m = 0; m < 8; m++) { const t = m / 8, v2 = quant(.9 * tone(1.6, t), 2); m ? c.lineTo(X(t), Y(v2)) : c.moveTo(X(t), Y(v2)); c.lineTo(X(t + 1 / 8), Y(v2)); } c.strokeStyle = RED; c.lineWidth = 3; c.stroke(); }
+    if (i === 3) cd(bx.x + 48, bx.y + 44, 42, q);
+    if (i === 4) for (let m = 0; m < 3; m++) DigPixel.view(L, FR[frIdx(m * .2)], { x: bx.x - 4 + m * 34, y: bx.y + 20 + m * 6, w: 40, h: 30, lines: 0, frame: true, a: q });
+    if (i === 5) { al(q); rr(bx.x, bx.y + 22, 96, 18, 4); c.fillStyle = RED; c.fill(); al(q); rr(bx.x, bx.y + 54, 10, 18, 4); c.fillStyle = OKR; c.fill(); }
+    c.lineJoin = 'miter';
+    al(q); PN(k, v, 200, y + 48, { k: [k].concat(KK[i]), s: 28, w: 700, f: F.B, c: INK, bg: CARD, bd: i === 1 ? RED : LINE, bw: i === 1 ? 2.5 : 2, pad: 12, max: 1120 });
+  });
+}
+
+/* ════════ a lecke ════════ */
+const SCENES = [scene1, scene2, scene3, scene4, scene5, scene6, scene7, scene8];
+const SETTLE = [5, 5.5, 2, 2, 3.5, 2, 6.5, 3];
+L = Lesson.create({
+  content: window.LESSON_CONTENT, home: false, resetCtx: true,
+  steps: [
+    { settle: SETTLE[0],
+      controls(L) {
+        L.slider({ label: lab('hang csúszka'), k: 'hang csúszka', min: 1, max: notes().length, step: 1, value: notes().length, format: (v) => fillIn('hang sorszám felirat', [fmt(v)]),
+          onInput: (v) => { S1.note = v - 1; S1.play = -99; } });
+        L.button(lab('meghallgatom gomb'), () => { S1.play = L.st; S1.note = null; play({ fs: 0, bits: 0 }); }, 'meghallgatom gomb');
+      },
+      enter() { reset1(); }, leave() { stopSound(); } },
+    { settle: SETTLE[1],
+      controls(L) {
+        L.slider({ label: lab('mintavétel csúszka'), k: 'mintavétel csúszka', min: 0, max: RATES().length - 1, step: 1, value: 1, format: (v) => khz(RATES()[v]) + ' kHz',
+          onInput: (v) => { S2.ri = v; S2.t = L.st; S2.sw = .8; } });
+        L.button(lab('meghallgatom gomb'), () => { S2.play = L.st; play({ fs: RATES()[S2.ri], bits: num('CD bitmélysége') }); }, 'meghallgatom gomb');
+      },
+      enter(L) { reset2(); if (L.sliders['mintavétel csúszka']) L.sliders['mintavétel csúszka'].set(S2.ri); }, leave() { stopSound(); } },
+    { settle: SETTLE[2],
+      controls() { tipControls(P3); },
+      enter() { reset3(); veilIf(P3); } },
+    { settle: SETTLE[3],
+      controls(L) {
+        L.slider({ label: lab('bitmélység csúszka'), k: 'bitmélység csúszka', min: 0, max: BITS().length - 1, step: 1, value: 0, format: (v) => fmt(BITS()[v]) + ' bit', onInput: (v) => pick4(v) });
+        L.button(lab('meghallgatom gomb'), () => { S4.play = L.st; play({ fs: num('CD mintavételi gyakorisága'), bits: BITS()[S4.bi] }); }, 'meghallgatom gomb');
+      },
+      enter(L) { reset4(); if (L.sliders['bitmélység csúszka']) L.sliders['bitmélység csúszka'].set(S4.bi); }, leave() { stopSound(); } },
+    { settle: SETTLE[4],
+      controls(L) {
+        reset5();
+        L.slider({ label: lab('mintavétel 5 csúszka'), k: 'mintavétel 5 csúszka', min: 0, max: RATES().length - 1, step: 1, value: S5.ri, format: (v) => khz(RATES()[v]) + ' kHz', onInput: (v) => { S5.ri = v; } });
+        L.slider({ label: lab('bitmélység 5 csúszka'), k: 'bitmélység 5 csúszka', min: 0, max: BITS().length - 1, step: 1, value: S5.bi, format: (v) => fmt(BITS()[v]) + ' bit', onInput: (v) => { S5.bi = v; } });
+        L.slider({ label: lab('csatorna csúszka'), k: 'csatorna csúszka', min: 1, max: num('CD csatornái'), step: 1, value: S5.ch, format: (v) => fmt(v), onInput: (v) => { S5.ch = v; } });
+        L.slider({ label: lab('hossz csúszka'), k: 'hossz csúszka', min: 1, max: 10, step: 1, value: S5.min, format: (v) => fmt(v), onInput: (v) => { S5.min = v; } });
+      },
+      enter(L) { reset5(); [['mintavétel 5 csúszka', S5.ri], ['bitmélység 5 csúszka', S5.bi], ['csatorna csúszka', S5.ch], ['hossz csúszka', S5.min]].forEach(([k, v]) => { if (L.sliders[k]) L.sliders[k].set(v); }); } },
+    { settle: SETTLE[5],
+      controls(L) {
+        tipControls(P6);
+        S6.sl = L.slider({ label: lab('kocka csúszka'), k: 'kocka csúszka', min: 2, max: 60, step: 1, value: num('film képkockái'), format: (v) => fmt(v), onInput: (v) => { S6.fps = v; } });
+        S6.sl.input.disabled = !P6.guess;
+        P6.on = () => { S6.sl.input.disabled = false; };
+      },
+      enter() { reset6(); veilIf(P6); if (S6.sl) { S6.sl.input.disabled = true; S6.sl.set(num('film képkockái')); } } },
+    { settle: SETTLE[6],
+      controls(L) { L.button(lab('következő gomb'), () => { S7.k = (S7.k + 1) % 46; S7.t = L.st; }, 'következő gomb'); },
+      enter() { reset7(); } },
+    { settle: SETTLE[7] },
+  ],
+  init(Lx) {
+    L = Lx;
+    let m = 0; for (let k = 0; k < 4000; k++) { let s = 0; for (let h = 0; h < HARM.length; h++) s += HARM[h] * Math.sin(TAU * (h + 1) * k / 4000); m = Math.max(m, Math.abs(s)); }
+    HN = m;
+    PL1 = BioPlot.create(L, { x: SC1.x, y: SC1.y, w: SC1.w, h: SC1.h, xa: { min: 0, max: WIN1, ticks: 10, name: { s: lab('idő tengely'), k: 'idő tengely' } }, ya: { min: -1.15, max: 1.15, labels: false, ticks: [-1, 0, 1], name: { s: lab('jel tengely'), k: 'jel tengely' } } });
+    PL2T = BioPlot.create(L, { x: P2T.x, y: P2T.y, w: P2T.w, h: P2T.h, xa: { min: 0, max: WIN, ticks: [0, 1, 2, 3, 4, 5] }, ya: { min: -1.15, max: 1.15, labels: false, ticks: [-1, 0, 1] } });
+    PL2B = BioPlot.create(L, { x: P2B.x, y: P2B.y, w: P2B.w, h: P2B.h, xa: { min: 0, max: WIN, ticks: [0, 1, 2, 3, 4, 5], name: { s: lab('idő tengely'), k: 'idő tengely' } }, ya: { min: -1.15, max: 1.15, labels: false, ticks: [-1, 0, 1] } });
+    PL4 = BioPlot.create(L, { x: P4.x, y: P4.y, w: P4.w, h: P4.h, xa: { min: 0, max: WIN, ticks: [0, 1, 2, 3, 4, 5], name: { s: lab('idő tengely'), k: 'idő tengely' } }, ya: { min: -1.15, max: 1.15, labels: false, ticks: [] } });
+    const s0 = samples(num('CD mintavételi gyakorisága'), 16); HI4 = 0; s0.forEach((s, k) => { if (k < s0.length / 2 && s.v > s0[HI4].v) HI4 = k; });
+    FR = []; for (let k = 0; k < FHZ * FCYC; k++) FR.push(makeFrame(k / FHZ));
+    DIFF = {};
+    reset1(); reset2(); reset3(); reset4(); reset5(); reset6(); reset7();
+    L.checks = () => {
+      const fs = num('CD mintavételi gyakorisága'), b = num('CD bitmélysége'), ch = num('CD csatornái'), fmax = num('legmagasabb hallható hang');
+      const fw = num('Full HD szélessége'), fh = num('Full HD magassága'), bpp = num('egy pixel mérete'), fps = num('film képkockái');
+      const r20 = []; for (let k = 0; k < 6; k++) r20.push(Math.sin(TAU * fmax * k / fmax + .7));
+      const tipOk = Number(lab('44100 tipp').replace(/\D/g, '')) === fs, P = pair7(3), ratio = fw * fh * bpp * fps * 8 / (num('tömörített videó') * 1e6);
+      return [
+        { name: 'CD: 44 100 · 16 · 2 = 1 411 200 bit/s', ok: fs * b * ch === 1411200, got: fs * b * ch, want: 1411200 },
+        { name: 'CD 1 perc ≈ 10,6 MB', ok: DigBit.size(fs * b * ch * 60 / 8).s === '10,6 MB', got: DigBit.size(fs * b * ch * 60 / 8).s, want: '10,6 MB' },
+        { name: 'tömörített zene 1 perc = 960 kB', ok: DigBit.size(num('tömörített zene') * 1000 * 60 / 8).s === '960 kB', got: DigBit.size(num('tömörített zene') * 1000 * 60 / 8).s, want: '960 kB' },
+        { name: '2^16 = 65 536 szint', ok: levels(b) === 65536, got: levels(b), want: 65536 },
+        { name: 'Nyquist: 2 · 20 000 < 44 100', ok: 2 * fmax < fs, got: 2 * fmax, want: '< ' + fs },
+        { name: 'rezgésenként 1 minta: minden pötty egy magasságban', ok: r20.every((v) => Math.abs(v - r20[0]) < 1e-6), got: r20[5], want: r20[0] },
+        { name: 'a helyes tipp = a CD adata', ok: tipOk, got: lab('44100 tipp'), want: fs },
+        { name: 'Full HD kocka = 6,2 MB', ok: DigBit.size(fw * fh * bpp).s === '6,2 MB', got: DigBit.size(fw * fh * bpp).s, want: '6,2 MB' },
+        { name: '24 kocka/s → 149,3 MB/s', ok: DigBit.size(fw * fh * bpp * fps).s === '149 MB' || DigBit.size(fw * fh * bpp * fps).s === '149,3 MB', got: DigBit.size(fw * fh * bpp * fps).s, want: '149 MB' },
+        { name: '1 perc videó ≈ 9 GB', ok: Math.abs(fw * fh * bpp * fps * 60 / 1e9 - 8.958) < .01, got: fw * fh * bpp * fps * 60 / 1e9, want: 8.958 },
+        { name: 'tömörítés kb. 150×', ok: Math.abs(ratio - 149.3) < .1, got: ratio, want: 149.3 },
+        { name: 'kevés pixel változik két kocka közt (< 10 %)', ok: P.n > 0 && P.n < FW * FH * .1, got: P.n, want: '< ' + FW * FH * .1 },
+        { name: 'a dallam 8 hang, minden hangnak van ereje', ok: notes().length === VOLS.length, got: notes().length, want: VOLS.length },
+        { name: '12 kocka = 1 pattanás 12 kocka/s mellett', ok: frIdx(NSTR / NSTR) === frIdx(0) + FHZ, got: frIdx(1), want: FHZ },
+      ];
+    };
+  },
+  draw(L) {
+    c = L.ctx; background();
+    for (let i = 0; i < SCENES.length; i++) {
+      const w = clamp(1 - Math.abs(L.sp - i) * 2); if (w <= .001) continue;
+      const st = i === L.step ? L.st : SETTLE[i] + 1;
+      GA = 1; SCENES[i](st, w, i === L.step); c.globalAlpha = 1; GA = 1;
+    }
+  },
+});
+/* QA-állapotok (1-alapú lépésszám); a hangot egyik sem indítja (csak a ▶-jelzés rajzát) */
+const guessQA = (P, k, back = 30) => (L2) => { P.guess = null; tipGuess(P, k, L2.st - back); };
+const sl = (k, v) => (L2) => { L2.sliders[k].set(v, { fire: true }); };
+window.__qaStates = {
+  1: [{ name: 'harmadik-hang', set: sl('hang csúszka', 3) }, { name: 'első-hang', set: sl('hang csúszka', 1) },
+    { name: 'szól', set: (L2) => { S1.play = L2.st - 1.5; S1.note = null; } }],
+  2: [{ name: 'két-kHz', set: (L2) => { sl('mintavétel csúszka', 0)(L2); S2.t = L2.st - 5; } }, { name: 'nyolc-kHz', set: (L2) => { sl('mintavétel csúszka', 2)(L2); S2.t = L2.st - 5; } },
+    { name: 'cd-minőség', set: (L2) => { sl('mintavétel csúszka', 4)(L2); S2.t = L2.st - 5; } },
+    { name: 'szól', set: (L2) => { S2.play = L2.st - 1; } }],
+  3: [{ name: 'tipp-jó', set: guessQA(P3, '44100 tipp') }, { name: 'tipp-rossz', set: guessQA(P3, '44 tipp') },
+    { name: 'közben', set: guessQA(P3, '4410 tipp', 2) }],
+  4: [{ name: 'négy-bit', set: (L2) => { sl('bitmélység csúszka', 1)(L2); S4.t = L2.st - 5; } }, { name: 'nyolc-bit', set: (L2) => { sl('bitmélység csúszka', 2)(L2); S4.t = L2.st - 5; } },
+    { name: 'tizenhat-bit', set: (L2) => { sl('bitmélység csúszka', 3)(L2); S4.t = L2.st - 5; } }, { name: 'kerekít-közben', set: (L2) => { sl('bitmélység csúszka', 1)(L2); S4.t = L2.st - .6; } },
+    { name: 'szól', set: (L2) => { S4.play = L2.st - 1; } }],
+  5: [{ name: 'legkisebb', set: (L2) => { sl('mintavétel 5 csúszka', 0)(L2); sl('bitmélység 5 csúszka', 0)(L2); sl('csatorna csúszka', 1)(L2); } },
+    { name: 'tíz-perc', set: sl('hossz csúszka', 10) }, { name: 'mono-8bit', set: (L2) => { sl('bitmélység 5 csúszka', 2)(L2); sl('csatorna csúszka', 1)(L2); } }],
+  6: [{ name: 'tipp-jó', set: guessQA(P6, '12 tipp') }, { name: 'tipp-rossz', set: guessQA(P6, '3 tipp') },
+    { name: 'repül', set: guessQA(P6, '100 tipp', .7) }, { name: 'három-kocka', set: (L2) => { guessQA(P6, '12 tipp')(L2); sl('kocka csúszka', 3)(L2); } },
+    { name: 'hatvan-kocka', set: (L2) => { guessQA(P6, '12 tipp')(L2); sl('kocka csúszka', 60)(L2); } }],
+  7: [{ name: 'következő-pár', set: (L2) => { S7.k = 9; S7.t = L2.st - 3; } }],
+};
+
+})();
+</script>
+</body>
+</html>
