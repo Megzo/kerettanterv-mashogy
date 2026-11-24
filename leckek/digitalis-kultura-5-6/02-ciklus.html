@@ -1413,9 +1413,12 @@ const DigBlock = (() => {
   return { bind, BLOCKS, CAT, def, prog, clone, equal, count, find, walk, spec, run, trace, editor, clock, controls, watch, text, flow, fmt, sfx };
 })();
 /* ── MODUL VÉGE: Blokkprogram ── */
-/* ── MODUL: Robot (DigRobot) · forrás: digitalis-kultura-5-6/02-ciklus, 2026-11-24 · v1.0 ── */
+/* ── MODUL: Robot (DigRobot) · forrás: digitalis-kultura-5-6/02-ciklus, 2026-11-24 · v1.1: 07-szenzor, 2026-11-24 ── */
 /* Felülnézeti asztal- és rácsrobot a DigBlock világaként (terv 4.2, szerződés 19.): tollal rajzol, falnak ütközik.
-   Csak a Lesson motorra épül (L.ctx, L.tx, Lesson.U); a DigBlocktól független (de a világa annak az adapterét adja).
+   v1.1 (07-szenzor): szenzorok (ultrahang, fény, szín, érintés), padlóvonal, mérési zaj, folyamatos motorvezérlés,
+   visszhang- és érzékelési rajz. Visszafelé kompatibilis: a v1.0 hívások és képek változatlanok.
+   Csak a Lesson motorra épül (L.ctx, L.tx, Lesson.U); a DigBlocktól független (de a világa annak az adapterét adja;
+   a motor nyomvonala a DigBlock.trace-t használja, ha van – különben saját, azonos alakú nyomvonalat ad).
    BEKÖTÉS: DigRobot.bind({ L: () => L, ga: () => GA });   ALFA: a globalAlpha-t ga() · a értékre ÁLLÍTJA.
    Rajz: kör test (papír, tinta körvonal), két kerék oldalt, elöl kékeszöld irányjelző ék, elöl ütköző-ív, középen a
    toll. NINCS arc, szem, mosoly. Ütközés: az ütköző-ív és rövid sugarak cinóberben felvillannak (.6 mp) – semmi nem törik.
@@ -1449,6 +1452,63 @@ const DigBlock = (() => {
    DigRobot.visited(R, t) → Map('cx,cy' → szám)   rács: a bejárt cellák
    DigRobot.robot(L, X, Y, rPx, dirDeg, o)        csak a robot rajza (bárhová, pl. jelmagyarázatba): o = {a, pen, col, flash}
    DigRobot.COLS → a tollszínek
+
+   ── v1.1 (07-szenzor) – csak hozzáad ──
+   W = DigRobot.world({…, robot: {…, sensors: [
+          {id: 'távolság', type: 'ultrahang', dx: 0, dy: r (cm: jobbra / előre a robot középpontjától), ang: 0 (fok),
+           range: [2, 400] (cm), cone: 15 (a mérési kúp teljes szöge, fok), inc: 10 (legfeljebb ekkora beesési szögnél
+           ér vissza a visszhang, fok – modell), rays: 9 (sugarak a kúpban), every: 0 (mérési ciklus, mp – a motorban a
+           két mérés között a régi érték marad), none: range[1] (ezt adja, ha nincs érvényes visszhang), noise},
+          {id: 'fény', type: 'fény', dx, dy, spot: 1 (a mérőfolt sugara, cm), off: 0 (az asztalon kívül)},
+          {id: 'szín', type: 'szín', dx, dy} (a folt közepén álló padlóelem neve),
+          {id: 'ütköző', type: 'érintés', reach: .3 (cm)}]},
+        floor: [{path: [[x, y]…], w: 2 (cm), col: '#1c2440', val: 10, name: 'fekete'} | {poly: [[x, y]…], col, val, name}],
+        floorBase: {val: 90, name: 'fehér', col: (asztallap)}   (a padló alapja – modell: fehér 90, fekete 10),
+        noise: {seed: 1, amp: 0}   (± mérési zaj minden szenzorra, a szenzor saját egységében; a szenzor noise-a
+                                    felülírja; seedelt: a motorban a mérés idejéből, a DigBlock.run-ban a helyzetből)
+        walls: [[x1, y1, x2, y2, 'puha'], …]  (5. elem: 'puha' – függöny: elnyeli az ultrahangot; a ferde falat a
+                                    geometria adja: ferde beesésnél a visszhang elkerüli a szenzort)
+        obstacles: [{…, kind: 'puha'}]})
+   W.sense(s, id) → a szenzor értéke: ultrahang → cm (zajjal; nincs visszhang / túl közel / túl messze → `none`,
+      alapból a mérési tartomány teteje: 400 – így a DigBlock-összehasonlítás nem ad típushibát) · fény → 0..100 ·
+      szín → név · érintés → logikai. Más név: v1.0 szerint (ütközik, ütköző, x, y, irány, rácsban fal elöl/jobbra/balra).
+   W.measure(s, id, key) → részletek: ultrahang {v, d (cm | null), ok, why: 'ok' | 'ferde' | 'puha' | 'messze' |
+      'közel', hit: {x, y, t, nx, ny, kind} (a visszhangot adó pont), axis (a tengely menti első felület), pose} ·
+      fény {v, cover (0..1: a folt mekkora része sötét elem)} · szín {v} · érintés {v}; key: a zaj kulcsa (alap: s.t,
+      ennek híján a helyzet)
+   W.sensor(id) → a szenzor leírása (alapértékekkel) | null · W.pose(s, id) → {x, y, dir} a szenzor helye ·
+   W.ray(x, y, ux, uy, max) → {t, x, y, nx, ny, kind} az első felület egy sugár mentén (fal, akadály, asztalszél) | null ·
+   W.floorAt(x, y) → {val, name} · W.senseAll(s) → {id: érték}
+   DigRobot.motor(W, s0, ctl, o) → R   folyamatos vezérlés rögzített ütemben (nem a képkockából): o = {T: 20 (mp),
+      dt: .02, base: W.speed.v (cm/s, teljes kerékseb.), track: 2·r (keréktáv, cm), lag: 0 (a kerekek késése /
+      fékút, mp – modell), turnW: W.speed.w (fok/s, a pontos fordulásé)}. Minden ütemben: mérés (a szenzor
+      every-je szerint) → ctl(s, sense, t) → {bal, jobb (−1..1), id, op, mk, set: {pen, col}} vagy egy pontos
+      mozdulat {move: lépés (· W.step cm) | turn: fok (+ jobbra) | wait: mp} (előtte megáll: fék a lag-gal, utána
+      pontosan, lag nélkül) vagy {end: 'kész' | 'állj' | 'hiba', err}. Ütközésnél a robot a falnál megáll (s.bump).
+      R: a DigBlock.run nyomvonalával azonos (frames, at, doneAt, next, prev, until, count, varsAt, T, end, s0);
+      end: 'idő' (elérte a T-t), 'kész', 'állj', 'hiba'. A frame-ek s-e: {x, y, dir, t, vl, vr, bump, m: {id: a program
+      által abban az ütemben látott érték}}; f.motor = true. Ha a ctl-nek van reset()-je, a futás elején hívódik;
+      ctl.hist (változók: {név: [{t, v}]}) → R.varsAt.
+   DigRobot.fromProg(P, o) → ctl   DigBlock-program a motorhoz: minden ciklus-kör egy ütem; a feltételek a mért
+      értékekből; folyamatos blokkok: menj (előre|hátra), forogj (jobbra|balra; o.turn: .5 kerékseb.), motorok (bal %,
+      jobb %), megállj; pontos mozdulatok: lépj, lépj egyet, fordulj, fordulj jobbra/balra, várj; tollat le/fel,
+      tollszín; ha, ha-különben, ismételd, amíg, mindig, legyen, növeld, állj. o = {blocks: DigBlock.BLOCKS, lab, loops:
+      false (a „#. kör” jelzés), turn: .5, vars, seed}. A frame id-je az utoljára végrehajtott mozgásblokk (a
+      szerkesztő ezt keretezi), mk.tests az IGAZ / HAMIS.
+   DigRobot.defBlocks(DigBlock)   a folyamatos blokkok regisztrálása (mozgás kategória): 'menj', 'forogj', 'motorok',
+      'megállj' – feliratuk '<op> blokk' a .md-ből (+ 'előre opció', 'hátra opció', 'jobbra opció', 'balra opció').
+      Csak a DigRobot.motor futtatja őket (a DigBlock.run-ban 'ismeretlen' hiba).
+   DigRobot.echo(L, W, V, s, u, o) → {d, ms, ok, why, l, D, back}   ultrahang-impulzus: u 0..1 az oda-vissza út;
+      kifutó ívek a szenzorból, a felületen tükörkép-középpontú visszavert ívek (ferde falnál elkerülik a szenzort,
+      puhánál halványak). o = {id, a, c: hangsebesség m/s (a .md-ből) → ms: az oda-vissza idő, gap: 4 (cm), n: 3,
+      clip: true (a nézet dobozára vágva)}.
+   DigRobot.rays(L, W, V, s, o)    a szenzorok érzékelési tartománya halványan (kúp a felületig, a visszhang pontja,
+      fényfolt); o = {a, ids, hit: true, clip: true}
+   DigRobot.draw(…, {… sensors: true (a szenzorok a roboton), rays: false, dim: 1 (a világ – asztal, padló, falak –
+      alfa-szorzója: „a robot szemével”), ping: 0..1 (az ultrahangos szenzor kiemelése)})
+   DigRobot.robot(…, o: {… sensors: [..], cm: px/cm, ping, lit: {id: 0..1}})   ultrahangos szenzornál a kékeszöld,
+      rácsos szenzorlap jelzi az elejét (az ék helyett); fényérzékelő: kis négyzet halvány fényfolttal.
+   DigRobot.bumpAt(R, t): a motor nyomvonalán is (az érintkezés kezdete).
    ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
 const DigRobot = (() => {
   'use strict';
@@ -1484,6 +1544,18 @@ const DigRobot = (() => {
     const t = -b - Math.sqrt(disc); return t >= 0 ? t : Infinity;
   }
   const EDGE = { É: [0, 0, 1, 0], D: [0, 1, 1, 1], Ny: [0, 0, 0, 1], K: [1, 0, 1, 1] };
+  /* v1.1: szenzor-alapértékek, felületfajta, seedelt zaj */
+  const SDEF = {
+    ultrahang: { range: [2, 400], cone: 15, inc: 10, rays: 9, every: 0 },
+    fény: { spot: 1, off: 0, every: 0 }, szín: { every: 0 }, érintés: { reach: .3, every: 0 },
+  };
+  const kindOf = (k) => (k && typeof k === 'object' ? k.kind : k) || 'fal';
+  const strHash = (str) => { let h = 2166136261; for (const ch of String(str)) { h ^= ch.codePointAt(0); h = Math.imul(h, 16777619); } return h >>> 0; };
+  function hash01(a, b, c) {
+    let h = Math.imul(a | 0, 374761393) ^ Math.imul(b | 0, 668265263) ^ Math.imul(c | 0, 1274126177);
+    h = Math.imul(h ^ (h >>> 13), 1274126177); h ^= h >>> 16; h = Math.imul(h ^ (h >>> 15), 2246822519); h ^= h >>> 13;
+    return (h >>> 0) / 4294967296;
+  }
   function world(o = {}) {
     const mode = o.mode === 'rács' ? 'rács' : 'asztal', grid = mode === 'rács';
     const W = {
@@ -1550,6 +1622,7 @@ const DigRobot = (() => {
       return null;
     };
     W.sense = (s, name) => {
+      if (SENS[name]) return W.measure(s, name).v;
       if (name === 'ütközik' || name === 'ütköző') return !!s.bump;
       if (name === 'x') return s.x; if (name === 'y') return s.y; if (name === 'irány') return ((s.dir % 360) + 360) % 360;
       if (grid && (name === 'fal elöl' || name === 'fal jobbra' || name === 'fal balra')) {
@@ -1563,6 +1636,89 @@ const DigRobot = (() => {
       const m = clamp(u / (s1.mu || 1));
       return Object.assign({}, s1, { x: lerp(s0.x, s1.x, m), y: lerp(s0.y, s1.y, m), dir: lerp(s0.dir, s1.dir, m), pen: s0.pen, col: s0.col, bump: s1.bump && m >= 1 });
     };
+    /* ── v1.1: szenzorok, padló, zaj ── */
+    W.floor = (o.floor || []).slice(); W.floorBase = Object.assign({ val: 90, name: 'fehér' }, o.floorBase || {});
+    W.noise = Object.assign({ seed: 1, amp: 0 }, o.noise || {});
+    const SENS = {};
+    (W.robot.sensors || []).forEach((q) => { SENS[q.id] = Object.assign({}, SDEF[q.type] || {}, { dx: 0, dy: q.type === 'ultrahang' ? W.robot.r : 0, ang: 0 }, q); });
+    W.sensors = (W.robot.sensors || []).map((q) => SENS[q.id]);
+    W.sensor = (id) => SENS[id] || null;
+    const SK = [];                      // felületek a sugárkövetéshez: [x1, y1, x2, y2, kind]
+    if (!grid) {
+      W.walls.forEach((w) => SK.push([w[0], w[1], w[2], w[3], kindOf(w[4])]));
+      W.obstacles.forEach((b) => { const k = kindOf(b.kind); if (b.r == null) SK.push([b.x, b.y, b.x + b.w, b.y, k], [b.x + b.w, b.y, b.x + b.w, b.y + b.h, k], [b.x + b.w, b.y + b.h, b.x, b.y + b.h, k], [b.x, b.y + b.h, b.x, b.y, k]); });
+      if (W.edges) { const [w, h] = W.size; SK.push([0, 0, w, 0, 'fal'], [w, 0, w, h, 'fal'], [w, h, 0, h, 'fal'], [0, h, 0, 0, 'fal']); }
+    }
+    W.ray = (px, py, ux, uy, max = Infinity) => {
+      let best = null;
+      for (const g of SK) {
+        const ex = g[2] - g[0], ey = g[3] - g[1], den = ux * ey - uy * ex; if (Math.abs(den) < 1e-12) continue;
+        const qx = g[0] - px, qy = g[1] - py, t = (qx * ey - qy * ex) / den, v = (qx * uy - qy * ux) / den;
+        if (t > 1e-6 && t <= max && v >= -1e-9 && v <= 1 + 1e-9 && (!best || t < best.t)) {
+          const len = Math.hypot(ex, ey); let nx = -ey / len, ny = ex / len; if (nx * ux + ny * uy > 0) { nx = -nx; ny = -ny; }
+          best = { t, x: px + ux * t, y: py + uy * t, nx, ny, kind: g[4] };
+        }
+      }
+      for (const b of W.obstacles) {
+        if (b.r == null) continue;
+        const fx = px - b.x, fy = py - b.y, bb = fx * ux + fy * uy, cc = fx * fx + fy * fy - b.r * b.r, disc = bb * bb - cc;
+        if (disc < 0) continue; const t = -bb - Math.sqrt(disc);
+        if (t > 1e-6 && t <= max && (!best || t < best.t)) { const hx = px + ux * t, hy = py + uy * t; best = { t, x: hx, y: hy, nx: (hx - b.x) / b.r, ny: (hy - b.y) / b.r, kind: kindOf(b.kind) }; }
+      }
+      return best;
+    };
+    W.pose = (s, id) => {
+      const q = SENS[id] || { dx: 0, dy: 0, ang: 0 }, [fx, fy] = head(s.dir), [rx, ry] = head(s.dir + 90);
+      return { x: s.x + q.dx * rx + q.dy * fx, y: s.y + q.dx * ry + q.dy * fy, dir: s.dir + (q.ang || 0) };
+    };
+    const inPoly = (P, x, y) => { let r = false; for (let i = 0, j = P.length - 1; i < P.length; j = i++) { const [xi, yi] = P[i], [xj, yj] = P[j]; if ((yi > y) !== (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi) + xi) r = !r; } return r; };
+    const nearPath = (P, x, y, d) => { for (let i = 1; i < P.length; i++) { const [ax, ay] = P[i - 1], [bx, by] = P[i], ex = bx - ax, ey = by - ay, l2 = ex * ex + ey * ey, u = l2 ? clamp(((x - ax) * ex + (y - ay) * ey) / l2) : 0; if (Math.hypot(ax + ex * u - x, ay + ey * u - y) <= d) return true; } return false; };
+    W.floorAt = (x, y) => {
+      for (let i = W.floor.length - 1; i >= 0; i--) {
+        const f = W.floor[i];
+        if (f.poly ? inPoly(f.poly, x, y) : nearPath(f.path, x, y, (f.w || 2) / 2)) return { val: f.val == null ? 10 : f.val, name: f.name || 'fekete', f };
+      }
+      return { val: W.floorBase.val, name: W.floorBase.name, f: null };
+    };
+    const nz = (s, id, q, key) => {
+      const amp = q.noise != null ? q.noise : W.noise.amp; if (!amp) return 0;
+      const k = key != null ? key : s.t != null ? Math.round(s.t * 1000) : Math.round(s.x * 100) * 7 + Math.round(s.y * 100) * 131 + Math.round(s.dir * 10) * 17;
+      return amp * (2 * hash01(W.noise.seed, strHash(id), k) - 1);
+    };
+    W.measure = (s, id, key) => {
+      const q = SENS[id]; if (!q) return null;
+      const p = W.pose(s, id);
+      if (q.type === 'ultrahang') {
+        const N = Math.max(1, q.rays | 0), R1 = q.range[1];
+        let best = null, any = false, soft = true, axis = null;
+        for (let i = 0; i < N; i++) {
+          const an = p.dir + (N === 1 ? 0 : -q.cone / 2 + q.cone * i / (N - 1)), [ux, uy] = head(an), h = W.ray(p.x, p.y, ux, uy, R1);
+          if (i === (N - 1) >> 1) axis = h;
+          if (!h) continue;
+          any = true; if (h.kind === 'puha') continue; soft = false;
+          const inc = Math.acos(clamp(-(ux * h.nx + uy * h.ny), -1, 1)) / RAD;
+          if (inc <= q.inc + 1e-9 && (!best || h.t < best.t)) best = Object.assign({ an, inc }, h);
+        }
+        let ok = !!best, why = 'ok';
+        if (best && best.t < q.range[0]) { ok = false; why = 'közel'; }
+        else if (!best) why = !any ? 'messze' : soft ? 'puha' : 'ferde';
+        const none = q.none != null ? q.none : R1;
+        return { v: ok ? Math.max(0, best.t + nz(s, id, q, key)) : none, d: ok ? best.t : null, ok, why, hit: best, axis, pose: p };
+      }
+      if (q.type === 'fény') {
+        const r = q.spot, [w, h] = W.size; let sum = 0, n = 0, dark = 0;
+        for (let i = -2; i <= 2; i++) for (let j = -2; j <= 2; j++) {
+          if (i * i + j * j > 5) continue;
+          const x = p.x + i * r / 2, y = p.y + j * r / 2, off = x < 0 || y < 0 || x > w || y > h;
+          const v = off ? q.off : W.floorAt(x, y).val; sum += v; n++; if (v < W.floorBase.val - 1e-9) dark++;
+        }
+        return { v: clamp(sum / n + nz(s, id, q, key), 0, 100), cover: dark / n, pose: p };
+      }
+      if (q.type === 'szín') return { v: W.floorAt(p.x, p.y).name, pose: p };
+      if (q.type === 'érintés') return { v: !!s.bump || (!grid && W.free(s, q.reach).hit), pose: p };
+      return null;
+    };
+    W.senseAll = (s) => { const o2 = {}; for (const id in SENS) o2[id] = W.sense(s, id); return o2; };
     return W;
   }
 
@@ -1596,7 +1752,8 @@ const DigRobot = (() => {
     for (let i = R.frames.length - 1; i >= 0; i--) {
       const f = R.frames[i]; if (f.t0 > t) continue;
       if (t - f.t1 > 1) return -1;
-      if ((f.op === 'lépj' || f.op === 'lépj egyet') && f.s1 && f.s1.bump) { const tb = f.t0 + (f.t1 - f.t0) * (f.s1.mu || 1); if (t >= tb) return t - tb; }
+      if ((f.op === 'lépj' || f.op === 'lépj egyet') && f.s1 && f.s1.bump && !f.motor) { const tb = f.t0 + (f.t1 - f.t0) * (f.s1.mu || 1); if (t >= tb) return t - tb; }
+      if (f.motor && f.s1 && f.s1.bump && !(f.s0 && f.s0.bump) && t >= f.t1) return t - f.t1;     // v1.1: motor
     }
     return -1;
   }
@@ -1618,8 +1775,24 @@ const DigRobot = (() => {
     c.beginPath(); c.roundRect(rp - ww * .45, -wl / 2, ww, wl, ww * .35); c.fill();
     // test
     c.beginPath(); c.arc(0, 0, rp, 0, U.TAU); c.fillStyle = o.hl ? '#fbe9e1' : CARD; c.fill(); c.strokeStyle = INK; c.lineWidth = Math.max(2, rp * .07); c.stroke();
-    // irányjelző ék
-    c.beginPath(); c.moveTo(0, -rp * .8); c.lineTo(rp * .26, -rp * .38); c.lineTo(-rp * .26, -rp * .38); c.closePath(); c.fillStyle = TEAL; c.fill();
+    // irányjelző ék (v1.1: ultrahangos szenzornál a kékeszöld szenzorlap jelzi az elejét)
+    const SS = o.sensors || [], us = SS.find((q) => q.type === 'ultrahang');
+    if (!us) { c.beginPath(); c.moveTo(0, -rp * .8); c.lineTo(rp * .26, -rp * .38); c.lineTo(-rp * .26, -rp * .38); c.closePath(); c.fillStyle = TEAL; c.fill(); }
+    else {
+      const gw = rp * .9, gh = rp * .3, gy = -rp * 1.02, pg = clamp(o.ping || 0);
+      c.beginPath(); c.roundRect(-gw / 2, gy, gw, gh, rp * .06); c.fillStyle = U.mix(CARD, TEAL, .25 + .5 * pg); c.fill();
+      c.strokeStyle = TEAL; c.lineWidth = Math.max(2, rp * .06); c.stroke();
+      c.beginPath(); for (let i = 1; i < 6; i++) { const x = -gw / 2 + gw * i / 6; c.moveTo(x, gy + gh * .22); c.lineTo(x, gy + gh * .78); }
+      c.lineWidth = Math.max(1.5, rp * .035); c.stroke();
+    }
+    // fényérzékelők: kis négyzet halvány fényfolttal
+    SS.forEach((q) => {
+      if (q.type !== 'fény' && q.type !== 'szín') return;
+      const k = o.cm || rp / 6, X = (q.dx || 0) * k, Y = -(q.dy || 0) * k, lt = o.lit && o.lit[q.id] != null ? clamp(o.lit[q.id]) : .5;
+      const hs = Math.max(5, rp * .2);
+      al(a * (.3 + .5 * lt)); c.beginPath(); c.arc(X, Y, hs * 1.25, 0, U.TAU); c.fillStyle = '#f0b429'; c.fill();
+      al(a); c.fillStyle = INK; c.fillRect(X - hs / 2, Y - hs / 2, hs, hs);
+    });
     // ütköző-ív
     if (o.bumper !== false) {
       c.lineCap = 'round'; c.lineWidth = Math.max(3, rp * .12); c.strokeStyle = fl > 0 ? U.mix(MUT, RED, fl) : MUT;
@@ -1638,8 +1811,9 @@ const DigRobot = (() => {
     c.restore();
   }
   function draw(L, W, V, s, o = {}) {
-    const c = L.ctx, a = o.a == null ? 1 : o.a, grid = W.mode === 'rács';
-    if (a <= .003) return;
+    const c = L.ctx, a0 = o.a == null ? 1 : o.a, grid = W.mode === 'rács';
+    if (a0 <= .003) return;
+    let a = a0 * (o.dim == null ? 1 : clamp(o.dim));          // v1.1: a világ halványítása („a robot szemével”)
     const R = o.run, t = o.t || 0;
     if (R && !s) s = R.at(t).s;
     c.save();
@@ -1671,11 +1845,26 @@ const DigRobot = (() => {
       const m = visited(R, t); al(a * .5); c.fillStyle = 'rgba(10,111,134,.16)';
       m.forEach((k, key) => { const [gx, gy] = key.split(',').map(Number); const [X, Y] = V.px(gx, gy); c.fillRect(X + 2, Y + 2, V.s - 4, V.s - 4); });
     }
+    // v1.1: padló (vonalak, foltok)
+    if (W.floor && W.floor.length) {
+      c.lineCap = 'round'; c.lineJoin = 'round';
+      W.floor.forEach((f) => {
+        al(a); c.beginPath(); const P = f.poly || f.path; P.forEach((q, j) => { const [X, Y] = V.px(q[0], q[1]); if (j) c.lineTo(X, Y); else c.moveTo(X, Y); });
+        if (f.poly) { c.closePath(); c.fillStyle = f.col || INK; c.fill(); } else { c.strokeStyle = f.col || INK; c.lineWidth = Math.max(2, (f.w || 2) * V.s); c.stroke(); }
+      });
+      c.lineCap = 'butt'; c.lineJoin = 'miter';
+    }
     // asztal széle, falak, akadályok
     al(a); c.lineCap = 'round';
     if (!grid) {
       c.strokeStyle = INK; c.lineWidth = 3; c.strokeRect(tx0, ty0, tx1 - tx0, ty1 - ty0);
-      c.lineWidth = Math.max(5, .9 * V.s); c.beginPath(); W.walls.forEach((w) => { const [X1, Y1] = V.px(w[0], w[1]), [X2, Y2] = V.px(w[2], w[3]); c.moveTo(X1, Y1); c.lineTo(X2, Y2); }); c.stroke();
+      c.lineWidth = Math.max(5, .9 * V.s); c.beginPath(); W.walls.forEach((w) => { if (kindOf(w[4]) === 'puha') return; const [X1, Y1] = V.px(w[0], w[1]), [X2, Y2] = V.px(w[2], w[3]); c.moveTo(X1, Y1); c.lineTo(X2, Y2); }); c.stroke();
+      W.walls.forEach((w) => {             // v1.1: puha függöny – hullámos, lila
+        if (kindOf(w[4]) !== 'puha') return;
+        const [X1, Y1] = V.px(w[0], w[1]), [X2, Y2] = V.px(w[2], w[3]), len = Math.hypot(X2 - X1, Y2 - Y1), nx = -(Y2 - Y1) / len, ny = (X2 - X1) / len, n = Math.max(4, Math.round(len / 14)), A = Math.max(3, .45 * V.s);
+        c.beginPath(); for (let i = 0; i <= n * 4; i++) { const u = i / (n * 4), w2 = Math.sin(u * n * U.TAU) * A; const X = X1 + (X2 - X1) * u + nx * w2, Y = Y1 + (Y2 - Y1) * u + ny * w2; if (i) c.lineTo(X, Y); else c.moveTo(X, Y); }
+        c.strokeStyle = '#7b4fa0'; c.lineWidth = Math.max(4, .6 * V.s); c.stroke(); c.strokeStyle = INK;
+      });
       W.obstacles.forEach((b) => {
         c.beginPath(); if (b.r != null) { const [X, Y] = V.px(b.x, b.y); c.arc(X, Y, b.r * V.s, 0, U.TAU); } else { const [X, Y] = V.px(b.x, b.y); c.rect(X, Y, b.w * V.s, b.h * V.s); }
         c.fillStyle = 'rgba(143,90,12,.18)'; c.fill(); c.strokeStyle = INK; c.lineWidth = 3; c.stroke();
@@ -1691,16 +1880,279 @@ const DigRobot = (() => {
     c.lineCap = 'round'; c.lineJoin = 'round';
     tr.forEach((p) => { al(a); c.strokeStyle = COLS[p.col] || p.col || INK; c.lineWidth = Math.max(2.5, p.w * V.s); c.beginPath(); p.pts.forEach((q, j) => { const [X, Y] = V.px(q[0], q[1]); if (j) c.lineTo(X, Y); else c.moveTo(X, Y); }); c.stroke(); });
     c.lineCap = 'butt'; c.lineJoin = 'miter';
+    a = a0;
     const rpx = Math.max(o.minR || 12, W.robot.r * V.s);
-    if (o.ghost) { const [X, Y] = V.px(o.ghost.x, o.ghost.y); c.setLineDash([6, 5]); robot(L, X, Y, rpx, o.ghost.dir, { a: a * .3, pen: false }); c.setLineDash([]); }
+    const SS = o.sensors === false ? null : W.sensors && W.sensors.length ? W.sensors : null;
+    if (s && SS && o.rays) rays(L, W, V, s, { a: a * (o.rays === true ? 1 : o.rays) });
+    if (o.ghost) { const [X, Y] = V.px(o.ghost.x, o.ghost.y); c.setLineDash([6, 5]); robot(L, X, Y, rpx, o.ghost.dir, Object.assign({ a: a * .3, pen: false }, SS ? { sensors: SS, cm: rpx / W.robot.r } : {})); c.setLineDash([]); }
     if (s && o.robot !== false) {
       const [X, Y] = V.px(s.x, s.y), tb = R ? bumpAt(R, t) : -1, fl = tb >= 0 && tb < .6 ? 1 - tb / .6 : 0;
-      robot(L, X, Y, rpx, s.dir, { a, pen: s.pen, col: s.col, flash: fl, hl: o.hl, bumper: W.robot.bumper });
+      const q = { a, pen: s.pen, col: s.col, flash: fl, hl: o.hl, bumper: W.robot.bumper };
+      if (SS) { q.sensors = SS; q.cm = rpx / W.robot.r; q.ping = o.ping; q.lit = {}; SS.forEach((d) => { if (d.type === 'fény') { const v = s.m && s.m[d.id] != null ? s.m[d.id] : W.sense(s, d.id); q.lit[d.id] = v / 100; } }); }
+      robot(L, X, Y, rpx, s.dir, q);
     }
     c.restore();
     c.globalAlpha = 1;
   }
-  return { bind, COLS, world, view, draw, robot, trailTo, bounds, bumpAt, visited, sweepSeg };
+  /* ── v1.1: folyamatos vezérlés ── */
+  function miniTrace(frames, info) {       // a DigBlock.trace alakja, ha a DigBlock nincs betöltve
+    const T = info.T, wl = info.world.lerp, first = {}, hist = info.hist || {};
+    frames.forEach((f) => { if (f.id != null && first[f.id] == null) first[f.id] = f.t1; });
+    const idx = (t) => { let lo = 0, hi = frames.length - 1, r = -1; while (lo <= hi) { const m = (lo + hi) >> 1; if (frames[m].t0 <= t + 1e-9) { r = m; lo = m + 1; } else hi = m - 1; } return r; };
+    const R = { frames, T, end: info.end, err: info.err || null, s0: info.s0, hist,
+      varsAt(t) { const o2 = {}; for (const k in hist) { const h = hist[k]; let j = -1; for (let q = 0; q < h.length; q++) if (h[q].t <= t + 1e-9) j = q; if (j >= 0) o2[k] = { v: h[j].v, pv: j > 0 ? h[j - 1].v : undefined, tc: j > 0 ? h[j].t : -99 }; } return o2; },
+      at(t) {
+        const i = idx(t); if (i < 0) return { i: -1, frame: null, id: null, u: 0, s: R.s0, mk: { loops: {}, tests: {} }, vars: R.varsAt(t) };
+        const f = frames[i], d = f.t1 - f.t0, inside = t > 1e-9 && t < f.t1 - 1e-9, u = inside ? (d > 0 ? clamp((t - f.t0) / d) : 1) : 1;
+        return { i, frame: f, id: inside ? f.id : null, u, s: inside ? wl(f.s0, f.s1, u) : f.s1, mk: f.mk || { loops: {}, tests: {} }, vars: R.varsAt(t) };
+      },
+      doneAt(t) { const s2 = new Set(); for (const k in first) if (first[k] <= t + 1e-9) s2.add(k); return s2; },
+      next(t) { for (const f of frames) if (f.t1 > t + 1e-6) return f.t1; return T; },
+      prev(t) { let r = 0; for (const f of frames) { if (f.t0 < t - 1e-6) r = f.t0; else break; } return r; },
+      until(t, pred) { for (const f of frames) if (f.t0 > t + 1e-6 && pred(f)) return f.t0; return null; },
+      count(t, pred) { let k = 0; for (const f of frames) { if (f.t1 > t + 1e-9) break; if (!pred || pred(f)) k++; } return k; },
+    };
+    return R;
+  }
+  function motor(W, s0, ctl, o = {}) {
+    const dt = o.dt || .02, T = o.T == null ? 20 : o.T, base = o.base || W.speed.v, track = o.track || 2 * W.robot.r;
+    const lag = o.lag || 0, turnW = o.turnW || W.speed.w, maxF = o.maxFrames || 20000;
+    const fk = lag > 0 ? 1 - Math.exp(-dt / lag) : 1;
+    const SS = W.sensors || [], held = {}, last = {};
+    let s = Object.assign({}, s0 || W.init(), { t: 0, vl: 0, vr: 0, bump: false, mu: 1 });
+    const measure = (st, t) => {
+      const m = {};
+      SS.forEach((q) => { if (last[q.id] == null || t >= last[q.id] + (q.every || 0) - 1e-9) { held[q.id] = W.measure(st, q.id, Math.round(t * 1000)).v; last[q.id] = t; } m[q.id] = held[q.id]; });
+      return m;
+    };
+    if (ctl.reset) ctl.reset();
+    s.m = measure(s, 0);
+    const S0 = s, frames = [];
+    let t = 0, end = 'idő', err = null, man = null, cur = { bal: 0, jobb: 0 }, info = {};
+    const sense = (name) => (s.m && name in s.m ? s.m[name] : W.sense(s, name));
+    /* egy ütem: kerekek (cl, cr célérték, lag) → elmozdulás ütközéssel; ex: pontos mozdulat (lag nélkül) */
+    function integ(cl, cr, ex) {
+      if (ex) { s.vl = cl; s.vr = cr; } else { s.vl += (cl - s.vl) * fk; s.vr += (cr - s.vr) * fk; }
+      const v = base * (s.vl + s.vr) / 2, w = base * (s.vl - s.vr) / track / RAD;
+      return { v, w };
+    }
+    function move(st, dist, dth) {
+      const n = Object.assign({}, st); n.bump = false;
+      if (Math.abs(dist) > 1e-9) { const f = W.free({ x: st.x, y: st.y, dir: st.dir + dth / 2 }, dist); n.x = st.x + f.ux * f.d; n.y = st.y + f.uy * f.d; n.bump = f.hit; n.moved = f.d * Math.sign(dist); }
+      else n.moved = 0;
+      n.dir = st.dir + dth; return n;
+    }
+    function push(n, id, op, extra) {
+      frames.push(Object.assign({ t0: t, t1: t + dt, id, op, s0: s, s1: n, vars: {}, val: undefined, test: null, err: null, mk: info.mk || { loops: {}, tests: {} }, motor: true }, extra || {}));
+      t += dt; s = n;
+    }
+    while (t < T - 1e-9 && frames.length < maxF) {
+      const m = measure(s, t); s = Object.assign({}, s, { m });
+      if (!man) {
+        const r = ctl(s, sense, t) || { end: 'kész' };
+        info = r;
+        if (r.set) { s = Object.assign({}, s, r.set.pen != null ? { pen: !!r.set.pen } : {}, r.set.col != null ? { col: r.set.col } : {}); }
+        if (r.end) {
+          end = r.end; err = r.err || null; if (end === 'hiba') { if (frames.length) frames[frames.length - 1].err = err; break; }
+          const k = integ(0, 0, false), n = move(s, k.v * dt, k.w * dt); delete n.moved;      // a záró ütem: megáll (a döntés látszik)
+          push(n, r.id == null ? null : r.id, r.op || null); break;
+        }
+        if (r.move != null || r.turn != null || r.wait != null) {
+          man = r.move != null ? { kind: 'move', left: Math.abs(r.move * W.step), sg: Math.sign(r.move) || 1 } : r.turn != null ? { kind: 'turn', left: Math.abs(r.turn), sg: Math.sign(r.turn) || 1 } : { kind: 'wait', left: Math.max(0, r.wait) };
+          man.id = r.id; man.op = r.op; man.phase = man.kind === 'wait' || lag <= 0 ? 'fut' : 'fék';
+          if (man.kind === 'wait' && man.left <= 1e-9) { man = null; continue; }
+          if (man.kind !== 'wait' && man.left <= 1e-9) { man = null; continue; }
+        } else cur = { bal: clamp(r.bal || 0, -1, 1), jobb: clamp(r.jobb || 0, -1, 1) };
+      }
+      if (man) {
+        let n;
+        if (man.phase === 'fék') {
+          const k = integ(0, 0, false); n = move(s, k.v * dt, k.w * dt);
+          if (Math.max(Math.abs(n.vl), Math.abs(n.vr)) < .03) { n.vl = 0; n.vr = 0; man.phase = 'fut'; }
+        } else if (man.kind === 'wait') {
+          const k = integ(cur.bal, cur.jobb, false); n = move(s, k.v * dt, k.w * dt); man.left -= dt;
+        } else if (man.kind === 'move') {
+          const step = Math.min(base * dt, man.left); n = move(s, man.sg * step, 0); n.vl = n.vr = 0;
+          man.left -= Math.abs(n.moved); if (n.bump || Math.abs(n.moved) < step - 1e-9) man.left = 0;
+        } else {
+          const step = Math.min(turnW * dt, man.left); n = move(s, 0, man.sg * step); n.vl = n.vr = 0; man.left -= step;
+        }
+        delete n.moved; push(n, man.id, man.op);
+        if (man.phase === 'fut' && man.left <= 1e-9) { man = null; cur = { bal: 0, jobb: 0 }; }
+        continue;
+      }
+      const k = integ(cur.bal, cur.jobb, false), n = move(s, k.v * dt, k.w * dt); delete n.moved;
+      push(n, info.id == null ? null : info.id, info.op || null);
+    }
+    // a program vége után: fékút (lag), amíg a kerekek meg nem állnak
+    if (end !== 'idő' && end !== 'hiba' && lag > 0) {
+      info = { mk: info.mk, id: info.id };
+      while (Math.max(Math.abs(s.vl), Math.abs(s.vr)) >= .03 && frames.length < maxF) {
+        const m = measure(s, t); s = Object.assign({}, s, { m });
+        const k = integ(0, 0, false), n = move(s, k.v * dt, k.w * dt); delete n.moved; push(n, info.id == null ? null : info.id, 'fék');
+      }
+    }
+    const hist = {}; if (ctl.hist) for (const q in ctl.hist) hist[q] = ctl.hist[q].slice();
+    const tr = typeof DigBlock !== 'undefined' && DigBlock.trace ? DigBlock.trace : miniTrace;
+    const R = tr(frames, { T: t, end, err, s0: S0, hist, world: W });
+    R.motor = true; R.dt = dt;
+    return R;
+  }
+  /* DigBlock-program → vezérlő (generátorral: minden ciklus-kör egy ütem, a pontos mozdulat kivárja magát) */
+  function fromProg(P, o = {}) {
+    const BL = o.blocks || (typeof DigBlock !== 'undefined' ? DigBlock.BLOCKS : {});
+    const labf = o.lab || ((k) => { const L = getL(); return L ? L.lab(k) : k; });
+    const TP = o.turn == null ? .5 : o.turn, ZERO = { bal: 0, jobb: 0 }, STOP = {};
+    let gen = null, vars = {}, mk = null, cmd = ZERO, cs = null, csense = null, ct = 0, act = null, pend = null, rnd = null;
+    const hist = {};
+    const snap = () => ({ loops: Object.assign({}, mk.loops), tests: Object.assign({}, mk.tests) });
+    const fail = (n, sub, kind) => { throw { dbErr: { id: (sub && sub.id) || n.id, sid: n.id, kind } }; };
+    const numOf = (v, n, sub) => {
+      if (typeof v === 'number') return v;
+      if (typeof v === 'string') { const q = v.trim().replace('−', '-').replace(',', '.'); if (/^-?\d+(\.\d+)?$/.test(q)) return +q; }
+      return fail(n, sub, 'típus');
+    };
+    const setVar = (k, v) => { vars[k] = v; (hist[k] = hist[k] || []).push({ t: ct, v }); };
+    function ev(a, n) {
+      if (!a.op) return a.k ? labf(a.k) : a.v;
+      const x = a.args, B = BL[a.op] || {};
+      switch (a.op) {
+        case 'érzékelő': { const v = csense(x[0].v); if (v === undefined) return fail(n, a, 'érzékelő'); return v; }
+        case 'változó': { const k = x[0].v; if (!(k in vars)) return fail(n, a, 'változó'); return vars[k]; }
+        case '+': return numOf(ev(x[0], n), n, a) + numOf(ev(x[1], n), n, a);
+        case '−': return numOf(ev(x[0], n), n, a) - numOf(ev(x[1], n), n, a);
+        case '·': return numOf(ev(x[0], n), n, a) * numOf(ev(x[1], n), n, a);
+        case ':': { const p = numOf(ev(x[0], n), n, a), q = numOf(ev(x[1], n), n, a); if (q === 0) return fail(n, a, 'nulla'); return p / q; }
+        case '<': case '>': case '≤': case '≥': { const p = numOf(ev(x[0], n), n, a), q = numOf(ev(x[1], n), n, a); return a.op === '<' ? p < q : a.op === '>' ? p > q : a.op === '≤' ? p <= q : p >= q; }
+        case '=': { const p = ev(x[0], n), q = ev(x[1], n); return typeof p === 'number' && typeof q === 'number' ? Math.abs(p - q) < 1e-9 : String(p) === String(q); }
+        case 'és': return !!ev(x[0], n) && !!ev(x[1], n);
+        case 'vagy': return !!ev(x[0], n) || !!ev(x[1], n);
+        case 'nem': return !ev(x[0], n);
+        case 'véletlen': { const p = Math.round(numOf(ev(x[0], n), n, a)), q = Math.round(numOf(ev(x[1], n), n, a)); return Math.min(p, q) + Math.floor(rnd() * (Math.abs(q - p) + 1)); }
+        default:
+          if (B.sense) { const v = csense(B.sense); if (v === undefined) return fail(n, a, 'érzékelő'); return !!v; }
+          return fail(n, a, 'ismeretlen');
+      }
+    }
+    const test = (id, v) => { mk.tests[id] = v; };
+    const loop = (id, k) => { if (k == null) delete mk.loops[id]; else if (o.loops) mk.loops[id] = k; };
+    function* list(L0) { for (const n of L0) { if ((yield* one(n)) === STOP) return STOP; } }
+    function* one(n) {
+      const x = n.args, B = BL[n.op] || {};
+      if (B.shape === 'esemény') { if (n.op === 'indításkor') return yield* list(n.body[0]); return; }
+      switch (n.op) {
+        case 'mindig': for (let k = 1; ; k++) { loop(n.id, k); if ((yield* list(n.body[0])) === STOP) return STOP; yield { tick: 1 }; }
+        case 'amíg': for (let k = 1; ; k++) { const v = !!ev(x[0], n); test(n.id, v); if (!v) { loop(n.id); return; } loop(n.id, k); if ((yield* list(n.body[0])) === STOP) return STOP; yield { tick: 1 }; }
+        case 'ismételd': { const N = Math.round(numOf(ev(x[0], n), n, x[0])); for (let k = 1; k <= N; k++) { loop(n.id, k); if ((yield* list(n.body[0])) === STOP) return STOP; yield { tick: 1 }; } loop(n.id); return; }
+        case 'ha': { const v = !!ev(x[0], n); test(n.id, v); if (v) return yield* list(n.body[0]); return; }
+        case 'ha-különben': { const v = !!ev(x[0], n); test(n.id, v); return yield* list(v ? n.body[0] : n.body[1]); }
+        case 'menj': act = n.id; cmd = x[0].v === 'hátra' ? { bal: -1, jobb: -1 } : { bal: 1, jobb: 1 }; return;
+        case 'forogj': act = n.id; cmd = x[0].v === 'balra' ? { bal: -TP, jobb: TP } : { bal: TP, jobb: -TP }; return;
+        case 'motorok': act = n.id; cmd = { bal: clamp(numOf(ev(x[0], n), n, x[0]) / 100, -1, 1), jobb: clamp(numOf(ev(x[1], n), n, x[1]) / 100, -1, 1) }; return;
+        case 'megállj': act = n.id; cmd = ZERO; return;
+        case 'lépj': case 'lépj egyet': { act = n.id; const k = n.op === 'lépj' ? numOf(ev(x[0], n), n, x[0]) : 1; yield { id: n.id, op: n.op, move: k }; cmd = ZERO; return; }
+        case 'fordulj': case 'fordulj jobbra': case 'fordulj balra': {
+          act = n.id; const left = n.op === 'fordulj balra' || (n.op === 'fordulj' && ev(x[0], n) === 'balra'), deg = n.op === 'fordulj' ? numOf(ev(x[1], n), n, x[1]) : 90;
+          yield { id: n.id, op: n.op, turn: left ? -deg : deg }; cmd = ZERO; return;
+        }
+        case 'várj': { act = n.id; yield { id: n.id, op: n.op, wait: numOf(ev(x[0], n), n, x[0]) }; return; }
+        case 'tollat le': case 'tollat fel': pend = Object.assign(pend || {}, { pen: n.op === 'tollat le' }); return;
+        case 'tollszín': pend = Object.assign(pend || {}, { col: x[0].v }); return;
+        case 'legyen': setVar(x[0].v, ev(x[1], n)); return;
+        case 'növeld': { const k = x[0].v; if (!(k in vars)) return fail(n, x[0], 'változó'); setVar(k, numOf(vars[k], n, n) + numOf(ev(x[1], n), n, x[1])); return; }
+        case 'mondd': ev(x[0], n); return;
+        case 'állj': act = n.id; cmd = ZERO; return STOP;
+        default: return fail(n, n, 'ismeretlen');
+      }
+    }
+    function* root() { for (const n of P.body) { if ((yield* one(n)) === STOP) return 'állj'; } return 'kész'; }
+    const ctl = (s, sense, t) => {
+      cs = s; csense = sense; ct = t; if (!gen) ctl.reset();
+      let r;
+      try { r = gen.next(); } catch (e) { if (e && e.dbErr) return { end: 'hiba', err: e.dbErr, id: e.dbErr.sid, mk: snap() }; throw e; }
+      if (r.done) { const nd = act != null ? findId(P, act) : null; return { end: r.value || 'kész', bal: 0, jobb: 0, id: act, op: nd ? nd.op : null, mk: snap() }; }
+      const y = r.value, out = { bal: cmd.bal, jobb: cmd.jobb, id: y.id != null ? y.id : act, op: y.op || null, mk: snap() };
+      if (out.op == null && out.id != null) { const nd = findId(P, out.id); out.op = nd ? nd.op : null; }
+      if (pend) { out.set = pend; pend = null; }
+      ['move', 'turn', 'wait'].forEach((q) => { if (y[q] != null) out[q] = y[q]; });
+      return out;
+    };
+    ctl.reset = () => {
+      vars = Object.assign({}, o.vars || {}); for (const k in hist) delete hist[k]; for (const k in vars) hist[k] = [{ t: 0, v: vars[k] }];
+      mk = { loops: {}, tests: {} }; cmd = ZERO; act = null; pend = null; rnd = U.rng(o.seed || 1); gen = root();
+    };
+    ctl.hist = hist; void cs;
+    return ctl;
+  }
+  function findId(P, id) {
+    let r = null; const rec = (L0) => L0.forEach((n) => { if (r) return; if (n.id === id) r = n; (n.body || []).forEach(rec); });
+    rec(P.body || []); return r;
+  }
+  function defBlocks(DB) {
+    const mk = (op, args) => { const b = DB.def(op, { args, body: 0, shape: 'utasítás', world: false }); b.cat = 'mozgás'; b.motor = true; return b; };
+    mk('menj', [{ t: 'irány', opts: ['előre', 'hátra'] }]);
+    mk('forogj', [{ t: 'irány', opts: ['jobbra', 'balra'] }]);
+    mk('motorok', [{ t: 'szám', min: -100, max: 100, step: 10 }, { t: 'szám', min: -100, max: 100, step: 10 }]);
+    mk('megállj', []);
+    return DB;
+  }
+  /* ── v1.1: ultrahang-impulzus és érzékelési tartomány ── */
+  const usOf = (W, id) => (id ? W.sensor(id) : (W.sensors || []).find((q) => q.type === 'ultrahang')) || null;
+  function halfClip(c, V, h, BIG) {             // a felület (h pont, n normális) szenzor felőli oldala
+    const [X, Y] = V.px(h.x, h.y), tx = -h.ny, ty = h.nx;
+    c.beginPath(); c.moveTo(X + tx * BIG, Y + ty * BIG); c.lineTo(X - tx * BIG, Y - ty * BIG);
+    c.lineTo(X - tx * BIG + h.nx * BIG, Y - ty * BIG + h.ny * BIG); c.lineTo(X + tx * BIG + h.nx * BIG, Y + ty * BIG + h.ny * BIG); c.closePath(); c.clip();
+  }
+  function echo(L, W, V, s, u, o = {}) {
+    const q = usOf(W, o.id); if (!q) return null;
+    const c = L.ctx, a = o.a == null ? 1 : o.a, p = W.pose(s, q.id), m = W.measure(s, q.id);
+    const [ux, uy] = head(p.dir), h = m.axis, R1 = q.range[1], D = h ? h.t : R1;
+    const l = clamp(u) * 2 * D, gap = o.gap || 4, nA = o.n || 3, cs = o.c || 343;
+    const [PX, PY] = V.px(p.x, p.y), A0 = (p.dir - q.cone / 2 - 90) * RAD, A1 = (p.dir + q.cone / 2 - 90) * RAD;
+    c.save();
+    if (o.clip !== false) { c.beginPath(); c.roundRect(V.x, V.y, V.w, V.h, 14); c.clip(); }
+    if (h) halfClip(c, V, h, 4000);
+    c.lineCap = 'round';
+    for (let j = 0; j < nA; j++) {                  // kifutó ívek
+      const r = l - j * gap; if (r <= .2 || r > D + 1e-9) continue;
+      al(a * (1 - j / nA) * (h || r < R1 * .9 ? 1 : 1 - r / R1)); c.strokeStyle = TEAL; c.lineWidth = 3.5;
+      c.beginPath(); c.arc(PX, PY, r * V.s, A0, A1); c.stroke();
+    }
+    if (h && l > D) {                                 // visszavert ívek: a tükörkép középpontjából
+      const dn = (p.x - h.x) * h.nx + (p.y - h.y) * h.ny, ix = p.x - 2 * dn * h.nx, iy = p.y - 2 * dn * h.ny;
+      const dot = ux * h.nx + uy * h.ny, rx = ux - 2 * dot * h.nx, ry = uy - 2 * dot * h.ny, rd = Math.atan2(ry, rx);
+      const [IX, IY] = V.px(ix, iy), soft = h.kind === 'puha', hc = q.cone / 2 * RAD;
+      for (let j = 0; j < nA; j++) {
+        const r = l - j * gap; if (r <= D) continue;
+        al(a * (1 - j / nA) * (soft ? .15 : 1)); c.strokeStyle = soft ? '#7b4fa0' : RED; c.lineWidth = 3.5;
+        c.beginPath(); c.arc(IX, IY, r * V.s, rd - hc, rd + hc); c.stroke();
+      }
+    }
+    c.restore(); c.lineCap = 'butt';
+    const d = m.d;
+    return { d, ms: d != null ? 2 * d / 100 / cs * 1000 : null, ok: m.ok, why: m.why, l, D, back: l > D, ms_l: l / 100 / cs * 1000, hit: h };
+  }
+  function rays(L, W, V, s, o = {}) {
+    const c = L.ctx, a = o.a == null ? 1 : o.a;
+    c.save(); if (o.clip !== false) { c.beginPath(); c.roundRect(V.x, V.y, V.w, V.h, 14); c.clip(); }
+    (W.sensors || []).forEach((q) => {
+      if (o.ids && o.ids.indexOf(q.id) < 0) return;
+      const p = W.pose(s, q.id), [PX, PY] = V.px(p.x, p.y);
+      if (q.type === 'ultrahang') {
+        const N = Math.max(3, q.rays | 0), pts = [];
+        for (let i = 0; i < N; i++) { const an = p.dir - q.cone / 2 + q.cone * i / (N - 1), [ux, uy] = head(an), h = W.ray(p.x, p.y, ux, uy, q.range[1]), r = h ? h.t : q.range[1]; pts.push(V.px(p.x + ux * r, p.y + uy * r)); }
+        al(a * .9); c.beginPath(); c.moveTo(PX, PY); pts.forEach((P2) => c.lineTo(P2[0], P2[1])); c.closePath(); c.fillStyle = 'rgba(10,111,134,.13)'; c.fill();
+        c.setLineDash([6, 5]); c.strokeStyle = 'rgba(10,111,134,.55)'; c.lineWidth = 2; c.beginPath(); c.moveTo(PX, PY); c.lineTo(pts[0][0], pts[0][1]); c.moveTo(PX, PY); c.lineTo(pts[N - 1][0], pts[N - 1][1]); c.stroke(); c.setLineDash([]);
+        const m = W.measure(s, q.id);
+        if (o.hit !== false && m.ok && m.hit) { const [HX, HY] = V.px(m.hit.x, m.hit.y); al(a); c.beginPath(); c.arc(HX, HY, 7, 0, U.TAU); c.fillStyle = RED; c.fill(); c.strokeStyle = CARD; c.lineWidth = 2; c.stroke(); }
+      } else if (q.type === 'fény' || q.type === 'szín') {
+        al(a * .55); c.beginPath(); c.arc(PX, PY, Math.max(6, (q.spot || 1) * V.s * 1.6), 0, U.TAU); c.fillStyle = 'rgba(240,180,41,.45)'; c.fill();
+      }
+    });
+    c.restore(); c.globalAlpha = ga();
+  }
+  return { bind, COLS, world, view, draw, robot, trailTo, bounds, bumpAt, visited, sweepSeg,
+    motor, fromProg, defBlocks, echo, rays, VERSION: '1.1' };
 })();
 /* ── MODUL VÉGE: Robot ── */
 
