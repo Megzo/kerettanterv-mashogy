@@ -92,7 +92,7 @@ A többi lecke a fenti (és a korábbi sorozatok) moduljait vette át; 14 metrik
 Kötelező szakmai lektorálást (build-figyelmeztetés `review:`) ebben a sorozatban egyik lecke sem
 kér. Felhasználói döntés kell:
 
-- **15-okologiai-labnyom** – **licenc:** a GFN/NEFBA-adatok CC BY-SA 4.0 licencűek, ezért a lecke csak kerekített, forrással jelölt értékeket használ, adatfájl nem készült. Hogy legyen-e külön adatfájl (javaslat: `shared/foldrajz/labnyom-nefba.js`, országos idősor), arról a felhasználónak kell döntenie.
+- **15-okologiai-labnyom** – **licenc:** a GFN/NEFBA-adatok CC BY-SA 4.0 licencűek, ezért a lecke csak kerekített, forrással jelölt értékeket használ, adatfájl nem készült. **Döntés (2026-11-24, felhasználó): külön adatfájl nem kell, maradnak a kerekített értékek.**
 
 A koordinátor review-gyűjtőjéből és a szakértőt kérő pontokból:
 
@@ -118,4 +118,4 @@ A koordinátor review-gyűjtőjéből és a szakértőt kérő pontokból:
 - **12-globalizacio**: a póló útja és a hajóutak illusztrációk · a telephely-modell és a tőkekivonás-görbe saját modell · az árrészek egy aktivista-szervezet becslése – tanári review · a mosolygörbe kvalitatív · a 8. lépés szereplőinek kiegyensúlyozottsága (szerződés 15.) · a konténerhajó-forrás ábrái licencesek, csak számok idézve
 - **13-magyarorszag**: a megyeszékhelyek koordinátái fejből (a sokszögbe esést a lecke ellenőrzi) · az autópálya-vonalak és az agglomeráció-folt vázlatosak · a megyei GDP becslés, Budapestét a cégközpontok felhúzzák · a KSH-terület kerekítése miatt a népsűrűség ±1 · a KSH-felhasználási feltétel ellenőrizendő · „megye” vs. 2023 óta „vármegye” · kimaradt: környezeti állapot, határon túli magyarok, munkanélküliség · minden 2024–2026-os adat évente frissítendő
 - **14-penz**: a 2026-os alapkamat (5,50 % aug. 26-tól) MNB-n ellenőrizendő · a „kamat − infláció” csak közelítő reálkamat · a frank-példa egyszerűsít, a 300 CHF kitalált · az adósságmodell növekedés/infláció nélküli, valódi államadósság-adat nincs · a befektetési háromszög tankönyvi általánosítás („nem ajánlás”) · semleges hang, termék/bank nélkül
-- **15-okologiai-labnyom**: **licenc** – CC BY-SA 4.0, csak kerekített értékek; külön adatfájlról a felhasználó dönt · két kiadás keveredik (világ: 2026-os kiadás, országok: 2025-ös) · a „2050 előtt” állítás a 2026-os napból számolva (kb. 26 év) · a 4. lépés modellje egyszerűsített · a #MoveTheDate-számok nem összeadhatók · kimaradt az Aral-tó-esettanulmány · semleges hang, az országválogatás (32) és a „tévhit” címkék tanári review-ja
+- **15-okologiai-labnyom**: **licenc** – CC BY-SA 4.0, csak kerekített értékek; döntés (2026-11-24): külön adatfájl nem kell · két kiadás keveredik (világ: 2026-os kiadás, országok: 2025-ös) · a „2050 előtt” állítás a 2026-os napból számolva (kb. 26 év) · a 4. lépés modellje egyszerűsített · a #MoveTheDate-számok nem összeadhatók · kimaradt az Aral-tó-esettanulmány · semleges hang, az országválogatás (32) és a „tévhit” címkék tanári review-ja
