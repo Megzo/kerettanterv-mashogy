@@ -24,11 +24,17 @@ Letöltés után a repó [`index.html`](index.html)-je dupla kattintással is me
   [`pilot/foldrajz-9-10/`](pilot/foldrajz-9-10/)
 - **Matematika 9–10.** (gimnázium), 15 lecke – [`leckek/matematika-9-10/`](leckek/matematika-9-10/),
   [`pilot/matematika-9-10/`](pilot/matematika-9-10/)
+- **Természettudomány 5–6.**, 17 lecke – [`leckek/termeszettudomany-5-6/`](leckek/termeszettudomany-5-6/),
+  [`pilot/termeszettudomany-5-6/`](pilot/termeszettudomany-5-6/)
+- **Magyar nyelv és irodalom 5–6.**, 17 lecke – [`leckek/magyar-5-6/`](leckek/magyar-5-6/),
+  [`pilot/magyar-5-6/`](pilot/magyar-5-6/)
 
-Az utóbbi öt sorozat egy éjszakai, párhuzamos gépi gyártásban készült (összefoglaló, számok,
-kerethasználat: [`pilot/EJSZAKAI-GYARTAS.md`](pilot/EJSZAKAI-GYARTAS.md)). **Tanári review még
-nem volt** – a review-pontok sorozatonként a `METRIKAK.md`-ben vannak; három biológialecke
-(újraélesztés, járvány, magzat) szakmai lektorálás nélkül nem használható.
+Az utóbbi hét sorozat párhuzamos gépi gyártásban készült (öt egy éjszaka alatt – összefoglaló,
+számok, kerethasználat: [`pilot/EJSZAKAI-GYARTAS.md`](pilot/EJSZAKAI-GYARTAS.md) –, a
+természettudomány és a magyar a következő napon). **Tanári review még nem volt** – a
+review-pontok sorozatonként a `METRIKAK.md`-ben vannak. Szakmai lektorálás nélkül nem
+használható: három biológialecke (újraélesztés, járvány, magzat), a természettudományból a tűz
+(tűzvédelem) és az emberi test (egészség).
 
 - [`leckek/`](leckek/README.md) – a leckék; mindegyik szövege egy tanár által is
   szerkeszthető `.md`-fájlban van, a `tools/build_lesson.py` égeti be a leckébe.

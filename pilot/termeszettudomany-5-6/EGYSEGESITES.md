@@ -22,6 +22,8 @@ blokkot tartalmazza, **bájtra azonosan** (az API-dokumentáció a blokk tetejé
 
 md5 (a nyitó sortól a `MODUL VÉGE: TtTipp` sorig, a sorvégi újsorral együtt):
 `e334f46119af5db9f6231d308a810a85` – mind a 16 leckében egyezik
+(**a 16-folyo is:** a TtTipp-blokk ugyanez, md5 `e334f46119af5db9f6231d308a810a85` – már a gyártáskor a modult kapta, régi segéd nincs
+benne, TtMuszert nem használ; újra-QA ✓, 2026-11-24 – így mind a 17 lecke egyezik)
 (ellenőrzés: `awk '/^\/\* ── MODUL: „Tippelj!” és bélyegek \(TtTipp\)/{p=1} p{print} p&&/MODUL VÉGE: TtTipp/{exit}' <lecke>.html | md5sum`).
 
 A modul a három változat igényeit fedi le: a 01-es API változatlan nevekkel (a 17-es `noRhythm`/`qv` és a
