@@ -534,7 +534,7 @@ const BioBody = (() => {
 /* ── MODUL VÉGE: Testrajz (BioBody) ─────────────────────────────────────────────────────────── */
 
 
-/* ── MODUL: Áramlás csőhálózatban (BioFlow) · forrás: biologia-7-8/11-verkor, 2026-11-23 ──
+/* ── MODUL: Áramlás csőhálózatban (BioFlow) · forrás: biologia-7-8/11-verkor, 2026-11-23 · v1.1 (2026-11-24) ──
    Zárt csőhálózat (vérkör, vagy általában gráf: energia- és anyagáram), benne áramló
    részecskékkel. Minden állapot ZÁRT KÉPLETBŐL jön (a szívverések számából, b), nincs
    képkockánkénti összegzés: a QA és a visszaléptetés determinisztikus.
@@ -561,7 +561,8 @@ const BioBody = (() => {
    fl.draw(c, {map, S, b, a, hi: [élId…], dim, tubes, dots, r, sc, arrows, edgeA(e)})
                                              map: koordináta → képernyő; S: px / egység; sc: vonalszorzó
    fl.tracer(seq: [körIndex…], startEdge) → {at(b) → {e, u, r, k, lap, q}}   követett részecske; a körök
-                                             egymás után következnek (pl. egyszer a fejen, egyszer a lábon át)
+                                             egymás után következnek (pl. egyszer a fejen, egyszer a lábon át);
+                                             at(0) a startEdge elején áll (u = 0)
    fl.runs(r) → [{group, kind, q0, q1, edges}]   a kör egymás utáni szakaszai (csoportonként) – sávdiagramhoz
    fl.R, fl.E, fl.idx                         körök, élek (e.d: időtartam körben), id → index
    BioFlow.clock(rate) → {at(t) → b, set(t, rate), reset(rate)}   szakaszonként lineáris dobbanás-óra:
@@ -575,6 +576,8 @@ const BioBody = (() => {
      h.pt(id) → [x, y]   'jobb pitvar', 'jobb kamra', 'bal pitvar', 'bal kamra', 'aorta', 'tüdőartéria',
                          'felső üres véna', 'alsó üres véna', 'tüdővénák', 'vitorlás-j', 'vitorlás-b',
                          'zsebes-j', 'zsebes-b', 'sövény', 'bal kamra fal', 'jobb kamra fal'
+   v1.1 (2026-11-24): javítva – a tracer().at(0) (és minden pontosan élhatárra eső hely) az előző él
+       végét adta, mert a maradékképzés ((a % n) + n) % n kerekítése 1 ulp-vel visszacsúszott.
    ──────────────────────────────────────────────────────────────────────────────────────────── */
 const BioFlow = (() => {
   'use strict';
@@ -582,7 +585,7 @@ const BioFlow = (() => {
   const COL = { rich: '#c0392b', poor: '#7b2440', ink: '#1c2440', paper: '#f7f1e6', card: '#fffaf1', musc: '#e3a593', muscL: '#8c3b2a' };
   const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
   const smooth = (t) => { t = clamp(t); return t * t * (3 - 2 * t); };
-  const mod = (a, n) => ((a % n) + n) % n;
+  const mod = (a, n) => { const r = a % n; return r < 0 ? (r + n < n ? r + n : 0) : r; };   // pontos (a ≥ 0-ra a % n)
   const hx = (h) => { const n = parseInt(h.slice(1), 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; };
   const mix = (a, b, t) => { const A = hx(a), B = hx(b); return '#' + A.map((v, i) => Math.round(v + (B[i] - v) * clamp(t)).toString(16).padStart(2, '0')).join(''); };
   const rng = (seed) => { let s = seed >>> 0 || 1; return () => { s ^= s << 13; s >>>= 0; s ^= s >> 17; s ^= s << 5; s >>>= 0; return s / 4294967296; }; };

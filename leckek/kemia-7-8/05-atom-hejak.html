@@ -292,7 +292,7 @@ const KemTx = (function () {
 })();
 /* ── MODUL VÉGE ── */
 
-/* ── MODUL: Atommodell (KemAtom) · forrás: kemia-7-8/05-atom-hejak, 2026-11-23 ──
+/* ── MODUL: Atommodell (KemAtom) · forrás: kemia-7-8/05-atom-hejak, 2026-11-23 · v1.1 (2026-11-24) ──
    Bohr-féle héjmodell Z ≤ 20-ig: 3D-hatású nukleonkupac, héjak, keringő elektronok, külső
    héj kiemelése, „felugró” elektron (lángfestés), elektronfelhő-nézet, Lewis-pöttyök.
    Szöveget nem ír (a feliratok a lecke dolga), kivéve az o.sym vegyjelet (L.tx-szel).
@@ -323,9 +323,14 @@ const KemTx = (function () {
    KemAtom.outer(L, n, x, y, r, o) → {dots: [{x, y, site, paired}], unpaired: [...]}
        csak a külső elektronok Lewis-pöttyei egy pont (pl. vegyjel) körül; o.er, o.c, o.rot,
        o.sym (vegyjel középre, KemTx-szel), o.s (betűméret), o.k, o.hc + o.hl (kiemelt páratlanok)
+   KemAtom.sites(n, firstShell) → [{site, slot}]   a Lewis-helykiosztás (amit az outer és a KemMol is
+       használ): site 0 fent, 1 jobbra, 2 lent, 3 balra (szöge: KemAtom.SITE_A[site]); előbb egyesével,
+       aztán párba (fent, balra, lent, jobbra); slot −1/+1: a pár két tagja, 0: magányos elektron
    KemAtom.sphere(ctx, x, y, r, hex, o) – 3D-hatású golyó (gyorsítótárazott sprite), sötét körvonallal
    KemAtom.COL  {p, n, e} – a proton, a neutron és az elektron színe
    Ionképzés / elektronátadás (07): a draw-geometria .el pontjaiból építhető; a modul később bővül.
+   v1.1 (2026-11-24): a sites/SITE_A kiajánlva (a KemMol eddig saját másolatot tartott belőle) – a
+       régi hívások változatlanok.
    ─────────────────────────────────────────────────────────────────────────── */
 const KemAtom = (function () {
   const TAU = Math.PI * 2, U = Lesson.U;
@@ -514,7 +519,7 @@ const KemAtom = (function () {
     }
     return { dots, unpaired: dots.filter((d) => !d.paired) };
   }
-  return { config, outerN, neutrons, draw, outer, sphere, COL };
+  return { config, outerN, neutrons, draw, outer, sites, SITE_A, sphere, COL };
 })();
 /* ── MODUL VÉGE ── */
 

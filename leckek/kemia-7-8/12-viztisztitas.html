@@ -363,7 +363,7 @@
    A modulblokkokat a lecke nem módosítja és nem bővíti.
    ════════════════════════════════════════════════════════════════════════════ */
 
-/* ── MODUL: Részecskemotor (Reszecske) · forrás: kemia-7-8/01-reszecskemodell, 2026-11-23 ── */
+/* ── MODUL: Részecskemotor (Reszecske) · forrás: kemia-7-8/01-reszecskemodell, 2026-11-23 · v1.1 (2026-11-24) ── */
 /* API
    Tantárgyfüggetlen 2D részecskeszimuláció (gáz, folyadék, szilárd rács, diffúzió, keverék),
    DETERMINISZTIKUS VISSZAJÁTSZÁSSAL. Nem hivatkozik a lecke kódjára; csak egy 2D vászon kell.
@@ -387,8 +387,14 @@
      anchorK: 0,                 // rugó a rácshelyhez (1/s²) a horgonyzott részecskékre → szilárd rács
      max: 600,                   // a részecskék felső száma
    });
-   S.add('N2', 40, {region: {x, y, w, h}, lattice: 'random' | 'hex', gap: 2, anchor: false, tag: 0})
-                               // csak az első S.at előtt; később esemény ({add}) kell
+   S.add('N2', 40, {region: {x, y, w, h}, lattice: 'random' | 'hex', gap: 2, anchor: false, tag: 0,
+                    exact: false, fill: false}) → a ténylegesen letett darabszám
+                               // csak az első S.at előtt; később esemény ({add}) kell.
+                               // Ha a régióba (a gap-pel és a már bent lévőkkel) nem fér el n darab, a
+                               // modul kevesebbet tesz le, és console.warn-nal szól (azonos hívásra egyszer);
+                               // exact: true → a maradékot átfedéssel is leteszi (az ütközés széttolja),
+                               // így pontosan n darab lesz (a max-korlátig); fill: true → n csak felső
+                               // korlát („töltsd fel, ameddig elfér”, pl. hex rács), nincs figyelmeztetés
    S.at(t, events)             // az állapotot PONTOSAN a t. másodpercre hozza. events: időrendben,
                                //   [{t, set: {T, collide, gravity, attract, anchorK, thermo}},
                                //    {t, add: ['N2', 10, {region…}]}, {t, remove: 'N2' | fn(S, i) → bool},
@@ -409,6 +415,8 @@
      Z.frame(t, phase, B, it)  → [{x, y, ang}]        //   phase: 0 rácsban rezeg · 1 folyadék · 2 gáz (közte átmenet)
                                                       //   B: {x, y, w, h, d (részecskeátmérő)}; it: átfedés-feloldás
    Teljesítmény: rácsos szomszédkeresés; ~400 részecske 120 Hz-en is bőven 60 fps.
+   v1.1 (2026-11-24): add – figyelmeztetés, ha kevesebb fér el; exact és fill opció; visszaadja a darabszámot.
+       A régi hívások ugyanazt a helyzetet adják (a véletlensorozat nem változik).
    ──────────────────────────────────────────────────────────────────────────────── */
 const Reszecske = (() => {
   const TAU = Math.PI * 2;
@@ -460,6 +468,7 @@ const Reszecske = (() => {
       gravity: cfg.gravity || 0, attract: cfg.attract || null, anchorK: cfg.anchorK || 0, rng: (cfg.seed >>> 0) || 1,
       hits: [0, 0, 0, 0], wl: box.x, wr: box.x + box.w, wt: box.y, wb: box.y + box.h };
     let k = 0, ep = 0, sigs = [], evT = [], cps = [], base = null;
+    const warned = new Set();
     const rnd = () => { let s = P.rng; s ^= s << 13; s >>>= 0; s ^= s >> 17; s ^= s << 5; s >>>= 0; P.rng = s; return s / 4294967296; };
     const gauss = () => { const u = Math.max(1e-12, rnd()), v = rnd(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(TAU * v); };
     const wallAt = (side, t, def) => (typeof WF[side] === 'function' ? WF[side](t) : def);
@@ -484,6 +493,12 @@ const Reszecske = (() => {
           if (ok) pts.push([x, y]);
         }
       }
+      if (pts.length < n && o.exact) while (pts.length < n) pts.push([R.x + s.r + rnd() * Math.max(0, R.w - 2 * s.r), R.y + s.r + rnd() * Math.max(0, R.h - 2 * s.r)]);
+      const placed = Math.min(pts.length, MAX - S.n);
+      if (placed < n && !o.fill) {
+        const key = name + '|' + n + '|' + [R.x, R.y, R.w, R.h].join(',');
+        if (!warned.has(key)) { warned.add(key); console.warn(`Reszecske.add: ${name} – ${n} helyett ${placed} fért el (régió ${Math.round(R.w)}×${Math.round(R.h)} px, gap ${gap}${S.n + pts.length > MAX ? ', max elérve' : ''}); nagyobb régió, kisebb gap vagy {exact: true}`); }
+      }
       const sig = Math.sqrt(kk * P.T / s.m) * (o.vScale == null ? 1 : o.vScale);
       for (const [x, y] of pts) {
         if (S.n >= MAX) break;
@@ -493,6 +508,7 @@ const Reszecske = (() => {
         S.a0[i] = rnd() * TAU; S.w[i] = (rnd() < .5 ? -1 : 1) * (.6 + 1.6 * rnd()) * (o.spin == null ? 1 : o.spin);
         S.sp[i] = si; S.tag[i] = o.tag || 0;
       }
+      return placed;
     }
     function removeIf(f) {
       let j = 0;
@@ -591,7 +607,7 @@ const Reszecske = (() => {
       k++;
     }
 
-    S.add = (name, n, o) => { if (base) throw new Error('Reszecske: S.add csak az első S.at előtt; utána {add} esemény kell'); addN(name, n, o); };
+    S.add = (name, n, o) => { if (base) throw new Error('Reszecske: S.add csak az első S.at előtt; utána {add} esemény kell'); return addN(name, n, o); };
     S.reset = () => { if (base) restore(base); cps = base ? [base] : []; ep = 0; sigs = []; evT = []; };
     S.at = (t, ev = []) => {
       if (!base) { P.wl = wallAt('l', 0, P.wl); P.wr = wallAt('r', 0, P.wr); P.wt = wallAt('t', 0, P.wt); P.wb = wallAt('b', 0, P.wb); base = snap(); cps = [base]; }
@@ -686,7 +702,7 @@ const Reszecske = (() => {
 })();
 /* ── MODUL VÉGE ── */
 
-/* ── MODUL: Labor + nagyító (KemLab) · forrás: kemia-7-8/01-reszecskemodell, 2026-11-23 ── */
+/* ── MODUL: Labor + nagyító (KemLab) · forrás: kemia-7-8/01-reszecskemodell, 2026-11-23 · v1.1 (2026-11-24) ── */
 /* API
    Laboreszközök a világos témához (tintakörvonal, áttetsző üveg) és a NAGYÍTÓ, amely a makroszintet
    a részecskeszinttel köti össze. Nem hivatkozik a lecke kódjára. Minden függvény a lecke L-jét kapja;
@@ -704,11 +720,16 @@ const Reszecske = (() => {
    KemLab.gauge(L, cx, cy, R, {v: 0..1, a})                nyomásmérő óra (mutató 0..1 között)
    KemLab.thermo(L, x, yb, h, {T, lo, hi, a})              hőmérő (piros folyadékszál)
    KemLab.lens(L, {from: {x, y, r} | {x, y, w, h}, to: {x, y, R} | {x, y, w, h, r},
-                   label, k, a, bg, labelAt: 'bottom'|'top', draw: (ctx) => {…}})
+                   label, k, a, bg, labelAt: 'bottom'|'top', labelX, labelA, draw: (ctx) => {…}})
         A nagyító MINDIG így néz ki: kis kör (vagy keret) a makrotárgyon, érintő vonalak, nagy kör vagy
         lekerekített „részecskeablak” tintakerettel; a draw a kivágott ablakba rajzol; a keret alatt a
         felirat („nagyítás · szemléltetés”, a .md-ből). Kör: kinagyított részlet; ablak: egy egész edény
         tartalma (pl. a fecskendőé) részecskeszinten.
+        A felirat helye: labelAt ('bottom': a keret alatt, 'top': fölötte), vízszintesen labelX (alap: a
+        célkör/-ablak közepe) és labelA igazítás ('center' alap | 'left' | 'right') – pl. ha a kúp a keret
+        alján lép ki, labelX: T.x + T.w, labelA: 'right' a felirat az ablak jobb széléhez igazodik.
+        A kúp érintő vonalai a felirat dobozát kihagyják, így nem futnak át rajta.
+   v1.1 (2026-11-24): labelX/labelA dokumentálva; a kúp nem fut át a nagyító saját feliratán.
    ──────────────────────────────────────────────────────────────────────────────── */
 const KemLab = (() => {
   const TAU = Math.PI * 2, INK = '#1c2440', MUT = '#565d72', GLASS = 'rgba(255,255,255,.42)', WATERC = 'rgba(70,150,215,.42)', WATERD = '#1b5a94';
@@ -850,23 +871,28 @@ const KemLab = (() => {
     return [[s.x, s.y, id], [s.x + s.w, s.y, id], [s.x + s.w, s.y + s.h, id], [s.x, s.y + s.h, id]];
   };
   const shapePath = (c, s) => { c.beginPath(); if (s.w == null) c.arc(s.x, s.y, s.R != null ? s.R : s.r, 0, TAU); else c.roundRect(s.x, s.y, s.w, s.h, s.r == null ? 0 : s.r); };
+  const LBL = (L) => ({ s: 22, w: 500, i: 1, f: L.fonts.D });
   function lens(L, o) {
     const c = L.ctx, F = o.from, T = o.to;
     const H = hull(shapePts(F, 0).concat(shapePts(T, 1)));
+    const lcx = T.w == null ? T.x : T.x + T.w / 2, ly = o.labelAt === 'top' ? (T.w == null ? T.y - T.R - 22 : T.y - 22) : (T.w == null ? T.y + T.R + 38 : T.y + T.h + 38);
+    const lx = o.labelX == null ? lcx : o.labelX, la = o.labelA || 'center';
     al(L, o, .9); c.beginPath(); H.forEach((p, i) => (i ? c.lineTo(p[0], p[1]) : c.moveTo(p[0], p[1]))); c.closePath(); c.fillStyle = 'rgba(28,36,64,.05)'; c.fill();
+    c.save();
+    if (o.label) {   // a kúp vonalai a felirat dobozát kihagyják (evenodd vágás)
+      const w = L.measure(o.label, LBL(L)).w, x0 = la === 'center' ? lx - w / 2 : la === 'right' || la === 'end' ? lx - w : lx;
+      c.beginPath(); c.rect(-1e4, -1e4, 3e4, 3e4); c.rect(x0 - 10, ly - 24, w + 20, 34); c.clip('evenodd');
+    }
     al(L, o, .55); c.setLineDash([]);
     for (let i = 0; i < H.length; i++) { const p = H[i], q = H[(i + 1) % H.length]; if (p[2] !== q[2]) ln(c, p[0], p[1], q[0], q[1], INK, 2); }
+    c.restore();
     al(L, o); shapePath(c, F); c.strokeStyle = INK; c.lineWidth = 3; c.stroke();
     shapePath(c, T); c.fillStyle = o.bg || '#fbf6ec'; c.fill();
     c.save(); shapePath(c, T); c.clip(); if (o.draw) o.draw(c); c.restore();
     al(L, o); shapePath(c, T); c.strokeStyle = INK; c.lineWidth = 5; c.stroke();
     al(L, o, .3); if (T.w == null) { c.beginPath(); c.arc(T.x, T.y, T.R + 9, 0, TAU); } else c.roundRect(T.x - 8, T.y - 8, T.w + 16, T.h + 16, (T.r || 0) + 8);
     c.lineWidth = 2; c.stroke();
-    if (o.label) {
-      al(L, o);
-      const cx = T.w == null ? T.x : T.x + T.w / 2, yy = o.labelAt === 'top' ? (T.w == null ? T.y - T.R - 22 : T.y - 22) : (T.w == null ? T.y + T.R + 38 : T.y + T.h + 38);
-      L.tx(o.label, o.labelX == null ? cx : o.labelX, yy, { k: o.k, s: 22, w: 500, i: 1, f: L.fonts.D, a: o.labelA || 'center', c: MUT });
-    }
+    if (o.label) { al(L, o); L.tx(o.label, lx, ly, Object.assign(LBL(L), { k: o.k, a: la, c: MUT })); }
   }
   return { syringe, cylinder, beaker, flask, tripod, burner, gauge, thermo, lens };
 })();
@@ -1071,7 +1097,7 @@ const KemTx = (function () {
 })();
 /* ── MODUL VÉGE ── */
 
-/* ── MODUL: Atommodell (KemAtom) · forrás: kemia-7-8/05-atom-hejak, 2026-11-23 ──
+/* ── MODUL: Atommodell (KemAtom) · forrás: kemia-7-8/05-atom-hejak, 2026-11-23 · v1.1 (2026-11-24) ──
    Bohr-féle héjmodell Z ≤ 20-ig: 3D-hatású nukleonkupac, héjak, keringő elektronok, külső
    héj kiemelése, „felugró” elektron (lángfestés), elektronfelhő-nézet, Lewis-pöttyök.
    Szöveget nem ír (a feliratok a lecke dolga), kivéve az o.sym vegyjelet (L.tx-szel).
@@ -1102,9 +1128,14 @@ const KemTx = (function () {
    KemAtom.outer(L, n, x, y, r, o) → {dots: [{x, y, site, paired}], unpaired: [...]}
        csak a külső elektronok Lewis-pöttyei egy pont (pl. vegyjel) körül; o.er, o.c, o.rot,
        o.sym (vegyjel középre, KemTx-szel), o.s (betűméret), o.k, o.hc + o.hl (kiemelt páratlanok)
+   KemAtom.sites(n, firstShell) → [{site, slot}]   a Lewis-helykiosztás (amit az outer és a KemMol is
+       használ): site 0 fent, 1 jobbra, 2 lent, 3 balra (szöge: KemAtom.SITE_A[site]); előbb egyesével,
+       aztán párba (fent, balra, lent, jobbra); slot −1/+1: a pár két tagja, 0: magányos elektron
    KemAtom.sphere(ctx, x, y, r, hex, o) – 3D-hatású golyó (gyorsítótárazott sprite), sötét körvonallal
    KemAtom.COL  {p, n, e} – a proton, a neutron és az elektron színe
    Ionképzés / elektronátadás (07): a draw-geometria .el pontjaiból építhető; a modul később bővül.
+   v1.1 (2026-11-24): a sites/SITE_A kiajánlva (a KemMol eddig saját másolatot tartott belőle) – a
+       régi hívások változatlanok.
    ─────────────────────────────────────────────────────────────────────────── */
 const KemAtom = (function () {
   const TAU = Math.PI * 2, U = Lesson.U;
@@ -1293,16 +1324,17 @@ const KemAtom = (function () {
     }
     return { dots, unpaired: dots.filter((d) => !d.paired) };
   }
-  return { config, outerN, neutrons, draw, outer, sphere, COL };
+  return { config, outerN, neutrons, draw, outer, sites, SITE_A, sphere, COL };
 })();
 /* ── MODUL VÉGE ── */
 
-/* ── MODUL: Molekula-rajzoló (KemMol) · forrás: kemia-7-8/06-molekulak, 2026-11-23 ──
+/* ── MODUL: Molekula-rajzoló (KemMol) · forrás: kemia-7-8/06-molekulak, 2026-11-23 · v1.1 (2026-11-24) ──
    Molekulák a vásznon három nézetben – Lewis-kép (vegyjel + elektronpár-pöttyök vagy vonalak),
    pálcikamodell, kalottamodell – folytonos átmenettel, 3D-forgatással és mélységi rendezéssel; a
    kötésképződés animációja (a párosítatlan elektronok a két atom közé vándorolnak, közös pár lesz).
    Függőség (előtte töltve): lesson.js (Lesson.U, Lesson.FONTS), a 05-atom-hejak KemTx (vegyjel) és
-   KemAtom blokkja (KemAtom.sphere: 3D-hatású golyó · KemAtom.outer: a szabad atom Lewis-képe).
+   KemAtom blokkja (KemAtom.sphere: 3D-hatású golyó · KemAtom.outer: a szabad atom Lewis-képe ·
+   KemAtom.sites/SITE_A: a Lewis-helykiosztás – v1.1 óta a KemMol is ezt használja, nincs saját másolata).
    Szöveget csak L.tx / KemTx útján ír. Zárt képletű: a rajz csak a megadott opciókból számolódik.
 
    Molekula:  mol = {name, atoms: [{el, x, y, z, lx, ly, q, rot}], bonds: [[i, j, rend]]}
@@ -1314,6 +1346,12 @@ const KemAtom = (function () {
    KemMol.EL[s] = {c, bd?, lc, r, v}   kitöltőszín, körvonal (alap: a szín sötét változata), a vegyjel
        színe a golyón, van der Waals-sugár (Å, Bondi), vegyértékelektronok (főcsoport; fémeknél
        null). Színkód: H fehér, C fekete, N kék, O piros, Cl zöld, S sárga, Na lila – sötét körvonallal.
+       Benne: H–Ca (Z 1–20) teljesen, továbbá Br, I, Kr, Xe, Ba, Fe, Cu, Zn, Ag, Au, Hg, Ni, Pt, Sn, Pb
+       (v1.1-ben bővítve: Li, Be, B, Zn, Ag, Au, Hg, Ni, Pt, Sn, Pb, Kr, Xe, Ba). Ami hiányzik, arra a
+       modul szürke tartalékot használ ({c: '#9aa0ad', r: 1,6, v: 0}); a lecke a blokkon kívül
+       bővítheti (KemMol.EL.X = {…}) – ha gyakran kell, kerüljön ide.
+       r: Bondi-féle van der Waals-sugár (Å); Li, Be, B, Ba: Mantina et al. (2009); a Fe-nek nincs
+       Bondi-értéke (2,0: szemléltető).
    KemMol.tpl(név, o?) → mol (új példány)   sablonok: H2 Cl2 O2 N2 HCl CO H2O CH4 CO2 NH3 O3 SO2 H2O2
        o.len: a fő kötéshossz (pm), o.angle: a kötésszög (°) – pl. a .md adataiból:
        KemMol.tpl('H2O', {len: 95.8, angle: 104.5}). Alapértékek: kísérleti gázfázisú geometria.
@@ -1350,6 +1388,8 @@ const KemAtom = (function () {
        felirattal: o.text, o.k, o.c, o.r (ívsugár), o.s, o.d (a felirat távolsága), o.side (180°-nál
        az ív oldala: −1 fent, +1 lent) → {x, y} a felirat helye
    Tervezett bővítés (terv, 4. fejezet): morph (átrendeződés, 08), chain (lánc, 13–14), lattice (rácsok, 07).
+   v1.1 (2026-11-24): EL bővítve (lásd fent; a Zn színe a 03-elem-vegyulet-keverek eddigi pótlásáé);
+       a Lewis-helykiosztás a KemAtom.sites-ból jön (azonos kiosztás, a kép nem változik).
    ─────────────────────────────────────────────────────────────────────────── */
 const KemMol = (function () {
   const TAU = Math.PI * 2, U = Lesson.U, INK = '#1c2440', RING = '#c8401c', TEAL = '#0a6f86', WHITE = '#ffffff';
@@ -1365,6 +1405,13 @@ const KemMol = (function () {
     Ca: { c: '#8c9a76', lc: INK, r: 2.31, v: 2 }, Br: { c: '#8b2a1e', lc: WHITE, r: 1.85, v: 7 },
     I: { c: '#6b2f8a', lc: WHITE, r: 1.98, v: 7 }, Fe: { c: '#a3643c', lc: WHITE, r: 2.0, v: null },
     Cu: { c: '#c17a44', lc: WHITE, r: 1.40, v: null },
+    Li: { c: '#a985d6', lc: INK, r: 1.82, v: 1 }, Be: { c: '#9fc16e', lc: INK, r: 1.53, v: 2 },
+    B: { c: '#e2a07a', lc: INK, r: 1.92, v: 3 }, Kr: { c: '#6a9fbb', lc: INK, r: 2.02, v: 8 },
+    Xe: { c: '#4f7fa0', lc: WHITE, r: 2.16, v: 8 }, Ba: { c: '#6f7d52', lc: WHITE, r: 2.68, v: 2 },
+    Zn: { c: '#9aa4b4', lc: INK, r: 1.39, v: null }, Ag: { c: '#c6cad3', lc: INK, r: 1.72, v: null },
+    Au: { c: '#d9a520', lc: INK, r: 1.66, v: null }, Hg: { c: '#b4b9c6', lc: INK, r: 1.55, v: null },
+    Ni: { c: '#8fae8a', lc: INK, r: 1.63, v: null }, Pt: { c: '#d3d5dc', lc: INK, r: 1.75, v: null },
+    Sn: { c: '#8e9aab', lc: INK, r: 2.17, v: 4 }, Pb: { c: '#575d6e', lc: WHITE, r: 2.02, v: 4 },
   };
   const EN = { H: 2.20, C: 2.55, N: 3.04, O: 3.44, F: 3.98, P: 2.19, S: 2.58, Cl: 3.16, Br: 2.96, I: 2.66, Si: 1.90, B: 2.04 };
   const SUB = '₀₁₂₃₄₅₆₇₈₉';
@@ -1372,16 +1419,8 @@ const KemMol = (function () {
   const elOf = (s) => EL[s] || { c: '#9aa0ad', lc: INK, r: 1.6, v: 0 };
   const isFirst = (s) => s === 'H' || s === 'He';
 
-  /* ── Lewis-helyek: ugyanaz a kiosztás, mint a KemAtom.outer-é (fent, jobbra, lent, balra; előbb
-        egyesével, aztán párba: fent, balra, lent, jobbra) ── */
-  const SITE_A = [-Math.PI / 2, 0, Math.PI / 2, Math.PI];
-  function sites(n, first) {
-    const out = [];
-    if (first) { for (let i = 0; i < n; i++) out.push({ site: 0, slot: n === 2 ? (i ? 1 : -1) : 0 }); return out; }
-    const cnt = [0, 0, 0, 0], o1 = [0, 1, 2, 3], o2 = [0, 3, 2, 1], tmp = [];
-    for (let i = 0; i < n; i++) { const s = i < 4 ? o1[i] : o2[i - 4]; cnt[s]++; tmp.push({ site: s, k: cnt[s] }); }
-    return tmp.map((q) => ({ site: q.site, slot: cnt[q.site] === 2 ? (q.k === 1 ? -1 : 1) : 0 }));
-  }
+  /* ── Lewis-helyek: a KemAtom kiosztása (fent, jobbra, lent, balra; előbb egyesével, aztán párba) ── */
+  const SITE_A = KemAtom.SITE_A, sites = KemAtom.sites;
   function valence(a) { const e = elOf(a.el); return Math.max(0, (e.v || 0) - (a.q || 0)); }
   function unpaired(s) { const n = elOf(s).v || 0; return isFirst(s) ? (n === 1 ? 1 : 0) : (n <= 4 ? n : 8 - n); }
 

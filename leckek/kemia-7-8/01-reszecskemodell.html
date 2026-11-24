@@ -83,7 +83,7 @@
 (function () {
 'use strict';
 
-/* ── MODUL: Részecskemotor (Reszecske) · forrás: kemia-7-8/01-reszecskemodell, 2026-11-23 ── */
+/* ── MODUL: Részecskemotor (Reszecske) · forrás: kemia-7-8/01-reszecskemodell, 2026-11-23 · v1.1 (2026-11-24) ── */
 /* API
    Tantárgyfüggetlen 2D részecskeszimuláció (gáz, folyadék, szilárd rács, diffúzió, keverék),
    DETERMINISZTIKUS VISSZAJÁTSZÁSSAL. Nem hivatkozik a lecke kódjára; csak egy 2D vászon kell.
@@ -107,8 +107,14 @@
      anchorK: 0,                 // rugó a rácshelyhez (1/s²) a horgonyzott részecskékre → szilárd rács
      max: 600,                   // a részecskék felső száma
    });
-   S.add('N2', 40, {region: {x, y, w, h}, lattice: 'random' | 'hex', gap: 2, anchor: false, tag: 0})
-                               // csak az első S.at előtt; később esemény ({add}) kell
+   S.add('N2', 40, {region: {x, y, w, h}, lattice: 'random' | 'hex', gap: 2, anchor: false, tag: 0,
+                    exact: false, fill: false}) → a ténylegesen letett darabszám
+                               // csak az első S.at előtt; később esemény ({add}) kell.
+                               // Ha a régióba (a gap-pel és a már bent lévőkkel) nem fér el n darab, a
+                               // modul kevesebbet tesz le, és console.warn-nal szól (azonos hívásra egyszer);
+                               // exact: true → a maradékot átfedéssel is leteszi (az ütközés széttolja),
+                               // így pontosan n darab lesz (a max-korlátig); fill: true → n csak felső
+                               // korlát („töltsd fel, ameddig elfér”, pl. hex rács), nincs figyelmeztetés
    S.at(t, events)             // az állapotot PONTOSAN a t. másodpercre hozza. events: időrendben,
                                //   [{t, set: {T, collide, gravity, attract, anchorK, thermo}},
                                //    {t, add: ['N2', 10, {region…}]}, {t, remove: 'N2' | fn(S, i) → bool},
@@ -129,6 +135,8 @@
      Z.frame(t, phase, B, it)  → [{x, y, ang}]        //   phase: 0 rácsban rezeg · 1 folyadék · 2 gáz (közte átmenet)
                                                       //   B: {x, y, w, h, d (részecskeátmérő)}; it: átfedés-feloldás
    Teljesítmény: rácsos szomszédkeresés; ~400 részecske 120 Hz-en is bőven 60 fps.
+   v1.1 (2026-11-24): add – figyelmeztetés, ha kevesebb fér el; exact és fill opció; visszaadja a darabszámot.
+       A régi hívások ugyanazt a helyzetet adják (a véletlensorozat nem változik).
    ──────────────────────────────────────────────────────────────────────────────── */
 const Reszecske = (() => {
   const TAU = Math.PI * 2;
@@ -180,6 +188,7 @@ const Reszecske = (() => {
       gravity: cfg.gravity || 0, attract: cfg.attract || null, anchorK: cfg.anchorK || 0, rng: (cfg.seed >>> 0) || 1,
       hits: [0, 0, 0, 0], wl: box.x, wr: box.x + box.w, wt: box.y, wb: box.y + box.h };
     let k = 0, ep = 0, sigs = [], evT = [], cps = [], base = null;
+    const warned = new Set();
     const rnd = () => { let s = P.rng; s ^= s << 13; s >>>= 0; s ^= s >> 17; s ^= s << 5; s >>>= 0; P.rng = s; return s / 4294967296; };
     const gauss = () => { const u = Math.max(1e-12, rnd()), v = rnd(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(TAU * v); };
     const wallAt = (side, t, def) => (typeof WF[side] === 'function' ? WF[side](t) : def);
@@ -204,6 +213,12 @@ const Reszecske = (() => {
           if (ok) pts.push([x, y]);
         }
       }
+      if (pts.length < n && o.exact) while (pts.length < n) pts.push([R.x + s.r + rnd() * Math.max(0, R.w - 2 * s.r), R.y + s.r + rnd() * Math.max(0, R.h - 2 * s.r)]);
+      const placed = Math.min(pts.length, MAX - S.n);
+      if (placed < n && !o.fill) {
+        const key = name + '|' + n + '|' + [R.x, R.y, R.w, R.h].join(',');
+        if (!warned.has(key)) { warned.add(key); console.warn(`Reszecske.add: ${name} – ${n} helyett ${placed} fért el (régió ${Math.round(R.w)}×${Math.round(R.h)} px, gap ${gap}${S.n + pts.length > MAX ? ', max elérve' : ''}); nagyobb régió, kisebb gap vagy {exact: true}`); }
+      }
       const sig = Math.sqrt(kk * P.T / s.m) * (o.vScale == null ? 1 : o.vScale);
       for (const [x, y] of pts) {
         if (S.n >= MAX) break;
@@ -213,6 +228,7 @@ const Reszecske = (() => {
         S.a0[i] = rnd() * TAU; S.w[i] = (rnd() < .5 ? -1 : 1) * (.6 + 1.6 * rnd()) * (o.spin == null ? 1 : o.spin);
         S.sp[i] = si; S.tag[i] = o.tag || 0;
       }
+      return placed;
     }
     function removeIf(f) {
       let j = 0;
@@ -311,7 +327,7 @@ const Reszecske = (() => {
       k++;
     }
 
-    S.add = (name, n, o) => { if (base) throw new Error('Reszecske: S.add csak az első S.at előtt; utána {add} esemény kell'); addN(name, n, o); };
+    S.add = (name, n, o) => { if (base) throw new Error('Reszecske: S.add csak az első S.at előtt; utána {add} esemény kell'); return addN(name, n, o); };
     S.reset = () => { if (base) restore(base); cps = base ? [base] : []; ep = 0; sigs = []; evT = []; };
     S.at = (t, ev = []) => {
       if (!base) { P.wl = wallAt('l', 0, P.wl); P.wr = wallAt('r', 0, P.wr); P.wt = wallAt('t', 0, P.wt); P.wb = wallAt('b', 0, P.wb); base = snap(); cps = [base]; }
@@ -406,7 +422,7 @@ const Reszecske = (() => {
 })();
 /* ── MODUL VÉGE ── */
 
-/* ── MODUL: Labor + nagyító (KemLab) · forrás: kemia-7-8/01-reszecskemodell, 2026-11-23 ── */
+/* ── MODUL: Labor + nagyító (KemLab) · forrás: kemia-7-8/01-reszecskemodell, 2026-11-23 · v1.1 (2026-11-24) ── */
 /* API
    Laboreszközök a világos témához (tintakörvonal, áttetsző üveg) és a NAGYÍTÓ, amely a makroszintet
    a részecskeszinttel köti össze. Nem hivatkozik a lecke kódjára. Minden függvény a lecke L-jét kapja;
@@ -424,11 +440,16 @@ const Reszecske = (() => {
    KemLab.gauge(L, cx, cy, R, {v: 0..1, a})                nyomásmérő óra (mutató 0..1 között)
    KemLab.thermo(L, x, yb, h, {T, lo, hi, a})              hőmérő (piros folyadékszál)
    KemLab.lens(L, {from: {x, y, r} | {x, y, w, h}, to: {x, y, R} | {x, y, w, h, r},
-                   label, k, a, bg, labelAt: 'bottom'|'top', draw: (ctx) => {…}})
+                   label, k, a, bg, labelAt: 'bottom'|'top', labelX, labelA, draw: (ctx) => {…}})
         A nagyító MINDIG így néz ki: kis kör (vagy keret) a makrotárgyon, érintő vonalak, nagy kör vagy
         lekerekített „részecskeablak” tintakerettel; a draw a kivágott ablakba rajzol; a keret alatt a
         felirat („nagyítás · szemléltetés”, a .md-ből). Kör: kinagyított részlet; ablak: egy egész edény
         tartalma (pl. a fecskendőé) részecskeszinten.
+        A felirat helye: labelAt ('bottom': a keret alatt, 'top': fölötte), vízszintesen labelX (alap: a
+        célkör/-ablak közepe) és labelA igazítás ('center' alap | 'left' | 'right') – pl. ha a kúp a keret
+        alján lép ki, labelX: T.x + T.w, labelA: 'right' a felirat az ablak jobb széléhez igazodik.
+        A kúp érintő vonalai a felirat dobozát kihagyják, így nem futnak át rajta.
+   v1.1 (2026-11-24): labelX/labelA dokumentálva; a kúp nem fut át a nagyító saját feliratán.
    ──────────────────────────────────────────────────────────────────────────────── */
 const KemLab = (() => {
   const TAU = Math.PI * 2, INK = '#1c2440', MUT = '#565d72', GLASS = 'rgba(255,255,255,.42)', WATERC = 'rgba(70,150,215,.42)', WATERD = '#1b5a94';
@@ -570,23 +591,28 @@ const KemLab = (() => {
     return [[s.x, s.y, id], [s.x + s.w, s.y, id], [s.x + s.w, s.y + s.h, id], [s.x, s.y + s.h, id]];
   };
   const shapePath = (c, s) => { c.beginPath(); if (s.w == null) c.arc(s.x, s.y, s.R != null ? s.R : s.r, 0, TAU); else c.roundRect(s.x, s.y, s.w, s.h, s.r == null ? 0 : s.r); };
+  const LBL = (L) => ({ s: 22, w: 500, i: 1, f: L.fonts.D });
   function lens(L, o) {
     const c = L.ctx, F = o.from, T = o.to;
     const H = hull(shapePts(F, 0).concat(shapePts(T, 1)));
+    const lcx = T.w == null ? T.x : T.x + T.w / 2, ly = o.labelAt === 'top' ? (T.w == null ? T.y - T.R - 22 : T.y - 22) : (T.w == null ? T.y + T.R + 38 : T.y + T.h + 38);
+    const lx = o.labelX == null ? lcx : o.labelX, la = o.labelA || 'center';
     al(L, o, .9); c.beginPath(); H.forEach((p, i) => (i ? c.lineTo(p[0], p[1]) : c.moveTo(p[0], p[1]))); c.closePath(); c.fillStyle = 'rgba(28,36,64,.05)'; c.fill();
+    c.save();
+    if (o.label) {   // a kúp vonalai a felirat dobozát kihagyják (evenodd vágás)
+      const w = L.measure(o.label, LBL(L)).w, x0 = la === 'center' ? lx - w / 2 : la === 'right' || la === 'end' ? lx - w : lx;
+      c.beginPath(); c.rect(-1e4, -1e4, 3e4, 3e4); c.rect(x0 - 10, ly - 24, w + 20, 34); c.clip('evenodd');
+    }
     al(L, o, .55); c.setLineDash([]);
     for (let i = 0; i < H.length; i++) { const p = H[i], q = H[(i + 1) % H.length]; if (p[2] !== q[2]) ln(c, p[0], p[1], q[0], q[1], INK, 2); }
+    c.restore();
     al(L, o); shapePath(c, F); c.strokeStyle = INK; c.lineWidth = 3; c.stroke();
     shapePath(c, T); c.fillStyle = o.bg || '#fbf6ec'; c.fill();
     c.save(); shapePath(c, T); c.clip(); if (o.draw) o.draw(c); c.restore();
     al(L, o); shapePath(c, T); c.strokeStyle = INK; c.lineWidth = 5; c.stroke();
     al(L, o, .3); if (T.w == null) { c.beginPath(); c.arc(T.x, T.y, T.R + 9, 0, TAU); } else c.roundRect(T.x - 8, T.y - 8, T.w + 16, T.h + 16, (T.r || 0) + 8);
     c.lineWidth = 2; c.stroke();
-    if (o.label) {
-      al(L, o);
-      const cx = T.w == null ? T.x : T.x + T.w / 2, yy = o.labelAt === 'top' ? (T.w == null ? T.y - T.R - 22 : T.y - 22) : (T.w == null ? T.y + T.R + 38 : T.y + T.h + 38);
-      L.tx(o.label, o.labelX == null ? cx : o.labelX, yy, { k: o.k, s: 22, w: 500, i: 1, f: L.fonts.D, a: o.labelA || 'center', c: MUT });
-    }
+    if (o.label) { al(L, o); L.tx(o.label, lx, ly, Object.assign(LBL(L), { k: o.k, a: la, c: MUT })); }
   }
   return { syringe, cylinder, beaker, flask, tripod, burner, gauge, thermo, lens };
 })();
@@ -747,7 +773,7 @@ function build3() {
     species: { N2: { r: 15, m: 28, c: EL.N, draw: 'ketatom' }, O2: { r: 15, m: 32, c: EL.O, draw: 'ketatom' } } });
   S3.SA.add('N2', 40, { region: B3 }); S3.SA.add('O2', 10, { region: B3 });
   S3.SW = Reszecske.create({ seed: 304, box: B3, vRef: 150, thermo: .3, max: 700, species: { H2O: { r: 15, m: 18, draw: 'viz' } } });
-  S3.SW.add('H2O', 700, { region: B3, lattice: 'hex', gap: 4 });
+  S3.SW.add('H2O', 700, { region: B3, lattice: 'hex', gap: 4, fill: true });
 }
 function scene3(st, a) {
   const ms = S3.mat[S3.mat.length - 1], fade = clamp((st - ms.t) / .5), prev = S3.mat.length > 1 ? S3.mat[S3.mat.length - 2].m : ms.m;
@@ -936,7 +962,7 @@ function build7() {
   const B = { x: 815, y: 60, w: 400, h: 400 };
   S7.S = Reszecske.create({ seed: 707, box: B, vRef: 110, thermo: .3, max: 300,
     species: { E: { r: 17, m: 46, draw: 'etanol' }, W: { r: 11, m: 18, draw: 'viz' } } });
-  S7.S.add('E', 44, { region: B, gap: 1 }); S7.S.add('W', 150, { region: B, gap: .5 });
+  S7.S.add('E', 44, { region: B, gap: 1 }); S7.S.add('W', 150, { region: B, gap: .5, fill: true });
 }
 const PEAS = [], POPPY = [];
 { const r = U.rng(71), d = 25;

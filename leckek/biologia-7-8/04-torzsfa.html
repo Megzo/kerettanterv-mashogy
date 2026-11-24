@@ -86,7 +86,7 @@
    (ugyanabban a sorrendben, mint ott: a DeepTime a TortTimeline-ra épül).
    ÚJ: BioTree (D modul fa-része: dendrogram, halmazábra ↔ törzsfa morf, jellegjelek) – a BioNet után.
    ══════════════════════════════════════════════════════════════════════════════════════════ */
-/* ── MODUL: Hálózat (BioNet) · forrás: biologia-7-8/06-taplalekhalozat, 2026-11-24 ──
+/* ── MODUL: Hálózat (BioNet) · forrás: biologia-7-8/06-taplalekhalozat, 2026-11-24 · v1.1 (2026-11-24) ──
    Csomópont–él rajz (táplálékhálózat, anyagkörforgás, bármilyen irányított gráf) ikonokkal,
    kiemeléssel, kivett csomópontokkal; pöttyáram az éleken és lánc mentén („energia elszáll”);
    kvalitatív kaszkád egy faj kivételére/betelepítésére; energia-/biomassza-piramis lin ↔ log
@@ -123,7 +123,10 @@
              egy szint: a fogyasztó a táplálékai számával, a zsákmány a ragadozói számával arányos
              (súlyozott) részt kap; szintenként decay-szel csillapodik; KVALITATÍV, nem előrejelzés
    net.badges(res, {t = ∞ (a változás óta eltelt idő), dt = .7 (mp lépésenként), thr = .1, a = 1,
-             up = kékeszöld, down = cinóber, size = 1}) – ▲/▼ jelek a csomópontok jobb felső sarkán
+             up = kékeszöld, down = cinóber, size = 1, pos = 'ne', offset = [0, 0]}) – ▲/▼ jelek a csomópontokon
+             pos: a jel helye a kör szélén – 'ne' (jobb felső, alap) | 'nw' | 'se' | 'sw' | 'n' | 's' | 'e' | 'w' |
+             'auto' (a név túloldalán: above → 'se', below → 'ne', left → 'ne', right → 'nw') | fn(n) → ezek egyike;
+             offset: [dx, dy] px vagy fn(n) → [dx, dy] – finomhangolás (pl. ha a jel a névbe vagy élbe lóg)
    BioNet.chain(c, {pts: [[x, y]…], rate (pötty/s), keep: p | [p…] (a j. ponton továbbmenés esélye),
              t, t0 = −∞, seed = 1, speed = 150, r = 6, col, stroke, spread = 0 (oldalirányú szórás px),
              heat: {col, dx = 1, dy = −.5, dist = 120, life = 1.8}, a = 1}) → [db…]
@@ -140,6 +143,8 @@
              names: [{s, k}], nameX (ha megvan: a nevek jobbra igazítva ide), values = true,
              fmt(v, i) → szöveg, s = 24, vk (az értékfelirat .md-kulcsa)}) → [{x, y, w, h}…]
    BioNet.hash(i, j, k) → [0, 1) – determinisztikus „véletlen”
+   v1.1 (2026-11-24): badges – pos/offset opció (eddig mindig a jobb felső sarokra rajzolt, ami a
+       fölötte álló névvel ütközött); az alapértelmezés változatlan.
    ──────────────────────────────────────────────────────────────────────────────────────────── */
 const BioNet = (() => {
   'use strict';
@@ -308,13 +313,17 @@ const BioNet = (() => {
       return { v, d };
     };
 
+    const BADGE_DIR = { ne: [.78, -.78], nw: [-.78, -.78], se: [.78, .78], sw: [-.78, .78], n: [0, -1.1], s: [0, 1.1], e: [1.1, 0], w: [-1.1, 0] };
     net.badges = (res, q = {}) => {
       const c = L.ctx, t = q.t == null ? Infinity : q.t, dt = q.dt || .7, thr = q.thr == null ? .1 : q.thr, A = q.a == null ? 1 : q.a, base = c.globalAlpha;
       for (const id in res.v) {
         const val = res.v[id], n = net.N[id]; if (!n || Math.abs(val) < thr) continue;
         const ap = smooth((t - (res.d[id] - 1) * dt) / .45); if (ap <= 0) continue;
         const m = Math.abs(val), sz = (14 + 14 * Math.sqrt(m)) * (q.size || 1) * (.6 + .4 * ap), up = val > 0;
-        const x = n.x + n.r * .78, y = n.y - n.r * .78;
+        let ps = typeof q.pos === 'function' ? q.pos(n) : q.pos || 'ne';
+        if (ps === 'auto') ps = { above: 'se', below: 'ne', left: 'ne', right: 'nw' }[n.side] || 'ne';
+        const dv = BADGE_DIR[ps] || BADGE_DIR.ne, of = (typeof q.offset === 'function' ? q.offset(n) : q.offset) || [0, 0];
+        const x = n.x + n.r * dv[0] + of[0], y = n.y + n.r * dv[1] + of[1];
         c.globalAlpha = base * A * ap;
         c.beginPath(); c.arc(x, y, sz * .95, 0, TAU); c.fillStyle = COL.card; c.fill();
         c.lineWidth = 3; c.strokeStyle = up ? (q.up || COL.teal) : (q.down || COL.red); c.stroke();
