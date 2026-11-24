@@ -14,6 +14,21 @@ Letöltés után a repó [`index.html`](index.html)-je dupla kattintással is me
   számok: [`pilot/fizika-7-8/`](pilot/fizika-7-8/)
 - **Történelem 5–6.**, 20 lecke – [`leckek/tortenelem-5-6/`](leckek/tortenelem-5-6/), terv és
   gyártási számok: [`pilot/tortenelem-5-6/`](pilot/tortenelem-5-6/)
+- **Matematika 5–6.**, 18 lecke – [`leckek/matematika-5-6/`](leckek/matematika-5-6/),
+  [`pilot/matematika-5-6/`](pilot/matematika-5-6/)
+- **Kémia 7–8.**, 14 lecke – [`leckek/kemia-7-8/`](leckek/kemia-7-8/),
+  [`pilot/kemia-7-8/`](pilot/kemia-7-8/)
+- **Biológia 7–8.**, 17 lecke – [`leckek/biologia-7-8/`](leckek/biologia-7-8/),
+  [`pilot/biologia-7-8/`](pilot/biologia-7-8/)
+- **Földrajz 9–10.** (gimnázium), 15 lecke – [`leckek/foldrajz-9-10/`](leckek/foldrajz-9-10/),
+  [`pilot/foldrajz-9-10/`](pilot/foldrajz-9-10/)
+- **Matematika 9–10.** (gimnázium), 15 lecke – [`leckek/matematika-9-10/`](leckek/matematika-9-10/),
+  [`pilot/matematika-9-10/`](pilot/matematika-9-10/)
+
+Az utóbbi öt sorozat egy éjszakai, párhuzamos gépi gyártásban készült (összefoglaló, számok,
+kerethasználat: [`pilot/EJSZAKAI-GYARTAS.md`](pilot/EJSZAKAI-GYARTAS.md)). **Tanári review még
+nem volt** – a review-pontok sorozatonként a `METRIKAK.md`-ben vannak; három biológialecke
+(újraélesztés, járvány, magzat) szakmai lektorálás nélkül nem használható.
 
 - [`leckek/`](leckek/README.md) – a leckék; mindegyik szövege egy tanár által is
   szerkeszthető `.md`-fájlban van, a `tools/build_lesson.py` égeti be a leckébe.
