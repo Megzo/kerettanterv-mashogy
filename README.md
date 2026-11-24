@@ -28,13 +28,20 @@ Letöltés után a repó [`index.html`](index.html)-je dupla kattintással is me
   [`pilot/termeszettudomany-5-6/`](pilot/termeszettudomany-5-6/)
 - **Magyar nyelv és irodalom 5–6.**, 17 lecke – [`leckek/magyar-5-6/`](leckek/magyar-5-6/),
   [`pilot/magyar-5-6/`](pilot/magyar-5-6/)
+- **Digitális kultúra 5–6.**, 17 lecke – [`leckek/digitalis-kultura-5-6/`](leckek/digitalis-kultura-5-6/),
+  [`pilot/digitalis-kultura-5-6/`](pilot/digitalis-kultura-5-6/) – saját, offline blokkprogramozóval
+  és robotszimulátorral
 
-Az utóbbi hét sorozat párhuzamos gépi gyártásban készült (öt egy éjszaka alatt – összefoglaló,
+Ezzel a nyitóoldal 5–6. évfolyamos oszlopának mind az öt tárgya (matematika, magyar, történelem,
+természettudomány, digitális kultúra) kapott egy-egy sorozatot.
+
+Az utóbbi nyolc sorozat párhuzamos gépi gyártásban készült (öt egy éjszaka alatt – összefoglaló,
 számok, kerethasználat: [`pilot/EJSZAKAI-GYARTAS.md`](pilot/EJSZAKAI-GYARTAS.md) –, a
-természettudomány és a magyar a következő napon). **Tanári review még nem volt** – a
-review-pontok sorozatonként a `METRIKAK.md`-ben vannak. Szakmai lektorálás nélkül nem
+természettudomány, a magyar és a digitális kultúra a következő napon). **Tanári review még nem
+volt** – a review-pontok sorozatonként a `METRIKAK.md`-ben vannak. Szakmai lektorálás nélkül nem
 használható: három biológialecke (újraélesztés, járvány, magzat), a természettudományból a tűz
-(tűzvédelem) és az emberi test (egészség).
+(tűzvédelem) és az emberi test (egészség), a digitális kultúrából a jelszó, a digitális lábnyom és
+az álhír (online biztonság).
 
 - [`leckek/`](leckek/README.md) – a leckék; mindegyik szövege egy tanár által is
   szerkeszthető `.md`-fájlban van, a `tools/build_lesson.py` égeti be a leckébe.
