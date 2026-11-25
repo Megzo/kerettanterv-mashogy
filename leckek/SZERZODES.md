@@ -867,3 +867,54 @@ a saját briefed (3. fejezet) és a modulok API-vázlata (4. fejezet).
   pontszám, áldozatszám-tipp, effektus, csúszka áldozatszámon; [ ] nincs önkényuralmi jelkép, fotó, plakát; [ ] a
   szó szerinti idézet közkincs vagy jogszabály; [ ] 1990 utáni tartalom intézmény és adat, szürke pártszínek;
   [ ] a történeti határ „vázlatos” és dátumozott; [ ] lektort kérő leckében ott a `Szakmai ellenőrzés` blokk.
+
+## 21. Történelem-kiegészítés (9–10. évfolyam, gimnázium)
+
+Történelemleckénél a 9–10. évfolyamon a fenti szabályok, a 11. (Történelem 5–6.) és a **20. (Történelem 7–8.)
+fejezet** együtt érvényesek – ahol ez a fejezet mást mond, ez az irányadó. **Kötelező olvasmány:**
+`pilot/tortenelem-9-10/terv.md` – a 0. fejezet (döntések), az 1.3 pont (szerkesztői elvek), a saját briefed (3. fejezet)
+és a 4. fejezet (melyik modult melyik leckéből, melyik sorból másolod).
+
+- **Mappa, fejléc:** `leckek/tortenelem-9-10/NN-slug.{html,md,content.js}`; metaadat-sor:
+  `tantárgy: Történelem · évfolyam: 9–10. · témakör: N. <a kerettanterv témakörének címe>`. Panel ≤ 55 szó (cél 40–50),
+  spec `"sources": true`; a lektort kérő leckékben `"review": [...]` a terv 2. táblája szerint.
+- **Elemző szint:** a vásznon egy *mechanizmus* működjön (szavazás, adózás, ár, népesség, jogkörök), és a diák a
+  kapcsolóval/csúszkával a következményt lássa. Az 5–6. évfolyam kulcsvizuálját (a brief „Ne ismételd” sora) nem
+  ismételjük. Adat, becslés és **modell** a vásznon is elválik: a lecke saját modellje „modell” bélyeget kap, és a lépés
+  kimondja, mit hagy ki.
+- **„Honnan tudjuk?” forráskritikával:** ki írta, mikor, milyen céllal, mennyivel az esemény után, mit nem tudhatott.
+- **Vitatott kérdések** (őstörténet, honfoglalás, hun–magyar kapcsolat, kettős honfoglalás, Szent Korona-tan, létszám- és
+  népességbecslések, mohácsi vereség, a francia forradalom mérlege, a szabadságharc veresége): **konszenzus / vitatott /
+  nem igazolt** – három külön jelölés; vitánál legalább két nézőpont, értékítélet helyett forrás, adat, kérdés.
+  Áltudományos állítás nem jelenhet meg tényként; ha szerepel, csak elvetettként, a cáfolattal. A nyelvrokonság nem
+  genetikai rokonság; a krónikás hun–magyar azonosság „hagyomány” réteg.
+- **Vallások tárgyilagosan:** leíró keret („a … hite / tanítása szerint”), egyik vallás sem értékelve vagy rangsorolva;
+  szent szöveg és élő hagyomány: „hagyomány” réteg. Reformáció és katolikus megújulás kiegyensúlyozottan.
+- **Erőszak méltósággal** (keresztes háborúk, inkvizíció, pogromok, rabszolgaság, gyarmatosítás, hódoltság, terror,
+  megtorlás): a 20. fejezet szabályai szerint – nincs pontszám, effektus, animált számláló, vér, kitalált áldozati
+  történet, „Tippelj!” áldozatszámra; csatát nem játszunk le (térkép, erőviszony, forrás).
+- **Szerzői jog:** az ókori, középkori, kora újkori eredeti szöveg közkincs, de **a modern fordítása gyakran nem** – szó
+  szerint csak az eredetiből készült **saját fordítás** (így jelölve, a megjegyzésben a felhasznált kiadással) vagy 1955-ben
+  vagy előbb elhunyt fordító munkája idézhető; bizonytalanságnál parafrázis. Jogszabályszöveg † nélkül. Portré nincs
+  (sziluett, pecsét, névkártya).
+- **Térképek, határok:** 1914 előtti történeti határ **nincs** a `TORT_HATAR`-ban, új közös adatfájl nem készül. Ókori,
+  középkori, kora újkori terület, hódoltság, front: **leckén belül rajzolt, lágy szélű sokszög** (`TortMap.region`),
+  „vázlatos” bélyeggel és dátummal; a töréspontok helységnévvel a kódban, a kulcshelyek `coord`-ként az `### Adatok`
+  alatt, a `.md` két egybevetett atlaszt nevez meg (geometriát onnan nem veszünk át). A középkori–kora újkori Magyar
+  Királyság kerete a `mo1914hsz` csoporttal közelíthető, **„vázlatos – az 1914-es határral közelítve”** felirattal, az
+  eltérések a `.md`-ben. Terület és népesség mindig az `### Adatok`-ból.
+- **Színek:** háborús feleknél indigó `#3b4590` / szilva `#7d3a66` (+ egy harmadik semleges tónus sraffozással);
+  népcsoportoknál, felekezeteknél egymáshoz hasonló semleges tónusok mintával – nincs „jó” és „rossz” szín. A TortState
+  bordó „irányít” nyila itt egy kézbe vont hatalmat is jelölhet (princeps, forradalmi diktatúra) – a jelmagyarázat
+  kimondja; a TortParl tónusai nem pártokat jelölhetnek (vagyoni osztály, követutasítás) – szintén kimondva.
+- **Modulok:** **új közös modul nincs**, referencialecke nincs. Minden modult (TtTipp, TortTimeline, TortSource, TortMap,
+  FoldChart, TortParl, TortState, TortTerr, TortCards, MatChart) **bájtra azonosan** a terv 4.1 táblája szerinti
+  forrásleckéből veszel át, md5-tel ellenőrizve. Ami új rajz, modell vagy szimuláció, az leckén belüli kód, **MODUL-jelölés
+  nélkül**, a modulblokkok után. Modulhibát a saját példányodban javíts, és írd a metrikasorba.
+- **Számformátum:** a 20. fejezet szerint; ókori évszám „Kr. e. 508”, évszázad „Kr. e. 5. század közepe”, perjeles év
+  („Kr. e. 508/507”, „1000/1001”) a szövegben, a `year` adat egy évet tartalmaz.
+- **Kész, ha** (a 10. és a 20. fejezeten felül): [ ] a brief „Ne ismételd” sora teljesül; [ ] minden modell „modell” vagy
+  „kitalált” bélyeges, és a lépés kimondja a korlátját; [ ] vitatott kérdésnél konszenzus / vitatott / nem igazolt jelölés
+  és legalább két nézőpont; [ ] vallási tartalom leíró keretben; [ ] szó szerinti idézetnél a fordító is rendben (saját
+  fordítás vagy † ≤ 1955); [ ] minden kézi sokszög „vázlatos”, dátumozott, töréspontjai kommentezve, két atlasz a `.md`-ben;
+  [ ] a modulblokkok md5-je egyezik a terv 4.1 táblájával (vagy az eltérés a metrikasorban).
