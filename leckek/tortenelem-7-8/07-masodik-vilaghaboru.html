@@ -96,7 +96,6 @@
   "legfeljebb": null,
   "kattints": null,
   "teleki": null,
-  "dv pótlás": 48,
   "együtt cím": null,
   "együtt terület": null,
   "együtt népesség": null,
@@ -3847,7 +3846,7 @@ function mythCard(k1, k2, x, y, a, o = {}) {
 }
 
 /* ════════ adatkészlet: csoportok, hovatartozás, frontok ════════ */
-let R = [], SETS = {}, PATCH = null, EKEYS, WKEYS, SKEYS, IKEYS, ISIC, HKEYS, POCKET1, POCKET2, DIST = null;
+let R = [], SETS = {}, EKEYS, WKEYS, SKEYS, IKEYS, ISIC, HKEYS, POCKET1, POCKET2, DIST = null;
 const uniq = (a) => [...new Set(a)];
 function buildSets(T) {
   const g = (k) => T.ids(k), minus = (a, b) => { const s = new Set(b); return a.filter((x) => !s.has(x)); }, inter = (a, b) => { const s = new Set(b); return a.filter((x) => s.has(x)); };
@@ -3909,12 +3908,7 @@ function buildRules() {
     { g: 'eu1942.FI', who: N, from: A('finn fegyverszünet') },
     { g: 'eu1923.GR', who: 'ALx', from: A('Athén felszabadul') }, { g: 'eu1938.AL', who: 'ALx', from: A('Albánia felszabadul') },
   );
-  // a Tisza vonalától nyugatra eső RS-03 (Zenta, Ada, Magyarkanizsa) – ADATHIBA-pótlás, lásd a .md fejlécét
-  const tz = MAPK.river('Tisza').filter((p) => p[1] > 45.0 && p[1] < 46.45 && p[0] > 19.7 && p[0] < 20.6);
-  if (tz.length > 1 && tz[0][1] < tz[tz.length - 1][1]) tz.reverse();
-  PATCH = tz.length > 1 ? TK.side(tz, [[19.3, 44.9], [19.3, 46.6]]) : null;
 }
-const hasPatch = (d) => PATCH && d >= ya('délvidéki bevonulás');
 
 /* ── frontok: a kulcskockák geometriája (VÁZLAT – a dátumok a .md-ből) ── */
 const ring = (p) => p.concat([p[0]]);
@@ -4005,11 +3999,6 @@ function politics(T, d, sty, o = {}) {
     if (ss) ov({ ids: SETS.WEST }, ss, al2);
     if (is) ov({ ids: SETS.ITA }, is, al2);
     if (ip) ov({ ids: SETS.ITA }, ip, al2);
-  }
-  if (hasPatch(d)) {   // Zenta, Ada, Magyarkanizsa: Magyarország aktuális színével (lásd buildRules)
-    const who = T.control(R, d)['HU-BA'], s = sty[who];
-    if (s) items.push(Object.assign({ g: ['RS-03'], clip: PATCH }, s));
-    if (Ef && d > ya('keleti front 7') && sty.SUx) { const wsd = westSide(T, Ef); items.push({ g: ['RS-03'], clip: PATCH, clipOut: wsd, c: LAND, a: 1 }, Object.assign({ g: ['RS-03'], clip: PATCH, clipOut: wsd }, sty.SUx)); }
   }
   T.fill(c, items, { a });
   if (o.outlines !== false) {
@@ -4106,7 +4095,6 @@ function scene1(st, w, active) {
     const gc = TK.group(P.g).c, away = [gc[0] + (gc[0] - BP[0]) * 1.2, gc[1] + (gc[1] - BP[1]) * 1.2];
     const off = TK.explode(P.g, away, (1 - u) * .55), sel = S1.sel === i;
     al(1); TK.fill(c, [{ g: P.g, c: P.mode === 'mód katonai' ? '#a66b2c' : OCH, a: (sel ? .62 : .42) * u, dx: off.dx, dy: off.dy, hatch: P.mode === 'mód katonai' ? { c: 'rgba(143,90,12,.55)', gap: 12, w: 2 } : null }]);
-    if (P.id === 'dv' && PATCH) { al(1); TK.fill(c, [{ g: ['RS-03'], clip: PATCH, c: '#a66b2c', a: (sel ? .62 : .42) * u, dx: off.dx, dy: off.dy, hatch: { c: 'rgba(143,90,12,.55)', gap: 12, w: 2 } }]); }
     al(1); TK.outline(c, P.g, { c: sel ? RED : OCH, w: sel ? 3.5 : 2.2, a: u, dx: off.dx, dy: off.dy });
     hits.push({ g: P.g, i, dx: off.dx, dy: off.dy });
   });
@@ -4128,11 +4116,6 @@ function scene1(st, w, active) {
   const ci = [['Budapest', 'város Budapest', 9], ['Kassa', 'hely Kassa', 6], ['Kolozsvár', 'hely Kolozsvár', 6]].map(([d, k, pri]) => { const q = LL(d + ' helye'); return { id: d, lon: q[0], lat: q[1], s: lab(k), k, pri, size: 22, r: 5, dot: true }; });
   titleK('rev cím', p(0));
   al(1); MAPK.labels(L, items.concat(ci), { rect: [20, 110, 870, 640], avoid: [{ x: 20, y: 30, w: 520, h: 90 }] });
-  if (st > T1(3) + .8 && PATCH) {
-    const q = MAPK.pt(19.85, 45.9), pa = clamp((st - T1(3) - .8) / .5), bx = 520, by = 700;
-    vline(q[0], q[1], bx + 60, by - 18, OCH, pa * .8, 2, [5, 4]);
-    al(pa); L.pill(lab('dv pótlás'), bx, by, { k: 'dv pótlás', s: 22, w: 600, a: 'left', bg: 'rgba(255,250,241,.95)', bd: 'rgba(143,90,12,.6)', bw: 1.5, c: OCH, pad: 8, r: 8 });
-  }
   al(p(.2)); stampK('vázlatos', 40, 700);
   al(p(.2)); L.pill(lab('mo 1920'), 210, 700, { k: 'mo 1920', s: 22, w: 600, a: 'left', bg: 'rgba(207,195,168,.75)', bd: INK, bw: 2, c: INK, pad: 10, r: 8 });
   // kártya
@@ -4373,9 +4356,8 @@ function scene7(st, w) {
   al(1); MAPK.base(c, { mountains: .1, rivers: { rank: 5, hi: { 'Duna': { w: 3.4 }, 'Tisza': { w: 2.8 } } } });
   const Hf = TK.front(HKEYS, d), hu = { ids: TK.ids('mo1941') };
   // a front két oldala: nyugatra német (tengely) megszállás, keletre szovjet kézen – a zseb a bekerítéstől Buda elestéig
-  const es = Hf ? TK.side(Hf, [[27.5, 43.0], [27.5, 51.0]]) : null, ws = Hf ? TK.side(Hf, [[14.0, 43.0], [14.0, 51.0]]) : null;
+  const es = Hf ? TK.side(Hf, [[27.5, 43.0], [27.5, 51.0]]) : null;
   al(1); TK.fill(c, [Object.assign({ g: hu, clipOut: es }, STY.AXm), Object.assign({ g: hu, clip: es }, STY.SUx)]);
-  if (PATCH) { al(1); TK.fill(c, [Object.assign({ g: ['RS-03'], clip: PATCH, clipOut: es }, STY.AXm)].concat(ws ? [Object.assign({ g: ['RS-03'], clip: PATCH, clipOut: ws }, STY.SUx)] : [])); }
   const pk = d >= ya('Budapest bekerítése') && d < ya('Buda eleste') ? (d < ya('Pest eleste') ? POCKET1 : POCKET2) : null;
   if (pk) { al(1); TK.fill(c, [{ poly: pk, c: LAND, a: 1 }, Object.assign({ poly: pk }, STY.AXm)]); }
   al(1); TK.outline(c, 'mo1941', { c: INK, w: 2.4 });
@@ -4588,7 +4570,7 @@ L = Lesson.create({
         { name: 'a kulcsesemények időrendben', ok: ord, got: ord, want: true },
         { name: 'a front-kulcskockák időrendben', ok: keysOk, got: keysOk, want: true },
         { name: 'dátum → nap → dátum (Barbarossa)', ok: back.join('.') === ymd.join('.'), got: back.join('.'), want: ymd.join('.') },
-        { name: 'a Délvidék-pótlás (RS-03 a Tiszától nyugatra) elkészült', ok: !!PATCH, got: !!PATCH, want: true },
+        { name: 'a delvidek1941 csoportban benne van a Tiszától nyugatra eső RS-03 (Zenta, Ada, Magyarkanizsa)', ok: TORT_HATAR.groups.delvidek1941.includes('RS-03.bacs'), got: TORT_HATAR.groups.delvidek1941.includes('RS-03.bacs'), want: true },
         { name: 'a keleti front 1942 ősszel messzebb van Berlintől, mint 1944 tavaszán (a tipp helyes válasza)', ok: dk42 > dk44, got: Math.round(dk42) + ' / ' + Math.round(dk44), want: '1942 > 1944' }];
     };
   },

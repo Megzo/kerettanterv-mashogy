@@ -269,6 +269,11 @@ CUTS = [
     # ── A Duna Újvidéknél: a Dél-bácskai körzet Dunától délre eső része (Pétervárad, Karlóca, Beocsin) a Szerémséghez
     # (1918-ig Horvát-Szlavónország) tartozott. A Natural Earth Duna-vonalán; a JOBB (déli) oldal a szerémségi darab.
     ("duna-ujvidek", "DANUBE_NS", {"RS-06": ("RS-06", "RS-06.srem")}),
+    # ── A Tisza az Észak-bánsági körzetben: a körzet Tiszától nyugatra eső része (Magyarkanizsa, Zenta, Ada községek,
+    # kb. 920 km²) a Bácskához tartozik (Bács-Bodrog vármegye; 1941-ben visszakerült), a keleti (Csóka, Törökkanizsa,
+    # Nagykikinda) a Bánsághoz. A Natural Earth Tisza-vonalán Szegedtől (HU) Óbecse–Törökbecse alá, északról délre; a
+    # JOBB (nyugati) oldal a bácskai darab.
+    ("tisza-rs03", "TISZA_RS03", {"RS-03": ("RS-03", "RS-03.bacs")}),
     # ── Német–orosz és német–osztrák határ 1914 (a mai Lengyelországban). A cseh határtól a Visztulán és a Przemszán
     # (Mysłowice: a „három császár sarka”) át a Prosnáig, a Gopło-tóig, a Visztuláig és a Drwęcáig. A BAL oldal német.
     ("de-ru-1914", [(18.30, 49.88), (18.45, 49.93), (18.70, 49.96), (18.90, 49.98),      # Pless ↑DE, Bielitz ↓AT
@@ -420,6 +425,19 @@ def river_line(feats, name, x0, x1):
     sys.exit(f"nincs folyóvonal: {name}")
 
 
+def river_line_lat(feats, name, y0, y1):
+    """Mint a river_line, de szélesség szerint vág (észak–déli folyásra, pl. a Tisza)."""
+    for f in feats:
+        if (f["properties"].get("name") or "") != name:
+            continue
+        g = f["geometry"]
+        for line in ([g["coordinates"]] if g["type"] == "LineString" else g["coordinates"]):
+            pts = [tuple(p[:2]) for p in line if y0 <= p[1] <= y1]
+            if len(pts) > 5:
+                return pts
+    sys.exit(f"nincs folyóvonal: {name}")
+
+
 def river_cuts(rivers10):
     # Dráva (a Natural Earth-ben a „Mur” vonal folytatása Legrád alatt): a határ 18,283° K-nél válik el a folyótól
     drava = river_line(rivers10, "Mur", 18.29, 18.93)
@@ -427,7 +445,9 @@ def river_cuts(rivers10):
     # Duna Újvidéknél: a horvát határtól (Ilok) a körzethatárig (19,986° K), mindkét vége a Szerémségben
     duna = river_line(rivers10, "Danube", 19.40, 19.97)
     duna = [(19.385, 45.19), (19.42, 45.25)] + [p for p in duna if p[0] > 19.43] + [(19.99, 45.10)]
-    return {"DRAVA": drava, "DANUBE_NS": duna}
+    # Tisza: Szegedtől (46,22° É, Magyarország) Óbecse–Törökbecse alá (45,50° É); mindkét vége az Észak-bánsági körzeten kívül
+    tisza = river_line_lat(rivers10, "Tisa", 45.50, 46.22)
+    return {"DRAVA": drava, "DANUBE_NS": duna, "TISZA_RS03": tisza}
 
 
 # ─────────────────────────────────────────────── geometria: vágás vonallal
@@ -705,7 +725,7 @@ def build_groups(ids):
     K39 = sorted(u for u in ids if u.endswith(".k39"))
     BD2 = sorted(set(u for u in ids if u.endswith(".bd2")) |
                  {u for u in ("RO-SM", "RO-MM", "RO-SJ", "RO-BN", "RO-HR", "RO-CV") if has(u)})
-    DV41 = ["RS-01", "RS-05", "RS-06", "HR-14.bar", "HR-20", "SI-PM"]
+    DV41 = ["RS-01", "RS-03.bacs", "RS-05", "RS-06", "HR-14.bar", "HR-20", "SI-PM"]
     MO20 = HU + ["SK-BL.hidfo"]
     MO41 = MO20 + BD1 + ["UA-21"] + K39 + BD2 + DV41
     g = {
@@ -722,7 +742,7 @@ def build_groups(ids):
         "I": ["UA-21", "UA-21.bd1", "SK-KI.bd1"] + K39 + ["HU-SZ"],
         "II": BD2,
         "III": ["HU-BZ", "HU-HE", "HU-NO", "HU-KE", "HU-GS", "SK-BL.bd1", "SK-TA.bd1", "SK-NI.bd1", "SK-BC.bd1"],
-        "IV": ["HU-BK", "HU-CS", "HU-BE", "HU-HB", "HU-JN", "RS-01", "RS-05", "RS-06"],
+        "IV": ["HU-BK", "HU-CS", "HU-BE", "HU-HB", "HU-JN", "RS-01", "RS-03.bacs", "RS-05", "RS-06"],
         "V": ["HU-VA", "HU-ZA", "HU-SO", "HU-BA", "HU-TO", "HU-VE", "HU-FE", "HR-14.bar", "HR-20", "SI-PM"],
         "VI": ["HU-PE"], "BP": ["HU-BU"],
     }
@@ -898,7 +918,7 @@ NOTES = {
     "karpatalja1939": "vázlatos: a Kárpátaljai terület a bécsi döntés sávja nélkül (1939. március 15–18.)",
     "szlovakia1939": "vázlatos: a kelet-szlovákiai sáv (1939. április 4.; Szobránc, Sztakcsin, Ulics környéke), kézi vonal",
     "bd2": "vázlatos: második bécsi döntés, 1940. augusztus 30. – kézi vágóvonal Nagyvárad, Kolozsvár, Marosvásárhely, Sepsiszentgyörgy (HU) és Nagyszalonta, Torda, Segesvár, Brassó (RO) között; a mai megyehatárok miatt Kovászna és Hargita szinte egészben",
-    "delvidek1941": "vázlatos: Bácska (a Dunáig), baranyai háromszög, Muraköz, Muravidék (1941. április); a Bánság német katonai közigazgatás alá került, nincs benne",
+    "delvidek1941": "vázlatos: Bácska (a Dunáig és a Tiszáig; az Észak-bánsági körzet Tiszától nyugatra eső része – Magyarkanizsa, Zenta, Ada – a Tisza-vonalon vágva), baranyai háromszög, Muraköz, Muravidék (1941. április); a Bánság német katonai közigazgatás alá került, nincs benne",
     "mo1941": "vázlatos: az 1941-es országterület (mo1920 + bd1 + Kárpátalja + kelet-szlovákiai sáv + bd2 + Délvidék)",
     "mo1947": "a mai Magyarország (a párizsi béke, 1947 után)",
     "pozsonyi-hidfo1947": "vázlatos: Horvátjárfalu, Oroszvár, Dunacsún – kézi vonal Ligetfalu déli szélén és a Dunán",
@@ -1175,7 +1195,7 @@ PIECE_NAMES = {
     "SK-BC.bd1": "visszacsatolt rész 1938", "SK-KI.bd1": "visszacsatolt rész 1938", "UA-21.bd1": "visszacsatolt rész 1938",
     "SK-KI.k39": "1939. áprilisi sáv", "SK-PV.k39": "1939. áprilisi sáv", "SK-BL.hidfo": "pozsonyi hídfő (1947-ig magyar)",
     "PL-MA.arva": "árvai falvak (1920-ig magyar)", "PL-MA.szepes": "szepesi falvak (1920-ig magyar)",
-    "HR-14.bar": "baranyai háromszög", "RS-06.srem": "szerémségi rész", "PL-SL.a": "német 1939-ig", "PL-SL.b": "1922-től lengyel",
+    "HR-14.bar": "baranyai háromszög", "RS-06.srem": "szerémségi rész", "RS-03.bacs": "Tiszától nyugatra (Bácska)", "PL-SL.a": "német 1939-ig", "PL-SL.b": "1922-től lengyel",
     "PL-SL.c": "1914-ig orosz", "PL-SL.d": "1918-ig osztrák", "PL-WP.a": "német 1939-ig", "PL-WP.b": "1920-tól lengyel",
     "PL-WP.c": "1914-ig orosz", "PL-KP.b": "1920-tól lengyel", "PL-KP.c": "1914-ig orosz", "PL-KP.de22": "német 1939-ig",
     "PL-PM.a": "német 1939-ig", "PL-PM.gd": "Danzig Szabad Város 1920–39", "PL-PM.op": "Kelet-Poroszország 1920–39",

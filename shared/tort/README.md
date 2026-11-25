@@ -147,8 +147,9 @@ pontosan egyszer fednek le (a build ellenőrzi). Ami nem állam (gyarmat, mandá
   Vilnius-vidéke (= mai Vilnius megye), Besszarábia (= Moldova + Budzsák).
 - Kézi vágóvonalak (vázlatos, helységnevek közé húzva): bécsi döntések (`bd1` +9 %, mert a falusor nem
   rekonstruálható), kelet-szlovákiai sáv 1939, pozsonyi hídfő, árvai és szepesi falvak, baranyai háromszög (Dráva),
-  Szerémség (Duna), német–orosz és osztrák–orosz határ 1914, lengyel korridor és Felső-Szilézia 1922, Danzig, Kelet-
-  Poroszország, rigai határ 1921, Szudéta-vidék, Zaolzie, francia demarkációs vonal 1940, Észak-Schleswig, Memel-vidék,
+  Szerémség (Duna), Tisza (az Észak-bánsági körzet nyugati része – Magyarkanizsa, Zenta, Ada – a Bácskához),
+  német–orosz és osztrák–orosz határ 1914, lengyel korridor és Felső-Szilézia 1922, Danzig, Kelet-Poroszország,
+  rigai határ 1921, Szudéta-vidék, Zaolzie, francia demarkációs vonal 1940, Észak-Schleswig, Memel-vidék,
   Budzsák, Nesztosz (Nyugat-Trákia), Saar 1920, Berlin szektorai.
 - `zonak1944`: megyékből összerakva; Sopron (V. zóna) Győr-Moson-Sopronban, Sátoraljaújhely (I.) Borsodban maradt –
   **történész ellenőrizze**. A Bánság 1941-ben német katonai közigazgatás – nincs a `delvidek1941`-ben.
@@ -174,8 +175,8 @@ pontosan egyszer fednek le (a build ellenőrzi). Ami nem állam (gyarmat, mandá
 | `karpatalja1939` | 11 262 | 12 061 | −6,6 % |
 | `szlovakia1939` | 1 589 | 1 697 | −6,4 % |
 | `bd2` | 42 955 | 43 104 | −0,3 % |
-| `delvidek1941` | 10 560 | 11 475 | −8,0 % |
-| `mo1941` | 172 438 | 171 753 | +0,4 % |
+| `delvidek1941` | 11 490 | 11 475 | +0,1 % |
+| `mo1941` | 173 368 | 171 753 | +0,9 % |
 | `pozsonyi-hidfo1947` | 68 | 65 | +4,8 % |
 | `eu1914.DE` / `AH` / `FR` / `IT` | 539 838 / 680 410 / 532 377 / 289 345 | 540 858 / 676 615 / 536 464 / 286 682 | −0,2 / +0,6 / −0,8 / +0,9 % |
 | `eu1923.PL` / `CS` / `RO` / `YU` / `AT` | 391 755 / 139 674 / 295 430 / 246 096 / 83 758 | 388 634 / 140 446 / 295 049 / 248 987 / 83 868 | +0,8 / −0,5 / +0,1 / −1,2 / −0,1 % |

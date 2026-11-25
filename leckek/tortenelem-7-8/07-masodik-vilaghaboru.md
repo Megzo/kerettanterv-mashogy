@@ -27,12 +27,11 @@ tantárgy: Történelem · évfolyam: 7–8. · témakör: 6. A második világh
   – A térképek háttere Natural Earth (közkincs; „Made with Natural Earth”). A történeti határok a
     shared/tort/map-torthatar.js egységeiből jönnek (mai közigazgatási egységek + kézi vágás, VÁZLATOS). A
     hovatartozás (ki ellenőrzi az adott napon) a lecke kódjában van, a dátumok ebből a fájlból.
-  – ADATHIBA (map-torthatar.js, 2026-11-25): a „delvidek1941” csoportból (és a mo1941, eu1942.HU, zonak1944.IV
-    csoportból) hiányzik a Tiszától nyugatra eső Zenta, Ada és Magyarkanizsa környéke (az RS-03, Észak-bánsági
-    körzet bácskai része, kb. 920 km²); az eu1942 Szerbiához sorolja. Ez magyarázza, hogy a csoport kb. 8 %-kal
-    kisebb a hivatalos kb. 11,5 ezer km²-nél. A lecke ezt a részt KÉZZEL PÓTOLJA (az RS-03 egység a Tisza vonalától
-    nyugatra, a Tisza a map-karpat.js folyóvonala) – az adatfájlt nem módosítottuk. Eszék (HR-14) és Pétervárad,
-    Karlóca (RS-06.srem) helyesen NINCS a csoportban (1941-ben a Független Horvát Államhoz tartoztak).
+  – Javított adathiba (map-torthatar.js, 2026-11-25): a „delvidek1941” csoportból (és a mo1941, eu1942.HU,
+    zonak1944.IV csoportból) korábban hiányzott a Tiszától nyugatra eső Zenta, Ada és Magyarkanizsa környéke (az
+    RS-03, Észak-bánsági körzet bácskai része, kb. 920 km²). Az adatfájlban ez most külön egység (RS-03.bacs, a
+    Tisza vonalán vágva), és benne van a csoportokban; a lecke korábbi kézi pótlása ezért kikerült. Eszék (HR-14) és
+    Pétervárad, Karlóca (RS-06.srem) helyesen NINCS a csoportban (1941-ben a Független Horvát Államhoz tartoztak).
   – A frontvonalak (4–8. lépés) VÁZLATOK: a kulcskockák töréspontjai saját munka, a dátumuk az ### Adatok alatt.
     Egybevetésre használt atlaszok és térképek (csak összevetés, geometria nem került át): Történelmi atlasz a
     középiskolák számára (Cartographia), a West Point (US Military Academy) második világháborús hadjárattérképei
@@ -156,7 +155,6 @@ Magyarország 1938 és 1941 között négy lépésben szerzett vissza területek
 - legfeljebb: legfeljebb #
 - kattints: Kattints egy területre!
 - teleki: Teleki Pál halála: #
-- dv pótlás: Zenta, Ada, Magyarkanizsa: kézi pótlás
 - együtt cím: Az ország 1938 előtt → 1941
 - együtt terület: terület: # → #
 - együtt népesség: népesség: # → #
@@ -656,6 +654,6 @@ A második világháború **totális háború** volt: a hátország, a városok 
     áldozataival) – mindkettőt tartományként, „vitatott” bélyeggel mutatjuk.
   – Jalta: a „Németország megszállási övezetei” egyszerűsítés; a konferenciák döntései bonyolultabbak (lengyel
     határ, ENSZ, szovjet hadba lépés Japán ellen) – a 09-hideghaboru folytatja.
-  – ADATHIBA a map-torthatar.js-ben: lásd a fejléc megjegyzését (Zenta, Ada, Magyarkanizsa hiányzik a
-    „delvidek1941” csoportból; a lecke kézzel pótolja).
+  – A map-torthatar.js Délvidék-hibája (Zenta, Ada, Magyarkanizsa) az adatfájlban javítva, lásd a fejléc
+    megjegyzését.
 -->
