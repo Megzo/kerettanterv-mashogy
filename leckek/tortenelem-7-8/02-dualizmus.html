@@ -3169,7 +3169,9 @@ const MatChart = (() => {
     dotplot, marks, cards, stamp, legend };
 })();
 /* ── MODUL VÉGE ── */
-/* ── MODUL: Vázlatos Budapest (TortCity) · forrás: tortenelem-7-8/02-dualizmus, 2026-11-25 ── */
+/* ── MODUL: Vázlatos Budapest (TortCity) · forrás: tortenelem-7-8/02-dualizmus, 2026-11-25 · v1.1 ── */
+/* VÁLTOZÁSOK: v1.1 (2026-11-25) – papírszínű, átlátszatlan haló minden feliratra (create/base/places: halo, alap 5 px,
+   false: ki); felirat-eltolás dx/dy (places-elem, bridgeLabels-név) szaggatott vezetővonallal; hídnévnél dirs is. */
 /* Budapest „évszámos” alaptérképe a 7–8. évfolyamos történelemleckékhez (pilot/tortenelem-7-8/terv.md 4.2):
    Duna-ágak, szigetek, városhatár az év szerint, hidak (épül / áll / lerombolva / újjáépült), utak, helyszínek,
    bekerítő gyűrű. A TortMap-re épül (vetület, kamera, ütközésmentes címkézés: map.pt, map.ppk, map.labels), és a
@@ -3179,17 +3181,20 @@ const MatChart = (() => {
    VETÜLET: TortCity.proj() → TortProj.lcc({lon0: 19.05, lat0: 47.5, lat1: 47.3, lat2: 47.7}); TortCity.BOX – a
    modul geometriájának kivágata [18.9, 47.35, 19.35, 47.65] (a .md coord-adatainak box-a is ez legyen).
      const map = TortMap.create({proj: TortCity.proj(), layers: [{data: TORT_MAP_KARPAT}]});   // a base-t nem hívjuk
-     const C = TortCity.create(L, {map, T, years})
+     const C = TortCity.create(L, {map, T, years, halo})
        T     = {duna, margit, obudai, csepel, pest, buda, obuda, budapest} – {s, k} feliratok (ami hiányzik, nincs kiírva)
        years = {egyesites: tört év (alap 1873,88 – 1873. november 17.), nagy: tört év (alap 1950,0 – Nagy-Budapest)}
                – a leckében az L.dat(k).a-ból add meg, hogy a .md-ben javítható legyen.
+       halo  = a feliratok papírszínű, átlátszatlan körvonala a betűk körül px-ben (alap 5; false: nincs) – hogy a Duna,
+               az utak és a hidak fölött is olvasható legyen; a base és a places o.halo-ja hívásonként felülírja.
    KÉPKOCKÁNKÉNT (előbb map.frame(nézet) – a modul a TortMap legutóbbi nézetét használja):
      C.base(ctx, o)        papír-szárazföld, városterület (kitöltés + körvonal), Duna-ágak, szigetek, feliratok.
                            o = {year (tört év), a (alfa), labels: true, fill: true (a városterület halvány kitöltése),
                                 towns: true (a városok nevei), water: true, land: true (a teljes vásznat papírszínű
                                 szárazfölddel tölti), townAt: {pest|buda|obuda|budapest: [lon, lat]} (a városnév
-                                helye, ha a nézet kivágja), outline: true (a városhatár), islands: true (a szigetek neve), rect: [x, y, w, h] (csak az
-                                ebbe eső feliratokat írja ki; alap: a vizuális terület), dunaAt: [lon, lat, forgatás rad]}
+                                helye, ha a nézet kivágja), outline: true (a városhatár), islands: true (a szigetek
+                                neve), rect: [x, y, w, h] (csak az ebbe eső feliratokat írja ki; alap: a vizuális
+                                terület), dunaAt: [lon, lat, forgatás rad], halo: px | false}
                            Városhatár: year < egyesítés → Pest, Buda, Óbuda külön foltja; egyesítés … nagy → Budapest
                            (az 1950 előtti, vázlatos határ); ≥ nagy → Nagy-Budapest (Natural Earth admin-1 körvonal).
                            A váltás fél év alatt áttűnik (year tört szám: a csúszka vagy egy animáció hajthatja).
@@ -3203,13 +3208,17 @@ const MatChart = (() => {
                            Hídazonosítók: lanchid, margit, szabadsag (= Ferenc József híd), erzsebet, petofi, arpad, kossuth
                            (1946–1960), rakoczi, osszekoto (Déli összekötő vasúti), ujpesti (vasúti), megyeri, galvani.
      C.bridgeLabels(L, list, names, o) → map.labels-elemek a hidak közepére (a hívó adja a map.labels-be, a saját
-                           helyszíneivel együtt): names = {id: {s, k, sub?: {s, k}}}; o = {pri, size, dirs}
+                           helyszíneivel együtt): names = {id: {s, k, sub?: {s, k}, dx?, dy?, dirs?}}; o = {pri, size,
+                           dirs}. dx/dy: a felirat a hídközéptől ennyi px-re kerül (vezetővonallal), pl. ha úton ülne.
      C.roads(ctx, items, o) utak: items = [{id, p: 0..1 (kirajzolás az út elejétől), c, w, a, metro: true (szaggatott,
                            földalatti/metró-jelölés)}]; o = {a}. Útazonosítók: andrassy, nagykorut, kiskorut, rakoczi,
                            ulloi, bajcsy, vaci, dozsa, margitkorut, foldalatti (az M1 nyomvonala).
      C.road(id) → [[lon, lat]…]     C.roadAt(id, u) → [x, y] az út u (0..1) hosszarányú pontja (címkéhez)
      C.places(L, items, o) → map.labels eredménye. items = [{id, lon, lat, s, k, sub?, sk?, pri, t: 0..1 (megjelenés),
-                           c, dotC, r, dirs, size}]; o = {avoid: [doboz…], extra: [további map.labels-elemek]}
+                           c, dotC, r, dirs, size, dx?, dy?, lead?}]; o = {avoid: [doboz…], extra: [további
+                           map.labels-elemek], halo: px | false}. dx/dy: a felirat horgonya ennyi px-re eltolva (a pont
+                           a helyén marad; 20 px fölött szaggatott vezetővonal, lead: false kikapcsolja). Minden
+                           felirat alá papírszínű haló kerül (a TortMap vékony halója fölé, átlátszatlanul).
      C.ring(ctx, pts, o)   zárt gyűrű / körzethatár (a lecke adja: pts = [[lon, lat]…]); o = {c, w, dash, fill, a,
                            smooth: true, p: 0..1 (kirajzolás)}
      C.pt(lon, lat) → {x, y}          C.hit(px, py, items, r = 28) → id | null (items: [{id, lon, lat}])
@@ -3236,7 +3245,7 @@ const TortCity = (() => {
   const smooth = (t) => { t = clamp(t); return t * t * (3 - 2 * t); };
   const COL = { land: '#f3ead8', town: 'rgba(200,64,28,.075)', townLine: '#7a4a35', bank: '#1b5a94',
     water: 'rgba(98,160,212,.55)', island: '#eee6cf', park: 'rgba(29,122,69,.13)', ink: '#1c2440', muted: '#565d72',
-    red: '#c8401c', halo: 'rgba(250,246,238,.94)', deck: '#fffaf1', hl: '#c8401c', waterD: '#1b5a94',
+    red: '#c8401c', halo: 'rgba(250,246,238,.94)', paper: '#faf6ee', deck: '#fffaf1', hl: '#c8401c', waterD: '#1b5a94',
     towns: { pest: 'rgba(10,111,134,.10)', buda: 'rgba(143,90,12,.10)', obuda: 'rgba(125,58,102,.10)' } };
   const BOX = [18.9, 47.35, 19.35, 47.65];
   const KX = Math.cos(47.5 * Math.PI / 180), MLAT = 110540, MLON = 111320 * KX;   // m / fok
@@ -3368,10 +3377,19 @@ const TortCity = (() => {
     const path = (ctx, pts, close) => { pts.forEach((p, i) => { const q = map.pt(p[0], p[1]); if (i) ctx.lineTo(q[0], q[1]); else ctx.moveTo(q[0], q[1]); }); if (close) ctx.closePath(); };
     const ribbonPath = (ctx, R) => { path(ctx, R.L); for (let i = R.R.length - 1; i >= 0; i--) { const q = map.pt(R.R[i][0], R.R[i][1]); ctx.lineTo(q[0], q[1]); } ctx.closePath(); };
     const outlinePts = (id) => id === 'nagy' ? NAGY : id === 'regi' ? null : TOWNS[id];
+    const HALO0 = o.halo == null ? 5 : o.halo;
+    const haloW = (h) => { h = h == null ? HALO0 : h; return h === false || !(h > 0) ? 0 : h; };
+    /* papírszínű haló egy felirat alá (strokeText, lineJoin round); az állapotot save/restore állítja vissza */
+    const haloText = (c, str, x, y, f, al, hw) => {
+      if (!str || !hw) return;
+      c.save(); c.font = `${f.i ? 'italic ' : ''}${f.w || 500} ${f.s || 24}px ${f.f}`; c.letterSpacing = f.ls || '0px';
+      c.textAlign = al || 'center'; c.textBaseline = 'alphabetic'; c.setLineDash([]);
+      c.lineJoin = 'round'; c.lineWidth = 2 * hw; c.strokeStyle = COL.paper; c.strokeText(str, x, y); c.restore();
+    };
+    let txtHalo = HALO0;
     const txt = (t, x, y, f) => {
       if (!t || !t.s) return;
-      const c = L.ctx; c.save(); c.font = `${f.i ? 'italic ' : ''}${f.w} ${f.s}px ${f.f}`; c.letterSpacing = f.ls || '0px'; c.textAlign = 'center'; c.textBaseline = 'alphabetic';
-      c.lineJoin = 'round'; c.lineWidth = Math.max(5, f.s * .24); c.strokeStyle = COL.halo; c.strokeText(t.s, x, y); c.restore();
+      haloText(L.ctx, t.s, x, y, f, 'center', haloW(txtHalo));
       L.tx(t.s, x, y, Object.assign({ a: 'center', k: t.k }, f));
     };
 
@@ -3395,6 +3413,7 @@ const TortCity = (() => {
       if (a <= .003) return;
       if (s.land !== false) { ctx.save(); ctx.globalAlpha = g0 * a; ctx.fillStyle = COL.land; ctx.fillRect(-20, -20, 1960, 1120); ctx.restore(); }
       const TL = Object.assign({}, TOWNLBL, s.townAt || {});
+      txtHalo = s.halo == null ? HALO0 : s.halo;
       // városterület az év szerint (fél év áttűnés)
       const uMerge = smooth((yr - Y.egyesites + .25) / .5), uNagy = smooth((yr - Y.nagy + .25) / .5);
       const fill = s.fill !== false, ol = s.outline !== false;
@@ -3495,7 +3514,7 @@ const TortCity = (() => {
       return list.filter((b) => b.st !== 'nincs' && names[b.id]).map((b) => {
         const n = names[b.id];
         return { id: 'híd-' + b.id, x: b.x, y: b.y, s: n.s, k: n.k, sub: n.sub && n.sub.s, sk: n.sub && n.sub.k, r: 8, size: s.size || 24,
-          pri: s.pri == null ? 5 : s.pri, dirs: s.dirs || ['E', 'W', 'NE', 'SE', 'NW', 'SW'], a: b.st === 'rom' ? .7 : 1, c: b.st === 'épül' ? COL.muted : COL.ink };
+          dx: n.dx, dy: n.dy, pri: s.pri == null ? 5 : s.pri, dirs: n.dirs || s.dirs || ['E', 'W', 'NE', 'SE', 'NW', 'SW'], a: b.st === 'rom' ? .7 : 1, c: b.st === 'épül' ? COL.muted : COL.ink };
       });
     }
 
@@ -3539,7 +3558,47 @@ const TortCity = (() => {
         const t = it.t == null ? 1 : it.t;
         return Object.assign({ dot: true, r: it.r || 7, size: it.size || 24, a: smooth(t) }, it);
       });
-      return map.labels(Lx, its.concat(s.extra || []), { avoid: s.avoid || [] });
+      const all = [], dots = [], leads = [], avoid = (s.avoid || []).slice();
+      for (const it0 of its.concat(s.extra || [])) {
+        if (!(it0.dx || it0.dy)) { all.push(it0); continue; }
+        const p0 = it0.x != null ? [it0.x, it0.y] : map.pt(it0.lon, it0.lat), p1 = [p0[0] + (it0.dx || 0), p0[1] + (it0.dy || 0)];
+        const it = Object.assign({}, it0, { x: p1[0], y: p1[1], dot: false, r: 3 }); delete it.lon; delete it.lat; all.push(it);
+        const r = it0.dot ? (it0.r || 6) : (it0.r || 0);
+        if (it0.dot) { dots.push({ p: p0, r, c: it0.dotC, a: it0.a }); avoid.push({ x: p0[0] - r - 2, y: p0[1] - r - 2, w: 2 * r + 4, h: 2 * r + 4, own: it.id || it.s }); }
+        if (it0.lead !== false && Math.hypot(p1[0] - p0[0], p1[1] - p0[1]) > 20) leads.push({ p0, p1, r, a: it0.a });
+      }
+      const c = Lx.ctx, g0 = c.globalAlpha, FN = Lx.fonts, hw = haloW(s.halo);
+      const al1 = (a) => (a == null ? 1 : a);
+      // 1) elhelyezés rajz nélkül (a TortMap megjegyzi, és a 2. hívás ugyanide teszi), 2) haló, 3) jelek, 4) feliratok
+      const boxes = map.labels(Lx, all, { avoid, draw: false }), byId = {};
+      for (const it of all) byId[it.id || it.s] = it;
+      c.save(); c.setLineDash([5, 4]); c.strokeStyle = COL.muted; c.lineWidth = 1.6; c.lineCap = 'butt';
+      for (const q of leads) {
+        const ang = Math.atan2(q.p1[1] - q.p0[1], q.p1[0] - q.p0[0]), r0 = q.r + 3;
+        c.globalAlpha = g0 * al1(q.a); c.beginPath(); c.moveTo(q.p0[0] + Math.cos(ang) * r0, q.p0[1] + Math.sin(ang) * r0); c.lineTo(q.p1[0], q.p1[1]); c.stroke();
+      }
+      c.restore(); c.globalAlpha = g0;
+      if (hw) for (const b of boxes) {
+        const it = byId[b.id]; if (!it) continue;
+        const px = it.x != null ? it.x : map.pt(it.lon, it.lat)[0];
+        const al = b.x >= px ? 'left' : b.x + b.w <= px ? 'right' : 'center';
+        const fm = { s: it.size || 24, w: it.w || 700, f: it.f || FN.B, i: it.i, ls: it.ls }, fs = { s: it.subSize || 22, w: 500, f: FN.B, i: it.subI };
+        const bw = Math.max(Lx.measure(it.s, fm).w, it.sub ? Lx.measure(it.sub, fs).w : 0);
+        const ax = al === 'left' ? b.x : al === 'right' ? b.x + bw : b.x + bw / 2;
+        c.globalAlpha = g0 * al1(it.a);
+        haloText(c, it.s, ax, b.y + fm.s * .76, fm, al, hw);
+        if (it.sub) haloText(c, it.sub, ax, b.y + fm.s * .98 + 3 + fs.s * .76, fs, al, hw);
+      }
+      c.globalAlpha = g0;
+      for (const d of dots) {
+        c.globalAlpha = g0 * al1(d.a);
+        c.beginPath(); c.arc(d.p[0], d.p[1], d.r + 2.5, 0, Math.PI * 2); c.fillStyle = COL.halo; c.fill();
+        c.beginPath(); c.arc(d.p[0], d.p[1], d.r, 0, Math.PI * 2); c.fillStyle = d.c || COL.ink; c.fill();
+      }
+      c.globalAlpha = g0;
+      const res = map.labels(Lx, all, { avoid });
+      c.globalAlpha = g0;
+      return res;
     }
     function ring(ctx, pts, s = {}) {
       const g0 = ctx.globalAlpha, a = s.a == null ? 1 : s.a;
@@ -3856,7 +3915,9 @@ function bridgeYears() {
   return { lanchid: { start: yu('Lánchíd építése'), built: yu('Lánchíd átadása') }, margit: { start: yu('Margit híd építése'), built: yu('Margit híd átadása') },
     szabadsag: { start: yu('Ferenc József híd építése'), built: yu('Ferenc József híd átadása') }, erzsebet: { start: yu('Erzsébet híd építése'), built: yu('Erzsébet híd átadása') } };
 }
-const BNAMES = () => ({ lanchid: K('híd Lánchíd'), margit: K('híd Margit'), szabadsag: Object.assign(K('híd Ferenc József'), { sub: K('ma Szabadság') }), erzsebet: K('híd Erzsébet') });
+// felirat-eltolás (TortCity v1.1): a Lánchíd neve a hídpálya fölé, a Ferenc József és az Erzsébet hídé a budai partra (ne üljön úton)
+const BNAMES = () => ({ lanchid: Object.assign(K('híd Lánchíd'), { dy: -30, dirs: ['E', 'NE'] }), margit: K('híd Margit'),
+  szabadsag: Object.assign(K('híd Ferenc József'), { sub: K('ma Szabadság'), dirs: ['W', 'SW', 'NW'] }), erzsebet: Object.assign(K('híd Erzsébet'), { dirs: ['W', 'NW', 'SW'] }) });
 const PL5 = [['vár', 'hely Vár', 'Budai Vár helye', null, null], ['parl', 'hely Parlament', 'Országház helye', 'Országház építése', 'Országház elkészülte'],
   ['opera', 'hely Opera', 'Operaház helye', 'Operaház megnyitása', null], ['nyu', 'hely Nyugati', 'Nyugati pályaudvar helye', 'Nyugati pályaudvar', null],
   ['kel', 'hely Keleti', 'Keleti pályaudvar helye', 'Keleti pályaudvar', null], ['liget', 'hely Városliget', 'Városliget helye', null, null]];
@@ -3906,9 +3967,9 @@ function scene5(st, w) {
   for (const [id, k, d, k0, k1] of PL5) {
     const t = k0 ? clamp((Y - ya(k0) + .3) / .3) : 1; if (t <= 0) continue;
     const q = LL(d), sub = k1 && Y < yu(k1) ? lab('épül sablon') : undefined;
-    items.push({ id, lon: q[0], lat: q[1], s: lab(k), k, sub, sk: sub ? 'épül sablon' : undefined, t: t * la, pri: 5, size: 22, r: 6, dotC: id === 'liget' ? GOOD : INK, dirs: id === 'vár' ? ['W', 'NW', 'SW'] : undefined });
+    items.push({ id, lon: q[0], lat: q[1], s: lab(k), k, sub, sk: sub ? 'épül sablon' : undefined, t: t * la, pri: 5, size: 22, r: 6, dotC: id === 'liget' ? GOOD : INK, dirs: id === 'vár' ? ['W', 'NW', 'SW'] : id === 'opera' ? ['W', 'SW', 'NW'] : id === 'nyu' ? ['W', 'SW', 'NW'] : undefined, dy: id === 'nyu' ? 16 : undefined });
   }
-  if (pa > .5) { const q = CITY.roadAt('andrassy', .62); ex.push({ id: 'r-and', x: q[0], y: q[1], s: lab('út Andrássy'), k: 'út Andrássy', r: 0, dot: false, size: 22, w: 700, pri: 7, dirs: ['NW', 'SE', 'N', 'S'], a: la * clamp((pa - .5) * 4), c: pa < 1 ? RED : INK }); }
+  if (pa > .5) { const q = CITY.roadAt('andrassy', .8); ex.push({ id: 'r-and', x: q[0], y: q[1], s: lab('út Andrássy'), k: 'út Andrássy', r: 0, dot: false, size: 22, w: 700, pri: 7, dirs: ['SE', 'NW', 'N', 'S'], a: la * clamp((pa - .5) * 4), c: pa < 1 ? RED : INK }); }
   if (pn > .5) { const q = CITY.roadAt('nagykorut', .72); ex.push({ id: 'r-nk', x: q[0], y: q[1], s: lab('út Nagykörút'), k: 'út Nagykörút', r: 0, dot: false, size: 22, w: 700, pri: 7, dirs: ['E', 'SE', 'NE'], a: la * clamp((pn - .5) * 4), c: pn < 1 ? RED : INK }); }
   al(1); CITY.places(L, items, { avoid: [pop, yp, an, mk, { x: 30, y: 1000, w: 380, h: 70 }], extra: ex });
   al(1); stampK('vázlatos', 40, 1040);
@@ -3927,12 +3988,12 @@ function scene6(st, w) {
   const { R } = cityRoads(Y, { metro: pm });
   al(1); CITY.roads(c, R, {});
   al(1); const bl = CITY.bridges(c, bridgeYears(), Y, { hl: 'szabadsag' });
-  const lv = LL('Városliget helye'), ex = CITY.bridgeLabels(L, bl.filter((b) => b.id === 'szabadsag'), BNAMES(), { pri: 8, size: 22 });
+  const lv = LL('Városliget helye'), ex = CITY.bridgeLabels(L, bl.filter((b) => b.id === 'szabadsag'), BNAMES(), { pri: 8, size: 22 }).map((b) => Object.assign(b, { id: b.id + '-mil' }));   // saját azonosító: a címkehely-memória ne keveredjen az 5. lépéssel
   const qa = CITY.roadAt('andrassy', .45);
-  ex.push({ id: 'r-and', x: qa[0], y: qa[1], s: lab('út Andrássy'), k: 'út Andrássy', r: 0, dot: false, size: 22, w: 700, pri: 7, dirs: ['NW', 'SE'] });
+  ex.push({ id: 'r-and-mil', x: qa[0], y: qa[1], s: lab('út Andrássy'), k: 'út Andrássy', r: 0, dot: false, size: 22, w: 700, pri: 7, dirs: ['NW', 'SE'] });
   const lo = LL('Operaház helye');
   al(1); CITY.places(L, [{ id: 'liget', lon: lv[0], lat: lv[1], s: lab('hely Városliget'), k: 'hely Városliget', pri: 9, size: 24, r: 8, dotC: GOOD },
-    { id: 'opera', lon: lo[0], lat: lo[1], s: lab('hely Opera'), k: 'hely Opera', pri: 6, size: 22, r: 6, dirs: ['SE', 'E', 'S'] }], { extra: ex, avoid: [{ x: 30, y: 560, w: 150, h: 60 }] });
+    { id: 'opera-mil', lon: lo[0], lat: lo[1], s: lab('hely Opera'), k: 'hely Opera', pri: 6, size: 22, r: 6, dirs: ['W', 'NW', 'SE'] }], { extra: ex, avoid: [{ x: 30, y: 572, w: 150, h: 50 }] });
   c.restore();
   al(1); rr(20, 104, 750, 520, 14); c.strokeStyle = LINE; c.lineWidth = 2; c.stroke();
   stampK('vázlatos', 40, 596);
