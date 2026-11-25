@@ -77,7 +77,7 @@ Szabályok:
   szóközzel (`12 000 cm³`). A mértékegységet a lecke előírja – a build szól, ha más.
 - Egy kulcs csak egyszer szerepelhet a fájlban; mindegy, melyik `##` alatt áll.
 - Lépésenként legfeljebb kb. 55 szó panelszöveg (a build figyelmeztet; a lecke ezt szigoríthatja,
-  a történelemleckékben 45 szó).
+  a történelem 5–6. leckéiben 45 szó).
 - Feliratban a `#` jel helyére a lecke számot ír (pl. `≈ # felnőtt tömege`).
 
 ### Évszám, dátum, koordináta, tartomány, becslés
@@ -150,8 +150,10 @@ szerepel (`{összeg}`), és nem egyezik a lecke számolásával, a lecke piros s
 
 Ha a lecke kéri (földrajz), minden adat mellé forrás kell: `<!-- forrás: …, lekérdezve: ÉÉÉÉ-HH-NN -->`
 ugyanabban vagy a következő sorban, vagy a szakasz elején egyszer
-`<!-- forrás (az alábbiakra): … -->`. Elsősegély-leckében a szakmai lektor egy
-`<!-- Szakmai ellenőrzés: <szerep>, <dátum>, <ajánlás verziója> -->` blokkot ír a végére (név nélkül).
+`<!-- forrás (az alábbiakra): … -->`. Ha a lecke szakmai lektort kér (elsősegély, online biztonság, a
+20. századi történelemleckék egy része), a lektor egy
+`<!-- Szakmai ellenőrzés: <szerep>, <dátum>, <ajánlás verziója> -->` blokkot ír a végére (név nélkül);
+amíg ez „még nincs lektorálva”, a lecke nem használható.
 
 ### Magyar nyelv és irodalom: idézet, verssor, szóelem
 

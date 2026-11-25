@@ -31,17 +31,25 @@ Letöltés után a repó [`index.html`](index.html)-je dupla kattintással is me
 - **Digitális kultúra 5–6.**, 17 lecke – [`leckek/digitalis-kultura-5-6/`](leckek/digitalis-kultura-5-6/),
   [`pilot/digitalis-kultura-5-6/`](pilot/digitalis-kultura-5-6/) – saját, offline blokkprogramozóval
   és robotszimulátorral
+- **Történelem 7–8.**, 17 lecke – [`leckek/tortenelem-7-8/`](leckek/tortenelem-7-8/),
+  [`pilot/tortenelem-7-8/`](pilot/tortenelem-7-8/) – a nemzetállamoktól az uniós csatlakozásig; saját, vázlatos történeti
+  határok adatfájlja ([`shared/tort/`](shared/tort/README.md)), és új modulok a leckékben: történeti
+  területek és frontok (TortTerr), vázlatos Budapest (TortCity), parlamenti patkó és mandátumszámító
+  (TortParl), intézményséma (TortState)
 
 Ezzel a nyitóoldal 5–6. évfolyamos oszlopának mind az öt tárgya (matematika, magyar, történelem,
 természettudomány, digitális kultúra) kapott egy-egy sorozatot.
 
-Az utóbbi nyolc sorozat párhuzamos gépi gyártásban készült (öt egy éjszaka alatt – összefoglaló,
+Az utóbbi kilenc sorozat párhuzamos gépi gyártásban készült (öt egy éjszaka alatt – összefoglaló,
 számok, kerethasználat: [`pilot/EJSZAKAI-GYARTAS.md`](pilot/EJSZAKAI-GYARTAS.md) –, a
-természettudomány, a magyar és a digitális kultúra a következő napon). **Tanári review még nem
-volt** – a review-pontok sorozatonként a `METRIKAK.md`-ben vannak. Szakmai lektorálás nélkül nem
-használható: három biológialecke (újraélesztés, járvány, magzat), a természettudományból a tűz
-(tűzvédelem) és az emberi test (egészség), a digitális kultúrából a jelszó, a digitális lábnyom és
-az álhír (online biztonság).
+természettudomány, a magyar és a digitális kultúra a következő napon, a Történelem 7–8. az azutáni
+napon). **Tanári review még nem volt** – a review-pontok sorozatonként a `METRIKAK.md`-ben vannak.
+Szakmai lektorálás nélkül nem használható: három biológialecke (újraélesztés, járvány, magzat), a
+természettudományból a tűz (tűzvédelem) és az emberi test (egészség), a digitális kultúrából a
+jelszó, a digitális lábnyom és az álhír (online biztonság), a Történelem 7–8. sorozatból a holokauszt
+(történész és emlékezetpedagógus) és további hét lecke: Trianon, a diktatúrák, a második
+világháború, a szovjetizálás, 1956, a rendszerváltoztatás és a határon túli magyarok (történész) –
+így a sorozat 20. századi leckéinek többsége lektort kér.
 
 - [`leckek/`](leckek/README.md) – a leckék; mindegyik szövege egy tanár által is
   szerkeszthető `.md`-fájlban van, a `tools/build_lesson.py` égeti be a leckébe.

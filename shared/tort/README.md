@@ -114,7 +114,10 @@ function strokeGroup(c, V, ids) {                        // körvonal: a csoport
 }
 ```
 
-(A 07-es lecke `TortTerr` modulja erre épül; ha elkészül, azt használd.)
+Ehelyett lehetőleg a `TortTerr` modult használd (leckén belüli MODUL-blokk, v1.0, referencia:
+`leckek/tortenelem-7-8/07-masodik-vilaghaboru.html`; a Történelem 7–8. 11 leckéje bájtra azonosan másolja). A
+v1.1-re javasolt bővítések (közös határív két csoport közt, több csoport körvonala, nézet `TortMap` nélkül …):
+`pilot/tortenelem-7-8/EGYSEGESITES.md`, 5. fejezet.
 
 ### Csoportkulcsok
 
@@ -153,6 +156,9 @@ pontosan egyszer fednek le (a build ellenőrzi). Ami nem állam (gyarmat, mandá
   Budzsák, Nesztosz (Nyugat-Trákia), Saar 1920, Berlin szektorai.
 - `zonak1944`: megyékből összerakva; Sopron (V. zóna) Győr-Moson-Sopronban, Sátoraljaújhely (I.) Borsodban maradt –
   **történész ellenőrizze**. A Bánság 1941-ben német katonai közigazgatás – nincs a `delvidek1941`-ben.
+- Ismert adathiányok (a Történelem 7–8. leckéiből, `pilot/tortenelem-7-8/EGYSEGESITES.md` 4.): nincs porosz/német
+  1815/1866-os csoport; a `map-karpat.js` kivágásszélén kék rés, keleti szélén (30° K) ék alakú hiány látszik –
+  ott az Európa-térképet érdemes alá tenni; a `map-europa.js` 60° K-nél véget ér.
 - Nem szerepel: Eupen-Malmedy, Hlučín-vidék, Petsamo, Karéliai-földszoros (külön), a trieszti szabad terület, Görögország
   megszállási zónái, a szovjet front – ezeket a lecke vázlatos réteggel rajzolja, ha kell.
 
