@@ -780,3 +780,90 @@ eltérésekkel.
   forrása és bizonytalansága, és az, hogy a lecke blokknyelve miben tér el az órán használt
   környezettől. A 06, 15, 16 leckében ezen felül `<!-- Szakmai ellenőrzés: <szerep>, <dátum> -->` (név
   nélkül).
+
+## 20. Történelem-kiegészítés (7–8. évfolyam)
+
+Történelemleckénél a 7–8. évfolyamon a fenti szabályok, a 11. fejezet (Történelem 5–6.) és ezek együtt érvényesek.
+**Kötelező olvasmány:** `pilot/tortenelem-7-8/terv.md` – a 0. fejezet (döntések), az 1.3 pont (szerkesztői elvek),
+a saját briefed (3. fejezet) és a modulok API-vázlata (4. fejezet).
+
+- **Mappa, fejléc:** `leckek/tortenelem-7-8/NN-slug.{html,md,content.js}`; metaadat-sor:
+  `tantárgy: Történelem · évfolyam: 7–8. · témakör: N. <a kerettanterv témakörének címe>`.
+- **Panel:** lépésenként ≤ 55 szó (alapérték, nincs `maxWords`), a cél 40–50 szó; új fogalom **félkövéren**, egy
+  mondattal. Spec: `"sources": true` minden leckében.
+- **Rétegek és bélyegek:** a 11. fejezet szerint (forrás / rekonstrukció / hagyomány; „vázlatos”, „illusztráció”,
+  „becslés”), kiegészítve: „vitatott” (okker, mint a „becslés”) és „modell”, „kitalált” (halvány tinta). „Honnan
+  tudjuk?” minden leckében – a 20. századnál a statisztika forráskritikájával is: ki számolt, milyen kategóriával
+  (anyanyelv vagy nemzetiség, egy vagy több válasz), mit titkoltak, mikor javították.
+- **Vitatott kérdések:** ahol a szakirodalom vitatkozik (áldozatszám, létszám, felelősség megoszlása), a lecke
+  **tartományt és legalább két forrást** mutat (`range`, „kb.”, „(becslés)”, „vitatott” bélyeg), és értékítélet
+  helyett forrást, adatot, kérdést ad. Az értékelő fejlesztési feladatokat („Ítélet megfogalmazása…”, „Vélemény
+  megfogalmazása…”) a lecke kérdésként adja a tanárnak (`> megjegyzés:` vagy záró kérdés), a vásznon tény áll. A
+  népirtás és a háborús bűn ténye nem vita tárgya. A `.md` végén a `<!-- Vitatott / bizonytalan pontok: … -->` blokk
+  kötelező (11. fejezet), forrással és a bizonytalanság mértékével.
+- **Felelősség pontos alanya:** „a náci Németország”, „az SS”, „a magyar kormány”, „a csendőrség”, „a szovjet
+  hadsereg”, „az NKVD” – nem „a németek”, „a magyarok”, „az oroszok”. Kollektív bűnösséget egyik irányban sem
+  sugallunk (kitelepítések, Beneš-dekrétumok, délvidéki megtorlások – ugyanazzal a mércével).
+- **Semlegesség:** pártpolitikai semlegesség, különösen 1990 után. Élő politikust nem értékelünk. 1990 után csak
+  intézmény, alkotmányos működés és adat; kormányfő, köztársasági elnök neve csak tényszerű címkeként (név, hivatali
+  idő). Valódi választási eredmény **szürke árnyalatokban**, a pártok mai színei és logói nélkül; a választási
+  kalkulátor kitalált pártokkal („A párt” …), egy színárnyalat tónusaival és mintázattal. A rendszerváltás
+  idővonala 2004-gyel zárul; utána legfeljebb a választások évei név nélkül.
+- **Holokauszt, népirtás, háborús áldozatok: méltóság, nincs játékosítás.** Nincs pontszám, nincs „Tippelj!”
+  áldozatszámra (a 08-ban csak forráskritikai kérdés), nincs látványos robbanás vagy villanás, nincs csúszka,
+  amely áldozatszámot „lejátszik”, nincs animált halottszámláló, nincs vér, nincs kitalált áldozati történet,
+  nincs hangeffektus. Az áldozatszám mindig forrással és tartománnyal áll; a térképes folyamat (deportálás)
+  gombnyomásra, lassan, lépésenként halad. Áldozatot és embermentőt csak dokumentált forrásból, névvel és hellyel
+  mutatunk. Ezek a leckék (08, és ahol a brief jelzi) **szakmai lektort kérnek**: spec `"review": ["történész",
+  "emlékezetpedagógus"]` (08) vagy `"review": ["történész"]` (04, 05, 07, 10, 11, 13, 14) → a `.md` végén
+  `<!-- Szakmai ellenőrzés: <szerep>, <dátum>, <ajánlás verziója> -->` (név nélkül); amíg nincs lektorálva:
+  „dátum: –, (még nincs lektorálva)”.
+- **Trianon:** tényadat forrással – terület, népesség, az 1910-es népszámlálás anyanyelvi adata, az utódállamok
+  népszámlálása mellette (a KSH és a terv 04-es briefje szerinti számokkal). A győztesek és az utódállamok érvei
+  és a magyar érvek egyaránt, azonos hangsúllyal. Sem revizionista, sem lekicsinylő hangnem. A szerződés neve a
+  vásznon „trianoni békeszerződés”; a kerettanterv „békediktátum” kifejezését a lecke magyarázza (miért nevezi így a
+  magyar szóhasználat). Az anyanyelvi adat mellett a forráskritika: anyanyelv ≠ nemzetiség, asszimilációs nyomás,
+  a zsidóság magyar anyanyelvűként számolva.
+- **Szerzői jog:** szó szerint csak közkincs szöveg idézhető – a szerző (és a fordító) legalább 70 éve halt meg,
+  vagy hivatalos jogszabály- és szerződésszöveg (`### Idézet` + `<!-- idézet: … · szerző † <év> · közkincs -->`;
+  jogszabálynál † nélkül; a build elutasítja, ha † + 70 ≥ az idei év). Közkincs eredeti, de nem közkincs fordítás
+  esetén **saját fordítás**, így jelölve. Élő vagy 70 évnél frissebben elhunyt szerzőtől (pl. Churchill, Kádár
+  János, Márton Áron, a DEGOB-jegyzőkönyvek, a kortárs visszaemlékezések) legfeljebb egy-két mondatos idézet a
+  TortSource kártyán forrással, inkább **parafrázis** – nem `### Idézet` blokkban. Fotó, plakát, karikatúra,
+  festmény, bankjegykép, térképlap nem kerül be; minden vizuál saját rajz. **Önkényuralmi jelkép**
+  (horogkereszt, nyilaskereszt, sarló-kalapács, ötágú vörös csillag) nem rajzolódik ki: a szöveg megnevezi, a
+  vásznon semleges „jelkép” helyőrző áll. Személyről nincs „hiteles” portré: sziluett vagy névkártya.
+- **Térképek, határok:** történeti határ **csak** a `shared/tort/map-torthatar.js` (`TORT_HATAR`) csoportjaiból
+  (TortTerr) vagy kézzel rajzolt, „vázlatos” bélyegű, dátumozott foltként/vonalként. A `TORT_HATAR` a Natural
+  Earth (közkincs) mai közigazgatási egységeinek uniója és kézi vágóvonalak; minden csoportja vázlatos, a `notes`
+  mezője megmondja, miben tér el. Európa-alaptérkép: `shared/tort/map-europa.js`. A hivatalos **területet és
+  népességet** mindig az `### Adatok`-ból mutasd, soha ne a sokszögből számold. Frontvonal: a lecke kódjában
+  kulcskockák (geometria), a dátumuk az `### Adatok` alatt; „vázlatos”, a `.md` megjegyzése felsorolja a
+  felhasznált atlaszokat (csak egybevetés, onnan geometriát nem veszünk át). A HistoGIS, a CShapes, a tankönyvi
+  atlaszok, az OSM és más térképszolgáltatások geometriája nem kerülhet a leckébe. Mai határ csak halvány,
+  kikapcsolható, „mai határok” feliratú réteg; mai korszakról szóló térképen (EU, népszámlálás 2021–22) a mai
+  országhatár a fő réteg. Helynév: a korabeli magyar név, első említéskor a mai hivatalos névvel (Kassa – ma
+  Košice).
+- **Számformátum magyarul:** tizedesvessző (54,5 %), valódi mínuszjel (−46 %), ezres tagolás nem törő szóközzel
+  (437 402 – a build `U+202F`-et tesz), dátum „1944. március 19.”, tartomány nagygondolatjellel („500–565 ezer”),
+  pénz „12 500 korona”, nagy szám szorzószóval („2,5 millió”); hatványalak (10²⁹) csak logaritmikus tengelyen és a
+  `06-pengo` hiperinflációs lépéseiben. A számot az `L.val(k)` / `U.fmt` adja, kézzel formázott szám nincs a
+  kódban.
+- **Színek:** a 11. fejezet semleges oldalszínei (indigó `#3b4590`, szilva `#7d3a66`) háborús feleknél és
+  tömböknél; nincs „jó” zöld és „rossz” piros. Pártállami „irányít” kapcsolat: bordó `#8a2f5b`; demokratikus
+  ellenőrzés: kékeszöld `#0a6f86`. A 08-ban tompa paletta: tinta, papír, a forrás kékeszöldje, halvány okker.
+- **Modulok:** a **TortTerr** (ref. `07-masodik-vilaghaboru`), a **TortCity** (ref. `02-dualizmus`), a **TortParl**
+  és a **TortState** (ref. `16-demokracia`) a 16. fejezet szerint, a terv 4.2 pontjának API-jával; blokkhatár
+  `/* ── MODUL: <név> (<Névtér>) · forrás: tortenelem-7-8/NN-slug, <dátum> ── */` … `/* ── MODUL VÉGE: <név> ── */`.
+  A többi modult (terv 4.1: TtTipp, TortMap, TortTimeline, TortSource, TortCards, TortScene, TortGlobe, FoldChoro,
+  FoldChart, MatChart, BioPlot) **bájtra azonosan** vedd át, az ott megadott md5-tel ellenőrizve; a TortSource
+  `50d3c6fd…`/`134cb7b3…` és a TortCards `c2a85a56…` változata nem használható. A `shared/tort/` adatfájljait a
+  leckeügynök nem módosítja (hiba vagy hiány: jelentés).
+- **Kapcsolódás.** Ha a szám más leckében is szerepel (`foldrajz-9-10/10-nepesseg`, `14-penz`; a sorozaton belül
+  04 ↔ 07 ↔ 14, 10 ↔ 14, 07 ↔ 08), ugyanaz a szám ugyanazzal a forrással áll, és a `> megjegyzés:` egy mondatban
+  hivatkozik.
+- **Kész, ha** (a 10. fejezeten felül): [ ] minden szám, dátum, helyszín az `### Adatok` alatt, forrással;
+  [ ] bizonytalan szám tartománnyal és jelöléssel; [ ] van „Honnan tudjuk?” lépés; [ ] érzékeny tartalomnál nincs
+  pontszám, áldozatszám-tipp, effektus, csúszka áldozatszámon; [ ] nincs önkényuralmi jelkép, fotó, plakát; [ ] a
+  szó szerinti idézet közkincs vagy jogszabály; [ ] 1990 utáni tartalom intézmény és adat, szürke pártszínek;
+  [ ] a történeti határ „vázlatos” és dátumozott; [ ] lektort kérő leckében ott a `Szakmai ellenőrzés` blokk.
