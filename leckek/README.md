@@ -148,10 +148,10 @@ szerepel (`{összeg}`), és nem egyezik a lecke számolásával, a lecke piros s
 | az adat éve | `8,2 milliárd fő (2025, frissítendő)` · `(előrejelzés)` · `(modell)` | a lecke jelzi; `--stale` listázza az elavultakat |
 | adatkészlet | `ENSZ WPP 2024` | a nagy táblázat a `shared/foldrajz/` alatt van; az évszám egyezzen a táblázat verziójával |
 
-Ha a lecke kéri (földrajz), minden adat mellé forrás kell: `<!-- forrás: …, lekérdezve: ÉÉÉÉ-HH-NN -->`
+Ha a lecke kéri (földrajz, történelem 7–10.), minden adat mellé forrás kell: `<!-- forrás: …, lekérdezve: ÉÉÉÉ-HH-NN -->`
 ugyanabban vagy a következő sorban, vagy a szakasz elején egyszer
 `<!-- forrás (az alábbiakra): … -->`. Ha a lecke szakmai lektort kér (elsősegély, online biztonság, a
-20. századi történelemleckék egy része), a lektor egy
+történelemleckék egy része – a 9–10. évfolyamon egy leckében három lektor is), a lektor egy
 `<!-- Szakmai ellenőrzés: <szerep>, <dátum>, <ajánlás verziója> -->` blokkot ír a végére (név nélkül);
 amíg ez „még nincs lektorálva”, a lecke nem használható.
 

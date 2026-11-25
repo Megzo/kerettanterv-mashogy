@@ -36,20 +36,28 @@ Letöltés után a repó [`index.html`](index.html)-je dupla kattintással is me
   határok adatfájlja ([`shared/tort/`](shared/tort/README.md)), és új modulok a leckékben: történeti
   területek és frontok (TortTerr), vázlatos Budapest (TortCity), parlamenti patkó és mandátumszámító
   (TortParl), intézményséma (TortState)
+- **Történelem 9–10.** (gimnázium), 17 lecke – [`leckek/tortenelem-9-10/`](leckek/tortenelem-9-10/),
+  [`pilot/tortenelem-9-10/`](pilot/tortenelem-9-10/) – Hammurapitól 1849-ig; államszervezetek összevetése,
+  gazdasági és népességi adatsorok, dátum szerint változó vázlatos térképek, forráskritika (pl. a magyar
+  őstörténet bizonyítékmátrixa); új modul nélkül, a Történelem 7–8. moduljaira építve
 
 Ezzel a nyitóoldal 5–6. évfolyamos oszlopának mind az öt tárgya (matematika, magyar, történelem,
 természettudomány, digitális kultúra) kapott egy-egy sorozatot.
 
-Az utóbbi kilenc sorozat párhuzamos gépi gyártásban készült (öt egy éjszaka alatt – összefoglaló,
+Az utóbbi tíz sorozat párhuzamos gépi gyártásban készült (öt egy éjszaka alatt – összefoglaló,
 számok, kerethasználat: [`pilot/EJSZAKAI-GYARTAS.md`](pilot/EJSZAKAI-GYARTAS.md) –, a
 természettudomány, a magyar és a digitális kultúra a következő napon, a Történelem 7–8. az azutáni
-napon). **Tanári review még nem volt** – a review-pontok sorozatonként a `METRIKAK.md`-ben vannak.
+napon, a Történelem 9–10. ugyanannak a napnak az estéjén, mind a 17 lecke párhuzamosan). **Tanári
+review még nem volt** – a review-pontok sorozatonként a `METRIKAK.md`-ben vannak.
 Szakmai lektorálás nélkül nem használható: három biológialecke (újraélesztés, járvány, magzat), a
 természettudományból a tűz (tűzvédelem) és az emberi test (egészség), a digitális kultúrából a
 jelszó, a digitális lábnyom és az álhír (online biztonság), a Történelem 7–8. sorozatból a holokauszt
 (történész és emlékezetpedagógus) és további hét lecke: Trianon, a diktatúrák, a második
 világháború, a szovjetizálás, 1956, a rendszerváltoztatás és a határon túli magyarok (történész) –
-így a sorozat 20. századi leckéinek többsége lektort kér.
+így a sorozat 20. századi leckéinek többsége lektort kér. A Történelem 9–10. sorozatból kilenc lecke kér
+lektort: a magyar őstörténet (történész, nyelvész és régész), a monoteizmus (vallástörténész), a
+reformáció (egyháztörténész), valamint az Árpád-kori állam, az Anjou-kor, a hódoltság, a francia
+forradalom, a 18. századi újranépesülés és 1848–49 (történész).
 
 - [`leckek/`](leckek/README.md) – a leckék; mindegyik szövege egy tanár által is
   szerkeszthető `.md`-fájlban van, a `tools/build_lesson.py` égeti be a leckébe.

@@ -2,7 +2,7 @@
    Újragenerálás: python3 tools/build_lesson.py leckek/tortenelem-9-10/15-iparosodas.md */
 window.LESSON_CONTENT = {
  "source": "15-iparosodas.md",
- "title": "Mitől lett tízszer olcsóbb egy autó? – az ipari forradalmak és az új eszmék",
+ "title": "Mitől kellett kilencszer kevesebbet dolgozni egy autóért? – az ipari forradalmak és az új eszmék",
  "titleLine": 1,
  "meta": {
   "subject": "Történelem",
@@ -23,7 +23,7 @@ window.LESSON_CONTENT = {
    "words": 40
   },
   {
-   "title": "Tízszer olcsóbb?",
+   "title": "Harmadára vagy kilencedére?",
    "html": "<p data-src=\"164\">A <b>tömegtermelés</b> miatt egy T-modell 1909-ben 825 dollár, 1925-ben 260 dollár volt. Dollárban ez csak harmadára esés – a bérek közben nőttek. <span class=\"key\">Egy gyári munkás órabérével mérve az autó kb. kilencszer olcsóbb lett.</span> Számold át!</p><p class=\"note\" data-src=\"168\">1914-től Ford napi 5 dollárt fizetett, mert a monoton munkából sokan kiléptek.</p>",
    "line": 163,
    "words": 44
@@ -54,9 +54,9 @@ window.LESSON_CONTENT = {
   },
   {
    "title": "Négy válasz egy új világra",
-   "html": "<p data-src=\"408\">A gyárak és a forradalmak új <b>eszméket</b> szültek. A <b>liberalizmus</b> jogegyenlőséget és <b>alkotmányosságot</b>, a <b>konzervativizmus</b> forradalom helyett <b>szerves reformot</b>, a <b>nacionalizmus</b> <b>nemzetállamot</b>, a <b>szocializmus</b> a magántulajdon megszüntetését kérte.</p><p data-src=\"412\"><span class=\"key\">Húzd az eszme nevét a forrásrészlethez!</span></p><p class=\"note\" data-src=\"414\">Ezek 19. századi eszmék, nem mai pártok nevei.</p>",
+   "html": "<p data-src=\"408\">Négy új <b>eszme</b> született. A <b>liberalizmus</b> jogegyenlőséget és <b>alkotmányosságot</b>, a <b>konzervativizmus</b> forradalom helyett <b>szerves reformot</b>, a <b>nacionalizmus</b> <b>nemzetállamot</b>, a <b>szocializmus</b> a magántulajdon megszüntetését kérte.</p><p data-src=\"412\"><span class=\"key\">Húzd az eszme nevét a forrásrészlethez!</span></p><p class=\"note\" data-src=\"414\">Ezek 19. századi eszmék, nem mai pártok nevei.</p>",
    "line": 407,
-   "words": 42
+   "words": 38
   },
   {
    "title": "Összefoglalás: két hullám",

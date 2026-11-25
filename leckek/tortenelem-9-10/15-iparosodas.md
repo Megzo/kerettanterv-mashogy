@@ -1,4 +1,4 @@
-# Mitől lett tízszer olcsóbb egy autó? – az ipari forradalmak és az új eszmék
+# Mitől kellett kilencszer kevesebbet dolgozni egy autóért? – az ipari forradalmak és az új eszmék
 tantárgy: Történelem · évfolyam: 9–10. · témakör: 11. Az új eszmék és az iparosodás kora
 
 <!--
@@ -160,7 +160,7 @@ keresgélni.
 <!-- forrás: a lecke modellje (kerek feltevés), lekérdezve: 2026-11-25 -->
 - munkások a modellben: 45 fő
 
-## 3. Tízszer olcsóbb?
+## 3. Harmadára vagy kilencedére?
 A **tömegtermelés** miatt egy T-modell {év eleje}-ben {ár eleje}, {év vége}-ben {ár vége} volt. Dollárban ez
 csak harmadára esés – a bérek közben nőttek. ==Egy gyári munkás órabérével mérve az autó kb. kilencszer olcsóbb
 lett.== Számold át!
@@ -405,7 +405,7 @@ Edwin **Chadwick** {Chadwick jelentése}-es jelentése szerint Manchesterben a m
 - gyerekhalottak átlagkora: 1,5 év
 
 ## 8. Négy válasz egy új világra
-A gyárak és a forradalmak új **eszméket** szültek. A **liberalizmus** jogegyenlőséget és
+Négy új **eszme** született. A **liberalizmus** jogegyenlőséget és
 **alkotmányosságot**, a **konzervativizmus** forradalom helyett **szerves reformot**, a **nacionalizmus**
 **nemzetállamot**, a **szocializmus** a magántulajdon megszüntetését kérte.
 
@@ -503,7 +503,7 @@ jutott el mindenkihez==, és a gyárváros ára az egészség és a környezet v
 - második hullám vége: 1914
 
 <!-- Vitatott / bizonytalan pontok:
-  – A cím „tízszer olcsóbb” kérdése: dollárban a T-modell ára 1909 → 1925 között csak kb. harmadára esett
+  – A cím „kilencszer kevesebb munka” kérdése (2026-11-25-ig a cím „tízszer olcsóbb” volt): dollárban a T-modell ára 1909 → 1925 között csak kb. harmadára esett
     (825 → 260); a gyári munkás órabérével mérve kb. 9-szeres (4342 óra → 481 óra; a NBER-sorral kb. 8,7-szeres).
     A lecke ezt mondja ki: „kb. kilencszer”, nem „tízszer”. A Runabout és a Touring változat ára eltér;
     az évek a cég üzleti évei, nem naptári évek.

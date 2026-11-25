@@ -137,7 +137,7 @@ hatalmi jogkörök átrendeződése), és a diák a kapcsolóval, csúszkával m
 | A hódoltság ára | a határ 1526 → 1699 dátumcsúszkán, a két magyar állam sémája, népesség-görbe Nyugat-Európával összevetve | 12 |
 | Hogyan fordul a szabadság forradalma diktatúrába | intézményséma 1789 → 1804, a hatalommegosztás elemei dátum szerint kapcsolnak ki | 13 |
 | Honnan jöttek az új lakók | népességgörbe 1720 → 1787 és vándorlási nyilak; kettős vámhatár áruáramlás-modellel | 14 |
-| Mitől lett tízszer olcsóbb egy autó | futószalag-szimuláció: állomások száma → átfutási idő; Manchester népessége és halandósága | 15 |
+| Mitől kellett kilencszer kevesebbet dolgozni egy autóért | futószalag-szimuláció: állomások száma → átfutási idő; Manchester népessége és halandósága | 15 |
 | Miért tartott 15 évig egy reform | a rendi országgyűlés „törvényútja”: vármegyei követutasítás → alsótábla → felsőtábla → király; örökváltság-számoló | 16 |
 | Mit változtattak meg az áprilisi törvények | intézményséma 1847 → 1848 április; a választójogosultak aránya; az ellenőrzött terület havonta 1848 szeptember – 1849 augusztus | 17 |
 
@@ -196,7 +196,7 @@ hatalmi jogkörök átrendeződése), és a diák a kapcsolóval, csúszkával m
 | 12 | `12-hodoltsag-merlege` | Mibe került másfél évszázad? – a három részre szakadt ország mérlege | 8 | TortMap, TortTerr, TortState, FoldChart, MatChart | 3 | történész |
 | 13 | `13-francia-forradalom` | Hogyan fordult a szabadság forradalma diktatúrába? – felvilágosodás és francia forradalom | 9 | TortState (timeline), TortCards, TortMap, TortTimeline | 3 | történész |
 | 14 | `14-ujranepesules` | Honnan jöttek az új lakók? – Magyarország a 18. században | 10 | FoldChart, TortMap, TortTerr, MatChart, TortCards | 3 | történész |
-| 15 | `15-iparosodas` | Mitől lett tízszer olcsóbb egy autó? – az ipari forradalmak és az új eszmék | 11 | FoldChart, MatChart, TortCards | 2 | – |
+| 15 | `15-iparosodas` | Mitől kellett kilencszer kevesebbet dolgozni egy autóért? – az ipari forradalmak és az új eszmék | 11 | FoldChart, MatChart, TortCards | 2 | – |
 | 16 | `16-rendi-orszaggyules` | Miért tartott évtizedekig egy reform? – a reformkor országgyűlése és vitái | 12 | TortState, TortParl, TortCards, TortTimeline | 3 | – |
 | 17 | `17-forradalom-1848` | Mit vívtak ki 1848-ban, és miért kellett megvédeni? – áprilisi törvények és szabadságharc | 13 | TortState, TortMap, TortTerr, MatChart, TortParl | 3 | történész |
 
@@ -1349,7 +1349,7 @@ Közös minden briefben (a 21. fejezet szabályai szerint):
 - **Review-pontok (történész):** a betelepítés értékelésének két nézőpontja; a népességi és etnikai becslések forrása és
   tartománya; a nyilak (honnan pontosan) – vázlatosság; a csoportszínek semlegessége.
 
-### 15 · `15-iparosodas` – Mitől lett tízszer olcsóbb egy autó? – az ipari forradalmak és az új eszmék
+### 15 · `15-iparosodas` – Mitől kellett kilencszer kevesebbet dolgozni egy autóért? – az ipari forradalmak és az új eszmék
 
 - **Tanulási cél:** Az **első ipari forradalom** (Nagy-Britannia, 18. század második fele) a textiliparban, a
   bányászatban, a kohászatban és a gőzgéppel indult; a **közlekedés forradalma** (vasút, gőzhajó) összekötötte a
