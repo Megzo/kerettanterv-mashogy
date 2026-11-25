@@ -3034,26 +3034,81 @@ const TortState = (() => {
 })();
 /* ── MODUL VÉGE: TortState ── */
 
-/* ── LECKE-HELPER: torthatar-dekóder ── (ideiglenes, csak ebben a leckében) ─────────────────────────────────────────
-   A shared/tort/README.md referencia-dekódere (TORT_HATAR: topologikus ívek → gyűrűk → kitöltés / körvonal), Path2D-
-   gyorsítótárral. A TortTerr modul (07-es lecke) elkészülte után erre cserélendő – a lecke csak ezt a felületet hívja:
-     TortHatar.ids(kulcsok)          ['mai0.HU', 'mo1914hsz', 'eu1914.AH', …] → egység-id-k (egyedi)
-     TortHatar.fill(V, kulcsok)      Path2D: a csoport(ok) kitöltése ('nonzero' szabállyal töltendő)
-     TortHatar.line(V, kulcsok)      Path2D: a csoport körvonala (a csoportban pontosan egyszer használt ívek;
-                                     a kivágat szélére eső ívek nélkül)
-     TortHatar.poly(V, pts, id)      Path2D egy kézi [lon, lat]-sokszögből (gyorsítótárazva id szerint)
-   A gyorsítótár a nézet-objektumhoz (V) kötött: a nézet maradjon állandó (init-ben számolva).
-   ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
-const TortHatar = (() => {
-  const H = window.TORT_HATAR, P = TortProj;
-  let ARCS = null, UN = null;
-  const RINGS = {}, CACHE = new WeakMap();
-  function load() {
-    if (ARCS) return;
-    ARCS = H.arcs.map((a) => P.decode(a, H.q)); UN = {};
-    for (const u of H.units) UN[u.id] = u;
-  }
-  function ring(refs) {
+/* ── MODUL: Történeti területek (TortTerr) · forrás: tortenelem-7-8/07-masodik-vilaghaboru, 2026-11-25 ── */
+/* Történeti területek, dátum szerinti hovatartozás és frontvonalak a 7–8. évfolyamos történelemleckékhez
+   (pilot/tortenelem-7-8/terv.md 4.2). Adat: shared/tort/map-torthatar.js (window.TORT_HATAR – topologikus ívek,
+   egységek, csoportok; formátum: shared/tort/README.md). A TortMap-re épül (a nézet a map.frame()-ből jön: map.V,
+   map.vb; a „szárazföldre vágás” a TortMap rétegeinek szárazföldjét használja), és a Lesson motorra (L.ctx, L.pill,
+   L.measure). A lecke kódjára nem hivatkozik; változtatás nélkül átemelhető (shared/tort/terr.js).
+   Minden felirat {s, k} pár, és csak L.pill írja ki. A modul NEM ad területet vagy népességet (a hivatalos számot a
+   lecke az ### Adatok-ból mutatja – terv 4.2, szerződés 20.). Minden csoport és front „vázlatos”: a bélyeget a lecke
+   teszi ki.
+
+   const T = TortTerr.create(L, TORT_HATAR, {map})        egyszer, init()-ben (az íveket és gyűrűket itt dekódolja)
+   CSOPORT (g) – mindenhol ezek bármelyike:
+     'mo1941' | 'eu1942.DE' (csoport vagy alcsoport kulcsa) · ['HU-BA', 'RS-01', …] (egység-azonosítók) ·
+     {ids: […]} (a T.group eredménye). Ismeretlen kulcs / egység: console.warn, és üresnek számít.
+   T.group(g) → {ids, c: [lon, lat]}       c: a legnagyobb (befoglaló téglalapú) egység címkepontja
+   T.ids(g) → [unit-id…]                    T.unit(id) → {id, n, cc, c, set, bb: [lon0, lat0, lon1, lat1]}
+   T.fill(ctx, items, o)                    kitöltés, csoportonként EGY útvonalban ('nonzero': nincs rés a varraton).
+        items = [{g | poly: [[lon, lat]…] (kézi, vázlatos folt a csoport helyett), c: szín, a: alfa (1),
+                  hatch: true | {c, gap: 13, w: 2, ang: 45 (fok)} (sraffozás a kitöltés fölé; c nélkül csak sraff),
+                  dx, dy (px eltolás – kiúsztatás), clip: [[lon, lat]…] (csak e sokszögön BELÜL), clipOut: […] (csak
+                  KÍVÜL) – pl. a frontvonal egyik oldala (T.side)}]
+        o = {land: true (a TortMap szárazföldjére vágva – közelképen a part pontosabb), a: alfa, blur: px (lágy szél)}
+   T.outline(ctx, g, o)                     EGYESÍTETT körvonal: a csoporton belül kétszer használt ívek (belső határok)
+        kimaradnak, a kivágat (bbox) szélére eső vágóélek is. o = {c: tinta, w: 2.5, dash, a, halo: px (papírszínű
+        alá-vonal), dx, dy, clip, clipOut, inner: true (a belső határok is, vékonyabban: o.iw)}
+   HOVATARTOZÁS (dátum: tört év, pl. L.dat(k).a)
+   T.control(rules, d) → {unitId: who}      rules = [{g, who, from?, to?}] – a d-ben érvényes szabályok közül a
+        LISTÁBAN KÉSŐBBI nyer (rétegezés: alap → változások). from ≤ d < to; a hiányzó határ nyitott.
+   T.blend(rules, d, fade = .05) → [{who, prev, t, ids, g}]   mint a control, de a váltás fade évig (.05 ≈ 18 nap)
+        áttűnik: t = 0..1 (1: kész), prev: az előző gazda (null: nem volt); g = {ids} – közvetlenül T.fill-be adható.
+        Visszalépéskor is helyes (zárt képlet a d-ből, nincs halmozott állapot).
+   T.paint(ctx, rules, d, styles, o)        kényelmi rajzoló: blend + fill. styles = {who: {c, a, hatch}} (ismeretlen
+        who: nem rajzol); o = {fade, land, a, clip, clipOut, dx, dy, only: [who…]} → a blend eredménye
+   KIÚSZTATÁS ÉS FELIRAT
+   T.explode(g, toward, u) → {dx, dy}       a csoport címkepontja u (0..1) arányban a toward [lon, lat] felé (px)
+   T.label(L, g, t, o) → doboz              pill a csoport címkepontján: t = {s, k}; o = {at: [lon, lat], dx, dy, a,
+        sub: {s, k}, s: 24, w: 700, c, bg, bd, bw, pad, r, max} – a sub kisebb, halvány sor a pill alatt
+   T.hit(px, py, gs) → g | null             melyik csoportra mutat a pont (gs: [g | {g, dx, dy}], a lista végétől –
+        a felül rajzolt nyer); a csoport-kulcsot (vagy az elemet) adja vissza
+   T.at(lon, lat, gs) → g | null            ugyanez földrajzi pontra
+   FRONTOK (a kulcskockák geometriája a lecke kódjában, a dátumuk a .md-ben; minden front vázlatos)
+   T.front(keys, d, o) → [[lon, lat]…] | null   keys = [{a: tört év, pts: [[lon, lat]…]}] (időrendben, a vonal iránya
+        minden kulcsban azonos, pl. északról délre). Minden kulcsot n (o.n, alap 160) pontra mintavételez ívhossz
+        szerint, és d szerint lineárisan interpolál. d < első kulcs vagy d > utolsó: null (o.clamp: az első/utolsó).
+        SZAKASZOK: pts = [[[lon, lat]…], [[lon, lat]…], …] – minden szakaszt külön mintavételez (o.n: tömb – szakaszonkénti
+        pontszám –, vagy szám, egyenlően elosztva), így egy hosszú, változatlan szakasz (pl. a tengeren visszavezető zárás)
+        pontjai nem csúsznak el, amikor a front-szakasz hossza változik; a szakaszok egymás végéhez fűzve jönnek vissza.
+   T.drawFront(ctx, pts, o)                 frontvonal: o = {c, w: 3.5, a, halo: 5, dash, teeth: 'bal' | 'jobb' |
+        null (a fogazat a haladási irány bal vagy jobb oldalára mutat – a támadás iránya), size: 9 (px), gap: 34 (px),
+        within: g (csak a csoport területén látszik – a tengeren, semleges országon átvezetett szakasz rejtve marad)}
+        Zárt front (egy megszállt / felszabadult terület széle): a kulcskocka pts-e ugyanazzal a ponttal kezdődjön és
+        végződjön; a T.fill clip-je maga a vonal (T.side nélkül).
+   T.side(pts, far, o) → [[lon, lat]…]      a front egyik oldala sokszögként (T.fill clip/clipOut-hoz): a vonal + a
+        „távoli” zárópontok (far = [[lon, lat]…], a vonal utolsó pontjától az elsőig, pl. keletre: [[60, 30], [60, 82]]);
+        a záróéleket o.step (2°) lépésben sűríti, hogy a vetületben ne vágjon át
+   T.shift(A, B, i0, i1) → km               két front átlagos elmozdulása az [i0, i1] mintavételi szakaszon (gömbi
+        távolság, „kb.” – a geometria vázlatos). A, B: T.front-eredmény (azonos n) vagy egy-egy kulcskocka ({a, pts}:
+        160 pontra mintavételezi); i0 = i1: egyetlen kijelölt pont elmozdulása (03: mérőszalag)
+   T.dist(pts, [lon, lat]) → km             a pont és a vonal legközelebbi csúcsa közti távolság
+   FOLDCHORO-NÉZET
+   TortTerr.asChoro(TORT_HATAR, ids) → {q, counties: [{n: id, p: [delta-kódolt gyűrű…]}]}   (FoldChoro.load-dal)
+   ALFA: a rajzolók a pillanatnyi globalAlpha-t o.a-val (elemnél it.a-val) SZOROZZÁK, és a vonalstílust (lineCap,
+   lineJoin, setLineDash) save/restore-ral visszaállítják.
+   TELJESÍTMÉNY: a kivetített útvonalakat (Path2D) nézetenként gyorsítótárazza (az utolsó 6 nézet – több térkép és a
+   jelenet-áttűnés egy képkockán; álló kamerán 0 újravetítés); mozgó
+   kamerán a teljes Európa (kb. 40 ezer pont) újravetítése néhány ms. A nézeten kívüli egységek kimaradnak.
+   ──────────────────────────────────────────────────────────────────────────────────────────────────────────── */
+const TortTerr = (() => {
+  'use strict';
+  const TP = window.TortProj, D = Math.PI / 180, R_KM = 6371;
+  const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+  const PAPER = 'rgba(250,246,238,.95)', INK = '#1c2440';
+
+  function decodeArcs(H) { return H.arcs.map((a) => TP.decode(a, H.q)); }
+  function ringOf(ARCS, refs) {
     const out = [];
     for (const r of refs) {
       const a = ARCS[r >= 0 ? r : ~r], n = a.length / 2;
@@ -3062,78 +3117,311 @@ const TortHatar = (() => {
     if (out.length > 4 && out[0] === out[out.length - 2] && out[1] === out[out.length - 1]) out.length -= 2;
     return Float64Array.from(out);
   }
-  const rings = (id) => RINGS[id] || (RINGS[id] = UN[id].r.map(ring));
-  function ids(keys) {
-    load();
-    const out = new Set();
-    for (const key of [].concat(keys)) {
-      const [g, s] = key.split('.'), v = s ? H.groups[g][s] : H.groups[g];
-      if (!v) throw new Error('TortHatar: ismeretlen csoport: ' + key);
-      for (const id of v) out.add(id);
+  function bbOf(rings) {
+    let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
+    for (const r of rings) for (let i = 0; i < r.length; i += 2) { const x = r[i], y = r[i + 1]; if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+    return [x0, y0, x1, y1];
+  }
+  const hitBB = (a, b) => a[0] <= b[2] && a[2] >= b[0] && a[1] <= b[3] && a[3] >= b[1];
+  function wind(x, y, r) {             // körülfordulási szám (nonzero) egy lapos gyűrűre
+    let w = 0; const n = r.length / 2;
+    for (let i = 0; i < n; i++) {
+      const j = i + 1 === n ? 0 : i + 1, x1 = r[2 * i], y1 = r[2 * i + 1], x2 = r[2 * j], y2 = r[2 * j + 1];
+      const cr = (x2 - x1) * (y - y1) - (x - x1) * (y2 - y1);
+      if (y1 <= y) { if (y2 > y && cr > 0) w++; } else if (y2 <= y && cr < 0) w--;
     }
-    return [...out];
+    return w;
   }
-  function cache(V) { let m = CACHE.get(V); if (!m) { m = new Map(); CACHE.set(V, m); } return m; }
-  function fill(V, keys) {
-    const m = cache(V), ck = 'f:' + [].concat(keys).join('|');
-    if (m.has(ck)) return m.get(ck);
-    const p = new Path2D();
-    for (const id of ids(keys)) for (const r of rings(id)) P.trace(p, V, r, { close: true });
-    m.set(ck, p); return p;
+  function gdist(lon1, lat1, lon2, lat2) {
+    const a = Math.sin((lat2 - lat1) * D / 2) ** 2 + Math.cos(lat1 * D) * Math.cos(lat2 * D) * Math.sin((lon2 - lon1) * D / 2) ** 2;
+    return 2 * R_KM * Math.asin(Math.min(1, Math.sqrt(a)));
   }
-  function line(V, keys) {
-    const m = cache(V), ck = 'l:' + [].concat(keys).join('|');
-    if (m.has(ck)) return m.get(ck);
-    const cnt = new Map();
-    for (const id of ids(keys)) for (const rr of UN[id].r) for (const r of rr) { const a = r >= 0 ? r : ~r; cnt.set(a, (cnt.get(a) || 0) + 1); }
-    const p = new Path2D(), edge = H.bbox.map((v) => v / H.q);
-    for (const [a, n] of cnt) if (n === 1) P.trace(p, V, ARCS[a], { edge });
-    m.set(ck, p); return p;
+  function resample(pts, n) {          // ívhossz szerint n pontra (a hosszúság cos(lat)-tal súlyozva)
+    const cum = [0];
+    for (let i = 1; i < pts.length; i++) {
+      const k = Math.cos((pts[i][1] + pts[i - 1][1]) / 2 * D);
+      cum.push(cum[i - 1] + Math.hypot((pts[i][0] - pts[i - 1][0]) * k, pts[i][1] - pts[i - 1][1]));
+    }
+    const tot = cum[cum.length - 1] || 1, out = []; let j = 1;
+    for (let s = 0; s < n; s++) {
+      const u = tot * s / (n - 1);
+      while (j < pts.length - 1 && cum[j] < u) j++;
+      const a = cum[j - 1], b = cum[j], f = b > a ? clamp((u - a) / (b - a)) : 0;
+      out.push([pts[j - 1][0] + (pts[j][0] - pts[j - 1][0]) * f, pts[j - 1][1] + (pts[j][1] - pts[j - 1][1]) * f]);
+    }
+    return out;
   }
-  function poly(V, pts, id) {
-    const m = cache(V), ck = 'p:' + id;
-    if (m.has(ck)) return m.get(ck);
-    const p = new Path2D();
-    P.trace(p, V, Float64Array.from(pts.flat()), { close: true });
-    m.set(ck, p); return p;
-  }
-  return { ids, fill, line, poly };
-})();
-/* ── LECKE-HELPER VÉGE: torthatar-dekóder ── */
 
-/* ── LECKE-HELPER: torthatar-kiegészítés ── (ideiglenes, csak ebben a leckében) ─────────────────────────────────────
-   A fenti torthatar-dekóder kiegészítése; a TortTerr modul (07-es lecke) elkészülte után azzal cserélendő.
-     TortHatarX.common(V, a, b)      Path2D: két csoport közös határa (az a- és a b-csoportban is használt ívek)
-     TortHatarX.hit(path, x, y)      a (x, y) logikai pont a Path2D-ben van-e ('nonzero'; saját, egységmátrixú
-                                     kontextuson – az L.ctx skálázott, ott az isPointInPath eszköz-pixelt várna)
-   A gyorsítótár a nézet-objektumhoz (V) kötött, mint a dekóderben.
-   ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
-const TortHatarX = (() => {
-  const H = window.TORT_HATAR, P = TortProj;
-  let UN = null, HC = null;
-  const AR = {}, CACHE = new WeakMap();
-  const arc = (i) => AR[i] || (AR[i] = P.decode(H.arcs[i], H.q));
-  function arcSet(keys) {
-    if (!UN) { UN = {}; for (const u of H.units) UN[u.id] = u; }
-    const s = new Set();
-    for (const id of TortHatar.ids(keys)) for (const rr of UN[id].r) for (const r of rr) s.add(r >= 0 ? r : ~r);
-    return s;
+  function create(L, H, o = {}) {
+    const map = o.map, ARCS = decodeArcs(H), U = {}, RINGS = {}, BB = {}, EDGE = H.bbox.map((v) => v / H.q);
+    for (const u of H.units) { U[u.id] = u; RINGS[u.id] = u.r.map((rr) => ringOf(ARCS, rr)); BB[u.id] = bbOf(RINGS[u.id]); }
+    const ABB = ARCS.map((a) => bbOf([a]));
+    const T = { H, map };
+    const warned = new Set();
+    const warn = (s) => { if (!warned.has(s)) { warned.add(s); console.warn('TortTerr: ' + s); } };
+    const idsMemo = new Map();
+
+    T.ids = (g) => {
+      if (g == null) return [];
+      if (Array.isArray(g)) return g.filter((id) => { if (!U[id]) { warn('ismeretlen egység: ' + id); return false; } return true; });
+      if (typeof g === 'object') return g.ids || [];
+      if (idsMemo.has(g)) return idsMemo.get(g);
+      let v = H.groups[g];
+      if (v == null && g.indexOf('.') > 0) { const i = g.indexOf('.'), a = H.groups[g.slice(0, i)]; if (a && !Array.isArray(a)) v = a[g.slice(i + 1)]; }
+      if (!Array.isArray(v)) { warn('ismeretlen csoport: ' + g); v = []; }
+      v = v.filter((id) => U[id]); idsMemo.set(g, v); return v;
+    };
+    T.unit = (id) => U[id] ? { id, n: U[id].n, cc: U[id].cc, c: U[id].c, set: U[id].set, bb: BB[id] } : null;
+    T.group = (g) => {
+      const ids = T.ids(g); let best = null, ba = -1;
+      for (const id of ids) { const b = BB[id], ar = (b[2] - b[0]) * (b[3] - b[1]) * Math.cos((b[1] + b[3]) / 2 * D); if (ar > ba) { ba = ar; best = id; } }
+      return { ids, c: best ? U[best].c.slice() : [0, 0] };
+    };
+    const keyOf = (g) => (typeof g === 'string' ? g : T.ids(g).join(','));
+
+    // ── kivetített útvonalak gyorsítótára (nézetenként) ──
+    const views = new Map();            // nézet-kulcs → (útvonal-kulcs → Path2D); a legutóbbi 6 nézet marad meg
+    function viewKey() { const V = map.V; return V ? [V.lon, V.lat, V.s, V.x, V.y].map((v) => (+v).toFixed(5)).join('|') : ''; }
+    function memo(k, fn) {
+      const vk = viewKey(); let cache = views.get(vk);
+      if (!cache) { cache = new Map(); views.set(vk, cache); if (views.size > 6) views.delete(views.keys().next().value); }
+      else { views.delete(vk); views.set(vk, cache); }
+      let p = cache.get(k); if (!p) { p = fn(); cache.set(k, p); if (cache.size > 400) cache.delete(cache.keys().next().value); }
+      return p;
+    }
+    function groupPath(g) {
+      return memo('f:' + keyOf(g), () => {
+        const p = new Path2D(), V = map.V, vb = map.vb;
+        for (const id of T.ids(g)) { if (vb && !hitBB(BB[id], vb)) continue; for (const r of RINGS[id]) TP.trace(p, V, r, { close: true }); }
+        return p;
+      });
+    }
+    function densify(pts, step) {
+      const out = [];
+      for (let i = 0; i < pts.length; i++) {
+        const a = pts[i], b = pts[(i + 1) % pts.length], n = Math.max(1, Math.ceil(Math.max(Math.abs(b[0] - a[0]), Math.abs(b[1] - a[1])) / step));
+        for (let k = 0; k < n; k++) out.push(a[0] + (b[0] - a[0]) * k / n, a[1] + (b[1] - a[1]) * k / n);
+      }
+      return Float64Array.from(out);
+    }
+    function polyPath(poly) {
+      const p = new Path2D(); if (!poly || poly.length < 3) return p;
+      TP.trace(p, map.V, densify(poly, 1), { close: true }); return p;
+    }
+    function landPath() {
+      return memo('land', () => {
+        const p = new Path2D(), ls = map.layers, al = map.alpha || [];
+        let own = ls[0]; for (const l of ls) if ((al[l.i] || 0) >= .5) own = l;
+        for (const r of own.land) if (!map.vb || hitBB(r.b, map.vb)) TP.trace(p, map.V, r.r, { close: true });
+        return p;
+      });
+    }
+    function applyClip(ctx, it) {
+      if (it.clip) ctx.clip(polyPath(it.clip), 'nonzero');
+      if (it.clipOut) { const p = new Path2D(); p.rect(-4000, -4000, 9000, 9000); p.addPath(polyPath(it.clipOut)); ctx.clip(p, 'evenodd'); }
+    }
+    function hatchIn(ctx, h) {
+      const gap = h.gap || 13, ang = (h.ang == null ? 45 : h.ang) * D, ca = Math.cos(ang), sa = Math.sin(ang);
+      ctx.beginPath();
+      for (let s = -3200; s <= 3200; s += gap) { ctx.moveTo(s * ca - 3000 * -sa + 960, s * sa - 3000 * ca + 540); ctx.lineTo(s * ca + 3000 * -sa + 960, s * sa + 3000 * ca + 540); }
+      ctx.strokeStyle = h.c || INK; ctx.lineWidth = h.w || 2; ctx.lineCap = 'butt'; ctx.stroke();
+    }
+
+    T.fill = (ctx, items, fo = {}) => {
+      if (!map.V) { warn('fill() frame() előtt'); return; }
+      const g0 = ctx.globalAlpha, A = fo.a == null ? 1 : fo.a;
+      for (const it of items) {
+        const a = A * (it.a == null ? 1 : it.a); if (a <= .003) continue;
+        const path = it.poly ? polyPath(it.poly) : groupPath(it.g);
+        ctx.save(); ctx.globalAlpha = g0 * a; if (fo.blur) ctx.filter = 'blur(' + fo.blur + 'px)';
+        if (it.dx || it.dy) ctx.translate(it.dx || 0, it.dy || 0);
+        if (fo.land) ctx.clip(landPath(), 'evenodd');
+        if (it.dx || it.dy) ctx.translate(-(it.dx || 0), -(it.dy || 0));
+        applyClip(ctx, it);
+        if (it.dx || it.dy) ctx.translate(it.dx || 0, it.dy || 0);
+        if (it.c) { ctx.fillStyle = it.c; ctx.fill(path, 'nonzero'); }
+        if (it.hatch) { ctx.clip(path, 'nonzero'); hatchIn(ctx, it.hatch === true ? {} : it.hatch); }
+        ctx.restore();
+      }
+      ctx.globalAlpha = g0;
+    };
+
+    function outlinePath(g, inner) {
+      return memo('o:' + (inner ? 'i:' : '') + keyOf(g), () => {
+        const cnt = new Map();
+        for (const id of T.ids(g)) for (const rr of U[id].r) for (const r of rr) { const a = r >= 0 ? r : ~r; cnt.set(a, (cnt.get(a) || 0) + 1); }
+        const p = new Path2D(), vb = map.vb;
+        for (const [a, n] of cnt) if ((inner ? n > 1 : n === 1) && (!vb || hitBB(ABB[a], vb))) TP.trace(p, map.V, ARCS[a], { edge: EDGE });
+        return p;
+      });
+    }
+    T.outline = (ctx, g, oo = {}) => {
+      if (!map.V) return;
+      const g0 = ctx.globalAlpha, a = oo.a == null ? 1 : oo.a; if (a <= .003) return;
+      ctx.save(); ctx.globalAlpha = g0 * a; ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+      applyClip(ctx, oo);
+      if (oo.dx || oo.dy) ctx.translate(oo.dx || 0, oo.dy || 0);
+      const p = outlinePath(g, false), w = oo.w || 2.5;
+      if (oo.inner) { ctx.setLineDash([]); ctx.strokeStyle = oo.ic || oo.c || INK; ctx.lineWidth = oo.iw || 1; ctx.stroke(outlinePath(g, true)); }
+      if (oo.halo) { ctx.setLineDash([]); ctx.strokeStyle = PAPER; ctx.lineWidth = w + oo.halo; ctx.stroke(p); }
+      ctx.setLineDash(oo.dash || []); ctx.strokeStyle = oo.c || INK; ctx.lineWidth = w; ctx.stroke(p);
+      ctx.restore(); ctx.globalAlpha = g0;
+    };
+
+    // ── hovatartozás ──
+    const ruleIds = (r) => (r._ids || (r._ids = T.ids(r.g)));
+    const act = (r, d) => (r.from == null || d >= r.from) && (r.to == null || d < r.to);
+    T.control = (rules, d) => {
+      const own = {};
+      for (const r of rules) if (act(r, d)) for (const id of ruleIds(r)) own[id] = r.who;
+      return own;
+    };
+    T.blend = (rules, d, fade = .05) => {
+      const cur = T.control(rules, d), byUnit = new Map();
+      // a d előtti legutóbbi váltás egységenként: a szabályhatárok közül a legkésőbbi, ahol a gazda megváltozott
+      const bounds = new Map();
+      for (const r of rules) for (const t of [r.from, r.to]) if (t != null && t <= d && t > d - fade) for (const id of ruleIds(r)) { if (!bounds.has(id)) bounds.set(id, []); bounds.get(id).push(t); }
+      const at = new Map();
+      for (const [id, ts] of bounds) {
+        ts.sort((x, y) => y - x);
+        for (const t of ts) {
+          let pw = null; for (const r of rules) if (act(r, t - 1e-7) && ruleIds(r).includes(id)) pw = r.who;
+          if (pw !== cur[id]) { at.set(id, { t: clamp((d - t) / fade), prev: pw }); break; }
+        }
+      }
+      const out = new Map();
+      const all = new Set([...Object.keys(cur), ...at.keys()]);
+      for (const id of all) {
+        const w = cur[id] == null ? null : cur[id], b = at.get(id), t = b ? b.t : 1, prev = b ? b.prev : null;
+        const k = w + '|' + prev + '|' + t.toFixed(3);
+        if (!out.has(k)) { const ids = []; out.set(k, { who: w, prev, t, ids, g: { ids } }); }
+        out.get(k).ids.push(id);
+      }
+      return [...out.values()];
+    };
+    T.paint = (ctx, rules, d, styles, po = {}) => {
+      const B = T.blend(rules, d, po.fade == null ? .05 : po.fade), items = [];
+      const ok = (w) => w != null && styles[w] && (!po.only || po.only.includes(w));
+      const put = (w, ids, a) => { const s = styles[w]; items.push({ g: { ids }, c: s.c, hatch: s.hatch, a: (s.a == null ? 1 : s.a) * a, clip: po.clip, clipOut: po.clipOut, dx: po.dx, dy: po.dy }); };
+      for (const b of B) { if (b.t < 1 && ok(b.prev)) put(b.prev, b.ids, 1); }
+      for (const b of B) { if (ok(b.who)) put(b.who, b.ids, b.t); }
+      T.fill(ctx, items, { land: po.land, a: po.a });
+      return B;
+    };
+
+    // ── kiúsztatás, felirat, találat ──
+    T.explode = (g, toward, u) => {
+      const c = T.group(g).c, a = map.pt(c[0], c[1]), b = map.pt(toward[0], toward[1]);
+      return { dx: (b[0] - a[0]) * u, dy: (b[1] - a[1]) * u };
+    };
+    T.label = (Lx, g, t, oo = {}) => {
+      const c = L.ctx, at = oo.at || T.group(g).c, p = map.pt(at[0], at[1]), x = p[0] + (oo.dx || 0), y = p[1] + (oo.dy || 0);
+      const g0 = c.globalAlpha, a = oo.a == null ? 1 : oo.a; if (a <= .003) return null;
+      c.save(); c.globalAlpha = g0 * a;
+      const sz = oo.s || 24, b = Lx.pill(t.s, x, y, { k: t.k, s: sz, w: oo.w || 700, f: Lx.fonts.B, a: 'center', c: oo.c || INK, bg: oo.bg || '#fffaf1', bd: oo.bd || 'rgba(28,36,64,.45)', bw: oo.bw || 2, pad: oo.pad == null ? 10 : oo.pad, r: oo.r == null ? 9 : oo.r, max: oo.max });
+      let box = b;
+      if (oo.sub && oo.sub.s) {
+        const sb = Lx.pill(oo.sub.s, x, b.y + b.h + 16, { k: oo.sub.k, s: 22, w: 600, f: Lx.fonts.B, a: 'center', c: '#565d72', bg: 'rgba(255,250,241,.92)', pad: 7, r: 7, max: oo.max });
+        box = { x: Math.min(b.x, sb.x), y: b.y, w: Math.max(b.x + b.w, sb.x + sb.w) - Math.min(b.x, sb.x), h: sb.y + sb.h - b.y };
+      }
+      c.restore();
+      return box;
+    };
+    function inGroup(lon, lat, g) {
+      for (const id of T.ids(g)) {
+        const b = BB[id]; if (lon < b[0] || lon > b[2] || lat < b[1] || lat > b[3]) continue;
+        let w = 0; for (const r of RINGS[id]) w += wind(lon, lat, r);
+        if (w) return true;
+      }
+      return false;
+    }
+    T.at = (lon, lat, gs) => { for (let i = gs.length - 1; i >= 0; i--) { const e = gs[i], g = e && e.g != null ? e.g : e; if (inGroup(lon, lat, g)) return e; } return null; };
+    T.hit = (px, py, gs) => {
+      if (!map.V) return null;
+      for (let i = gs.length - 1; i >= 0; i--) {
+        const e = gs[i], g = e && e.g != null ? e.g : e, ll = map.V.inv(px - (e.dx || 0), py - (e.dy || 0));
+        if (isFinite(ll[0]) && inGroup(ll[0], ll[1], g)) return e;
+      }
+      return null;
+    };
+
+    // ── frontok ──
+    const RS = new WeakMap();
+    T.front = (keys, d, fo = {}) => {
+      if (!keys || !keys.length) return null;
+      const n = fo.n || 160, nk = Array.isArray(n) ? n.join(',') : n;
+      const rs = (k) => {
+        let m = RS.get(k);
+        if (!m || m.nk !== nk) {
+          const parts = Array.isArray(k.pts[0][0]) ? k.pts : [k.pts];
+          const ns = Array.isArray(n) ? n : parts.map(() => Math.max(2, Math.round(n / parts.length)));
+          m = { nk, p: [].concat(...parts.map((q, i) => resample(q, ns[i] || ns[ns.length - 1]))) }; RS.set(k, m);
+        }
+        return m.p;
+      };
+      if (d < keys[0].a) return fo.clamp ? rs(keys[0]) : null;
+      const last = keys[keys.length - 1];
+      if (d > last.a) return fo.clamp ? rs(last) : null;
+      let i = 0; while (i < keys.length - 2 && d > keys[i + 1].a) i++;
+      const k0 = keys[i], k1 = keys[Math.min(i + 1, keys.length - 1)];
+      if (k1 === k0 || k1.a <= k0.a) return rs(k0);
+      const u = clamp((d - k0.a) / (k1.a - k0.a)), A = rs(k0), B = rs(k1);
+      return A.map((p, j) => [p[0] + (B[j][0] - p[0]) * u, p[1] + (B[j][1] - p[1]) * u]);
+    };
+    T.drawFront = (ctx, pts, fo = {}) => {
+      if (!pts || pts.length < 2 || !map.V) return;
+      const g0 = ctx.globalAlpha, a = fo.a == null ? 1 : fo.a; if (a <= .003) return;
+      const q = pts.map((p) => map.pt(p[0], p[1])), w = fo.w || 3.5, col = fo.c || '#c8401c';
+      ctx.save(); ctx.globalAlpha = g0 * a; ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+      if (fo.within) ctx.clip(groupPath(fo.within), 'nonzero');
+      const path = () => { ctx.beginPath(); q.forEach((p, i) => (i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1]))); };
+      if (fo.halo !== 0) { path(); ctx.strokeStyle = PAPER; ctx.lineWidth = w + (fo.halo || 5); ctx.stroke(); }
+      path(); ctx.setLineDash(fo.dash || []); ctx.strokeStyle = col; ctx.lineWidth = w; ctx.stroke(); ctx.setLineDash([]);
+      if (fo.teeth) {
+        const sgn = fo.teeth === 'bal' ? -1 : 1, size = fo.size || 9, gap = fo.gap || 34;
+        let run = gap / 2; ctx.beginPath();
+        for (let i = 1; i < q.length; i++) {
+          const x0 = q[i - 1][0], y0 = q[i - 1][1], dx = q[i][0] - x0, dy = q[i][1] - y0, l = Math.hypot(dx, dy); if (l < 1e-6) continue;
+          const ux = dx / l, uy = dy / l, nx = -uy * sgn, ny = ux * sgn;   // képernyőn (y lefelé): bal = (uy, −ux)
+          let s = run; while (s < l) {
+            const cx = x0 + ux * s, cy = y0 + uy * s;
+            ctx.moveTo(cx - ux * size * .7, cy - uy * size * .7); ctx.lineTo(cx + nx * size, cy + ny * size); ctx.lineTo(cx + ux * size * .7, cy + uy * size * .7); ctx.closePath();
+            s += gap;
+          }
+          run = s - l;
+        }
+        ctx.fillStyle = col; ctx.fill();
+      }
+      ctx.restore(); ctx.globalAlpha = g0;
+    };
+    T.side = (pts, far, so = {}) => {
+      if (!pts) return null;
+      const out = pts.slice(), step = so.step || 2, seq = [pts[pts.length - 1], ...far, pts[0]];
+      for (let i = 1; i < seq.length; i++) {
+        const a = seq[i - 1], b = seq[i], n = Math.max(1, Math.ceil(Math.max(Math.abs(b[0] - a[0]), Math.abs(b[1] - a[1])) / step));
+        for (let k = 1; k < n || (k === n && i < seq.length - 1); k++) out.push([a[0] + (b[0] - a[0]) * k / n, a[1] + (b[1] - a[1]) * k / n]);
+      }
+      return out;
+    };
+    T.shift = (A, B, i0 = 0, i1) => {
+      if (!A || !B) return 0;
+      if (A.pts) A = resample(A.pts, 160); if (B.pts) B = resample(B.pts, 160);
+      const j1 = Math.min(i1 == null ? A.length - 1 : i1, A.length - 1, B.length - 1); let s = 0, n = 0;
+      for (let i = Math.max(0, i0); i <= j1; i++) { s += gdist(A[i][0], A[i][1], B[i][0], B[i][1]); n++; }
+      return n ? s / n : 0;
+    };
+    T.dist = (pts, p) => { if (!pts) return null; let m = 1e9; for (const q of pts) m = Math.min(m, gdist(q[0], q[1], p[0], p[1])); return m; };
+    return T;
   }
-  function common(V, a, b) {
-    let m = CACHE.get(V); if (!m) { m = new Map(); CACHE.set(V, m); }
-    const ck = [].concat(a).join('|') + '§' + [].concat(b).join('|');
-    if (m.has(ck)) return m.get(ck);
-    const A = arcSet(a), B = arcSet(b), p = new Path2D();
-    for (const i of A) if (B.has(i)) P.trace(p, V, arc(i));
-    m.set(ck, p); return p;
+
+  function asChoro(H, ids) {
+    const ARCS = decodeArcs(H), U = {}; for (const u of H.units) U[u.id] = u;
+    const q = H.q, enc = (r) => { const o = []; let px = 0, py = 0; for (let i = 0; i < r.length; i += 2) { const x = Math.round(r[i] * q), y = Math.round(r[i + 1] * q); o.push(x - px, y - py); px = x; py = y; } return o; };
+    return { q, counties: (ids || Object.keys(U)).filter((id) => U[id]).map((id) => ({ n: id, p: U[id].r.map((rr) => enc(ringOf(ARCS, rr))) })) };
   }
-  function hit(path, x, y) {
-    if (!HC) HC = document.createElement('canvas').getContext('2d');
-    return HC.isPointInPath(path, x, y, 'nonzero');
-  }
-  return { common, hit };
+  return { create, asChoro };
 })();
-/* ── LECKE-HELPER VÉGE: torthatar-kiegészítés ── */
+/* ── MODUL VÉGE: TortTerr ── */
 
 /* ════════════════════════════════════════════════════════════════════════════════
    A lecke: 13-rendszervaltas
@@ -3218,11 +3506,11 @@ function arrowHead(x, y, ang, col, hs) {
   c.fillStyle = col; c.fill();
 }
 
-/* ── térképek: vetületek, nézetek (init-ben, állandó objektumok – a helper gyorsítótára ehhez kötött) ── */
+/* ── térképek: vetületek, nézetek (init-ben, állandó objektumok), TortTerr (TE: a MAPE, TS: a MAPS nézetén) ── */
 const PRE = TortProj.lcc({ lon0: 18, lat0: 50, lat1: 42, lat2: 60 });
 const PRS = TortProj.lcc({ lon0: 72, lat0: 56, lat1: 45, lat2: 66 });
-let MAPE, MAPS;
-const VW = {}, VV = {};                          // VW: nézet-paraméter (TortMap), VV: TortProj.view (TortHatar)
+let MAPE, MAPS, TE, TS;
+const VW = {}, VV = {};                          // VW: nézet-paraméter (TortMap), VV: TortProj.view (feliratok helye: V.pt)
 function mkView(id, proj, bbox, rect, pad) { VW[id] = TortProj.fit(proj, bbox, rect, pad || 0); VV[id] = TortProj.view(proj, VW[id]); }
 const G89 = (k) => 'eu1989.' + k;
 const ALL89 = ['NSZK', 'NDK', 'Berlin-Ny', 'Berlin-K', 'PL', 'CS', 'HU', 'AT', 'RO', 'BG', 'YU', 'IT', 'GR', 'TR', 'SU', 'FI', 'DK', 'FR', 'UK', 'IE', 'EG',
@@ -3230,16 +3518,45 @@ const ALL89 = ['NSZK', 'NDK', 'Berlin-Ny', 'Berlin-K', 'PL', 'CS', 'HU', 'AT', '
 const BLOC_K = ['SU', 'PL', 'NDK', 'Berlin-K', 'CS', 'HU', 'RO', 'BG'];
 const CURTAIN = [[['NDK', 'Berlin-K'], ['NSZK', 'Berlin-Ny']], [['CS'], ['NSZK']], [['CS'], ['AT']], [['HU'], ['AT']], [['BG'], ['GR']], [['BG'], ['TR']],
   [['SU'], ['FI']], [['SU'], ['NO']], [['SU'], ['TR']]];
-const fillG = (V, keys, col) => { c.fillStyle = col; c.fill(TortHatar.fill(V, keys.map(G89)), 'nonzero'); };
-function borders89(V, a) {
-  al(a); c.strokeStyle = U.rgba(INK, .4); c.lineWidth = 1.2; c.lineJoin = 'round';
-  for (const k of ALL89) c.stroke(TortHatar.line(V, [G89(k)]));
+// több csoportkulcs egy TortTerr-csoporttá (egyesített egységlista, kulcsonként egyszer számolva)
+const TG_MEMO = new Map();
+function TG(T, keys) {
+  keys = [].concat(keys); if (keys.length === 1) return keys[0];
+  const k = keys.join('|'); let g = TG_MEMO.get(k);
+  if (!g) { g = { ids: [...new Set([].concat(...keys.map((q) => T.ids(q))))] }; TG_MEMO.set(k, g); }
+  return g;
 }
-function curtain(V, a, skipHU, huA) {
+/* Két csoport KÖZÖS határa (a mindkettőben használt ívek) – a TortTerr v1.0 ezt nem tudja (v1.1-igény), ezért a
+   lecke a TORT_HATAR íveiből és a T.ids()-ből rakja össze; a nézet a T.map.V (a base()/frame() után), a Path2D-k
+   nézetértékenként gyorsítótárazva. */
+const commonBorder = (() => {
+  const H = window.TORT_HATAR, AR = {}, UN = new Map(), CACHE = new Map();
+  const arc = (i) => AR[i] || (AR[i] = TortProj.decode(H.arcs[i], H.q));
+  function arcSet(T, keys) {
+    if (!UN.size) for (const u of H.units) UN.set(u.id, u);
+    const s = new Set();
+    for (const id of T.ids(TG(T, keys))) for (const rr of UN.get(id).r) for (const r of rr) s.add(r >= 0 ? r : ~r);
+    return s;
+  }
+  return (T, a, b) => {
+    const V = T.map.V, ck = [V.lon, V.lat, V.s, V.x, V.y].map((v) => (+v).toFixed(5)).join('|') + '§' + a.join('|') + '§' + b.join('|');
+    let p = CACHE.get(ck); if (p) return p;
+    const A = arcSet(T, a), B = arcSet(T, b); p = new Path2D();
+    for (const i of A) if (B.has(i)) TortProj.trace(p, V, arc(i));
+    if (CACHE.size > 120) CACHE.delete(CACHE.keys().next().value);
+    CACHE.set(ck, p); return p;
+  };
+})();
+const fillG = (T, keys, col) => T.fill(c, [{ g: TG(T, keys.map(G89)), c: col }]);
+function borders89(T, a) {
+  al(a); c.lineJoin = 'round';
+  for (const k of ALL89) T.outline(c, G89(k), { c: U.rgba(INK, .4), w: 1.2 });
+}
+function curtain(T, a, skipHU, huA) {
   for (const [A, B] of CURTAIN) {
     const isHU = A[0] === 'HU', aa = isHU ? (skipHU ? 0 : a * (huA == null ? 1 : huA)) : a;
     if (aa < .01) continue;
-    const p = TortHatarX.common(V, A.map(G89), B.map(G89));
+    const p = commonBorder(T, A.map(G89), B.map(G89));
     al(aa); c.lineCap = 'round'; c.lineJoin = 'round'; c.strokeStyle = 'rgba(255,250,241,.9)'; c.lineWidth = 9; c.stroke(p);
     c.strokeStyle = RED; c.lineWidth = 4.5; c.stroke(p);
     c.strokeStyle = INK; c.lineWidth = 2; c.setLineDash([2, 9]); c.lineWidth = 9; c.globalAlpha = clamp(GA * aa * .55); c.stroke(p); c.setLineDash([]);
@@ -3267,9 +3584,9 @@ function scene1(st, w) {
   const p = (t) => out(clamp((st - t) / .6)), V = VV.e1;
   mapFrame(R1, p(0), () => {
     al(1); MAPE.base(c, { view: VW.e1, rivers: { rank: 3 }, lakes: true });
-    al(p(.3)); fillG(V, BLOC_K, BLOC); fillG(V, ['YU', 'AL'], NONMEM);
-    borders89(V, p(.3));
-    curtain(V, p(.9));
+    al(p(.3)); fillG(TE, BLOC_K, BLOC); fillG(TE, ['YU', 'AL'], NONMEM);
+    borders89(TE, p(.3));
+    curtain(TE, p(.9));
     ['SU', 'PL', 'NDK', 'CS', 'HU', 'RO', 'BG'].forEach((id) => cLabel(V, id, p(.5), true, id === 'HU' ? { dx: -22, dy: 14 } : {}));
     cLabel(V, 'YU', p(.5), true, { s: 22 });
     ['NSZK', 'AT', 'IT', 'FR'].forEach((id) => cLabel(V, id, p(.5) * .9, false, id === 'FR' ? { at: [6.2, 47.3] } : id === 'NSZK' ? { at: [8.4, 50.1] } : {}));
@@ -3388,9 +3705,9 @@ function day3(st) {
 const fall = (d, i) => smooth((d - doy(DOM[i].k)) / 5);
 function hit3(px, py) {
   if (px < R3[0] || px > R3[0] + R3[2] || py < R3[1] || py > R3[1] + R3[3]) return null;
-  for (const D of DOM) if (TortHatarX.hit(TortHatar.fill(VV.e3, D.g.map(G89)), px, py)) return D.id;
-  if (TortHatarX.hit(TortHatar.fill(VV.e3, [G89('SU')]), px, py)) return 'SU';
-  return null;
+  MAPE.frame(VW.e3);                             // a TortTerr a térkép pillanatnyi nézetén vizsgál
+  const e = TE.hit(px, py, [{ g: G89('SU'), id: 'SU' }].concat(DOM.map((D) => ({ g: TG(TE, D.g.map(G89)), id: D.id }))));
+  return e ? e.id : null;
 }
 function card3(id, a, day) {
   const x = 900, y = 296, w = 440;
@@ -3422,11 +3739,11 @@ function scene3(st, w, active) {
   tipHead(P3, st, 1, 'tipp3 kérdés', { q2: 'tipp3 kérdés 2', tExp: 1.6 });
   mapFrame(R3, p(.2), () => {
     al(1); MAPE.base(c, { view: VW.e3, rivers: { rank: 4 }, lakes: true });
-    al(1); fillG(V, ['SU'], BLOC); fillG(V, ['YU', 'AL'], NONMEM);
-    DOM.forEach((D, i) => { al(1); fillG(V, D.g, U.mix(BLOC, FREE, fall(day, i))); });
-    borders89(V, 1);
-    curtain(V, 1 - fall(day, 2));
-    if (S3.sel) { al(smooth((st - S3.selT) / .3)); c.strokeStyle = RED; c.lineWidth = 4; c.stroke(TortHatar.line(V, (S3.sel === 'SU' ? ['SU'] : DOM.find((q) => q.id === S3.sel).g).map(G89))); }
+    al(1); fillG(TE, ['SU'], BLOC); fillG(TE, ['YU', 'AL'], NONMEM);
+    DOM.forEach((D, i) => { al(1); fillG(TE, D.g, U.mix(BLOC, FREE, fall(day, i))); });
+    borders89(TE, 1);
+    curtain(TE, 1 - fall(day, 2));
+    if (S3.sel) { al(smooth((st - S3.selT) / .3)); TE.outline(c, TG(TE, (S3.sel === 'SU' ? ['SU'] : DOM.find((q) => q.id === S3.sel).g).map(G89)), { c: RED, w: 4 }); }
     DOM.forEach((D, i) => cLabel(V, D.id, 1, fall(day, i) < .5));
     cLabel(V, 'SU', 1, true, { dx: 40 }); cLabel(V, 'YU', 1, true); ['NSZK', 'AT', 'IT'].forEach((id) => cLabel(V, id, .85, false));
   });
@@ -3470,11 +3787,11 @@ function scene4(st, w) {
   const huFence = 1 - .35 * ev(0) - .25 * ev(2) - .4 * ev(4);
   mapFrame(R4, p(0), () => {
     al(1); MAPE.base(c, { view: VW.e4, rivers: { rank: 5, hi: { 'Duna': { w: 3 } } }, lakes: true });
-    al(.85); fillG(V, ['NDK', 'Berlin-K', 'PL', 'CS', 'HU', 'SU'], U.mix(BLOC, CARD, .25)); fillG(V, ['YU'], NONMEM);
-    al(.85 * ev(4)); fillG(V, ['HU'], U.mix(BLOC, FREE, .55));
-    borders89(V, 1);
-    curtain(V, 1, false, huFence);
-    if (ev(4) > .01) { const p2 = TortHatarX.common(V, [G89('HU')], [G89('AT')]); al(ev(4)); c.strokeStyle = TEAL; c.lineWidth = 3; c.setLineDash([3, 8]); c.stroke(p2); c.setLineDash([]); }
+    al(.85); fillG(TE, ['NDK', 'Berlin-K', 'PL', 'CS', 'HU', 'SU'], U.mix(BLOC, CARD, .25)); fillG(TE, ['YU'], NONMEM);
+    al(.85 * ev(4)); fillG(TE, ['HU'], U.mix(BLOC, FREE, .55));
+    borders89(TE, 1);
+    curtain(TE, 1, false, huFence);
+    if (ev(4) > .01) { const p2 = commonBorder(TE, [G89('HU')], [G89('AT')]); al(ev(4)); c.strokeStyle = TEAL; c.lineWidth = 3; c.setLineDash([3, 8]); c.stroke(p2); c.setLineDash([]); }
     ['NDK', 'CS', 'HU', 'AT', 'NSZK', 'PL'].forEach((id) => cLabel(V, id, .95, ['NDK', 'CS', 'PL'].includes(id) || (id === 'HU' && ev(4) < .5), Object.assign({ dy: id === 'HU' ? 30 : id === 'AT' ? 24 : 0 }, id === 'NSZK' ? { at: [11.7, 49.6] } : {})));
     // menekültek útja
     const ra = smooth((st - 6.4) / .8);
@@ -3680,20 +3997,20 @@ function scene7(st, w, active) {
   if (active && SL7 && !S7.manual && Math.round(SL7.get()) !== Math.round(day)) SL7.set(Math.round(day));
   mapFrame(R7, p(0), () => {
     al(1); MAPS.base(c, { view: VW.s7, rivers: { rank: 2 }, lakes: true });
-    al(.9); fillG(V, ['PL', 'CS', 'HU', 'RO', 'BG', 'NDK', 'Berlin-K'], U.mix(BLOC, FREE, .8));
-    borders89(V, .8);
+    al(.9); fillG(TS, ['PL', 'CS', 'HU', 'RO', 'BG', 'NDK', 'Berlin-K'], U.mix(BLOC, FREE, .8));
+    borders89(TS, .8);
     // egyben (1991 vége előtt)
     const all = SU15.map((k) => 'szu1991.' + k);
     if (u < .99) {
-      al(1 - u); c.fillStyle = BLOC; c.fill(TortHatar.fill(V, all), 'nonzero');
-      al(1 - u); c.strokeStyle = INK; c.lineWidth = 2; c.stroke(TortHatar.line(V, all));
+      al(1 - u); TS.fill(c, [{ g: TG(TS, all), c: BLOC }]);
+      al(1 - u); TS.outline(c, TG(TS, all), { c: INK, w: 2 });
       const q = V.pt(70, 58); al((1 - u) * p(.4)); L.tx(lab('ország SU'), q[0], q[1], { k: 'ország SU', f: F.D, s: 40, w: 600, a: 'center', b: 'middle', c: CARD });
     }
     if (u > .01) {
       SU15.forEach((k, i) => {
         const o = OFF7[k]; c.save(); c.translate(o[0] * u, o[1] * u);
-        al(u); c.fillStyle = k === 'RU' ? BLOC : SUTONE[i % SUTONE.length]; c.fill(TortHatar.fill(V, ['szu1991.' + k]), 'nonzero');
-        c.strokeStyle = CARD; c.lineWidth = 1.6; c.stroke(TortHatar.line(V, ['szu1991.' + k]));
+        al(u); TS.fill(c, [{ g: 'szu1991.' + k, c: k === 'RU' ? BLOC : SUTONE[i % SUTONE.length] }]);
+        TS.outline(c, 'szu1991.' + k, { c: CARD, w: 1.6 });
         c.restore();
       });
       MAPS.frame(VW.s7);
@@ -3928,6 +4245,7 @@ L = Lesson.create({
     const layers = [{ data: window.TORT_MAP_VILAG }, { data: window.TORT_MAP_EUROPA }];
     MAPE = TortMap.create({ proj: PRE, layers, rect: [0, 0, 1360, 1080] });
     MAPS = TortMap.create({ proj: PRS, layers, rect: [0, 0, 1360, 1080] });
+    TE = TortTerr.create(L, window.TORT_HATAR, { map: MAPE }); TS = TortTerr.create(L, window.TORT_HATAR, { map: MAPS });
     mkView('e1', PRE, [3, 41, 41, 57.5], R1, 0);
     mkView('e3', PRE, [8.5, 40.6, 33, 56.2], R3, 0);
     mkView('e4', PRE, [10.6, 45.7, 20.3, 52.75], R4, 0);
