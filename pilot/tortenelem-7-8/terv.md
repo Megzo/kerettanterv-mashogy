@@ -623,8 +623,9 @@ Közös minden briefben (a 7. fejezet szabályai szerint):
     *(ellenőrizendő)*.
   - 1946. július (csúcs): havi 4,19 · 10¹⁶ %, naponta kb. 207 %, az árak kb. 15 óránként duplázódtak (Hanke–Krus,
     `bcci.bg/resources/files/hanke-krus-hyperinflation-table.pdf`); népszerű források „11 órát” írnak – kiugró érték,
-    ne szerepeljen. Danyi (Statisztikai Szemle 2022/12) a „világrekord” rangsort vitatja Zimbabwével szemben, a havi
-    értéket nem.
+    ne szerepeljen. Danyi (Statisztikai Szemle 2022/12) a havi értéket is vitatja: a pengő és az adópengő együttes
+    mérésével 1946 júliusára havi 4,39 · 10⁸ %-ot (kb. 33 órás duplázódás) kap, így szerinte Zimbabwe az első
+    (javítva 2026-11-25 a 06-pengo leckeügynök jelzése alapján; a lecke mindkét értéket mutatja).
   - Forint: 1946. augusztus 1.; 1 Ft = 4 · 10²⁹ pengő (400 000 kvadrillió) = 200 millió adópengő – MNB, *Már hetven
     éve forinttal fizetünk* (`mnb.hu/letoltes/horvath-karoly-…`).
   - Legnagyobb kibocsátott bankjegy: 100 millió b.-pengő = 10²⁰ pengő, 1946. július 11.; az 1 milliárd b.-pengős
