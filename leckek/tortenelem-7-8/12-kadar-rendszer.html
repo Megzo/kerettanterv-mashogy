@@ -2330,7 +2330,7 @@ const MatChart = (() => {
 })();
 /* ── MODUL VÉGE ── */
 
-/* ── MODUL: Intézményséma (TortState) · forrás: tortenelem-7-8/16-demokracia, 2026-11-25 ── */
+/* ── MODUL: Intézményséma (TortState) · forrás: tortenelem-7-8/16-demokracia, 2026-11-25 · v1.1 (2026-11-25) ── */
 /* Ki választ kit, ki ellenőriz kit: csomópontok (intézmények) és címkézett nyilak, ki-/bekapcsolható elemekkel,
    dátum szerinti állapottal és elrendezés-váltással (terv 4.2). Csak a Lesson motorra épül (L.ctx, L.tx, L.pill,
    L.measure, L.st, Lesson.U, Lesson.FONTS); a lecke kódjára nem hivatkozik. Minden felirat {s, k} pár, és csak
@@ -2356,14 +2356,19 @@ const MatChart = (() => {
                              (szürkülő, szaggatott keretű doboz, áthúzott felirat; az élei is halványak);
                              t: az L.st, amikor a váltás indul (alap: L.st), d: az áttűnés hossza mp-ben (alap .5)
    S.isOn(key) → bool        a kapcsoló célállapota   ·   S.reset()   minden be, nincs „párt alá”, alap elrendezés
-   S.timeline(events, d, fade) → {i, last}    a d (tört év) pillanat állapota, ZÁRT KÉPLETTEL (visszaléptetéskor is
-                             helyes, nincs halmozás): events = [{a: tört év, off: [key…], on: [key…],
-                             over: {nodeId: pártNodeId | null}}] időrendben; fade (év, alap 0): az átmenet hossza.
-                             A kézi S.set-eket felülírja. i: az utolsó lezajlott esemény indexe (−1: egy sem).
+   S.timeline(events, d, fade, o) → {i, last}    a d (tört év) pillanat állapota, ZÁRT KÉPLETTEL (visszaléptetéskor
+                             is helyes, nincs halmozás): events = [{a: tört év, off: [key…], on: [key…],
+                             over: {nodeId: pártNodeId | null}}] időrendben; fade (év, alap 0): az átmenet hossza;
+                             o = {align: 'start' (alap: az átmenet a dátumon INDUL, így a dátum napján még nem hat) |
+                             'end' (a dátumra már lezajlik: [a − fade, a]) | 'mid' (a dátum az átmenet közepe)}.
+                             A kézi S.set-eket felülírja. i: az utolsó elért esemény indexe (d ≥ a, és már hat; −1: egy sem).
                              „over”: a csomópont bordó keretet kap, és a párt csomópontjából automatikus
                              „irányít” nyíl fut hozzá (felirat nélkül; a T.over kis felirat a doboz fölött).
    S.draw(ctx, o)            o = {a: 1, t: 1 (beúszás 0..1: előbb a dobozok, aztán a nyilak), hl: [key…] (kiemelt;
-                             a többi o.dim alfával, alap .25), labels: true (nyílfeliratok), pulse: mp | null
+                             a többi o.dim alfával, alap .25), hlEdge: 'ends' (alap: egy él kiemelt, ha a kulcsa a
+                             hl-ben van VAGY mindkét végpontja kiemelt) | 'key' (csak ha a kulcsa a hl-ben van – így két
+                             kiemelt doboz közti él is halványítható; az automatikus „irányít” nyíl ekkor is a
+                             végpontok szerint), labels: true (nyílfeliratok), pulse: mp | null
                              (a „választ” nyilakon pöttyök futnak – az L.st-ből), sel: id (kijelölt doboz: cinóber
                              keret)} → a dobozok listája [{id, x, y, w, h}]
    S.hit(px, py) → id | null        melyik dobozra mutat
@@ -2372,6 +2377,9 @@ const MatChart = (() => {
                              o = {a, w: 420 (a szöveg max. szélessége), side: 'auto' | 'left' | 'right' | 'below',
                              title?: {s, k} (alap: a doboz felirata), x, y (kézi hely), bounds: [x0, y0, x1, y1]}
    TortState.REL             a kapcsolattípusok stílusa ({col, w, dash})
+   Változások: v1.1 (2026-11-25) – draw o.hlEdge: 'key' (05-diktaturak: két kiemelt csúcs közti él nem volt
+   halványítható, a lecke két példányt úsztatott át); timeline o.align: 'end' | 'mid' (05: az esemény a saját dátumán
+   még nem hatott, a lecke a dátumot fade-del előbbre tolta). Visszafelé kompatibilis (az alapértékek a v1.0 szerint).
    ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
 const TortState = (() => {
   'use strict';
@@ -2431,10 +2439,10 @@ const TortState = (() => {
     S.set = (key, on, t, d) => { const cur = swVal(key); S.sw[key] = { v: on ? 1 : 0, from: cur, t0: t == null ? L.st : t, d: d || .5 }; return S; };
     S.isOn = (key) => { const q = S.sw[key]; return !q || (q.fixed != null ? q.fixed > .5 : q.v > .5); };
     S.reset = () => { S.sw = {}; S.over = {}; S.overT = {}; S.use('alap'); return S; };
-    S.timeline = (events, d, fade) => {
-      const fd = fade || 0, val = {}, ov = {}, ovT = {};
+    S.timeline = (events, d, fade, o = {}) => {
+      const fd = fade || 0, val = {}, ov = {}, ovT = {}, sh = o.align === 'end' ? fd : o.align === 'mid' ? fd / 2 : 0;
       let last = -1;
-      const prog = (a) => (fd > 0 ? smooth((d - a) / fd) : d >= a ? 1 : 0);
+      const prog = (a) => (fd > 0 ? smooth((d - a + sh) / fd) : d >= a ? 1 : 0);
       events.forEach((ev, i) => {
         const p = prog(ev.a); if (p <= 0) return;
         if (d >= ev.a) last = i;
@@ -2473,7 +2481,7 @@ const TortState = (() => {
     const edgeOn = (e) => Math.min(swVal(ekey(e)), swVal(e.from), swVal(e.to));
     S.draw = (c, o = {}) => {
       const a0 = c.globalAlpha, A = o.a == null ? 1 : o.a, t = o.t == null ? 1 : o.t, dim = o.dim == null ? .25 : o.dim;
-      const hl = o.hl && o.hl.length ? o.hl : null, isHl = (k) => !hl || hl.includes(k);
+      const hl = o.hl && o.hl.length ? o.hl : null, isHl = (k) => !hl || hl.includes(k), byKey = o.hlEdge === 'key';
       const na = smooth(t * 2), ea = smooth(t * 2 - 1);
       const set = (x) => { c.globalAlpha = clamp(a0 * A * x); };
       c.lineCap = 'round'; c.lineJoin = 'round';
@@ -2483,7 +2491,8 @@ const TortState = (() => {
       all.forEach((e) => {
         const g = curve(e), st = REL[e.rel] || REL['választ'], on = e._auto != null ? 1 : edgeOn(e);
         const pa = Math.min(g.A.a, g.B.a) * (e._auto != null ? e._auto : 1);
-        const vis = ea * pa * (isHl(ekey(e)) || (hl && (hl.includes(e.from) && hl.includes(e.to))) ? 1 : dim) * lerp(.28, 1, on);
+        const ends = hl && hl.includes(e.from) && hl.includes(e.to) && (!byKey || e._auto != null);
+        const vis = ea * pa * (isHl(ekey(e)) || ends ? 1 : dim) * lerp(.28, 1, on);
         if (vis <= .003) return;
         set(vis);
         c.strokeStyle = st.col; c.lineWidth = st.w;

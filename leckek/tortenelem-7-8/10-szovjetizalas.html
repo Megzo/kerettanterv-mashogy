@@ -2209,7 +2209,7 @@ const TortSource = (() => {
 })();
 /* ── MODUL VÉGE: Forráskártya ── */
 
-/* ── MODUL: Parlament (TortParl) · forrás: tortenelem-7-8/16-demokracia, 2026-11-25 ── */
+/* ── MODUL: Parlament (TortParl) · forrás: tortenelem-7-8/16-demokracia, 2026-11-25 · v1.1 (2026-11-25) ── */
 /* Parlamenti patkó, jelmagyarázat, szavazat–mandátum sáv és vegyes rendszerű mandátumszámító (terv 4.2).
    Csak a Lesson motorra épül (L.ctx, L.tx, L.pill, L.measure, Lesson.U, Lesson.FONTS); a lecke kódjára nem hivatkozik.
    Minden felirat {s, k} pár (k: .md-kulcs), és csak L.tx / L.pill írja ki. Betűméret ≥ 22 px.
@@ -2239,7 +2239,8 @@ const TortSource = (() => {
    TortParl.legend(L, items, o) → {x, y, w, h, rows: [{id, x, y, w, h}]}
         items = [{id, n: {s, k} (név), seats?, pct? (0..1), col, pat, note?: {s, k}}]; o = {x, y (bal felső),
         s: 24, a, sel, hl, dim, gap: 10, cols: ['seats', 'pct'] (mely számoszlopok), seatW, pctW (oszlopszélesség,
-        alap: mérve), head?: [{s, k} | null, …] (oszlopfejlécek: név, mandátum, %)}. A számok U.fmt-tel.
+        alap: mérve), pd: 1 (a % tizedesjegyei), head?: [{s, k} | null, …] (oszlopfejlécek: név, mandátum, %)}.
+        A számok U.fmt-tel.
    TortParl.bar(L, a, b, o) → {x, y, w, h}      két egymás alatti 100 %-os sáv (pl. szavazat, mandátum) és köztük
         pártonként összekötő sávok – az aránytalanság képe. a, b = {label: {s, k}, parts: [{id, v, col, pat}]};
         o = {x, y, w, h: 44 (sávmagasság), gap: 74 (a két sáv köze), a, pct: true (% a szeletben, ha elfér),
@@ -2266,6 +2267,8 @@ const TortSource = (() => {
              pass: {id: bool}, listPool: {id: n} (lista + töredék, csak a küszöb felett), list: {id: n} (listás
              mandátum), total: {id: n}, seats: összes mandátum, votesTotal}
         A nemzetiségi kedvezményes mandátumot NEM modellezi (16. § d–e); valódi eredményt a hívó a seats-be ír.
+   Változások: v1.1 (2026-11-25) – legend o.pd: a % tizedesjegyei (10-szovjetizalas: a v1.0 fixen 1 tizedest írt).
+   Visszafelé kompatibilis.
    ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
 const TortParl = (() => {
   'use strict';
@@ -2421,7 +2424,8 @@ const TortParl = (() => {
     const cols = o.cols || ['seats', 'pct'], hl = o.hl || (o.sel != null ? [o.sel] : null), dim = o.dim == null ? .3 : o.dim;
     const nameW = Math.max(...items.map((q) => L.measure(q.n.s, NF).w), o.head && o.head[0] ? L.measure(o.head[0].s, { f: F.B, s: 22, w: 700 }).w : 0);
     const seatW = o.seatW || Math.max(...items.map((q) => (q.seats == null ? 0 : L.measure(U.fmt(q.seats), MF).w)), o.head && o.head[1] ? L.measure(o.head[1].s, { f: F.B, s: 22, w: 700 }).w : 0);
-    const pctW = o.pctW || Math.max(...items.map((q) => (q.pct == null ? 0 : L.measure(pct(q.pct), MF).w)), o.head && o.head[2] ? L.measure(o.head[2].s, { f: F.B, s: 22, w: 700 }).w : 0);
+    const pd = o.pd == null ? 1 : o.pd;
+    const pctW = o.pctW || Math.max(...items.map((q) => (q.pct == null ? 0 : L.measure(pct(q.pct, pd), MF).w)), o.head && o.head[2] ? L.measure(o.head[2].s, { f: F.B, s: 22, w: 700 }).w : 0);
     const x = o.x, xN = x + sw + 14, xS = xN + nameW + 26 + seatW, xP = xS + (cols.includes('seats') ? 26 : 0) + pctW;
     let y = o.y; const rows = [];
     if (o.head) {
@@ -2439,7 +2443,7 @@ const TortParl = (() => {
       const cy = y + rowH / 2;
       L.tx(q.n.s, xN, cy, Object.assign({ k: q.n.k, b: 'middle', c: INK }, NF));
       if (cols.includes('seats') && q.seats != null) L.tx(U.fmt(q.seats), xS, cy, Object.assign({ a: 'right', b: 'middle', c: INK }, MF));
-      if (cols.includes('pct') && q.pct != null) L.tx(pct(q.pct), xP, cy, Object.assign({ a: 'right', b: 'middle', c: MUT }, MF, { w: 600 }));
+      if (cols.includes('pct') && q.pct != null) L.tx(pct(q.pct, pd), xP, cy, Object.assign({ a: 'right', b: 'middle', c: MUT }, MF, { w: 600 }));
       if (q.note) L.tx(q.note.s, (cols.length ? xP : xN + nameW) + 18, cy, { k: q.note.k, s: 22, w: 600, f: F.B, b: 'middle', c: q.note.c || MUT });
       rows.push({ id: q.id, x, y, w: xP - x, h: rowH });
       y += rowH + gap;
@@ -2532,7 +2536,7 @@ const TortParl = (() => {
 })();
 /* ── MODUL VÉGE: TortParl ── */
 
-/* ── MODUL: Intézményséma (TortState) · forrás: tortenelem-7-8/16-demokracia, 2026-11-25 ── */
+/* ── MODUL: Intézményséma (TortState) · forrás: tortenelem-7-8/16-demokracia, 2026-11-25 · v1.1 (2026-11-25) ── */
 /* Ki választ kit, ki ellenőriz kit: csomópontok (intézmények) és címkézett nyilak, ki-/bekapcsolható elemekkel,
    dátum szerinti állapottal és elrendezés-váltással (terv 4.2). Csak a Lesson motorra épül (L.ctx, L.tx, L.pill,
    L.measure, L.st, Lesson.U, Lesson.FONTS); a lecke kódjára nem hivatkozik. Minden felirat {s, k} pár, és csak
@@ -2558,14 +2562,19 @@ const TortParl = (() => {
                              (szürkülő, szaggatott keretű doboz, áthúzott felirat; az élei is halványak);
                              t: az L.st, amikor a váltás indul (alap: L.st), d: az áttűnés hossza mp-ben (alap .5)
    S.isOn(key) → bool        a kapcsoló célállapota   ·   S.reset()   minden be, nincs „párt alá”, alap elrendezés
-   S.timeline(events, d, fade) → {i, last}    a d (tört év) pillanat állapota, ZÁRT KÉPLETTEL (visszaléptetéskor is
-                             helyes, nincs halmozás): events = [{a: tört év, off: [key…], on: [key…],
-                             over: {nodeId: pártNodeId | null}}] időrendben; fade (év, alap 0): az átmenet hossza.
-                             A kézi S.set-eket felülírja. i: az utolsó lezajlott esemény indexe (−1: egy sem).
+   S.timeline(events, d, fade, o) → {i, last}    a d (tört év) pillanat állapota, ZÁRT KÉPLETTEL (visszaléptetéskor
+                             is helyes, nincs halmozás): events = [{a: tört év, off: [key…], on: [key…],
+                             over: {nodeId: pártNodeId | null}}] időrendben; fade (év, alap 0): az átmenet hossza;
+                             o = {align: 'start' (alap: az átmenet a dátumon INDUL, így a dátum napján még nem hat) |
+                             'end' (a dátumra már lezajlik: [a − fade, a]) | 'mid' (a dátum az átmenet közepe)}.
+                             A kézi S.set-eket felülírja. i: az utolsó elért esemény indexe (d ≥ a, és már hat; −1: egy sem).
                              „over”: a csomópont bordó keretet kap, és a párt csomópontjából automatikus
                              „irányít” nyíl fut hozzá (felirat nélkül; a T.over kis felirat a doboz fölött).
    S.draw(ctx, o)            o = {a: 1, t: 1 (beúszás 0..1: előbb a dobozok, aztán a nyilak), hl: [key…] (kiemelt;
-                             a többi o.dim alfával, alap .25), labels: true (nyílfeliratok), pulse: mp | null
+                             a többi o.dim alfával, alap .25), hlEdge: 'ends' (alap: egy él kiemelt, ha a kulcsa a
+                             hl-ben van VAGY mindkét végpontja kiemelt) | 'key' (csak ha a kulcsa a hl-ben van – így két
+                             kiemelt doboz közti él is halványítható; az automatikus „irányít” nyíl ekkor is a
+                             végpontok szerint), labels: true (nyílfeliratok), pulse: mp | null
                              (a „választ” nyilakon pöttyök futnak – az L.st-ből), sel: id (kijelölt doboz: cinóber
                              keret)} → a dobozok listája [{id, x, y, w, h}]
    S.hit(px, py) → id | null        melyik dobozra mutat
@@ -2574,6 +2583,9 @@ const TortParl = (() => {
                              o = {a, w: 420 (a szöveg max. szélessége), side: 'auto' | 'left' | 'right' | 'below',
                              title?: {s, k} (alap: a doboz felirata), x, y (kézi hely), bounds: [x0, y0, x1, y1]}
    TortState.REL             a kapcsolattípusok stílusa ({col, w, dash})
+   Változások: v1.1 (2026-11-25) – draw o.hlEdge: 'key' (05-diktaturak: két kiemelt csúcs közti él nem volt
+   halványítható, a lecke két példányt úsztatott át); timeline o.align: 'end' | 'mid' (05: az esemény a saját dátumán
+   még nem hatott, a lecke a dátumot fade-del előbbre tolta). Visszafelé kompatibilis (az alapértékek a v1.0 szerint).
    ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
 const TortState = (() => {
   'use strict';
@@ -2633,10 +2645,10 @@ const TortState = (() => {
     S.set = (key, on, t, d) => { const cur = swVal(key); S.sw[key] = { v: on ? 1 : 0, from: cur, t0: t == null ? L.st : t, d: d || .5 }; return S; };
     S.isOn = (key) => { const q = S.sw[key]; return !q || (q.fixed != null ? q.fixed > .5 : q.v > .5); };
     S.reset = () => { S.sw = {}; S.over = {}; S.overT = {}; S.use('alap'); return S; };
-    S.timeline = (events, d, fade) => {
-      const fd = fade || 0, val = {}, ov = {}, ovT = {};
+    S.timeline = (events, d, fade, o = {}) => {
+      const fd = fade || 0, val = {}, ov = {}, ovT = {}, sh = o.align === 'end' ? fd : o.align === 'mid' ? fd / 2 : 0;
       let last = -1;
-      const prog = (a) => (fd > 0 ? smooth((d - a) / fd) : d >= a ? 1 : 0);
+      const prog = (a) => (fd > 0 ? smooth((d - a + sh) / fd) : d >= a ? 1 : 0);
       events.forEach((ev, i) => {
         const p = prog(ev.a); if (p <= 0) return;
         if (d >= ev.a) last = i;
@@ -2675,7 +2687,7 @@ const TortState = (() => {
     const edgeOn = (e) => Math.min(swVal(ekey(e)), swVal(e.from), swVal(e.to));
     S.draw = (c, o = {}) => {
       const a0 = c.globalAlpha, A = o.a == null ? 1 : o.a, t = o.t == null ? 1 : o.t, dim = o.dim == null ? .25 : o.dim;
-      const hl = o.hl && o.hl.length ? o.hl : null, isHl = (k) => !hl || hl.includes(k);
+      const hl = o.hl && o.hl.length ? o.hl : null, isHl = (k) => !hl || hl.includes(k), byKey = o.hlEdge === 'key';
       const na = smooth(t * 2), ea = smooth(t * 2 - 1);
       const set = (x) => { c.globalAlpha = clamp(a0 * A * x); };
       c.lineCap = 'round'; c.lineJoin = 'round';
@@ -2685,7 +2697,8 @@ const TortState = (() => {
       all.forEach((e) => {
         const g = curve(e), st = REL[e.rel] || REL['választ'], on = e._auto != null ? 1 : edgeOn(e);
         const pa = Math.min(g.A.a, g.B.a) * (e._auto != null ? e._auto : 1);
-        const vis = ea * pa * (isHl(ekey(e)) || (hl && (hl.includes(e.from) && hl.includes(e.to))) ? 1 : dim) * lerp(.28, 1, on);
+        const ends = hl && hl.includes(e.from) && hl.includes(e.to) && (!byKey || e._auto != null);
+        const vis = ea * pa * (isHl(ekey(e)) || ends ? 1 : dim) * lerp(.28, 1, on);
         if (vis <= .003) return;
         set(vis);
         c.strokeStyle = st.col; c.lineWidth = st.w;
@@ -3472,7 +3485,7 @@ function legend(y, x, y0, a, o = {}) {
     return q;
   });
   const cols = y === 1949 || o.seatsOnly ? ['seats'] : ['seats', 'pct'];
-  return TortParl.legend(L, items, { x, y: y0, a, cols, head: [K('fej párt'), K('fej mandátum'), y === 1949 ? null : K('fej százalék')], hl: o.hl, dim: .3, s: o.s || 24 });
+  return TortParl.legend(L, items, { x, y: y0, a, cols, head: [K('fej párt'), K('fej mandátum'), y === 1949 ? null : K('fej százalék')], hl: o.hl, dim: .3, s: o.s || 24, pd: 2 });
 }
 const P3 = Tip(['tipp3 17', 'tipp3 35', 'tipp3 50'], 'tipp3 17');
 function scene3(st, w) {

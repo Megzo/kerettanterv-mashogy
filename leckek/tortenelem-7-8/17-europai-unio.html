@@ -1709,7 +1709,7 @@ const TortSource = (() => {
 })();
 /* ── MODUL VÉGE: Forráskártya ── */
 
-/* ── MODUL: Tematikus térkép (FoldChoro) · forrás: foldrajz-9-10/11-fejlettseg, 2026-11-24 · v1.1 (2026-11-24) ──
+/* ── MODUL: Tematikus térkép (FoldChoro) · forrás: foldrajz-9-10/11-fejlettseg, 2026-11-24 · v1.2 (2026-11-25, tortenelem-7-8) ──
    Országok / megyék sokszögei érték szerint színezve (choropleth), bármely TortProj-nézeten (Equal Earth,
    Lambert-kúp, gömb; a TortMap.frame() is ilyen nézetet ad). Osztályközök és színek a leckéből (a .md-ből),
    szekvenciális és divergens paletta, kategória-skála, „nincs adat” sraffozás, vitatott terület szaggatott
@@ -1740,15 +1740,20 @@ const TortSource = (() => {
                                       a: átlátszóság, sea: true (equalEarth/ortho: óceán + perem + vágás a peremre),
                                       hl: kulcs | [kulcsok] (vastag tinta keret, előre rajzolva),
                                       dim: 0..1 (ha van hl: a többi ennyire halványul), only: (key) → bool (csak ezek),
-                                      fill: (key, szín) → szín (felülírás, pl. kiemelés), border: true }
+                                      fill: (key, szín) → szín (felülírás, pl. kiemelés; v1.2: csak adatos elemre hívódik,
+                                            a semleges (undefined) és a „nincs adat” (null) elemre nem – fillAll: true:
+                                            mindre, a v1.1 szerint, ekkor a szín undefined / null is lehet), border: true }
                                     A vetített gyűrűket a nézet (lon, lat, s, x, y) szerint gyorsítótárazza.
      M.hit(px, py) → key | null     az utolsó draw vetülete szerint (páros–páratlan szabály); a semleges és a
                                     only-ból kimaradt elemek nem találhatók el; gömbön a korongon kívül null
      M.pt(key) → [x, y] | null      a címkepont (lp) a képernyőn (utolsó nézet)
      M.legend(q) → {x, y, w, h}     q = {x, y (bal felső), title: {s, k}, S, labels: [{s, k}] (osztályonként; ha nincs:
                                     S.labels(), k: q.k), noData: {s, k} (sraffozott mező), dir: 'v' | 'h', a,
-                                    hl: osztály (kiemelt mező), max (h: sorszélesség, ennél tör)}
-                                    → {x, y, w, h, items: [{x, y, w}] (a mezők helye, pl. zárójelhez)}
+                                    hl: osztály (kiemelt mező), max (h: sorszélesség, ennél tör),
+                                    bg: true | szín (v1.2: kártyaszerű háttér a tartalomhoz mérve – térképen olvasható),
+                                    pad: 12 (a háttér belső margója)}
+                                    → {x, y, w, h, items: [{x, y, w}] (a mezők helye, pl. zárójelhez); a w/h a háttér
+                                    nélküli tartalom mérete (a háttér pad-dal nagyobb)}
      FoldChoro.card(L, q) → {x, y, w, h}   adatkártya (méret a tartalomhoz): q = {x, y, w (min. szélesség),
                                     title: {s, k}, sub: {s, k}?, rows: [{l: {s, k}, v: {s, k}, c?}], a,
                                     anchor: [px, py] (szaggatott vezetővonal a kártyától ide), align: 'left' | 'right'
@@ -1762,6 +1767,9 @@ const TortSource = (() => {
    Változások: v1.1 (2026-11-24) – a gömbi kitöltés / hit hibája a proj.js-ben javítva (a modul kódja ugyanaz);
    hit a korongon kívül null; a card a betűállapotot sem hagyja elállítva (a mérés a save előtt volt); a draw
    határvonalai nem öröklik a hívó szaggatását; az alfa-szabály dokumentálva.
+   v1.2 (2026-11-25, csak a tortenelem-7-8 sorozatban) – a draw q.fill-je csak adatos elemre hívódik (17-europai-unio:
+   a semleges országra undefined színnel hívódott, a hívónak őrfeltétel kellett; régi viselkedés: q.fillAll);
+   legend q.bg / q.pad: háttér a mért tartalom alá (17: térképen háttér nélkül olvashatatlan volt). Visszafelé kompatibilis.
    ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
 const FoldChoro = (() => {
   const F = Lesson.FONTS, U = Lesson.U;
@@ -1870,7 +1878,7 @@ const FoldChoro = (() => {
           else if (c0 === null && c1 === null) hatchA = 1;
           else if (c0 === undefined || c1 === undefined) { col = c1 === undefined ? (c0 || undefined) : c1; hatchA = c1 === undefined ? (c0 === null ? 1 - t : 0) : hatchA; }
         }
-        if (q.fill) col = q.fill(key, col);
+        if (q.fill && (q.fillAll || col)) col = q.fill(key, col);
         const a = hl && !hl.has(key) ? 1 - dim : 1;
         c.globalAlpha = ga * a;
         c.fillStyle = col || st.land; c.fill(p.P, 'evenodd');
@@ -1912,23 +1920,36 @@ const FoldChoro = (() => {
       const c = L.ctx, S = q.S, labs = q.labels || S.labels().map((s) => ({ s, k: q.k })), sw = 34, sh = 24, gap = 12;
       const LF = { f: F.B, s: 22, w: 500, c: INK }, TF = { f: F.B, s: 22, w: 700, c: MUT };
       c.save(); if (q.a != null) c.globalAlpha *= q.a;
-      let x = q.x, y = q.y, w = 0;
-      if (q.title) { const b = L.tx(q.title.s, x, y + 16, Object.assign({}, TF, { k: q.title.k })); w = b.w; y += 40; }
+      /* elrendezés (mérés) – a háttérhez előre kell a méret */
+      const x = q.x; let y = q.y, w = 0;
+      if (q.title) { w = L.measure(q.title.s, TF).w; y += 40; }
       const items = labs.map((l, i) => ({ l, col: S.cols[i] })); if (q.noData) items.push({ l: q.noData, col: null });
-      let cx = x, rowW = 0, y0 = y; const pos = [];
+      let cx = x, rowW = 0; const pos = [];
       for (const itm of items) {
         const tw = L.measure(itm.l.s, LF).w, iw = sw + 10 + tw;
         if (q.dir === 'h' && q.max && cx > x && cx - x + iw > q.max) { cx = x; y += sh + gap; }
         pos.push({ x: cx, y, w: iw });
-        c.beginPath(); c.rect(cx, y, sw, sh);
-        c.fillStyle = itm.col || hatch(c, st.hatch); c.fill();
-        c.lineWidth = q.hl != null && items.indexOf(itm) === q.hl ? 3 : 1.5; c.strokeStyle = q.hl != null && items.indexOf(itm) === q.hl ? INK : st.edge; c.stroke();
-        L.tx(itm.l.s, cx + sw + 10, y + sh / 2, Object.assign({}, LF, { b: 'middle', k: itm.l.k }));
         if (q.dir === 'h') { cx += iw + 28; rowW = Math.max(rowW, cx - x - 28); } else { y += sh + gap; rowW = Math.max(rowW, iw); }
       }
       if (q.dir === 'h') y += sh; else y -= gap;
+      const W = Math.max(w, rowW), H = y - q.y;
+      if (q.bg) {
+        const pd = q.pad == null ? 12 : q.pad;
+        c.save(); c.shadowColor = 'rgba(70,50,20,.14)'; c.shadowBlur = 12; c.shadowOffsetY = 3;
+        c.beginPath(); c.roundRect(x - pd, q.y - pd, W + 2 * pd, H + 2 * pd, 10); c.fillStyle = q.bg === true ? CARD : q.bg; c.fill(); c.restore();
+        c.beginPath(); c.roundRect(x - pd, q.y - pd, W + 2 * pd, H + 2 * pd, 10); c.lineWidth = 1.5; c.strokeStyle = 'rgba(28,36,64,.22)'; c.setLineDash([]); c.stroke();
+      }
+      /* rajz */
+      if (q.title) L.tx(q.title.s, x, q.y + 16, Object.assign({}, TF, { k: q.title.k }));
+      items.forEach((itm, i) => {
+        const p = pos[i], on = q.hl != null && i === q.hl;
+        c.beginPath(); c.rect(p.x, p.y, sw, sh);
+        c.fillStyle = itm.col || hatch(c, st.hatch); c.fill();
+        c.lineWidth = on ? 3 : 1.5; c.strokeStyle = on ? INK : st.edge; c.stroke();
+        L.tx(itm.l.s, p.x + sw + 10, p.y + sh / 2, Object.assign({}, LF, { b: 'middle', k: itm.l.k }));
+      });
       c.restore();
-      return { x: q.x, y: q.y, w: Math.max(w, rowW), h: y - q.y, items: pos };
+      return { x: q.x, y: q.y, w: W, h: H, items: pos };
     };
     return M;
   }
@@ -2394,7 +2415,7 @@ const FoldChart = (() => {
 })();
 /* ── MODUL VÉGE: Adatgrafikon ── */
 
-/* ── MODUL: Intézményséma (TortState) · forrás: tortenelem-7-8/16-demokracia, 2026-11-25 ── */
+/* ── MODUL: Intézményséma (TortState) · forrás: tortenelem-7-8/16-demokracia, 2026-11-25 · v1.1 (2026-11-25) ── */
 /* Ki választ kit, ki ellenőriz kit: csomópontok (intézmények) és címkézett nyilak, ki-/bekapcsolható elemekkel,
    dátum szerinti állapottal és elrendezés-váltással (terv 4.2). Csak a Lesson motorra épül (L.ctx, L.tx, L.pill,
    L.measure, L.st, Lesson.U, Lesson.FONTS); a lecke kódjára nem hivatkozik. Minden felirat {s, k} pár, és csak
@@ -2420,14 +2441,19 @@ const FoldChart = (() => {
                              (szürkülő, szaggatott keretű doboz, áthúzott felirat; az élei is halványak);
                              t: az L.st, amikor a váltás indul (alap: L.st), d: az áttűnés hossza mp-ben (alap .5)
    S.isOn(key) → bool        a kapcsoló célállapota   ·   S.reset()   minden be, nincs „párt alá”, alap elrendezés
-   S.timeline(events, d, fade) → {i, last}    a d (tört év) pillanat állapota, ZÁRT KÉPLETTEL (visszaléptetéskor is
-                             helyes, nincs halmozás): events = [{a: tört év, off: [key…], on: [key…],
-                             over: {nodeId: pártNodeId | null}}] időrendben; fade (év, alap 0): az átmenet hossza.
-                             A kézi S.set-eket felülírja. i: az utolsó lezajlott esemény indexe (−1: egy sem).
+   S.timeline(events, d, fade, o) → {i, last}    a d (tört év) pillanat állapota, ZÁRT KÉPLETTEL (visszaléptetéskor
+                             is helyes, nincs halmozás): events = [{a: tört év, off: [key…], on: [key…],
+                             over: {nodeId: pártNodeId | null}}] időrendben; fade (év, alap 0): az átmenet hossza;
+                             o = {align: 'start' (alap: az átmenet a dátumon INDUL, így a dátum napján még nem hat) |
+                             'end' (a dátumra már lezajlik: [a − fade, a]) | 'mid' (a dátum az átmenet közepe)}.
+                             A kézi S.set-eket felülírja. i: az utolsó elért esemény indexe (d ≥ a, és már hat; −1: egy sem).
                              „over”: a csomópont bordó keretet kap, és a párt csomópontjából automatikus
                              „irányít” nyíl fut hozzá (felirat nélkül; a T.over kis felirat a doboz fölött).
    S.draw(ctx, o)            o = {a: 1, t: 1 (beúszás 0..1: előbb a dobozok, aztán a nyilak), hl: [key…] (kiemelt;
-                             a többi o.dim alfával, alap .25), labels: true (nyílfeliratok), pulse: mp | null
+                             a többi o.dim alfával, alap .25), hlEdge: 'ends' (alap: egy él kiemelt, ha a kulcsa a
+                             hl-ben van VAGY mindkét végpontja kiemelt) | 'key' (csak ha a kulcsa a hl-ben van – így két
+                             kiemelt doboz közti él is halványítható; az automatikus „irányít” nyíl ekkor is a
+                             végpontok szerint), labels: true (nyílfeliratok), pulse: mp | null
                              (a „választ” nyilakon pöttyök futnak – az L.st-ből), sel: id (kijelölt doboz: cinóber
                              keret)} → a dobozok listája [{id, x, y, w, h}]
    S.hit(px, py) → id | null        melyik dobozra mutat
@@ -2436,6 +2462,9 @@ const FoldChart = (() => {
                              o = {a, w: 420 (a szöveg max. szélessége), side: 'auto' | 'left' | 'right' | 'below',
                              title?: {s, k} (alap: a doboz felirata), x, y (kézi hely), bounds: [x0, y0, x1, y1]}
    TortState.REL             a kapcsolattípusok stílusa ({col, w, dash})
+   Változások: v1.1 (2026-11-25) – draw o.hlEdge: 'key' (05-diktaturak: két kiemelt csúcs közti él nem volt
+   halványítható, a lecke két példányt úsztatott át); timeline o.align: 'end' | 'mid' (05: az esemény a saját dátumán
+   még nem hatott, a lecke a dátumot fade-del előbbre tolta). Visszafelé kompatibilis (az alapértékek a v1.0 szerint).
    ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
 const TortState = (() => {
   'use strict';
@@ -2495,10 +2524,10 @@ const TortState = (() => {
     S.set = (key, on, t, d) => { const cur = swVal(key); S.sw[key] = { v: on ? 1 : 0, from: cur, t0: t == null ? L.st : t, d: d || .5 }; return S; };
     S.isOn = (key) => { const q = S.sw[key]; return !q || (q.fixed != null ? q.fixed > .5 : q.v > .5); };
     S.reset = () => { S.sw = {}; S.over = {}; S.overT = {}; S.use('alap'); return S; };
-    S.timeline = (events, d, fade) => {
-      const fd = fade || 0, val = {}, ov = {}, ovT = {};
+    S.timeline = (events, d, fade, o = {}) => {
+      const fd = fade || 0, val = {}, ov = {}, ovT = {}, sh = o.align === 'end' ? fd : o.align === 'mid' ? fd / 2 : 0;
       let last = -1;
-      const prog = (a) => (fd > 0 ? smooth((d - a) / fd) : d >= a ? 1 : 0);
+      const prog = (a) => (fd > 0 ? smooth((d - a + sh) / fd) : d >= a ? 1 : 0);
       events.forEach((ev, i) => {
         const p = prog(ev.a); if (p <= 0) return;
         if (d >= ev.a) last = i;
@@ -2537,7 +2566,7 @@ const TortState = (() => {
     const edgeOn = (e) => Math.min(swVal(ekey(e)), swVal(e.from), swVal(e.to));
     S.draw = (c, o = {}) => {
       const a0 = c.globalAlpha, A = o.a == null ? 1 : o.a, t = o.t == null ? 1 : o.t, dim = o.dim == null ? .25 : o.dim;
-      const hl = o.hl && o.hl.length ? o.hl : null, isHl = (k) => !hl || hl.includes(k);
+      const hl = o.hl && o.hl.length ? o.hl : null, isHl = (k) => !hl || hl.includes(k), byKey = o.hlEdge === 'key';
       const na = smooth(t * 2), ea = smooth(t * 2 - 1);
       const set = (x) => { c.globalAlpha = clamp(a0 * A * x); };
       c.lineCap = 'round'; c.lineJoin = 'round';
@@ -2547,7 +2576,8 @@ const TortState = (() => {
       all.forEach((e) => {
         const g = curve(e), st = REL[e.rel] || REL['választ'], on = e._auto != null ? 1 : edgeOn(e);
         const pa = Math.min(g.A.a, g.B.a) * (e._auto != null ? e._auto : 1);
-        const vis = ea * pa * (isHl(ekey(e)) || (hl && (hl.includes(e.from) && hl.includes(e.to))) ? 1 : dim) * lerp(.28, 1, on);
+        const ends = hl && hl.includes(e.from) && hl.includes(e.to) && (!byKey || e._auto != null);
+        const vis = ea * pa * (isHl(ekey(e)) || ends ? 1 : dim) * lerp(.28, 1, on);
         if (vis <= .003) return;
         set(vis);
         c.strokeStyle = st.col; c.lineWidth = st.w;
@@ -3430,8 +3460,7 @@ function scene4(st, w, active) {
     const fa = (lay === 'euró' ? tr : 0) + (S4.from === 'euró' && lay !== 'euró' ? 1 - tr : 0);
     al(p(.4) * fa); L.pill(lab('forint'), hu[0], hu[1] + 30, { k: ['forint', 'euró HUN'], s: 22, w: 700, a: 'center', b: 'middle', c: INK, bg: CARD, bd: INK, bw: 1.5, pad: 6, r: 8 });
     // jelmagyarázat
-    soft(R4[0] + 8, R4[1] + R4[3] - 52 - D.keys.length * 36 - 40, 370, D.keys.length * 36 + 76, p(.3) * tr, { r: 10 });
-    al(1); M4.legend({ x: R4[0] + 20, y: R4[1] + R4[3] - 40 - D.keys.length * 36 - 40, title: K('réteg ' + lay), S: S4C[lay], labels: D.labels.map(K), a: GA * p(.3) * tr });
+    al(1); M4.legend({ x: R4[0] + 20, y: R4[1] + R4[3] - 40 - D.keys.length * 36 - 40, title: K('réteg ' + lay), S: S4C[lay], labels: D.labels.map(K), a: GA * p(.3) * tr, bg: true });
     if (S4.sel) {
       const pt = PTS[S4.sel] ? V4.pt(PTS[S4.sel][0], PTS[S4.sel][1]) : M4.pt(S4.sel);
       countryCard(S4.sel, R4[0] + 20, R4[1] + 20, smooth((st - S4.selT) / .3), pt);
@@ -3737,8 +3766,7 @@ function scene9(st, w) {
     al(1); M9.draw(V9, { val: (k) => (JOIN[k] != null ? (k === 'GBR' ? 'x' : JOIN[k] === 1957 ? 'a' : 'b') : undefined), S: S9C, a: GA * p(0),
       fill: (k, col) => (JOIN[k] == null || JOIN[k] === 1957 ? col : U.mix(LAND, col, g)) });
     dotAt(V9, PTS.MLT[0], PTS.MLT[1], 7, U.mix(LAND, '#7fb6c2', g), p(0));
-    soft(R9[0] + 6, R9[1] + R9[3] - 166, 300, 156, p(.4), { r: 10 });
-    al(1); M9.legend({ x: R9[0] + 18, y: R9[1] + R9[3] - 154, title: KT('ö 2026', ['tagállamok'], fmt(num('tagállamok'))), S: S9C, labels: [K('alapítók'), K('később csatlakozott'), K('kártya kilépett rövid')], a: GA * p(.4) });
+    al(1); M9.legend({ x: R9[0] + 18, y: R9[1] + R9[3] - 154, title: KT('ö 2026', ['tagállamok'], fmt(num('tagállamok'))), S: S9C, labels: [K('alapítók'), K('később csatlakozott'), K('kártya kilépett rövid')], a: GA * p(.4), bg: true });
   });
   // kulcsdátumok
   const R = [['római szerződés', 'ö 1957'], ['maastrichti szerződés', 'ö 1992'], ['magyar csatlakozás', 'ö 2004'], ['brit kilépés', 'ö 2020']];

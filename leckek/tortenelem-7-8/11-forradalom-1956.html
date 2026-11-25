@@ -3590,20 +3590,43 @@ function kossuthCimer(x, y, w, h, a) {
   c.restore();
   al(a); shieldPath(x, y, w, h); c.strokeStyle = INK; c.lineWidth = 2.5; c.stroke();
 }
+/* a 4. lépés vidéki városfelirata: pont + név + alsor, papírszínű háttéren. pos = [irány 'N' | 'S' (a pont fölött /
+   alatt), ax (a doboz melyik pontja kerül a pont fölé: 0 bal, .5 közép, 1 jobb), dx (px), alsor előbb (a név a pont mellé)] */
+const PLACE4 = { 'hu Győr': ['S', .5, -14], 'hu Mosonmagyaróvár': ['N', .15, 0], 'hu Miskolc': ['S', .5, 60], 'hu Debrecen': ['S', .5, 20], 'hu Pécs': ['N', .5, 0, true] };
+function labelBg4(x, y, w, h, a) { if (!(a > .02)) return; al(a); rr(x - 7, y - 4, w + 14, h + 8, 8); c.fillStyle = 'rgba(250,246,238,.9)'; c.fill(); }
+function cityLabel4(pt, k, sk, pos, a) {
+  if (!(a > .02)) return null;
+  const NF = { f: F.B, s: 22, w: 700 }, SF = { f: F.B, s: 22, w: 500 }, r = 7, h = 50;
+  const [dir, ax, dx, subFirst] = pos, w = Math.max(L.measure(lab(k), NF).w, L.measure(lab(sk), SF).w);
+  const x = clamp(pt[0] - w * ax + (dx || 0), R4[0] + 16, R4[0] + R4[2] - 16 - w), y = dir === 'N' ? pt[1] - r - 12 - h : pt[1] + r + 12;
+  labelBg4(x, y, w, h, a);
+  al(a); c.beginPath(); c.arc(pt[0], pt[1], r + 2.5, 0, TAU); c.fillStyle = 'rgba(250,246,238,.94)'; c.fill();
+  c.beginPath(); c.arc(pt[0], pt[1], r, 0, TAU); c.fillStyle = INK; c.fill();
+  const al4 = ax < .3 ? 'left' : ax > .7 ? 'right' : 'center', tx = al4 === 'left' ? x : al4 === 'right' ? x + w : x + w / 2;
+  const y1 = y + 18, y2 = y + 44;
+  al(a); L.tx(lab(k), tx, subFirst ? y2 : y1, Object.assign({ k, a: al4, c: INK }, NF));
+  al(a); L.tx(lab(sk), tx, subFirst ? y1 : y2, Object.assign({ k: sk, a: al4, c: MUT }, SF));
+  return [{ x: x - 7, y: y - 4, w: w + 14, h: h + 8 }, { x: pt[0] - r - 3, y: pt[1] - r - 3, w: 2 * r + 6, h: 2 * r + 6 }];   // felirat, pont
+}
 function scene4(st, w) {
   GA = w;
   const p = (t) => out(clamp((st - t) / .6));
   titleK('gy cím', p(0));
   // térkép: nem csak Budapesten
   al(p(.2)); huMap(V4, R4);
-  const DIRS = { 'hu Győr': ['S', 'SE', 'SW'], 'hu Mosonmagyaróvár': ['N', 'NE', 'E'], 'hu Miskolc': ['N', 'NW', 'NE', 'W'], 'hu Debrecen': ['S', 'SW', 'SE', 'W'], 'hu Pécs': ['E', 'NE', 'SE', 'N'] };
-  const items = VILL.map(([ck, k, sk], i) => { const q = LL(ck); return { id: 'v4-' + ck, lon: q[0], lat: q[1], s: lab(k), k, sub: lab(sk), sk, pri: 6, size: 22, r: 7, dot: true, a: p(.6 + i * .2), c: INK, dirs: DIRS[ck] }; });
-  const bq = LL('hu Budapest');
-  items.push({ id: 'v4-bp', lon: bq[0], lat: bq[1], s: lab('város Budapest'), k: 'város Budapest', pri: 9, size: 22, r: 8, dot: true, a: p(.4), dirs: ['E', 'NE', 'SE'] });
-  const oq = LL('saját hely helye');
-  items.push({ id: 'v4-saját', lon: oq[0], lat: oq[1], s: lab('saját hely'), k: 'saját hely', sub: lab('saját hely 2'), sk: 'saját hely 2', pri: 10, size: 24, r: 9, dot: true, dotC: TEAL, c: TEAL, a: p(1.8), dirs: ['NE', 'E', 'N', 'NW'] });
+  /* vidéki városok: kézi elhelyezés (a nézet rögzített), papírszínű háttérrel – a folyók és határok ne fussanak át a
+     feliraton, és a név a pontja mellett legyen (a TortMap.labels a kétsoros feliratot itt távolra, vezetővonallal tette) */
+  al(1); MAP.frame(V4);
+  const boxes = VILL.map(([ck, k, sk], i) => cityLabel4(MAP.pt(...LL(ck)), k, sk, PLACE4[ck], p(.6 + i * .2)));
+  const bq = LL('hu Budapest'), oq = LL('saját hely helye');
+  const items = [{ id: 'v4-bp', lon: bq[0], lat: bq[1], s: lab('város Budapest'), k: 'város Budapest', pri: 9, size: 22, r: 8, dot: true, a: p(.4), dirs: ['E', 'NE', 'SE'] },
+    { id: 'v4-saját', lon: oq[0], lat: oq[1], s: lab('saját hely'), k: 'saját hely', sub: lab('saját hely 2'), sk: 'saját hely 2', pri: 10, size: 24, r: 9, dot: true, dotC: TEAL, c: TEAL, a: p(1.8), dirs: ['NE', 'E', 'N', 'NW', 'SE', 'S'] }];
   const lgd = { x: 30, y: R4[1] + R4[3] - 56, w: 640, h: 50 };
-  al(1); MAP.frame(V4); MAP.labels(L, items, { avoid: [lgd, { x: R4[0] + R4[2] - 400, y: R4[1] + 6, w: 396, h: 56 }], rect: R4 });
+  const lo = { avoid: [lgd, { x: R4[0] + R4[2] - 400, y: R4[1] + 6, w: 396, h: 56 }].concat(...boxes.filter(Boolean)), rect: R4 };
+  // a két adatfüggő felirat (a saját hely a tanáré) a TortMap-elhelyezéssel; előbb a dobozuk alá papírszínű háttér
+  const la = { 'v4-bp': p(.4), 'v4-saját': p(1.8) };
+  MAP.labels(L, items, Object.assign({ draw: false }, lo)).forEach((b) => labelBg4(b.x, b.y, b.w, b.h, la[b.id]));
+  al(1); MAP.labels(L, items, lo);
   // a saját hely jelölése (kékeszöld gyűrű)
   const op = MAP.pt(oq[0], oq[1]);
   al(p(1.8)); c.beginPath(); c.arc(op[0], op[1], 16, 0, TAU); c.strokeStyle = TEAL; c.lineWidth = 3; c.stroke();

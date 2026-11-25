@@ -1723,7 +1723,7 @@ const TortCards = (() => {
   return { create };
 })();
 /* ── MODUL VÉGE: Kártyák ── */
-/* ── MODUL: Tematikus térkép (FoldChoro) · forrás: foldrajz-9-10/11-fejlettseg, 2026-11-24 · v1.1 (2026-11-24) ──
+/* ── MODUL: Tematikus térkép (FoldChoro) · forrás: foldrajz-9-10/11-fejlettseg, 2026-11-24 · v1.2 (2026-11-25, tortenelem-7-8) ──
    Országok / megyék sokszögei érték szerint színezve (choropleth), bármely TortProj-nézeten (Equal Earth,
    Lambert-kúp, gömb; a TortMap.frame() is ilyen nézetet ad). Osztályközök és színek a leckéből (a .md-ből),
    szekvenciális és divergens paletta, kategória-skála, „nincs adat” sraffozás, vitatott terület szaggatott
@@ -1754,15 +1754,20 @@ const TortCards = (() => {
                                       a: átlátszóság, sea: true (equalEarth/ortho: óceán + perem + vágás a peremre),
                                       hl: kulcs | [kulcsok] (vastag tinta keret, előre rajzolva),
                                       dim: 0..1 (ha van hl: a többi ennyire halványul), only: (key) → bool (csak ezek),
-                                      fill: (key, szín) → szín (felülírás, pl. kiemelés), border: true }
+                                      fill: (key, szín) → szín (felülírás, pl. kiemelés; v1.2: csak adatos elemre hívódik,
+                                            a semleges (undefined) és a „nincs adat” (null) elemre nem – fillAll: true:
+                                            mindre, a v1.1 szerint, ekkor a szín undefined / null is lehet), border: true }
                                     A vetített gyűrűket a nézet (lon, lat, s, x, y) szerint gyorsítótárazza.
      M.hit(px, py) → key | null     az utolsó draw vetülete szerint (páros–páratlan szabály); a semleges és a
                                     only-ból kimaradt elemek nem találhatók el; gömbön a korongon kívül null
      M.pt(key) → [x, y] | null      a címkepont (lp) a képernyőn (utolsó nézet)
      M.legend(q) → {x, y, w, h}     q = {x, y (bal felső), title: {s, k}, S, labels: [{s, k}] (osztályonként; ha nincs:
                                     S.labels(), k: q.k), noData: {s, k} (sraffozott mező), dir: 'v' | 'h', a,
-                                    hl: osztály (kiemelt mező), max (h: sorszélesség, ennél tör)}
-                                    → {x, y, w, h, items: [{x, y, w}] (a mezők helye, pl. zárójelhez)}
+                                    hl: osztály (kiemelt mező), max (h: sorszélesség, ennél tör),
+                                    bg: true | szín (v1.2: kártyaszerű háttér a tartalomhoz mérve – térképen olvasható),
+                                    pad: 12 (a háttér belső margója)}
+                                    → {x, y, w, h, items: [{x, y, w}] (a mezők helye, pl. zárójelhez); a w/h a háttér
+                                    nélküli tartalom mérete (a háttér pad-dal nagyobb)}
      FoldChoro.card(L, q) → {x, y, w, h}   adatkártya (méret a tartalomhoz): q = {x, y, w (min. szélesség),
                                     title: {s, k}, sub: {s, k}?, rows: [{l: {s, k}, v: {s, k}, c?}], a,
                                     anchor: [px, py] (szaggatott vezetővonal a kártyától ide), align: 'left' | 'right'
@@ -1776,6 +1781,9 @@ const TortCards = (() => {
    Változások: v1.1 (2026-11-24) – a gömbi kitöltés / hit hibája a proj.js-ben javítva (a modul kódja ugyanaz);
    hit a korongon kívül null; a card a betűállapotot sem hagyja elállítva (a mérés a save előtt volt); a draw
    határvonalai nem öröklik a hívó szaggatását; az alfa-szabály dokumentálva.
+   v1.2 (2026-11-25, csak a tortenelem-7-8 sorozatban) – a draw q.fill-je csak adatos elemre hívódik (17-europai-unio:
+   a semleges országra undefined színnel hívódott, a hívónak őrfeltétel kellett; régi viselkedés: q.fillAll);
+   legend q.bg / q.pad: háttér a mért tartalom alá (17: térképen háttér nélkül olvashatatlan volt). Visszafelé kompatibilis.
    ──────────────────────────────────────────────────────────────────────────────────────────────────────── */
 const FoldChoro = (() => {
   const F = Lesson.FONTS, U = Lesson.U;
@@ -1884,7 +1892,7 @@ const FoldChoro = (() => {
           else if (c0 === null && c1 === null) hatchA = 1;
           else if (c0 === undefined || c1 === undefined) { col = c1 === undefined ? (c0 || undefined) : c1; hatchA = c1 === undefined ? (c0 === null ? 1 - t : 0) : hatchA; }
         }
-        if (q.fill) col = q.fill(key, col);
+        if (q.fill && (q.fillAll || col)) col = q.fill(key, col);
         const a = hl && !hl.has(key) ? 1 - dim : 1;
         c.globalAlpha = ga * a;
         c.fillStyle = col || st.land; c.fill(p.P, 'evenodd');
@@ -1926,23 +1934,36 @@ const FoldChoro = (() => {
       const c = L.ctx, S = q.S, labs = q.labels || S.labels().map((s) => ({ s, k: q.k })), sw = 34, sh = 24, gap = 12;
       const LF = { f: F.B, s: 22, w: 500, c: INK }, TF = { f: F.B, s: 22, w: 700, c: MUT };
       c.save(); if (q.a != null) c.globalAlpha *= q.a;
-      let x = q.x, y = q.y, w = 0;
-      if (q.title) { const b = L.tx(q.title.s, x, y + 16, Object.assign({}, TF, { k: q.title.k })); w = b.w; y += 40; }
+      /* elrendezés (mérés) – a háttérhez előre kell a méret */
+      const x = q.x; let y = q.y, w = 0;
+      if (q.title) { w = L.measure(q.title.s, TF).w; y += 40; }
       const items = labs.map((l, i) => ({ l, col: S.cols[i] })); if (q.noData) items.push({ l: q.noData, col: null });
-      let cx = x, rowW = 0, y0 = y; const pos = [];
+      let cx = x, rowW = 0; const pos = [];
       for (const itm of items) {
         const tw = L.measure(itm.l.s, LF).w, iw = sw + 10 + tw;
         if (q.dir === 'h' && q.max && cx > x && cx - x + iw > q.max) { cx = x; y += sh + gap; }
         pos.push({ x: cx, y, w: iw });
-        c.beginPath(); c.rect(cx, y, sw, sh);
-        c.fillStyle = itm.col || hatch(c, st.hatch); c.fill();
-        c.lineWidth = q.hl != null && items.indexOf(itm) === q.hl ? 3 : 1.5; c.strokeStyle = q.hl != null && items.indexOf(itm) === q.hl ? INK : st.edge; c.stroke();
-        L.tx(itm.l.s, cx + sw + 10, y + sh / 2, Object.assign({}, LF, { b: 'middle', k: itm.l.k }));
         if (q.dir === 'h') { cx += iw + 28; rowW = Math.max(rowW, cx - x - 28); } else { y += sh + gap; rowW = Math.max(rowW, iw); }
       }
       if (q.dir === 'h') y += sh; else y -= gap;
+      const W = Math.max(w, rowW), H = y - q.y;
+      if (q.bg) {
+        const pd = q.pad == null ? 12 : q.pad;
+        c.save(); c.shadowColor = 'rgba(70,50,20,.14)'; c.shadowBlur = 12; c.shadowOffsetY = 3;
+        c.beginPath(); c.roundRect(x - pd, q.y - pd, W + 2 * pd, H + 2 * pd, 10); c.fillStyle = q.bg === true ? CARD : q.bg; c.fill(); c.restore();
+        c.beginPath(); c.roundRect(x - pd, q.y - pd, W + 2 * pd, H + 2 * pd, 10); c.lineWidth = 1.5; c.strokeStyle = 'rgba(28,36,64,.22)'; c.setLineDash([]); c.stroke();
+      }
+      /* rajz */
+      if (q.title) L.tx(q.title.s, x, q.y + 16, Object.assign({}, TF, { k: q.title.k }));
+      items.forEach((itm, i) => {
+        const p = pos[i], on = q.hl != null && i === q.hl;
+        c.beginPath(); c.rect(p.x, p.y, sw, sh);
+        c.fillStyle = itm.col || hatch(c, st.hatch); c.fill();
+        c.lineWidth = on ? 3 : 1.5; c.strokeStyle = on ? INK : st.edge; c.stroke();
+        L.tx(itm.l.s, p.x + sw + 10, p.y + sh / 2, Object.assign({}, LF, { b: 'middle', k: itm.l.k }));
+      });
       c.restore();
-      return { x: q.x, y: q.y, w: Math.max(w, rowW), h: y - q.y, items: pos };
+      return { x: q.x, y: q.y, w: W, h: H, items: pos };
     };
     return M;
   }
@@ -3682,7 +3703,7 @@ function scene5(st, active) {
   al(1); const cg = c.createLinearGradient(950, 0, 1000, 0); cg.addColorStop(0, U.rgba('#f5efe3', 0)); cg.addColorStop(1, U.rgba('#f5efe3', .96)); c.fillStyle = cg; c.fillRect(950, 0, 412, 1080);
   if (active && L.pointer.pressed) { const k = CH5.hit(L.pointer.px, L.pointer.py); if (k) S5.sel = k; }
   al(1); tx(S5.mode === 'a' ? 'cím 5 anyanyelv' : 'cím 5', 60, 78, H1);
-  al(1); card(16, 700, 300, 296); al(1); CH5.legend({ x: 32, y: 716, title: K('jelmagyarázat'), S: SC5, k: 'jelmagyarázat', noData: K('nincs adat'), dir: 'v' });
+  al(1); CH5.legend({ x: 32, y: 716, title: K('jelmagyarázat'), S: SC5, k: 'jelmagyarázat', noData: K('nincs adat'), dir: 'v', bg: true, pad: 16 });
   al(1); stampK('vázlatos', 40, 136);
   if (S5.sel) drawCard5(card5(S5.sel), CH5.pt(S5.sel));
   al(1); L.pill(lab('kattints'), 1350, 1004, O(PILL, { a: 'right', k: 'kattints' }));
